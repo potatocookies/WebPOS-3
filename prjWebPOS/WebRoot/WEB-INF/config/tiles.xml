@@ -1,0 +1,1028 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+
+	<definition name="base.mainPageDefination" template="/WEB-INF/jsp/loginTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="loginheader" value="/WEB-INF/jsp/loginHeader.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp"></put-attribute>
+	</definition>
+
+	<definition name="base.definition" template="/WEB-INF/jsp/mainTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/jsp/header.jsp"></put-attribute>
+		<put-attribute name="banner" value="/WEB-INF/jsp/banner.jsp"></put-attribute><!--RP -->
+		<put-attribute name="menu" value="/WEB-INF/jsp/menu.jsp"></put-attribute> 
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp"></put-attribute>
+	</definition>
+
+	<definition name="base.definition1" template="/WEB-INF/jsp/mainTemplate1.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/jsp/header.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp"></put-attribute>
+	</definition>
+
+	<definition name="base.definition2" template="/WEB-INF/jsp/mainTemplate1.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/jsp/header.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp"></put-attribute>
+	</definition>
+
+	<definition name="base.definition4" template="/WEB-INF/jsp/newTabTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="banner" value="/WEB-INF/jsp/banner2.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+
+	<definition name="base.definition5" template="/WEB-INF/jsp/blankTemplate.jsp">
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+	
+	<definition name="base.definition6" template="/WEB-INF/jsp/newTabTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="banner" value="/WEB-INF/jsp/webPOS/posBanner.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+	<definition name="base.definition7" template="/WEB-INF/jsp/headerBodyTemplet.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/jsp/header.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+	
+	<definition name="base.definition8" template="/WEB-INF/jsp/newTabTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="banner" value="/WEB-INF/jsp/webPOS/posBannerForBilling.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+	
+	
+
+	
+
+	<!-- Kindly request to all developer please do not change this defination -->
+	<definition name="base.searchFormDefination" template="/WEB-INF/jsp/searchFormTemplate.jsp">
+		<put-attribute name="body" value=""></put-attribute>
+	</definition>
+	
+	
+	
+	<definition name="base.definitionPOS" template="/WEB-INF/jsp/webPOS/posMainTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/jsp/webPOS/headerPOS.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp"></put-attribute>
+	</definition>
+	
+	
+<!-- 	<definition name="base.definition7" template="/WEB-INF/jsp/newTabTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+	</definition> -->
+	
+	<definition name="base.definitionPMS" template="/WEB-INF/jsp/mainTemplate.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/jsp/header.jsp"></put-attribute>
+		<put-attribute name="banner" value="/WEB-INF/jsp/webPMS/setup/bannerPMS.jsp"></put-attribute><!--RP -->
+		<put-attribute name="menu" value="/WEB-INF/jsp/menu.jsp"></put-attribute> 
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/jsp/footer.jsp"></put-attribute>
+	</definition>
+	
+	
+	
+	
+	
+	
+	
+
+	
+		
+	<definition name="frmSearch" extends="base.searchFormDefination">
+		<!-- <put-attribute name="title" value="Search Form"></put-attribute> -->
+		<put-attribute name="body" value="/WEB-INF/jsp/frmSearch.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmLogin" extends="base.mainPageDefination">
+		<put-attribute name="title" value="User Login"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmLogin.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmModuleSelection" extends="base.mainPageDefination">
+		<put-attribute name="title" value="Module selection"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmModuleSelection.jsp"></put-attribute>
+	</definition>
+	
+
+	
+	
+	<definition name="frmPropertySelection" extends="base.definition5">
+		<!-- <put-attribute name="title" value="Property Selection"></put-attribute> -->
+		<put-attribute name="body"
+			value="/WEB-INF/jsp/frmPropertySelection.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmProperty" extends="base.definition">
+		<put-attribute name="title" value="Property Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmProperty.jsp"></put-attribute>
+	</definition>
+	<definition name="frmProperty_1" extends="base.definition4">
+		<put-attribute name="title" value="Property Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmProperty.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmLoginErrorPage" extends="base.definition">
+		<put-attribute name="title" value="loginerror"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmLoginErrorPage.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmMainMenu" extends="base.definition">
+		<put-attribute name="title" value="Main Screen"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmMainMenu.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmMainMenuWithDashBoard" extends="base.definition">
+		<put-attribute name="title" value="Main Screen"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmMainMenuWithDashBoard.jsp"></put-attribute>
+	</definition>
+
+
+
+
+
+
+<!-- 	Start WebPOS Tiles Entry -->
+
+
+	<definition name="frmWebPOSLogin" extends="base.mainPageDefination">
+		<put-attribute name="title" value="User Login"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmWebPOSLogin.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmWebPOSMainMenu" extends="base.definitionPOS">
+		<put-attribute name="title" value="Main Screen"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmWebPOSMainMenu.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmWebPOSModuleSelection" extends="base.definition5">
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmWebPOSModuleSelection.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSGroupMaster" extends="base.definition6">
+		<put-attribute name="title" value="Group Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSGroupMaster.jsp" />
+	</definition>
+
+	<definition name="frmPOSSelection" extends="base.mainPageDefination">
+		<put-attribute name="title" value="POS Selection" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSSelection.jsp" />
+	</definition>
+	
+	
+	<definition name="frmPOSReasonMaster" extends="base.definition6">
+		<put-attribute name="title" value="Reason Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSReasonMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSAreaMaster" extends="base.definition6">
+		<put-attribute name="title" value="Area Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSAreaMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSMaster" extends="base.definition6">
+		<put-attribute name="title" value="POS Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSTableMaster" extends="base.definition6">
+		<put-attribute name="title" value="Table Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSTableMaster.jsp" />
+	</definition>
+
+<definition name="frmPOSTaxMaster" extends="base.definition6">
+		<put-attribute name="title" value="Tax Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSTaxMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSMainMenu" extends="base.mainPageDefination">
+		<put-attribute name="title" value="Main Menu" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSMainMenu.jsp" />
+	</definition>
+	
+	<definition name="frmPOSMenuHead" extends="base.definition6">
+		<put-attribute name="title" value="Menu Head" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSMenuHead.jsp" />
+	</definition>
+	
+	<definition name="frmPOSModifierGroupMaster" extends="base.definition6">
+		<put-attribute name="title" value="Modifier Group Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSModifierGroupMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSMenuItemMaster" extends="base.definition6">
+		<put-attribute name="title" value="Menu Item" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSMenuItemMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSItemModifierMaster" extends="base.definition6">
+		<put-attribute name="title" value="Item Modifier" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSItemModifierMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSGroupWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Group Wise Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSGroupWiseReport.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSCustomerTypeMaster" extends="base.definition6">
+		<put-attribute name="title" value="CustomerTypeMaster" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCustomerTypeMaster.jsp" />
+	</definition>
+	
+	
+	<definition name="frmPOSPrice" extends="base.definition6">
+		<put-attribute name="title" value="Menu Item Pricing Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSPrice.jsp" />
+	</definition>
+	
+	<definition name="frmPOSZoneMaster" extends="base.definition6">
+		<put-attribute name="title" value="ZoneMaster" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSZoneMaster.jsp" />
+	</definition>
+
+<definition name="frmPOSWaiterMaster" extends="base.definition6">
+		<put-attribute name="title" value="Waiter Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSWaiterMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSShiftMaster" extends="base.definition6">
+		<put-attribute name="title" value="Shift Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSShiftMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSCustomerMaster" extends="base.definition6">
+		<put-attribute name="title" value="Customer Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCustomerMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSCustomerAreaMaster" extends="base.definition6">
+		<put-attribute name="title" value="Customer Area Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCustomerAreaMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSCustomerMaster" extends="base.definition6">
+		<put-attribute name="title" value="Customer Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCustomerMaster.jsp" />
+	</definition>
+
+    <definition name="frmPOSCustomerAreaMaster" extends="base.definition6">
+		<put-attribute name="title" value="Customer Area Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCustomerAreaMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSItemWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Item Wise Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSItemWiseReport.jsp"></put-attribute>
+	</definition>
+	<definition name="frmPOSSettlementWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Settlement Wise Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSettlementWiseReport.jsp"></put-attribute>
+	</definition>
+	<definition name="frmPOSAuditorReport" extends="base.definition6">
+		<put-attribute name="title" value="Auditor Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAuditorReport.jsp"></put-attribute>
+	</definition>
+	<definition name="frmPOSSubGroupSummaryReport" extends="base.definition6">
+		<put-attribute name="title" value="SubGroup Summary Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSubGroupWiseSummaryReport.jsp"></put-attribute>
+	</definition>
+	<definition name="frmPOSNonChargeableSettlementReport" extends="base.definition6">
+		<put-attribute name="title" value="NC KOT Settlement Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSNonChargableSettlementReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSTaxWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Tax Wise Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTaxWiseReport.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSDiscountWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Discount Wise Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDiscountWiseReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSComplimentarySettlementReport" extends="base.definition6">
+		<put-attribute name="title" value="Complimentary Settlement Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSComplimentarySettlementReport.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSBillReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Bill Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSBillReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSBillReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Bill Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSBillReport.jsp" />
+	</definition>
+
+    <definition name="frmPOSGroupSubGroupWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Group Sub-Group Wise Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSGroupSubGroupWiseReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSDailyCollectionReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Daily Collection Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDailyCollectionReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSSubGroupWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Sub Group Wise Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSubGroupWiseReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSBillWiseSettlementSalesSummaryFlash" extends="base.definition6">
+		<put-attribute name="title" value="Bill Wise Settlement Sales Summary Flash"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSBillWiseSettlementSalesSummaryFlash.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSDayWiseSalesSummaryFlash" extends="base.definition6">
+		<put-attribute name="title" value="Day Wise Sales Summary Flash"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmDayWiseSalesSummaryFlash.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSPrice" extends="base.definition6">
+		<put-attribute name="title" value="Menu Item Pricing Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSPrice.jsp" />
+	</definition>
+	
+	<definition name="frmPOSCostCenterMaster" extends="base.definition6">
+		<put-attribute name="title" value="Cost Center Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCostCenterMaster.jsp" />
+</definition>
+	
+	
+	<definition name="frmPOSRevenueHeadWiseItemSalesReport" extends="base.definition6">
+		<put-attribute name="title" value="Revenue Head Wise Item Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmRevenueHeadWiseItemSalesReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSOperatorWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Operator Wise Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSOperatorWiseReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSVoidBillReport" extends="base.definition6">
+		<put-attribute name="title" value="Void Bill Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSVoidBillReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSCostCenterWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Cost Center Wise Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSCostCenterWiseReport.jsp"></put-attribute>
+	</definition>
+
+	
+<definition name="frmPOSAuditFlash" extends="base.definition6">
+		<put-attribute name="title" value="POS Audit Flash"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAuditFlash.jsp"></put-attribute>
+	</definition>
+
+<definition name="frmPOSAdvanceOrderFlash" extends="base.definition6">
+		<put-attribute name="title" value="POS Advance Order Flash"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAdvanceOrderFlash.jsp"></put-attribute>
+	</definition>	
+		
+<definition name="frmPOSPhysicalStockFlash" extends="base.definition6">
+		<put-attribute name="title" value="Physical Stock Flash"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSPhysicalStockFlash.jsp"></put-attribute>
+	</definition>
+	
+
+
+	<definition name="frmPOSSalesReport" extends="base.definition6">
+		<put-attribute name="title" value="Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSalesReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSPromationFlash" extends="base.definition6">
+		<put-attribute name="title" value="Promotion Sales Flash Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSPromotionFlashReport.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSCounterWiseSalesReport" extends="base.definition6">
+		<put-attribute name="title" value="Counter Wise Sales Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmCounterWiseSalesReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="funPOSTaxBreakupSummaryReport" extends="base.definition6">
+		<put-attribute name="title" value="Tax Breakup Summary Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTaxBreakupSummaryReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSWaiterWiseIncentiveReport" extends="base.definition6">
+		<put-attribute name="title" value="Waiter Wise Incentive Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSWaiterWiseIncentiveReport.jsp"></put-attribute>
+	</definition>
+	<definition name="frmPOSDeliveryboyIncentive" extends="base.definition6">
+		<put-attribute name="title" value="Delivery Boy Incentive"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmDeliveryboyIncentive.jsp"></put-attribute>
+	</definition>
+	<definition name="frmPOSAdvanceOrderReport" extends="base.definition6">
+		<put-attribute name="title" value="Advance Order Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmAdvanceOrderReport.jsp"></put-attribute>
+	</definition>
+		
+	    <definition name="frmPOSItemMasterListingReport" extends="base.definition6">
+  <put-attribute name="title" value="Item Master Listing Report" /> 
+  <put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSItemMasterListingReport.jsp" /> 
+  </definition>	
+	
+	<definition name="frmPOSSettlement" extends="base.definition6">
+		<put-attribute name="title" value="Settlement Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSSettlementMaster.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSAdvanceOrderTypeMaster" extends="base.definition6">
+		<put-attribute name="title" value="Advance Order Type Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSAdvanceOrderTypeMaster.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSDeliveryPersonMaster" extends="base.definition6">
+		<put-attribute name="title" value="Delivery Person Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSDeliveryPersonMaster.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSOrderMaster" extends="base.definition6">
+		<put-attribute name="title" value="Order Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSOrderMaster.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSRecipeMaster" extends="base.definition6">
+		<put-attribute name="title" value="Recipe Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSRecipeMaster.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSPromationMaster" extends="base.definition6">
+		<put-attribute name="title" value="Promotion Master"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSPromotionMaster.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSMoveKOT" extends="base.definition6">
+		<put-attribute name="title" value="Move KOT To Table"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSMoveKOT.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSMoveKOTItemToTable" extends="base.definition6">
+		<put-attribute name="title" value="Move KOT Items To Table"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSMoveKOTItemToTable.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSUserRegistration" extends="base.definition6">
+		<put-attribute name="title" value="POS Users Access"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSUserRegistration.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSCounterMaster" extends="base.definition6">
+		<put-attribute name="title" value="POS Counter Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCounterMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSDebitCardMaster" extends="base.definition6">
+		<put-attribute name="title" value="Cost Center Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSDebitCardMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSFactoryMaster" extends="base.definition6">
+		<put-attribute name="title" value="Factory Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSFactoryMaster.jsp" />
+	</definition>
+	
+	<definition name="frmPOSRegisterDebitCard" extends="base.definition6">
+		<put-attribute name="title" value="Register Debit Card" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSRegisterDebitCard.jsp" />
+	</definition>	
+	
+	<definition name="frmPOSDayEndFlashReport" extends="base.definition6">
+		<put-attribute name="title" value="Day End Flash Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDayEndFlashReport.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmPOSAvgItemPerBillReport" extends="base.definition6">
+		<put-attribute name="title" value="Average Item Per Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAvgItemPerBillReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSAvgPerCoverReport" extends="base.definition6">
+		<put-attribute name="title" value="Aveage Per Cover Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAvgPerCoverReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSAvgTicketValueReport" extends="base.definition6">
+		<put-attribute name="title" value="Aveage Ticket Value Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAvgTicketValueReport.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSDebitCardFlashReport" extends="base.definition6">
+		<put-attribute name="title" value="Debit Card Flash Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDebitCardFlashReport.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSVoidAdvanceOrderReport" extends="base.definition6">
+		<put-attribute name="title" value="Void Advance Order Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSVoidAdvanceOrderReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSWaiterWiseItemWiseIncentiveReport" extends="base.definition6">
+		<put-attribute name="title" value="Waiter Wise Item Wise Incentive Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSWaiterWiseItemWiseIncentiveReport.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSCashManagement" extends="base.definition6">
+		<put-attribute name="title" value="Cash Managment Transcation" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSCashManagement.jsp" />
+	</definition>
+	
+	<definition name="frmUnsettleBill" extends="base.definition6">
+		<put-attribute name="title" value="Unsettle Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmUnsettleBill.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSTools" extends="base.definition6">
+		<put-attribute name="title" value="Tools"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSTools.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSClearMasterTransaction" extends="base.definition6">
+		<put-attribute name="title" value="Clear Master Transaction"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSClearMasterTransaction.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSVoidKOTReport" extends="base.definition6">
+		<put-attribute name="title" value="Void KOT Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSVoidKOTReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSVoidKOTReport" extends="base.definition6">
+		<put-attribute name="title" value="Void KOT Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSVoidKOTReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSGuestCreditReport" extends="base.definition6">
+		<put-attribute name="title" value="Guest Credit Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSGuestCreditReport.jsp" />
+	</definition>
+	
+	  <definition name="frmPOSUnusedCardBalanceReport" extends="base.definition6">
+		<put-attribute name="title" value="Unused Card Balance Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSUnusedCardBalanceReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSUnusedCardBalanceReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Unused Card Balance Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSUnusedCardBalanceReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSItemWiseConsumption" extends="base.definition6">
+		<put-attribute name="title" value="POS Item Wise Consumption" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSItemWiseConsumption.jsp" />
+	</definition>
+	
+	<definition name="frmPOSItemWiseConsumption" extends="base.definition6">
+		<put-attribute name="title" value="POS Item Wise Consumption" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSItemWiseConsumption.jsp" />
+	</definition>
+	<definition name="frmPOSPostingReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Posting Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSPostingReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSPostingReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Posting Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSPostingReport.jsp" />
+	</definition>
+	<definition name="frmPOSReprintDocsReport" extends="base.definition6">
+		<put-attribute name="title" value="Reprint Docs Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSReprintDocsReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSReprintDocsReport" extends="base.definition6">
+		<put-attribute name="title" value=" Reprint Docs Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSReprintDocsReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSSalesSummaryFlash" extends="base.definition6">
+		<put-attribute name="title" value="Sales Summary Flash" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSalesSummaryFlash.jsp" />
+	</definition>
+	
+	<definition name="frmPOSSalesSummaryFlash" extends="base.definition6">
+		<put-attribute name="title" value="Sales Summary Flash" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSalesSummaryFlash.jsp" />
+	</definition>
+   <definition name="frmPOSTableWisePaxReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Table Wise Pax Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTableWisePaxReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSTableWisePaxReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Table Wise Pax Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTableWisePaxReport.jsp" />
+	</definition>	
+	
+	<definition name="frmPOSConfigSetting" extends="base.definition6">
+		<put-attribute name="title" value="POS Config Setting" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSConfigSetting.jsp" />
+	</definition>	
+	
+	<definition name="frmPOSAddKOTToBill" extends="base.definition6">
+		<put-attribute name="title" value="Add KOT To Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSAddKOTToBill.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSMoveTable" extends="base.definition6">
+		<put-attribute name="title" value="Move Table"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSMoveTable.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSPhysicalStkPosting" extends="base.definition6">
+		<put-attribute name="title" value="Physical Stock Posting"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSPhysicalStkPosting.jsp"></put-attribute>
+	</definition>
+	
+	
+	<definition name="frmPOSStkIn" extends="base.definition6">
+		<put-attribute name="title" value="Stock In"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSStkIn.jsp"></put-attribute>
+	</definition>
+	
+	
+	<definition name="frmPOSStkOut" extends="base.definition6">
+		<put-attribute name="title" value="Stock Out"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSStkOut.jsp"></put-attribute>
+	</definition>
+	
+	
+	<definition name="frmPOSWiseSalesReport" extends="base.definition6">
+		  <put-attribute name="title" value="POS Wise Sales Report" /> 
+		  <put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSWiseSalesReport.jsp" /> 
+  	</definition>
+  
+ 	 <definition name="frmPOSPropertySetup" extends="base.definition6">
+		<put-attribute name="title" value="Property Setup"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSPropertySetup.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSVoidKot" extends="base.definition6">
+		<put-attribute name="title" value="POS Void Kot"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSVoidKot.jsp"></put-attribute>
+	</definition>
+
+
+ 	<definition name="frmPOSVoidBill" extends="base.definition6">
+		<put-attribute name="title" value="POS Void Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSVoidBill.jsp"></put-attribute>
+	</definition>
+		
+	<definition name="frmSettleBillFrontEnd" extends="base.definition6">
+		<put-attribute name="title" value="POS Bill Settlement Front End Form"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmSettleBillFrontPage.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmBillSettlement" extends="base.definition6">
+		<put-attribute name="title" value="POS Bill Settlement "></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmBillSettlement.jsp"></put-attribute>
+	</definition>	
+	
+	<definition name="frmPOSCustomerHistoryFlash" extends="base.definition6">
+		<put-attribute name="title" value="Customer History Flash" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSCustomerHistoryFlash.jsp" />
+	</definition>
+
+	<definition name="frmPOSAssignHomeDelivery" extends="base.definition6">
+		<put-attribute name="title" value="Assign Home Delivery" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSAssignHomeDelivery.jsp" />
+	</definition>
+
+	<definition name="frmPOSMultiBillSettle" extends="base.definition6">
+		<put-attribute name="title" value="Multi Bill Settle" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSMultiBillSettle.jsp" />
+	</definition>
+	
+	<definition name="frmPOSBulkMenuItemPricing" extends="base.definition6">
+	  <put-attribute name="title" value="Bulk Pricing Master" /> 
+	  <put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSBulkMenuItemPricing.jsp" /> 
+	</definition>
+	
+	<definition name="frmPOSDashboard" extends="base.definition6">
+		<put-attribute name="title" value="POS Dashboard" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDashboard.jsp" />
+	</definition>
+	
+	<definition name="frmPOSSaleVSPurchase" extends="base.definition6">
+		<put-attribute name="title" value="POS Sale VS Purchase" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSSaleVSPurchase.jsp" />
+	</definition>
+	
+	<definition name="frmPOSComparisonwiseDashboard" extends="base.definition6">
+		<put-attribute name="title" value="POS Comparisonwise Dashboard" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSComparisonwiseDashboard.jsp" />
+	</definition>
+	
+	<definition name="frmHomeDeliveryAddress" extends="base.definition6">
+		<put-attribute name="title" value="Home Delivery Address"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmHomeDeliveryAddress.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSSendBulkSMS" extends="base.definition6">
+		<put-attribute name="title" value="Send Bulk SMS" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSSendBulkSMS.jsp" />
+	</definition>
+
+	<definition name="frmPOSCocktailWorldInterface" extends="base.definition6">
+		<put-attribute name="title" value="Cocktail World Interface" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSCocktailWorldInterface.jsp" />
+	</definition>
+	
+	
+	<definition name="frmPOSKDSBookAndProcess" extends="base.definition6">
+		<put-attribute name="title" value="KDS Book and Process"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSKDSBookAndProcess.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSKDSForKOTBookAndProcess" extends="base.definition6">
+		<put-attribute name="title" value="KDS For KOT Book and Process"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSKDSForKOTBookAndProcess.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSTableReservation" extends="base.definition6">
+		<put-attribute name="title" value="POS Table Reservation"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSTableReservation.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSStockFlashReport" extends="base.definition6">
+		<put-attribute name="title" value="Stock Flash Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSStockFlashReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSStkInOutFlash" extends="base.definition6">
+		<put-attribute name="title" value="Stock In Out Flash Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSStkInOutFlash.jsp"></put-attribute>
+	</definition>
+
+	<definition name="frmPOSStkAdjustment" extends="base.definition6">
+		<put-attribute name="title" value="Stock Adjustment"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSStkAdjustment.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSReprint" extends="base.definition6">
+		<put-attribute name="title" value="Reprint" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSReprint.jsp" />
+	</definition>
+
+	<definition name="frmViewData" extends="base.definition5">
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmViewData.jsp" />
+	</definition>	
+	
+		<definition name="frmPOSMakeBill" extends="base.definition6">
+		<put-attribute name="title" value="Make Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSMakeBill.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmPOSRestaurantBill" extends="base.definition6">
+		<put-attribute name="title" value="Make KOT"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSMakeKOT.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSSubGroup" extends="base.definition6">
+		<put-attribute name="title" value="POS SubGroup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSSubGroupMaster.jsp" />
+	</definition>
+	
+	  <definition name="frmPOSWiseItemIncentive" extends="base.definition6">
+		  <put-attribute name="title" value="POSWise Item Incentive" /> 
+		  <put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSWiseItemIncentive.jsp" /> 
+  </definition>
+  
+  <definition name="frmPOSMailDayEndReports" extends="base.definition4">
+		<put-attribute name="title" value="Mail Day End" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmMailDayEndReports.jsp" />
+	</definition>
+
+	<definition name="frmPOSDailySalesReport" extends="base.definition6">
+		<put-attribute name="title" value="Daily Sales reports" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDailySalesReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSUnusedCardBalanceReport" extends="base.definition4">
+		<put-attribute name="title" value="Unused card Balance Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSUnusedCardBalanceReport.jsp" />
+	</definition>
+
+	<definition name="frmPOSTableWisePaxReport" extends="base.definition4">
+		<put-attribute name="title" value="Unused card Balance Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTableWisePaxReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSDayEndProcess" extends="base.definition6">
+	<put-attribute name="title" value=" Day End Process"></put-attribute>
+	<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmDayEndProcess.jsp"></put-attribute>
+	</definition>
+
+
+	<definition name="frmPOSDayEndDialog" extends="base.definition4">
+		<put-attribute name="title" value="POS Day End Dialog" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmDayEndDialog.jsp"/>
+	</definition>	
+	
+	<definition name="frmPOSShiftEndProcessConsolidate" extends="base.definition6">
+		<put-attribute name="title" value="Consolidate Day End" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmDayEndProcessConsolidate.jsp" />
+	</definition>
+	
+	<definition name="frmPOSDayEndWithoutDetails" extends="base.definition6">
+		<put-attribute name="title" value="Blank Day End" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmDayEndWithoutDetails.jsp" />
+	</definition>
+	
+	<definition name="frmPOSImportDatabase" extends="base.definition6">
+		<put-attribute name="title" value="Import Database"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSImportDatabase.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSVoidStock" extends="base.definition6">
+		<put-attribute name="title" value="Void  Stock"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSVoidStock.jsp"></put-attribute>
+	</definition> 
+	<definition name="frmChangePassword" extends="base.definition6">
+		<put-attribute name="title" value="Change Password"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmChangePassword.jsp"></put-attribute>
+	</definition>
+	
+	
+	
+	<definition name="frmPOSNonAvailableItems" extends="base.definition6">
+		<put-attribute name="title" value="Non Available Items"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSNonAvailableItems.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSTDH" extends="base.definition6">
+  <put-attribute name="title" value="TDH" /> 
+  <put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSTDH.jsp" /> 
+  </definition>
+	
+	<definition name="frmPOSDirectBiller" extends="base.definition6">
+		<put-attribute name="title" value="Direct Biller"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSDirectBiller.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmCallCenter" extends="base.definition6">
+		<put-attribute name="title" value="Call Center"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmCallCenter.jsp"></put-attribute>
+	</definition>
+	
+	
+	<definition name="frmCustomerHistory" extends="base.definition6">
+		<put-attribute name="title" value="Customer History"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmCustomerHistory.jsp"></put-attribute>
+	</definition> 
+	
+  
+  
+  
+		<definition name="frmPOSStockINOUT" extends="base.definition6">
+		<put-attribute name="title" value="Stock In_Out"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSStockINOUT.jsp"></put-attribute>
+	</definition> 
+	
+	<definition name="frmPOSCreditBillOutstandingReport" extends="base.definition6">
+		<put-attribute name="title" value="Credit Bill Outstanding Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSCreditBillOutstandingReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSCashMgmtReport" extends="base.definition6">
+		<put-attribute name="title" value="Cash Mgmt Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSCashMgmtReport.jsp" />
+	</definition>
+	
+	<definition name="frmPOSDataBaseBackup" extends="base.definition6">
+		<put-attribute name="title" value="Database Backup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSDataBaseBackup.jsp" />
+	</definition>	
+	
+	<definition name="frmPOSClearMaster" extends="base.searchFormDefination">
+		<put-attribute name="title" value="Clear Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSClearMaster.jsp" />
+	</definition>	
+  	
+	<definition name="frmConfirmUserLogin" extends="base.searchFormDefination">
+		<put-attribute name="title" value="Confirm User Login" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmConfirmUserLogin.jsp" />
+	</definition>	
+	
+	<definition name="frmPOSMenuHeadWiseReport" extends="base.definition6">
+		<put-attribute name="title" value="Menu Head Wise Sales Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSMenuHeadWiseReport.jsp" />
+	</definition>
+  
+  	<definition name="frmBillSeriesMaster" extends="base.definition6">
+		<put-attribute name="title" value="Bill Series Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmBillSeriesMaster.jsp" />
+	</definition>
+  
+  <definition name="frmDiscountMaster" extends="base.definition6">
+		<put-attribute name="title" value="Discount Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmDiscountMaster.jsp" />
+	</definition>
+	
+	
+	<definition name="frmBillSettlementMakeKOT" extends="base.definition6">
+		<put-attribute name="title" value="Discount Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmBillSettlementMakeKOT.jsp" />
+	</definition>
+	
+	<definition name="frmPOSChangeCustomerOnBill" extends="base.definition6">
+		<put-attribute name="title" value="Discount Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSChangeCustomerOnBill.jsp" />
+	</definition>
+	
+	<definition name="frmPOSBlindSettlementWiseReport1" extends="base.definition6">
+		<put-attribute name="title" value="Blind Settlement Wise Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSBlindSettlementWiseReport1.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSStatistics" extends="base.definition6">
+		<put-attribute name="title" value="POS Statistics" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSStatistics.jsp" />
+	</definition>
+	
+	<definition name="frmPOSTableStatusReport" extends="base.definition6">
+		<put-attribute name="title" value="POS Table Status Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSTableStatusReport.jsp" />
+	</definition>
+	
+	<definition name="frmUnlockTable" extends="base.definition6">
+		<put-attribute name="title" value="POS Unlock Table" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmUnlockTable.jsp" />
+	</definition>
+	
+	<definition name="frmTaxRegeneration" extends="base.definition6">
+		<put-attribute name="title" value="Change Customer On bill" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmTaxRegeneration.jsp" />
+	</definition>
+	
+	<definition name="frmPOSWaiterWiseItemReport" extends="base.definition6">
+		<put-attribute name="title" value="Waiter Wise Item Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSWaiterWiseItemReport.jsp" />
+	</definition>
+	
+	<definition name="frmBillSettlementTemp" extends="base.definition8">
+		<put-attribute name="title" value="Bill Settlement"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmBilling.jsp"></put-attribute>
+	</definition>	
+
+	<definition name="frmCallCenter" extends="base.definition6">
+		<put-attribute name="title" value="Call Center"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmCallCenter.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmCallCenterOrderFlash" extends="base.definition6">
+		<put-attribute name="title" value="Order Flash"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmCallCenterOrderFlash.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmPOSShortcutKeySetup" extends="base.definition6">
+		<put-attribute name="title" value="POS Shortcut Setup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSShortcutKeySetup.jsp" />
+	</definition>
+	
+	
+	
+	
+<!-- 	End Of WebPOS Tiles Entry -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</tiles-definitions>

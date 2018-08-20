@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+encoding//WebRoot/WEB-INF/reports/rptPhysicalStockPosting.jasper=UTF-8
+encoding//WebRoot/WEB-INF/reports/rptRequisitionList.jasper=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptAIPB.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptBillDiscountDetailReport.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptCostCenterSalesWiseDetailReport1.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptCostCenterWiseSummaryReport1.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptGroupSubGroupWiseReport.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptGroupWiseSalesReport.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptSubGroupWiseSummaryReport.jrxml=UTF-8
+encoding//WebRoot/WEB-INF/reports/webpos/rptTaxBreakupSummaryReport.jrxml=UTF-8

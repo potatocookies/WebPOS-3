@@ -836,6 +836,17 @@
 	        if (paidAmount == 0.00 && grandTotal != 0.00)
 	        {
 	        	alert("Please Enter Amount");
+	        	
+	        	return;
+	        }
+	        
+	        
+	        var txtPaidAmount=$("#txtPaidAmount").val()
+	        if(txtPaidAmount==0)
+	        {
+	        	alert("Bill Amount is Zero");
+	        	
+	        	return;
 	        }
 	        
 	        if (settleType=="Debit Card")
@@ -845,19 +856,18 @@
 	                if (cardBal < paidAmount)
 	                {
 	                	alert("Insufficient Amount in Card");
+	                	
+	                	return;
 	                }
 	           // }
 	        }
-	        var txtPaidAmount=$("#txtPaidAmount").val()
-	        if(txtPaidAmount==0)
-	        	{
-	        	alert("Bill Amount is Zero");
-	        	}
+	        
 	        
 	        if(settleType=="")
-	        	{
+	        {
 	        	alert("Please Select Settelment Mode");
-	        	}
+	        	return;
+	        }
 	      
 		 
 // 	        if (settleMode == true && (balanceAmount != 0.00 ) || hmSettlemetnOptions.length==0) //|| hmSettlemetnOptions.isEmpty()
@@ -1498,21 +1508,24 @@
             var remark="";//  $('#txtRemark').val();
             var dteExpiryDate=  "";//$('#dteExpiryDate').val();
             
-		    col1.innerHTML = "<input   readonly=\"readonly\" size=\"27px\"  class=\"strSettelmentDesc\"    style=\"text-align: left; color:blue; height:20px;\"   name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentDesc\" id=\"strSettelmentDesc."+(rowCount)+"\" value='"+settleName+"' />";
-		    col2.innerHTML = "<input readonly=\"readonly\"  size=\"3.1px\"        style=\"text-align: right; color:blue; height:20px;\"  />";
-		    col3.innerHTML = "<input readonly=\"readonly\" size=\"5px\"   class=\"dblSettlementAmt\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblSettlementAmt\" id=\"dblSettlementAmt."+(rowCount)+"\" value='"+paidAmount+"'/>";
-		    col4.innerHTML = "<input readonly=\"readonly\"  size=\"4px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
-		    col5.innerHTML = "<input readonly=\"readonly\"  size=\"4px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
-		    col6.innerHTML = "<input type=\"hidden\"  size=\"3.1px\"   class=\"strSettelmentType\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentType\" id=\"strSettelmentType."+(rowCount)+"\" value='"+settleName+"' />";
+		    col1.innerHTML = "<input   readonly=\"readonly\" size=\"32px\"  class=\"strSettelmentDesc\"    style=\"text-align: left; color:blue; height:20px;\"   name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentDesc\" id=\"strSettelmentDesc."+(rowCount)+"\" value='"+settleName+"' />";
+		    col2.innerHTML = "<input readonly=\"readonly\"  size=\"4px\"        style=\"text-align: right; color:blue; height:20px;\"  />";
+		    col3.innerHTML = "<input readonly=\"readonly\" size=\"10px\"   class=\"dblSettlementAmt\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblSettlementAmt\" id=\"dblSettlementAmt."+(rowCount)+"\" value='"+paidAmount+"'/>";
+		    col4.innerHTML = "<input readonly=\"readonly\"  size=\"1px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
+		    col5.innerHTML = "<input readonly=\"readonly\"  size=\"1px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
+		    col6.innerHTML = "<input type=\"hidden\"  size=\"0px\"   class=\"strSettelmentType\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentType\" id=\"strSettelmentType."+(rowCount)+"\" value='"+settleName+"' />";
 		    col7.innerHTML = "<input type=\"hidden\" size=\"0px\" class=\"dblPaidAmt\"     style=\"text-align: right; color:blue; height:20px;\"   name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblPaidAmt\" id=\"dblPaidAmt."+(rowCount)+"\" value="+paidAmount+" />";
 		    col8.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"dblRefundAmt\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblRefundAmt\" id=\"dblRefundAmt."+(rowCount)+"\" value="+refundAmount+" />";
 		    col9.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"strSettelmentCode\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentCode\" id=\"strSettelmentCode."+(rowCount)+"\" value='"+settlementCode+"'/>";
 		    col10.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"strRemark\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strRemark\" id=\"strRemark."+(rowCount)+"\" value='"+remark+"'/>";
 		    col10.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"strExpiryDate\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strExpiryDate\" id=\"strExpiryDate."+(rowCount)+"\" value='"+dteExpiryDate+"'/>";
 		    col10.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"strCardName\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strCardName\" id=\"strCardName."+(rowCount)+"\" value=''/>";
+		    
 		    document.getElementById("divRemarks").style.display='none';
 		    document.getElementById("divAmt").style.display='none';
+		    
 		    funFillBalanceAmt();
+		    
 		    rowCountSettle++;
 		    
             }
@@ -1527,13 +1540,15 @@
 			    var col3=insertRow.insertCell(2);
 			    var col4=insertRow.insertCell(3);
 			    var col5=insertRow.insertCell(4);
-			    col1.innerHTML = "<input   readonly=\"readonly\" size=\"27px\"     style=\"text-align: left; color:blue; height:20px;\"   value='Balance Amount' />";
-			    col2.innerHTML = "<input readonly=\"readonly\"  size=\"3.1px\"        style=\"text-align: right; color:blue; height:20px;\"  />";
-			    col3.innerHTML = "<input readonly=\"readonly\" size=\"5px\"        style=\"text-align: right; color:blue; height:20px;\"  value='"+balanceAmount+"' />";
-			    col4.innerHTML = "<input readonly=\"readonly\"  size=\"4px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
-			    col5.innerHTML = "<input readonly=\"readonly\"  size=\"4px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
+			    col1.innerHTML = "<input   readonly=\"readonly\" size=\"32px\"     style=\"text-align: left; color:blue; height:20px;\"   value='Balance Amount' />";
+			    col2.innerHTML = "<input readonly=\"readonly\"  size=\"4px\"        style=\"text-align: right; color:blue; height:20px;\"  />";
+			    col3.innerHTML = "<input readonly=\"readonly\" size=\"10px\"        style=\"text-align: right; color:blue; height:20px;\"  value='"+balanceAmount+"' />";
+			    col4.innerHTML = "<input readonly=\"readonly\"  size=\"1px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
+			    col5.innerHTML = "<input readonly=\"readonly\"  size=\"1px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
+			    
 			    $('#txtAmount').val(balanceAmount);
 			    $('#txtPaidAmount').val(balanceAmount);
+			    
 			    checkSetteType="Balance";
 			}
 
@@ -2350,31 +2365,31 @@
 	</tr>
 	<tr>
 		<td>
-			<div id="divOrder" style=" border: 0px solid #ccc; height: 560px;  overflow-x: auto; width: 360px;">
+			<div id="divOrder" style=" border: 0px solid #ccc; height: 560px;  overflow-x: auto; width: 350px;">
 				<label style=" display: inline-block;width: 175px;text-align: left;">Bill No: ${billNo}</label>
-				<label style=" display: inline-block;width: 175px;text-align: left;">Table No: ${TableNo}</label>
+				<label id="tableNameForDisplay" style=" display: inline-block;width: 175px;text-align: left;">Table No: ${gTableName}</label>
 				<br>
 				<label style=" display: inline-block;width: 130px;text-align: left;">Date: ${billDate}</label>
 				
 				<!--  here the div of Item table-->
-				<div id="divItemTable" style=" border: 1px solid #ccc; height: 460px; width: 400px;">
-				<table id="tblSettleItemTableHead" style="width: 98%; height:40px; border-collapse: collapse;overflow: auto;margin-left: auto;margin-right: auto;
-							font-size: 10px;font-weight: bold;"> 
-					<tr>
-						  <th><input type="button" value="Description" style="width: 180px;" class="tblBillItemDtlColBtnGrp" ></input></th>
-						  <th><input type="button" value="Qty" style="width: 47px;" class="tblBillItemDtlColBtnGrp" ></input></th>
-						  <th><input type="button" value="Amount" style="width: 55px;" class="tblBillItemDtlColBtnGrp"></input></th>
-						  <th><input type="button" value="DiscPer" class="tblBillItemDtlColBtnGrp"></input></th>
-						  <th><input type="button" value="DiscAmt" class="tblBillItemDtlColBtnGrp"></input></th>
-					</tr>
-						
-				</table> 
-				<div id="divItemTableInner" style=" border: 0px solid #ccc; height: 460px;  overflow-x: auto; overflow-y: auto; width: 400px;">
-					<table id="tblSettleItemTable" style="width: 98%;border-collapse: collapse;overflow: auto;margin-left: auto;margin-right: auto;
-								font-size: 10px;font-weight: bold;">
-					</table>
-				</div>
-				</div> 
+				<!-- <div id="divItemTable" style=" border: 1px solid #ccc; height: 460px; width: 400px;"> -->
+					<table id="tblSettleItemTableHead" style="width: 98%; height:40px; border-collapse: collapse;overflow: auto;margin-left: auto;margin-right: auto;
+								font-size: 10px;font-weight: bold;"> 
+						<tr>
+							  <th><input type="button" value="Description" style="width: 213px;height: 37px;" class="btn" ></input></th>
+							  <th><input type="button" value="Qty" style="width: 51px;height: 37px;" class="btn" ></input></th>
+							  <th><input type="button" value="Amount" style="width: 82px;height: 37px;" class="btn"></input></th>
+							  <th><input type="button" value="%" style="width: 1px;height: 37px;"  class="btn"></input></th>
+							  <th><input type="button" value="Amt" style="width: 1px;height: 37px;"  class="btn"></input></th>
+						</tr>
+							
+					</table> 
+					<!-- <div id="divItemTableInner" style=" border: 0px solid #ccc; height: 460px;  overflow-x: auto; overflow-y: auto; width: 400px;"> -->
+						<table id="tblSettleItemTable" style="width: 98%;border-collapse: collapse;overflow: auto;margin-left: auto;margin-right: auto;
+									font-size: 10px;font-weight: bold;">
+						</table>
+					<!-- </div> -->
+<!-- 				</div> --> 
 				
 			</div>
 		</td>
@@ -2514,11 +2529,11 @@
 			 		<table style="width:98%;height:98px;font-size:11px; font-weight: bold;">
 					 		<tr>
 					 			<td style="padding-bottom: 2px;"><label id="lblDisc" style=" display: inline-block;width: 100%;text-align: left;">Discount %</label></td>
-						 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountPer" value="0" path="dblDiscountPer"  cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  /> </td>						 		
+						 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountPer" value="0.00" path="dblDiscountPer"  cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  onfocus="this.value=''" onfocusout="this.value='0.00'"  /> </td>						 		
 					 		</tr>
 					 		<tr>
 					 			<td style="padding-bottom: 2px;" ><label id="lblDiscAmt" style=" display: inline-block;width: 100%;text-align: left;">Discount Amount</label></td>
-			        	 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountAmt" value="0.00" path="dblDiscountAmt" cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  /> </td>			        	 		
+			        	 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountAmt" value="0.00" path="dblDiscountAmt" cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"   onfocus="this.value=''" onfocusout="this.value='0.00'" /> </td>			        	 		
 				 			</tr>
 				 			<tr>
 					 			<td colspan="2" style="padding-bottom: 2px;">
@@ -2600,7 +2615,7 @@
 				 		</tr>
 				 		<tr>
 				 			<td style="padding-right: 5px;"><label id="lblDelCharge" style=" display: inline-block;width: 90%;text-align: left;">Del Charge</label></td>
-				 			<td style="padding-right: 5px;" ><s:input type="text"  id="txtDeliveryCharge" path="dblDeliveryCharges" value="0.00" cssStyle="width:80px; text-align: right;margin: 1px;" cssClass="longTextBox jQKeyboard form-control"/></td>
+				 			<td style="padding-right: 5px;" ><s:input type="text"  id="txtDeliveryCharge" path="dblDeliveryCharges" value="0.00" cssStyle="width:80px; text-align: right;margin: 1px;" cssClass="longTextBox jQKeyboard form-control" onfocus="this.value=''" onfocusout="this.value='0.00'"  /></td>
 				 			<td style="padding-right: 5px;"><label id="lblDelBoyname" style=" display: inline-block;width: 90%;text-align: left;"></label></td>
 				 			<td style="padding-right: 5px;"><input type="button" id="btnApplyDeliveryCharge" value="OK" style="width: 45px; height:25px;"  onclick="funbtnApplyDeliveryChargeClicked(this)" class="btn btn-primary btn-sm" ></input></td>
 				 		</tr>
@@ -2643,76 +2658,76 @@
 				 	
 				 </div>
 			 	<!--Div for numeric pad  -->
-			 	<div id="divNumericPad" style="border: 0px solid #ccc; height:170px; width: 235px; position:absolute;top:440px;left:780px; ">
+			 	<div id="divNumericPad" style="border: 0px solid #ccc; height:170px; width: 235px; position:absolute;top:410px;left:780px; ">
 				 	<table id="tblNumricbtn" cellpadding="0" cellspacing="2">
 				 	<tr>
-					 	<td width=45px>
+					 	<td width=45px style="padding-top: 3px;" >
 					 		<input type="button" id="btn7" value="7" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td  width=45px>
+					 	<td  width=45px style="padding-top: 3px;" >
 					 		<input type="button" id="btn8" value="8" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td width=45px>
+					 	<td width=45px style="padding-top: 3px;" >
 					 		<input type="button" id="btn9"  value="9" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td  width=45px>
+					 	<td  width=45px style="padding-top: 3px;">
 					 		<input type="button"  id="btnc"  value="c" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td  width=45px>
+					 	<td  width=45px style="padding-top: 3px;" >
 					 		<input type="button"  id="btn10"  value="10" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
 				 	</tr>
 				 	<tr>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn4"  value="4" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info"></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn5"  value="5" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn6"  value="6" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn0"  value="0" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn20"  value="20" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
 				 	</tr>
 				 	<tr>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn1"  value="1" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn2"  value="2" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn3"  value="3" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn00"  value="00" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td>
+					 	<td style="padding-top: 3px;" >
 					 		<input type="button"  id="btn100"  value="100" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
 				 	</tr>
 				 	<tr>
-					 	<td width=45px>
+					 	<td width=45px style="padding-top: 3px;" >
 					 		<input type="button"  id="btnDot"  value="." style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td colspan="3" width=45px>
-					 		<input type="button"  id="btnBackSpace"  value="BackSpace" style="width: 75px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
+					 	<td colspan="3" width=45px style="padding-top: 3px;" >
+					 		<input type="button"  id="btnBackSpace"  value="X" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	
-					 		<input type="button"  id="btnEnter"  value="Enter" style="width: 55px; height:40px;"  onclick="funEnterButtonClicked()" class="btn btn-outline-info" ></input>
+					 		<input type="button"  id="btnEnter"  value="Enter" style="width: 85px; height:40px;"  onclick="funEnterButtonClicked()" class="btn btn-outline-info" ></input>
 					 	</td>
-					 	<td width=45px>
+					 	<td width=45px style="padding-top: 3px;" >
 					 		<input type="button"  id="btn500"  value="500" style="width: 40px; height:40px;"  onclick="funNumpadButtonClicked(this)" class="btn btn-outline-info" ></input>
 					 	</td>
 				 	</tr>
 				 	</table>
 			 	</div>
 			 	
-			 	<div id="divBottomButtons" style=" border: 0px solid #ccc;height:70px;width:240px;display :block; position:absolute; top:515px;" >
+			 	<div id="divBottomButtons" style=" border: 0px solid #ccc;height:70px;width:240px;display :block; position:absolute; top:570px;" >
 					 <table>
 						 <tr>
 						 	<td style="padding-right: 5px;" ><input type="button" id="btnBack" value="BACK" style="width: 60px; height:40px;"  onclick="funBackButtonClicked(this)" class="btn btn-outline-success" ></input></td>

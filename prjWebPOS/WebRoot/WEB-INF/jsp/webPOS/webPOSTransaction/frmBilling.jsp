@@ -213,12 +213,12 @@ function funFillSettleTable(strItemName,dblQuantity,dblAmount,dblDiscountPer1,db
     var col8=insertRow.insertCell(7);
     var col9=insertRow.insertCell(8);
     
-    col1.innerHTML = "<input readonly=\"readonly\" size=\"27px\"  class=\"itemName\"    style=\"text-align: left; color:blue; height:20px;\"   name=\"listOfBillItemDtl["+(rowCount)+"].itemName\" id=\"strItemName."+(rowCount)+"\" value='"+strItemName+"' />";
-    col2.innerHTML = "<input readonly=\"readonly\" size=\"3.1px\"   class=\"itemQty\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listOfBillItemDtl["+(rowCount)+"].quantity\" id=\"dblQuantity."+(rowCount)+"\" value='"+dblQuantity+"' />";
-    col3.innerHTML = "<input readonly=\"readonly\" size=\"5px\"   class=\"itemAmt\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listOfBillItemDtl["+(rowCount)+"].amount\" id=\"dblAmount."+(rowCount)+"\" value='"+dblAmount+"'/>";
-    col4.innerHTML = "<input readonly=\"readonly\" size=\"4px\" class=\"discountPer\"     style=\"text-align: right; color:blue; height:20px;\"   name=\"listOfBillItemDtl["+(rowCount)+"].discountPer\" id=\"tblDiscountPer."+(rowCount)+"\" value='"+dblDiscountPer1+"' />";
-    col5.innerHTML = "<input readonly=\"readonly\" size=\"4px\"   class=\"discountAmt\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listOfBillItemDtl["+(rowCount)+"].discountAmt\" id=\"tblDiscountAmt."+(rowCount-1)+"\" value='"+dblDiscountAmt1+"' />";
-    col6.innerHTML = "<input type=\"hidden\"  size=\"0px\"   class=\"groupcode\"  style=\"text-align: right; color:blue;\"  name=\"listOfBillItemDtl["+(rowCount)+"].strGroupcode\" id=\"strGroupcode."+(rowCount)+"\" value='"+strGroupCode+"' />";	    
+    col1.innerHTML = "<input readonly=\"readonly\" size=\"32px\"  class=\"itemName\"    style=\"text-align: left; color:blue; height:20px;background-color:lavenderblush;\"   name=\"listOfBillItemDtl["+(rowCount)+"].itemName\" id=\"strItemName."+(rowCount)+"\" value='"+strItemName+"' />";
+    col2.innerHTML = "<input readonly=\"readonly\" size=\"4px\"   class=\"itemQty\"      style=\"text-align: right; color:blue; height:20px;background-color:lavenderblush;\"  name=\"listOfBillItemDtl["+(rowCount)+"].quantity\" id=\"dblQuantity."+(rowCount)+"\" value='"+dblQuantity+"' />";
+    col3.innerHTML = "<input readonly=\"readonly\" size=\"10px\"   class=\"itemAmt\"      style=\"text-align: right; color:blue; height:20px;background-color:lavenderblush;\"  name=\"listOfBillItemDtl["+(rowCount)+"].amount\" id=\"dblAmount."+(rowCount)+"\" value='"+dblAmount+"'/>";
+    col4.innerHTML = "<input readonly=\"readonly\" size=\"1px\" class=\"discountPer\"     style=\"text-align: right; color:blue; height:20px;background-color:lavenderblush;\"   name=\"listOfBillItemDtl["+(rowCount)+"].discountPer\" id=\"tblDiscountPer."+(rowCount)+"\" value='"+dblDiscountPer1+"' />";
+    col5.innerHTML = "<input readonly=\"readonly\" size=\"1px\"   class=\"discountAmt\"  style=\"text-align: right; color:blue; height:20px;background-color:lavenderblush;\"  name=\"listOfBillItemDtl["+(rowCount)+"].discountAmt\" id=\"tblDiscountAmt."+(rowCount-1)+"\" value='"+dblDiscountAmt1+"' />";
+    col6.innerHTML = "<input type=\"hidden\"  size=\"0px\"   class=\"groupcode\"    name=\"listOfBillItemDtl["+(rowCount)+"].strGroupcode\" id=\"strGroupcode."+(rowCount)+"\" value='"+strGroupCode+"' />";	    
     col7.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"subGroupCode\"  name=\"listOfBillItemDtl["+(rowCount)+"].strSubGroupCode\" id=\"strSubGroupCode."+(rowCount)+"\" value='"+strSubGroupCode+"' />";
     
    
@@ -371,11 +371,11 @@ function funCalculatePromotion(listItmeDtl)
 	    var col6=insertRow.insertCell(5);
 	    var col7=insertRow.insertCell(6);
 	    var col8=insertRow.insertCell(7);
-	    col1.innerHTML = "<input readonly=\"readonly\" size=\"27px\" class=\"taxName\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxName\" id=\"taxName."+(rowCountTax)+"\" style=\"text-align: left; color:blue; height:20px;\"  value='"+taxName+"' />";
-	    col2.innerHTML = "<input readonly=\"readonly\" size=\"3.1px\"  style=\"text-align: right; color:blue; height:20px;\"   />";
-	    col3.innerHTML = "<input readonly=\"readonly\" size=\"5px\" class=\"taxAmount\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxAmount\" id=\"taxAmount."+(rowCountTax)+"\"  style=\"text-align: right; color:blue; height:20px;\"  value='"+taxAmount+"'  />";
-	    col4.innerHTML = "<input readonly=\"readonly\" size=\"4px\"   style=\"text-align: right; color:blue; height:20px;\"  />";
-	    col5.innerHTML = "<input readonly=\"readonly\" size=\"4px\"   style=\"text-align: right; color:blue; height:20px;\"  />";
+	    col1.innerHTML = "<input readonly=\"readonly\" size=\"32px\" class=\"taxName\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxName\" id=\"taxName."+(rowCountTax)+"\" style=\"text-align: left; color:blue; height:20px;\"  value='"+taxName+"' />";
+	    col2.innerHTML = "<input readonly=\"readonly\" size=\"4px\"  style=\"text-align: right; color:blue; height:20px;\"   />";
+	    col3.innerHTML = "<input readonly=\"readonly\" size=\"10px\" class=\"taxAmount\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxAmount\" id=\"taxAmount."+(rowCountTax)+"\"  style=\"text-align: right; color:blue; height:20px;\"  value='"+taxAmount+"'  />";
+	    col4.innerHTML = "<input readonly=\"readonly\" size=\"1px\"   style=\"text-align: right; color:blue; height:20px;\"  />";
+	    col5.innerHTML = "<input readonly=\"readonly\" size=\"1px\"   style=\"text-align: right; color:blue; height:20px;\"  />";
 	    col6.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"taxCode\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxCode\" id=\"taxCode."+(rowCountTax)+"\" value='"+taxCode+"' />";
 	    col7.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"taxCalculationType\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxCalculationType\" id=\"taxCalculationType."+(rowCountTax)+"\" value='"+taxCalculationType+"' />";
 	    col8.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"taxableAmount\"  name=\"listTaxDtlOnBill["+(rowCountTax)+"].taxableAmount\" id=\"taxableAmount."+(rowCountTax)+"\" value='"+taxableAmount+"' />";
@@ -396,11 +396,21 @@ function funCalculatePromotion(listItmeDtl)
 	    var col3=insertRow.insertCell(2);
 	    var col4=insertRow.insertCell(3);
 	    var col5=insertRow.insertCell(4);
-	    col1.innerHTML = "<input readonly=\"readonly\" size=\"27px\"  style=\"text-align: left; color:blue; height:20px;\" id=\"column1."+(rowCount)+"\" value='"+column1+"'  />";
-	    col2.innerHTML = "<input readonly=\"readonly\" size=\"3.1px\" style=\"text-align: right; color:blue; height:20px;\"   />";
-	    col3.innerHTML = "<input readonly=\"readonly\" size=\"5px\"   style=\"text-align: right; color:blue; height:20px;\" id=\"column2."+(rowCount)+"\" value='"+column2+"' />";
-	    col4.innerHTML = "<input readonly=\"readonly\" size=\"4px\"   style=\"text-align: right; color:blue; height:20px;\"  />";
-	    col5.innerHTML = "<input readonly=\"readonly\" size=\"4px\"   style=\"text-align: right; color:blue; height:20px;\"  />";
+	    
+	   	var styleLeft="style=\"text-align: left; color:blue; height:20px;background-color:lavenderblush;\""; 
+	    var styleRight="style=\"text-align: right; color:blue; height:20px;background-color:lavenderblush;\"";
+	    if(column1=="" && column2=="")
+	    {
+	    	styleLeft="style=\"text-align: left; color:blue; height:20px;\""; 
+		    styleRight="style=\"text-align: right; color:blue; height:20px;\"";
+	    }
+	    
+	    
+	    col1.innerHTML = "<input readonly=\"readonly\" size=\"32px\"  "+styleLeft+" id=\"column1."+(rowCount)+"\" value='"+column1+"'  />";
+	    col2.innerHTML = "<input readonly=\"readonly\" size=\"4px\" "+styleLeft+"  />";
+	    col3.innerHTML = "<input readonly=\"readonly\" size=\"10px\"   "+styleRight+" id=\"column2."+(rowCount)+"\" value='"+column2+"' />";
+	    col4.innerHTML = "<input readonly=\"readonly\" size=\"1px\" "+styleRight+"  />";
+	    col5.innerHTML = "<input readonly=\"readonly\" size=\"1px\"   "+styleRight+" />";
 	    
 	    
    }

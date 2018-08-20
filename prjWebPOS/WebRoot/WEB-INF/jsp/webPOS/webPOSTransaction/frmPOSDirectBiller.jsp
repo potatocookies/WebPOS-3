@@ -328,6 +328,8 @@
 		taxTotal=0.00;
 		taxAmt=0.00;
 		grandTotal=0.00;
+		
+		$("#tableNameForDisplay").text("Table No : "+gTableName);
 	    
 	    var listItmeDtl=[];
 	    var mergeduplicateItm = new Map();
@@ -1174,7 +1176,7 @@
 		        	// location.reload(false); //loads from browser's cache 
 		        	 /* location.reload(true); //loads from server */
 		        	 window.location ="frmBillSettlementTemp.html"
-		        	 alert("KOT Save Successfully");
+		        	 alert("KOT Save Successfully. KOT NO: "+ $("#txtKOTNo").text());
 	        	}
 	        	else
 	        	{	        		
@@ -2873,7 +2875,7 @@
 		{		
 					var col=insertTR.insertCell(insertCol);
 					col.innerHTML = "<td><input type=\"button\" id="+obj.strCode+" value="+obj.strName+"    style=\"width: 90px;height: 30px; white-space: normal;\"  onclick=\"funTopButtonClicked(this)\" class=\"btn  btn-link\" /></td>";
-					col.style.padding = "5px";
+					/* col.style.paddingBottom = "5px"; */
 					insertCol++; 
 		});
 	}
@@ -3823,13 +3825,13 @@
 							</div>
 						</td>					
 						<td>
-							<div id="divArea" style="border: 1px solid rgb(204, 204, 204);height: 56px;overflow: auto;width: 650px;display: block;" >																	
+							<div id="divArea" style="border: 1px solid rgb(204, 204, 204);height: 34px;overflow: auto;width: 650px;display: block;" >																	
 									<span>
 										<label>Section:</label><label id="txtAreaName"></label>
 									</span>
 							</div>
 							
-							<div id="divTopButtonDtl" style="border: 1px solid rgb(204, 204, 204);height: 42px;overflow: auto;width: 650px;display: block;" >									
+							<div id="divTopButtonDtl" style="border: 1px solid rgb(204, 204, 204);height: 62px;overflow: auto;width: 650px;display: block;" >									
 								
 									<table id="tblTopButtonDtl"   style="border-collapse: separate;">
 									</table>

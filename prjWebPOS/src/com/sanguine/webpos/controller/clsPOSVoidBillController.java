@@ -13,10 +13,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 
+
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -112,7 +117,7 @@ public class clsPOSVoidBillController {
 		
 		
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@RequestMapping(value = "/fillBillGridData", method = RequestMethod.GET)
+	@RequestMapping(value = "/funGetBillList", method = RequestMethod.GET)
 	public @ResponseBody LinkedList funFillRGridData(HttpServletRequest req) {
 
 		String strPosCode = req.getSession().getAttribute("loginPOS")
@@ -132,7 +137,7 @@ public class clsPOSVoidBillController {
 				Map hmtemp = (Map) jarr.get(i);
 				LinkedList setFillGrid = new LinkedList();
 				setFillGrid.add(hmtemp.get("strBillNo").toString());
-				setFillGrid.add(hmtemp.get("dteBillDate").toString());
+				setFillGrid.add(hmtemp.get("dteBillDate").toString().split(" ")[1]);
 				setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
 				setFillGrid.add(hmtemp.get("strTableName").toString());
 				listFillGrid.add(setFillGrid);
@@ -218,12 +223,10 @@ public class clsPOSVoidBillController {
 			return mapFilltable;
 			
 		}
-		/////Item Void
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@RequestMapping(value = "/voidItem", method = RequestMethod.GET)
-		@ResponseBody
-		
-		public String funVoidBill(HttpServletRequest req){
+		@RequestMapping(value = "/voidItem", method = RequestMethod.POST)
+		//public @ResponseBody String funVoidBill(@RequestParam("voidedItemList") List<String> arrKOTItemDtlList, HttpServletRequest req)
+		public @ResponseBody String funVoidBill(HttpServletRequest req)
+		{
 
 			 String result="";
 			 String userCode=req.getSession().getAttribute("gUserCode").toString();
@@ -232,25 +235,42 @@ public class clsPOSVoidBillController {
 			 String posDate= req.getSession().getAttribute("gPOSDate").toString();
 			 String strPosCode=req.getSession().getAttribute("loginPOS").toString();
 	
-			String itemCode=req.getParameter("delItemcode").toString();
+			//String itemCode=req.getParameter("delItemcode").toString();
 			String billNo=req.getParameter("delbillNo").toString();
 			String tableNo=req.getParameter("delTableNo").toString();
 			String reasonCode=req.getParameter("reasonCode").toString();
 			String remarks=req.getParameter("remarks").toString();
-			String itemName=req.getParameter("delItemName").toString();		
-			double quantity=Double.parseDouble( req.getParameter("quantity").toString());
-			double amount=Double.parseDouble(req.getParameter("delAmount").toString());
 			double taxAmt=Double.parseDouble(req.getParameter("taxAmt").toString());
-		
-			String modItemCode=req.getParameter("delModItemcode").toString();
-
-			
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
-					
+			String[] arrVoidedItemList = req.getParameterValues("voidedItemList");
+			
+			
+			String itemCode="",itemName="",modItemCode="";		
+			double quantity=0,amount=0;
+			
+			if (arrVoidedItemList.length > 0)
+            {
+                for (int cnt = 0; cnt < arrVoidedItemList.length; cnt++)
+                {
+                    String []item= arrVoidedItemList[cnt].split(",");
+                    for(String itemData:item)
+                    {
+                    	  itemCode=itemData.split("#")[0];
+                          itemName=itemData.split("#")[1];
+                          modItemCode=itemData.split("#")[2];
+                          quantity=Double.parseDouble(itemData.split("#")[3]);
+                          amount=Double.parseDouble(itemData.split("#")[4]);
+                          
+                          Map jObj = funVoidItem( reasonCode, tableNo, billNo, remarks, userCode,clientCode,  posDate,  taxAmt,
+            						 itemCode, quantity,amount,itemName, modItemCode, strPosCode) ;
+            				
+            			  result=jObj.get("true").toString();
+                    }
+                    	
+                }
 
-				Map jObj = funVoidItem( reasonCode, tableNo, billNo, remarks, userCode,clientCode,  posDate,  taxAmt,
-						 itemCode, quantity,amount,itemName, modItemCode, strPosCode) ;
-				 result=jObj.get("true").toString();
+            }
+			
 				
 			}  catch (Exception e)
 	        {
@@ -262,6 +282,8 @@ public class clsPOSVoidBillController {
 			return result;	
 			
 		}
+		
+	
 		
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@RequestMapping(value = "/fullVoidBillButtonClick", method = RequestMethod.GET)

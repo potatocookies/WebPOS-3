@@ -16,40 +16,30 @@ import com.sanguine.dao.clsUserMasterDao;
 import com.sanguine.model.clsUserMasterModel;
 import com.sanguine.webpos.model.clsUserHdModel;
 @Service("clsUserMasterService")
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+
 public class clsUserMasterServiceImpl implements clsUserMasterService{
 	 
 	@Autowired 
-	    private  clsUserMasterDao objUserMasterDao;
-	
-	
+	private  clsUserMasterDao objUserMasterDao;
+		
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void funAddUpdateUser(clsUserMasterModel userMaster) {
 		objUserMasterDao.funAddUpdateUser(userMaster);
 	}
 
-	
-	
-	
 	@Override
 	public List<clsUserMasterModel> funListUserMaster() {
 		
 		return objUserMasterDao.funListUserMaster();
 	}
 
-	
-	
-	
 	@Override
 	public clsUserHdModel funGetUser(String userCode,String clientCode,String sql) throws SQLGrammarException 
 	{
 	
 		return objUserMasterDao.funGetUser(userCode,clientCode,sql);
 	}
-
-	
-	
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -57,9 +47,6 @@ public class clsUserMasterServiceImpl implements clsUserMasterService{
 		
 		return objUserMasterDao.funGetObject(userCode,clientCode);
 	}
-
-
-
 
 	@Override
 	public Map<String, String> funProperties(String strClientCode) {
@@ -74,7 +61,6 @@ public class clsUserMasterServiceImpl implements clsUserMasterService{
 		
 		return objUserMasterDao.funGetUserProperties(strClientCode);
 	}
-	
 
 
 	@Override

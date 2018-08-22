@@ -55,8 +55,7 @@ $(document).ready(function () {
 		**/
 		function funHelp(transactionName)
 		{	       
-	       // window.showModalDialog("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
-	       window.open("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
+	        window.open("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
 	    }
 	
 		
@@ -119,7 +118,7 @@ $(document).ready(function () {
 	 **/
 	function funList(strType)
 	{
-	//	var returnVal=window.showModalDialog("frmDeleteModuleList.html?strHeadingType="+strType,"","dialogHeight:600px;dialogWidth:500px;dialogLeft:350px;dialogTop:100px");
+	
 		var returnVal=window.open("frmPOSClearMasterTransaction.html?strHeadingType="+strType,"","dialogHeight:600px;dialogWidth:500px;dialogLeft:350px;dialogTop:100px");
 		
 		var timer = setInterval(function ()
@@ -271,39 +270,6 @@ $(document).ready(function () {
 			 });
 		}
 	}
-/* 	function funPOSStructureUpdate()
-	{
-		
-		var searchurl=getContextPath()+"/posUpdateStructure";
-		 $.ajax({
-			        type: "GET",
-			        url: searchurl,
-			        dataType: "text",
-			        success: function(response)
-			        {
-			        	
-			        		alert("Structure Update Successfully");
-			        	
-					},
-					error: function(jqXHR, exception) {
-			            if (jqXHR.status === 0) {
-			                alert('Not connect.n Verify Network.');
-			            } else if (jqXHR.status == 404) {
-			                alert('Requested page not found. [404]');
-			            } else if (jqXHR.status == 500) {
-			                alert('Internal Server Error [500].');
-			            } else if (exception === 'parsererror') {
-			                alert('Requested JSON parse failed.');
-			            } else if (exception === 'timeout') {
-			                alert('Time out error.');
-			            } else if (exception === 'abort') {
-			                alert('Ajax request aborted.');
-			            } else {
-			                alert('Uncaught Error.n' + jqXHR.responseText);
-			            }		            
-			        }
-		      });
-	} */
 	
 </script>
 
@@ -327,7 +293,7 @@ $(document).ready(function () {
 	<tr>
 	<td><img alt="" src="../${pageContext.request.contextPath}/resources/images/imgCleanMaster.png" onclick="funList('Master');"></td>
 	<td><img alt="" src="../${pageContext.request.contextPath}/resources/images/imgClearTransaction.png" onclick="funList('Transaction');"></td>
-	<td><img alt="" src="../${pageContext.request.contextPath}/resources/images/imgClose.png"></td>
+	<td><a href="#" onclick="funPOSHome()"><img alt="" src="../${pageContext.request.contextPath}/resources/images/imgClose.png"></a></td>
 	</tr>
 	
 	

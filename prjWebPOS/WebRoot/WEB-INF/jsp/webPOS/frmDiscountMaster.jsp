@@ -41,6 +41,7 @@ var fieldName="";
 			$("#txtToDate" ).datepicker('setDate', Dat);
 		 $("#txtDiscountOnCode").val("All");
 		 $("#txtDiscOnValue").val("All");
+		 document.getElementById("cmbDiscountOn").disabled=false;
 		  $("form").submit(function(event){
 			  if ($("#txtDiscountName").val()=="")
 		        {
@@ -73,6 +74,7 @@ var fieldName="";
 		           alert("Invalid date");
 		            return false;
 		        }
+			  document.getElementById("cmbDiscountOn").disabled=false;
 			  
 			});
 		  
@@ -118,6 +120,7 @@ var field;
 
 		$("[type='reset']").click(function(){
 		location.reload(true);
+		 document.getElementById("cmbDiscountOn").disabled=false;
 	});
 	});	
 	
@@ -219,7 +222,7 @@ var field;
 				        	$("#txtDiscountName").focus();
 				        	$("#cmbPOSName").val(response.strPosCode);
 				        	$("#cmbDiscountOn").val(response.strDiscountOn);
-				        	
+				        	document.getElementById("cmbDiscountOn").disabled=true;
 				        	$.each(response.listDiscountDtl, function(i,item)
 									{			
 							    		funAddRow(item.discountReasonCode,item.strDiscoutnName,item.discountOnType,item.discountOnValue);
@@ -304,9 +307,9 @@ var field;
 				$("#txtDiscOnValue").val("");
 				$("#txtDiscountValue").val(0);
 				$("#cmbDiscountOn").val($("#cmbDiscountOn").val());
-				$("#cmbDiscountOn").prop( "disabled", true );   
+
+				 
 			}
-		
 			
 		}
 		

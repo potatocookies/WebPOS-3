@@ -8356,7 +8356,11 @@ private void funSaveUserTruncationDtl(Map hmData)
 		String posDate = hmData.get("posDate").toString();
 		String userName = hmData.get("userName").toString();
 		String fromDate = hmData.get("fromDate").toString();
+		String[] dteFromDt = fromDate.split("-");
+		String dteFromDate = dteFromDt[2]+"-"+dteFromDt[1]+"-"+dteFromDt[0];
 		String toDate = hmData.get("toDate").toString();
+		String[] dteToDt = toDate.split("-");
+		String dteToDate = dteToDt[2]+"-"+dteToDt[1]+"-"+dteToDt[0];
 		String chkAllIsSelected =  hmData.get("chkAllSelected").toString();
 		
 		List jArrTransactionList=new ArrayList();
@@ -8375,7 +8379,7 @@ private void funSaveUserTruncationDtl(Map hmData)
 		{
             String sql = "insert into tbltruncationdtl(strUser,dteDate,strTruncateForms,strModuleType,dteFromDate,dteToDate,strPOSCode,strClientCode)"
                     + "values"
-                    + "('" + userName + "','" + posDate + "','Clear All POS Data','T','" + fromDate + "','" + toDate + "','All','" + clientCode + "')";
+                    + "('" + userName + "','" + posDate + "','Clear All POS Data','T','" + dteFromDate + "','" + dteToDate + "','All','" + clientCode + "')";
             System.out.println(sql);
             int i =webPOSSessionFactory.getCurrentSession().createSQLQuery(sql).executeUpdate();
 			
@@ -8384,7 +8388,7 @@ private void funSaveUserTruncationDtl(Map hmData)
         {
             String sql = "insert into tbltruncationdtl(strUser,dteDate,strTruncateForms,strModuleType,dteFromDate,dteToDate,strPOSCode,strClientCode)"
                     + "values"
-                    + "('" + userName + "','" + posDate + "','" + str + "','T','" + fromDate + "','" + toDate + "','" + posCode + "','" + clientCode + "')";
+                    + "('" + userName + "','" + posDate + "','" + str + "','T','" + dteFromDate + "','" + dteToDate + "','" + posCode + "','" + clientCode + "')";
             System.out.println(sql);
            
             int i = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql).executeUpdate();

@@ -53,11 +53,36 @@ $(document).ready(function() {
 	    $("#cmbPOSName").change(function() {
 	    	funFetchTableData();
 	        	});
-	   
-
+	  
         $("form").submit(function(event){
-			  funValidate();
+			  
+			  if(KOTNo.trim()=="")
+				{
+				alert("Select table from Open Tables" );
+				return false;
+				}
+			else if(selectedtblNo.trim()=="")
+			{
+				alert("Select table from All Tables" );
+				return false;
+			}
+			else
+			{
+				document.frmMoveKOT.action="saveMoveKOT.html?KOTNo="+ KOTNo+"&tableName="+selectedtblNo+"&selectedIndx="+prevCellIndex;
+				document.frmMoveKOT.submit();
+				
+			}
 			});
+        
+
+        $('#txtSearchTable').keypress(function(event){
+        	
+        	var keycode = (event.keyCode ? event.keyCode : event.which);
+        	if(keycode == '13'){
+        		funSearchTables();	
+        	}
+
+        });
 });
 
 var KOTNo="";
@@ -87,20 +112,20 @@ function funGetSelectedRowIndex(obj,tableId)
 			{
 				prevKOTIndex=index;
 				prevKOTCellIndex=cellIndex;
-				tableName.rows[index].cells[cellIndex].innerHTML="<input type=\"button\" id="+code+"  style=\"width: 100px;height: 100px; background: #595959;\" value='"+code+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
+				tableName.rows[index].cells[cellIndex].innerHTML="<button type=\"button\" id="+code+"  style=\"width: 100px;height: 100px; background: #595959;\" value='"+code+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
 				previousKOT=code;
 			}
 			else if(previousKOT==code)
 			{
-				tableName.rows[index].cells[cellIndex].innerHTML="<input type=\"button\" id="+code+" style=\"width: 100px;height: 100px;\" value='"+code+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
+				tableName.rows[index].cells[cellIndex].innerHTML="<button type=\"button\" id="+code+" style=\"width: 100px;height: 100px;    background-color: #2FABE9;\" value='"+code+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
 				previousKOT="";
 			}
 			else
 			{
-				 tableName.rows[prevKOTIndex].cells[prevKOTCellIndex].innerHTML="<input type=\"button\" id="+previousKOT+" style=\"width: 100px;height: 100px;\" value='"+previousKOT+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
+				 tableName.rows[prevKOTIndex].cells[prevKOTCellIndex].innerHTML="<button type=\"button\" id="+previousKOT+" style=\"width: 100px;height: 100px;    background-color: #2FABE9;\" value='"+previousKOT+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
 				 prevKOTIndex=index;
 				 prevKOTCellIndex=cellIndex;
-				 tableName.rows[index].cells[cellIndex].innerHTML="<input type=\"button\"  id="+code+" style=\"width: 100px;height: 100px; background: #595959;\" value='"+code+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
+				 tableName.rows[index].cells[cellIndex].innerHTML="<button type=\"button\"  id="+code+" style=\"width: 100px;height: 100px; background: #595959;\" value='"+code+"'onclick=\"funGetSelectedRowIndex(this,'"+tableId+"')\"/>";
 				 previousKOT=code;
 			}
 		}
@@ -109,13 +134,22 @@ function funGetSelectedRowIndex(obj,tableId)
 			
 			var tblNo= obj.id;
 		  	var status= obj.name;
-		  	var val=obj.value;
-		
+			var code = obj.value;
+			var paxNo="";
+			if(!code.includes(":"))
+			{
+				paxNo=0;
+			}
+			else
+			{
+				paxNo = code.split(":")[1];
+			}	
+			var val=code.split(":")[0];
   			if(previousTable=="")
 			{
 		  		 prevIndex=index;
 				 prevCellIndex=cellIndex;
-		  		 tableId.rows[index].cells[cellIndex].innerHTML="<td><input type=\"button\" id="+tblNo+" name="+status+"  value='"+val+"'     style=\"width: 100px;height: 100px; background: #595959;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+		  		 tableId.rows[index].cells[cellIndex].innerHTML="<td><button type=\"button\" id="+tblNo+" name="+status+"  value='"+val+"'     style=\"width: 100px;height: 100px; background: #595959;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+code.split(":")[0]+"<br>"+paxNo+"</button></td>";
 		   		
 			   	previousTable=tblNo;
 			   	prevVal=val;
@@ -126,9 +160,9 @@ function funGetSelectedRowIndex(obj,tableId)
 		  	else if(previousTable==tblNo)
 		  	{
 		  		if(status=="Occupied")
-		  			tableId.rows[prevIndex].cells[prevCellIndex].innerHTML="<td><input type=\"button\" id="+tblNo+" name="+status+" value='"+val+"'     style=\"width: 100px;height: 100px; background: #ff0d0d;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+		  			tableId.rows[prevIndex].cells[prevCellIndex].innerHTML="<td><button type=\"button\" id="+tblNo+" name="+status+" value='"+val+"'     style=\"width: 100px;height: 100px; background: #ff0d0d;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+code.split(":")[0]+"<br>"+paxNo+"</button></td>";
 		  		else
-		  			tableId.rows[prevIndex].cells[prevCellIndex].innerHTML="<td><input type=\"button\" id="+tblNo+" name="+status+" value='"+val+"'     style=\"width: 100px;height: 100px; \" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+		  			tableId.rows[prevIndex].cells[prevCellIndex].innerHTML="<td><button type=\"button\" id="+tblNo+" name="+status+" value='"+val+"'     style=\"width: 100px;height: 100px;background-color: #2FABE9; \" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+code.split(":")[0]+"<br>"+paxNo+"</button></td>";
 		  		
 		  		prevVal="";
 		   		previousTable="";
@@ -137,13 +171,13 @@ function funGetSelectedRowIndex(obj,tableId)
 			else
 			{
 				if(prevStatus=="Occupied")
-					tableId.rows[prevIndex].cells[prevCellIndex].innerHTML= "<td><input type=\"button\" id="+previousTable+" name="+prevStatus+" value='"+prevVal+"'     style=\"width: 100px;height: 100px; background: #ff0d0d;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+					tableId.rows[prevIndex].cells[prevCellIndex].innerHTML= "<td><button type=\"button\" id="+previousTable+" name="+prevStatus+" value='"+prevVal+"'     style=\"width: 100px;height: 100px; background: #ff0d0d;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+code.split(":")[0]+"<br>"+paxNo+"</button></td>";
 				else
-					tableId.rows[prevIndex].cells[prevCellIndex].innerHTML= "<td><input type=\"button\" id="+previousTable+" name="+prevStatus+" value='"+prevVal+"'     style=\"width: 100px;height: 100px; \" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+					tableId.rows[prevIndex].cells[prevCellIndex].innerHTML= "<td><button type=\"button\" id="+previousTable+" name="+prevStatus+" value='"+prevVal+"'     style=\"width: 100px;height: 100px;    background-color: #2FABE9; \" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+code.split(":")[0]+"<br>"+paxNo+"</button></td>";
 				
 				prevIndex=index;
 				prevCellIndex=cellIndex;
-				tableId.rows[index].cells[cellIndex].innerHTML= "<td><input type=\"button\" id="+tblNo+" name="+status+"  value='"+val+"'     style=\"width: 100px;height: 100px; background: #595959;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+				tableId.rows[index].cells[cellIndex].innerHTML= "<td><button type=\"button\" id="+tblNo+" name="+status+"  value='"+val+"'     style=\"width: 100px;height: 100px; background: #595959;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+code.split(":")[0]+"<br>"+paxNo+"</button></td>";
 				previousTable=tblNo;
 				prevVal=val;
 				prevStatus=status;
@@ -287,9 +321,9 @@ function funAddTableData(tableDtl)
 					
 					var col=insertTR.insertCell(insertCol);
 					if(obj.Status=="Occupied")
-						col.innerHTML = "<td><input type=\"button\" id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+"&#x00A;&#x00A;"+obj.Pax+"'    style=\"width: 100px;height: 100px; background: #ff0d0d;\"  onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+						col.innerHTML = "<td><button type=\"button\" id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+":"+obj.Pax+"'    style=\"width: 100px;height: 100px; background: #ff0d0d;\"  onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+obj.TableName+"<br>"+obj.Pax+"</button></td>";
 					else
-						col.innerHTML = "<td><input type=\"button\" id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+"&#x00A;&#x00A;"+obj.Pax+"'    style=\"width: 100px;height: 100px;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+						col.innerHTML = "<td><button type=\"button\"  id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+":"+obj.Pax+"'    style=\"width: 100px;height: 100px;background-color: #2FABE9;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+obj.TableName+"<br>"+obj.Pax+"</button></td>";
 					insertCol++;
 				}
 				else
@@ -299,9 +333,9 @@ function funAddTableData(tableDtl)
 									
 					var col=insertTR.insertCell(insertCol);
 					if(obj.Status=="Occupied")
-						col.innerHTML = "<td><input type=\"button\" id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+"&#x00A;&#x00A;"+obj.Pax+"'     style=\"width: 100px;height: 100px; background: #ff0d0d;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+						col.innerHTML = "<td><button type=\"button\"  id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+":"+obj.Pax+"'     style=\"width: 100px;height: 100px; background: #ff0d0d;\" onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+obj.TableName+"<br>"+obj.Pax+"</button></td>";
 					else
-						col.innerHTML = "<td><input type=\"button\" id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+"&#x00A;&#x00A;"+obj.Pax+"'     style=\"width: 100px;height: 100px; \"  onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" /></td>";
+						col.innerHTML = "<td><button type=\"button\"  id="+obj.TableNo+" name="+obj.Status+" value='"+obj.TableName+":"+obj.Pax+"'     style=\"width: 100px;height: 100px;background-color: #2FABE9; \"  onclick=\"funGetSelectedRowIndex(this,"+"tblTable"+")\" >"+obj.TableName+"<br>"+obj.Pax+"</button></td>";
 					insertCol++;
 				}							
 			
@@ -313,12 +347,13 @@ function funFillKOTTable(list)
 	 var tblTableDtl=document.getElementById('tblKOT');
 	 var insertCol=0;
 	 var insertTR=tblTableDtl.insertRow();
+	 
 	 $.each(list, function(i, obj) 
 		{									
 			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
 			{
 				var col=insertTR.insertCell(insertCol);
-					col.innerHTML = "<td><input type=\"button\" id="+obj+" value='"+obj+"'    style=\"width: 100px;height: 100px;\"  onclick=\"funGetSelectedRowIndex(this,'tblKOT')\"/>";
+					col.innerHTML = "<td><input type=\"button\" class = \"transForm_button\" id="+obj+" value='"+obj+"'    style=\"width: 100px;height: 100px;\"  onclick=\"funGetSelectedRowIndex(this,'tblKOT')\"/>";
 				insertCol++;
 			}
 			else
@@ -326,11 +361,55 @@ function funFillKOTTable(list)
 				insertTR=tblTableDtl.insertRow();									
 				insertCol=0;
 				var col=insertTR.insertCell(insertCol);
-					col.innerHTML = "<td><input type=\"button\" id="+obj+" value='"+obj+"'   style=\"width: 100px;height: 100px; \" onclick=\"funGetSelectedRowIndex(this,'tblKOT')\"/>";
+					col.innerHTML = "<td><input type=\"button\" class = \"transForm_button\" id="+obj+" value='"+obj+"'   style=\"width: 100px;height: 100px; \" onclick=\"funGetSelectedRowIndex(this,'tblKOT')\"/>";
 				insertCol++;
 			}							
 		});
 }
+
+
+function funSearchTables()
+{
+	var tblSearch = $("#txtSearchTable").val();
+
+	funRemoveTableRows("tblTable");
+	
+	var posCode=$("#cmbPOSName").val();
+	var searchurl=getContextPath()+"/loadSearchTableData.html";		
+	 $.ajax({
+	        type: "GET",
+	        data:{ 
+	        	posCode:posCode,
+	        	tblSearch:tblSearch,
+			},
+	        url: searchurl,
+	        dataType: "json",
+	        async: false,
+	        success: function(response)
+	        {
+	        		funAddTableData(response);
+		    },
+			error: function(jqXHR, exception) {
+	            if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }		            
+	        }
+     });
+	
+}
+
 
 </script>
 
@@ -369,7 +448,15 @@ function funFillKOTTable(list)
 		<div class="title">
 			<div style=" width: 50%; height: 450px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				
-				
+				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 15px;">
+					<div class="element-input col-lg-6" style="width: 30%;"> 
+	    				<label class="title" >All Tables</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="width: 30%;"> 
+	    				<input type="text" name="txtSearchTable" id="txtSearchTable" onblur="funSearchTables()"/>
+	    			</div>
+	    			
+				</div>
 				<table id="tblTable" class="transFormTable">
 					<tbody style="border-top: none;"></tbody>
 				</table>
@@ -381,51 +468,10 @@ function funFillKOTTable(list)
 		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
      		  <p align="center">
             		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Submit" onclick="return funValidateFields();"/></div>
-            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="Reset" onclick="funResetFields()"></div>
+            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="Close" onclick="funPOSHome()()"></div>
      		  </p>
    		 </div>
-		
-<!-- 		<table style="margin-left: 70px;  width: 86.5%;"> -->
-
-<!-- 			 <tr> -->
-			 
-<%-- 			<td><s:select id="cmbTable" name="cmbTable" path="strTableNo" items="${tableList}" cssClass="BoxW124px" /> --%>
-<!-- 				</td> -->
-<%-- 			 <td><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSCode" items="${posList}" cssClass="BoxW124px" /> --%>
-<!-- 				</td> -->
-<!-- 						</tr> -->
-<!-- 			 </table> -->
-<!-- 		<div id="divMain" style=" margin-left: 50px; " >				 -->
-<!-- 				<table   cellspacing="15" > -->
-									
-<!-- 					<tr> -->
-<!-- 						<td> -->
-<!-- 		<div id="divKOTDtl" style=" border: 1px solid #ccc; height: 425px;  overflow-x: auto; overflow-y: auto; width: 445px;">									 -->
-								
-<!-- 		<table id="tblKOT"   cellpadding="0" cellspacing="5"> -->
-		
-<!-- 		</table> -->
-<!-- 		</div> -->
-<!-- 		</td> -->
-<!-- 		<td> -->
-<!-- 		<div id="divTableDtl" style=" border: 1px solid #ccc; height: 425px;  overflow-x: auto; overflow-y: auto; width: 445px;">									 -->
-								
-<!-- 		<table id="tblTable"   cellpadding="0" cellspacing="5"> -->
-		
-<!-- 		</table> -->
-<!-- 		</div> -->
-<!-- 	</td> -->
-<!-- 	</tr> -->
-<!-- 	</table> -->
-<!-- 	</div> -->
-<!-- 		<br> -->
-<!-- 		<br> -->
-		
-<!-- 		<p style="margin-left: 170px;"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-			
-<!-- 		</p> -->
+	
 	</s:form>
 
 </body>

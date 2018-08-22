@@ -15,6 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sanguine.model.clsLocationMasterModel;
 import com.sanguine.model.clsPropertyMaster;
@@ -22,6 +23,7 @@ import com.sanguine.model.clsUserMasterModel;
 import com.sanguine.webpos.model.clsUserHDModel_ID;
 import com.sanguine.webpos.model.clsUserHdModel;
 @Repository("clsUserMasterDao")
+@Transactional(value="webPOSTransactionManager")
 public class clsUserMasterDaoImpl implements clsUserMasterDao {
 
 	@Autowired
@@ -52,42 +54,12 @@ public class clsUserMasterDaoImpl implements clsUserMasterDao {
 	@Override
 	public clsUserHdModel funGetUser(String userCode,String clientCode,String sql) throws SQLGrammarException
 	{ 
-		/*clsUserMasterModel obj=null;
-		try
-		{
-			obj =(clsUserMasterModel) sessionFactory.getCurrentSession().get(clsUserMasterModel.class,new clsUserMasterModel_ID(userCode,clientCode));
 			
-		}catch(Exception ex)
-		{ 
-			ex.printStackTrace();
-		}
-		return obj;*/
-//		Query query=webPOSSessionFactory.getCurrentSession().getNamedQuery(sql);
-//		
-//		query.setParameter("userCode",userCode);
-//		query.setParameter("clientCode",clientCode);
-//	
-//	      List list=query.list();
-//	      clsUserHdModel obj =(clsUserHdModel) list.get(0);
-//	  "from clsUserHdModel where strUserCode=:userCode and strClientCode=:clientCode")
-//		return (clsUserMasterModel) sessionFactory.getCurrentSession().get(clsUserMasterModel.class,new clsUserMasterModel_ID(userCode,clientCode));
-	
-		
-		
 		Query query=webPOSSessionFactory.getCurrentSession().createQuery(" from clsUserHdModel "
                 + "where strUserCode='" + userCode + "' and strClientCode like'" +clientCode+"%' " ) ;
 		List<clsUserHdModel> list = query.list();
 		clsUserHdModel obj =(clsUserHdModel)list.get(0);
-		
-//		
-//		String selectQuery = "select count(*),strUserName,strSuperType,dteValidDate,strPOSAccess from tbluserhd "
-//                + "where strUserCode='" + userCode + "' and strPassword='" + clientCode + "'";
-//		
-		
-		
-//		return (clsUserHdModel) webPOSSessionFactory.getCurrentSession().get(clsUserHdModel.class,new clsUserHDModel_ID(userCode,clientCode));
-	
-	  
+
 	  return obj;
 	}
 
@@ -97,9 +69,6 @@ public class clsUserMasterDaoImpl implements clsUserMasterDao {
 	
 	@Override
 	public clsUserMasterModel funGetObject(String userCode,String clientCode) {
-		
-		//return (clsUserMasterModel) sessionFactory.getCurrentSession().get(clsUserMasterModel.class, new clsUserMasterModel_ID(userCode,clientCode));
-		
 		Criteria cr=sessionFactory.getCurrentSession().createCriteria(clsUserMasterModel.class);
 		cr.add(Restrictions.eq("strUserCode", userCode));
 		cr.add(Restrictions.eq("strClientCode", clientCode));
@@ -169,7 +138,6 @@ public class clsUserMasterDaoImpl implements clsUserMasterDao {
 	@Override
 	public Map<String,String> funGetUserProperties(String strClientCode) {
 		 Map<String,String> map = new TreeMap<String,String>();		
-		// map.put("ALL","ALL");
 		List<clsPropertyMaster> properties= sessionFactory.getCurrentSession().createQuery("from clsPropertyMaster where strClientCode='"+strClientCode+"'").list();
 		for(clsPropertyMaster property: properties){
 			map.put(property.getPropertyCode(), property.getPropertyName());

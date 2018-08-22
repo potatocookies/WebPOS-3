@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSAddKOTToBillBean;
+import com.sanguine.webpos.bean.clsPOSBillDtl;
 import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
 import com.sanguine.webpos.bean.clsPOSKOTItemDtl;
 import com.sanguine.webpos.bean.clsPOSTableMasterBean;
@@ -229,10 +230,10 @@ public class clsPOSAddKOTToBillController {
 				{
 					for(int cnt=0;cnt<list.size();cnt++)
 					{
-						Object[] object = (Object[]) list.get(cnt);
+						clsPOSBillDtl objBean = (clsPOSBillDtl) list.get(cnt);
 						clsPOSKOTItemDtl objKOTDtl = new clsPOSKOTItemDtl();
-						objKOTDtl.setStrTableNo(object[1].toString());
-						objKOTDtl.setStrKOTNo(object[0].toString());	
+						objKOTDtl.setStrTableNo(objBean.getStrTableNo());
+						objKOTDtl.setStrKOTNo(objBean.getStrKOTNo());	
 						listKOTData.add(objKOTDtl);
 						
 					}

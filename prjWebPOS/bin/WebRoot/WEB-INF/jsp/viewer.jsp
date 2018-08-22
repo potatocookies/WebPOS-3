@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
   String appletWidth = "750";
@@ -38,17 +37,18 @@ JasperReports - Web Application Sample
 
 <SCRIPT LANGUAGE="JavaScript"><!--
     if (_ie == true) document.writeln('<OBJECT classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "600" HEIGHT = "400"  codebase="http://java.sun.com/products/plugin/1.1.2/jinstall-112-win32.cab#Version=1,1,2,0"><NOEMBED><XMP>');
-    else if (_ns == true && _ns6 == false) document.writeln('<EMBED type="application/x-java-applet;version=1.1.2" CODE = "EmbeddedViewerApplet.class" CODEBASE = "applets" ARCHIVE = "jasperreports-5.0.1.jar,jasperreports-applet-5.6.0.jar,commons-logging-1.1.1.jar,commons-collections-2.1.1.jar" WIDTH = "600" HEIGHT = "400" REPORT_URL = "${PAGE_URL}" scriptable=false pluginspage="http://java.sun.com/products/plugin/1.1.2/plugin-install.html"><NOEMBED><XMP>');
+    else if (_ns == true && _ns6 == false) document.writeln('<EMBED type="application/x-java-applet;version=1.1.2" CODE = "EmbeddedApplet.class" CODEBASE = "applets" ARCHIVE = "jasperreports-applet-5.6.0.jar,jasperreports-applet-5.6.0.jar,commons-logging-1.2.jar,commons-collections-3.2.1.jar" WIDTH = "600" HEIGHT = "400" REPORT_URL = "${PAGE_URL}" scriptable=false pluginspage="http://java.sun.com/products/plugin/1.1.2/plugin-install.html"><NOEMBED><XMP>');
 //--></SCRIPT>
-<APPLET  CODE = "EmbeddedViewerApplet.class" CODEBASE = "applets" ARCHIVE = "jasperreports-applet-5.6.0.jar,jasperreports-5.0.1.jar,commons-logging-1.1.1.jar,commons-collections-3.2.1.jar" WIDTH = "600" HEIGHT = "400"></XMP>
-    <PARAM NAME = CODE VALUE = "EmbeddedViewerApplet.class" >
+<APPLET  CODE = "EmbeddedApplet.class" CODEBASE = "applets" ARCHIVE = "jasperreports-applet-5.6.0.jar,jasperreports-applet-5.6.0.jar,commons-logging-1.2.jar,commons-collections-3.2.1.jar" WIDTH = "600" HEIGHT = "400"></XMP>
+    <PARAM NAME = CODE VALUE = "EmbeddedApplet.class" >
 <PARAM NAME = CODEBASE VALUE = "applets" >
-<PARAM NAME = ARCHIVE VALUE = "jasperreports-applet-5.6.0.jar,jasperreports-5.0.1.jar,commons-logging-1.1.1.jar,commons-collections-2.1.1.jar" >
+<PARAM NAME = ARCHIVE VALUE = "jasperreports-applet-5.6.0.jar,jasperreports-applet-5.6.0.jar,commons-logging-1.2.jar,commons-collections-3.2.1.jar" >
 
     <PARAM NAME="type" VALUE="application/x-java-applet;version=1.2.2">
     <PARAM NAME="scriptable" VALUE="false">
-    <PARAM NAME = "REPORT_URL" VALUE ="http://localhost:8080/prjWebStocks/reports/showViewer.html">
-
+    <PARAM NAME = "REPORT_URL" VALUE ="http://localhost:8080/prjWebPOS/reports/showViewer.html">
+    
+    <!--<PARAM NAME = "REPORT_URL" VALUE ="${reportname}"> -->
 
 </APPLET>
 </NOEMBED>
@@ -56,7 +56,7 @@ JasperReports - Web Application Sample
 </OBJECT>
 
 <!--
-<APPLET CODE = "EmbeddedViewerApplet.class" CODEBASE = "applets" ARCHIVE = "jasperreports-applet-5.6.0.jar,jasperreports-5.0.1.jar,commons-logging-1.1.1.jar,commons-collections-2.1.1.jar" WIDTH = "600" HEIGHT = "400">
+<APPLET CODE = "EmbeddedApplet.class" CODEBASE = "applets" ARCHIVE = "jasperreports-applet-5.6.0.jar,jasperreports-applet-5.6.0.jar,commons-logging-1.2.jar,commons-collections-3.2.1.jar" WIDTH = "600" HEIGHT = "400">
 <PARAM NAME = "REPORT_URL" VALUE ="<c:out value="${PAGE_URL}"/>">
 
 

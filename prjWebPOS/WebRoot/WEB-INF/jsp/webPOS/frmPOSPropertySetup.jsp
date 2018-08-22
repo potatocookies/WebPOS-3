@@ -128,7 +128,6 @@ ul.tab li.active {
 		var searchurl=getContextPath()+"/funGetPos.html?posCode="+posCode;
 		 $.ajax({
 			        type: "GET",
-			       
 			        url: searchurl,
 			        dataType: "json",
 			        success: function(response)
@@ -870,14 +869,12 @@ ul.tab li.active {
 							        	
 					        			$("#txtJioMID").val(response.strJioMID);
 					        			$("#txtJioTID").val(response.strJioTID);
-					        			
-					        			
 					        			$("#txtJioActivationCode").val(response.strJioActivationCode);
 					        			
-					        			
-					        				$("#txtJioDeviceID").val(response.strJioDeviceID);
-					        				funLoadPrinterDtl();
+					        			$("#txtJioDeviceID").val(response.strJioDeviceID);
+					        			funLoadPrinterDtl();
 				        				funSetSelectedBillSeries();
+				        				//hghhg
 				        				
 			        },
 					error: function(jqXHR, exception) {
@@ -1521,39 +1518,35 @@ ul.tab li.active {
 		var searchurl=getContextPath()+"/loadPrinterDtl.html";
 		 $.ajax({
 			        type: "GET",
-			       
 			        url: searchurl,
 			        dataType: "json",
+			        async: false,
 			        success: function(response)
 			        {
-			        	
 			        	$.each(response.listPrinterDtl, function(i,item)
-								{			
-						    		
-			        		funFillPrinterDtl(item.strCostCenterCode,item.strCostCenterName,item.strPrimaryPrinterPort,item.strSecondaryPrinterPort,item.strPrintOnBothPrintersYN);
-						    		
-						    		
-							  	});
-	 },
-		error: function(jqXHR, exception) {
-         if (jqXHR.status === 0) {
-             alert('Not connect.n Verify Network.');
-         } else if (jqXHR.status == 404) {
-             alert('Requested page not found. [404]');
-         } else if (jqXHR.status == 500) {
-             alert('Internal Server Error [500].');
-         } else if (exception === 'parsererror') {
-             alert('Requested JSON parse failed.');
-         } else if (exception === 'timeout') {
-             alert('Time out error.');
-         } else if (exception === 'abort') {
-             alert('Ajax request aborted.');
-         } else {
-             alert('Uncaught Error.n' + jqXHR.responseText);
-         }		            
-     }
-});
-}
+							{			
+					    	 funFillPrinterDtl(item.strCostCenterCode,item.strCostCenterName,item.strPrimaryPrinterPort,item.strSecondaryPrinterPort,item.strPrintOnBothPrintersYN);
+					    	});
+	                 },
+					error: function(jqXHR, exception) {
+			         if (jqXHR.status === 0) {
+			             alert('Not connect.n Verify Network.');
+			         } else if (jqXHR.status == 404) {
+			             alert('Requested page not found. [404]');
+			         } else if (jqXHR.status == 500) {
+			             alert('Internal Server Error [500].');
+			         } else if (exception === 'parsererror') {
+			             alert('Requested JSON parse failed.');
+			         } else if (exception === 'timeout') {
+			             alert('Time out error.');
+			         } else if (exception === 'abort') {
+			             alert('Ajax request aborted.');
+			         } else {
+			             alert('Uncaught Error.n' + jqXHR.responseText);
+			         }		            
+			     }
+             });
+    }
 	
 	function funFillPrinterDtl(strCode,strName,primaryPrinter,secondaryPrinter,strPrintOnBothPrintersYN)
 	{
@@ -1581,45 +1574,46 @@ ul.tab li.active {
 	{
 		var posCode=$('#cmbPosCode').val();
 		var searchurl=getContextPath()+"/loadOldSBillSeriesSetup.html?posCode="+posCode;
-		 $.ajax({
-			        type: "GET",
-			        url: searchurl,
-			        dataType: "json",
-			        success: function(response)
-			        {
-			        	
-		if(response.strType=="")
-			{
-			$("#cmbSelectedType").val("Group");
-			 funFillSelectedTypeDtlTable("Group");
-			}
-		else
-			{
-			$("#cmbSelectedType").val(response.strType);
-			document.getElementById("cmbSelectedType").disabled=true;
-			
-			funLoadOldBillSeries();
-			}
-		
-	 },
-		error: function(jqXHR, exception) {
-         if (jqXHR.status === 0) {
-             alert('Not connect.n Verify Network.');
-         } else if (jqXHR.status == 404) {
-             alert('Requested page not found. [404]');
-         } else if (jqXHR.status == 500) {
-             alert('Internal Server Error [500].');
-         } else if (exception === 'parsererror') {
-             alert('Requested JSON parse failed.');
-         } else if (exception === 'timeout') {
-             alert('Time out error.');
-         } else if (exception === 'abort') {
-             alert('Ajax request aborted.');
-         } else {
-             alert('Uncaught Error.n' + jqXHR.responseText);
-         }		            
-     }
-});
+		 $.ajax
+		 ({
+	        type: "GET",
+	        url: searchurl,
+	        dataType: "text",
+	        async: false,
+	        success: function(response)
+	        {
+		       if(response=="")
+					{
+					$("#cmbSelectedType").val("Group");
+					 funFillSelectedTypeDtlTable("Group");
+					}
+				else
+					{
+					$("#cmbSelectedType").val(response);
+					document.getElementById("cmbSelectedType").disabled=true;
+					
+					funLoadOldBillSeries();
+					}
+	
+            },
+			error: function(jqXHR, exception) {
+	         if (jqXHR.status === 0) {
+	             alert('Not connect.n Verify Network.');
+	         } else if (jqXHR.status == 404) {
+	             alert('Requested page not found. [404]');
+	         } else if (jqXHR.status == 500) {
+	             alert('Internal Server Error [500].');
+	         } else if (exception === 'parsererror') {
+	             alert('Requested JSON parse failed.');
+	         } else if (exception === 'timeout') {
+	             alert('Time out error.');
+	         } else if (exception === 'abort') {
+	             alert('Ajax request aborted.');
+	         } else {
+	             alert('Uncaught Error.n' + jqXHR.responseText);
+	         }		            
+	     }
+      });
 		
 	}
 	function funRemoveTableRows(tblId)

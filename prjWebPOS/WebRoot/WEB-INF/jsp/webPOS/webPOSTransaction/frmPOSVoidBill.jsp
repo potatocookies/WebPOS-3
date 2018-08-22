@@ -9,16 +9,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 <script type="text/javascript">
- 	var fieldName,textValue2="",selectedRowIndex=0,delTableNo="",delbillNo="",delItemcode="", delAmount="",bDate="",delModItemcode="";
- 
- 	
+ 	var fieldName,textValue2="",selectedRowIndex=0,delTableNo="",delbillNo="",delItemcode="", delAmount="",bDate="",delModItemcode="",count=0;
+ 	var arrVoidedItemDtlList=new Array();
+
  	$(function() 
  	{
- 	
- 		funFillGrid();
- 		
-    
- 		
+ 	   funFillGrid();
  	});
  	
 
@@ -332,7 +328,7 @@
 	    var tableName="";
 	   
 	    
-	    searchUrl=getContextPath()+"/fillBillGridData.html?";
+	    searchUrl=getContextPath()+"/funGetBillList.html?";
 		$.ajax({
 		        type: "GET",
 		        url: searchUrl,
@@ -375,7 +371,7 @@
 		var row = table.insertRow(rowCount);
 		row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Bill No >";
 		row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"TB Name\" value=BillDate >";
-		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Waiter Name\" value=Amount >";
+		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Waiter Name\"  value=Amount >";
 		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Take Away\" value=TableName >";
 		
 		rowCount++;
@@ -385,17 +381,17 @@
 	    	
 	    	for(var j=0;j<rowData.length;j++){
 	    		
-	    		row.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowData[j]+"\" value='"+rowData[j]+"' onclick=\"funGetSelectedRowData(this)\"/>";
+	    		if(j==2)
+    	    	{
+    	    	row.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\""+rowData[j]+"\" style=\"text-align: right;\" value='"+rowData[j]+"' onclick=\"funGetSelectedRowData(this)\"/>";
+    	    	}
+	    	    else
+	    	    {
+	    	    	row.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowData[j]+"\" value='"+rowData[j]+"' onclick=\"funGetSelectedRowData(this)\"/>";    
+	    	    }	
 	    	}
 	    	rowCount++;
-	    }
-		
-// 	  	$("#lblBillNo").text(billNo);
-    	
-//     	$("#lblTax").text(taxAmt);
-//     	$("#lblSubTotlal").text(subTotalAmt);
-//     	$("#lblTotal").text(totalAmount);
-		
+	    }		
 	}
 	
 	
@@ -458,118 +454,49 @@
  		var table = document.getElementById("tblData");
  		var rowCount = table.rows.length;
  		var row = table.insertRow(rowCount);
- 		row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"20%\" id=\"KOT NO.\" value=Description>";
- 		row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"18%\" id=\"TB Name\" value=BillDate >";
- 		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"11%\" id=\"Waiter Name\" value=Amount >";
- 		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"Take Away\" value=Modifier >";
- 		row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"10%\" id=\"Take Away\" value=KOT NO >";
-//   		row.insertCell(5).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"\" value=Select >";
- 		rowCount++;
- 	    for(var i=0;i<data.length;i++){
+ 		for(var i=0;i<data.length;i++)
+ 		{
  	    	row = table.insertRow(rowCount);
  	    	var rowData=data[i];
- 	    	
- 	    	for(var j=0;j<rowData.length;j++){
- 	    		
- 	    		row.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowData[j]+"\" value='"+rowData[j]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-
- 	    		 
- 	    	}
-//  	    	row.insertCell(5).innerHTML= "<input id=\"cbSGSel."+(rowCount)+"\" type=\"checkbox\" checked=\"checked\" name=\"BillGroupthemes\" value='"+rowData[3]+"' class=\"SGCheckBoxClass\" />";
- 	    	rowCount++;
+ 	    	row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"35%\" id=\"txtItemName."+ (rowCount) +"\" style=\"text-align: left\" value='"+rowData[0]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+ 	    	row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"5%\" id=\"txtQty."+ (rowCount) +"\" style=\"text-align: right\" value='"+rowData[1]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+ 	    	row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtAmount."+ (rowCount) +"\" style=\"text-align: right\" value='"+rowData[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+ 	    	row.insertCell(3).innerHTML= "<input type=\"hidden\" class=\"Box \" size=\"0%\" id=\"txtItemCode."+ (rowCount) +"\" value='"+rowData[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+ 	    	row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"11%\" id=\"txtKOT."+ (rowCount) +"\"style=\"text-align: left\" value='"+rowData[4]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+ 	    	 row.insertCell(5).innerHTML= "<input type=\"button\" class=\"deletebutton\" size=\"5%\" style=\"text-align: center;width:100%;font-size: 8px\" value = \"Del\" onClick=\"Javacsript:funDeleteRow(this)\"/>";
+            rowCount++;
  	    }
 	  	$("#lblBillNo").text(bill);
 	  	$("#lblUserCreated").text(userCreated);
     	$("#lblTax").text(taxAmt);
     	$("#lblSubTotlal").text(subTotalAmt);
     	$("#lblTotal").text(totalAmount);
- 		
- 		
- 		
  	}
      
 
 
- 	function funDeleteRow()
-	{
+    function funVoidItems()
+	 {
 	    var taxAmt=$("#lblTax").text();
-	  
-	
-	    var table = document.getElementById("tblData");
-	    var delItemName="";
-	    var count=$('#tblData tr').length-1;
-	    var delRowNo="";
-	    var i=selectedRowIndex;
-// 	    for(var i=1;i<=count;i++)
-// 	    {
-//          var a="";
-//         if(document.all("cbSGSel."+i).checked==true)
-//         	{
-//         	if(delRowNo=="")
-//         	{
-//         		delRowNo="del"+i;String userCode,String posDate,String selectedReasonDesc,String remark,String itemName,String tempItemCode, 
-//      			   String billNo ,String itemCodeForVoid,String modItemCode,String itemCode,String StrPOSCode,double totalBillQty,String strClientCode,String tableNo)
-//         	}else{
-        		delRowNo=delRowNo+"del"+i;
-//         	}
-        	var tableName = document.getElementById("tblData");
-	       	var itemcode= tableName.rows[i].cells[3].innerHTML; 
-	       	
-	        var btnBackground=itemcode.split('value=');
-	        var iCode=btnBackground[1].split("onclick");
-	        delItemcode=iCode[0].substring(1, (iCode[0].length-2));
-	        
-   	var modItemcode= tableName.rows[i].cells[4].innerHTML; 
-	       	
-	        var btnBackmodItemcode=modItemcode.split('value=');
-	        var mCode=btnBackmodItemcode[1].split("onclick");
-	        delModItemcode=mCode[0].substring(1, (mCode[0].length-2));
-	        
-  	var itemName= tableName.rows[i].cells[0].innerHTML; 
-	       	
-	        var btnBackgrounditemName=itemName.split('value=');
-	        var iName=btnBackgrounditemName[1].split("onclick");
-	        delItemName=iName[0].substring(1, (iName[0].length-2));
-	        
-	        
-   	var amount= tableName.rows[i].cells[2].innerHTML; 
-	       	
-	        var btnBackgroundamount=amount.split('value=');
-	        var amountnext=btnBackgroundamount[1].split("onclick");
-	        delAmount=amountnext[0].substring(1, (amountnext[0].length-2));
-	        
-   	var qty= tableName.rows[i].cells[1].innerHTML; 
-	       	
-	        var btnBackgroundqty=qty.split('value=');
-	        var delQunatity=btnBackgroundqty[1].split("onclick");
-	         var quantity=delQunatity[0].substring(1, (delQunatity[0].length-2));
-
-//         	}
-// 	    }
-// 	   var delreow= delRowNo.split("del");
-	  
-// 	   for(var i=1;i<delreow.length;i++) {
-		   
-		   
-		   table.deleteRow(selectedRowIndex);
-// 	   }
-	   var remarks = prompt("Enter Remarks", "");
+	    var remarks = prompt("Enter Remarks", "");
     	var reasonCode=$("#cmbDocType").val();
       
+    	//searchUrl=getContextPath()+"/voidItem.html?voidedItemList="+myMap;
     	searchUrl=getContextPath()+"/voidItem.html?";
 		$.ajax({
-		        type: "GET",
-		        url: searchUrl,
-		        async:false,
-		        data:"delItemcode="+delItemcode+"&delbillNo="+delbillNo+"&delTableNo="+delTableNo+"&remarks="+remarks+
-		        "&reasonCode="+reasonCode+"&quantity="+quantity+"&delAmount="+delAmount+"&delItemName="+delItemName+"&taxAmt="+taxAmt+"&delModItemcode="+delModItemcode,
-		        
-			    success: function(response)
-			    {
+			
+			type: "POST",
+	        url: searchUrl,
+	        dataType: "text",
+	        async:true,
+	        data:"delbillNo="+delbillNo+"&delTableNo="+delTableNo+"&remarks="+remarks+"&reasonCode="+reasonCode+"&taxAmt="+taxAmt+"&voidedItemList="+arrVoidedItemDtlList,
+	        success: function(response)
+	        {
 					if(response)
-						{
-					alert("Void Kot SucessFully");
-						}},
+					{
+				       alert("Void Bill SucessFully");
+					}
+				},
 			    error: function(jqXHR, exception) {
 		            if (jqXHR.status === 0) {
 		                alert('Not connect.n Verify Network.');
@@ -588,19 +515,31 @@
 		            }
 		        }
 		      });
+	
+	 }
+ 	
+ 	
+ 	//Function to Delete Selected Row From Grid
+	function funDeleteRow(obj)
+	{
+ 		var index = obj.parentNode.parentNode.rowIndex;
+	    var table = document.getElementById("tblData");  
 	    
-	    
-
+	    var voidedItemDtl=document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtItemName."+index).value+"#"+document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtQty."+index).value+"#"+document.getElementById("txtAmount."+index).value;
+	    //arrVoidedItemDtlList.push(voidedItemDtl);
+	    arrVoidedItemDtlList[count]=voidedItemDtl;
+	    count++;	    
+	    table.deleteRow(index);
 	}
  	
  	function funFullVoidBill()
  	{
- 		var billNo=$("#lblBillNo");
+ 	   var billNo=$("#lblBillNo");
  	   var remarks = prompt("Enter Remarks", "");
    	   var reasonCode=$("#cmbDocType").val();
    	
-   	searchUrl=getContextPath()+"/fullVoidBillButtonClick.html?";
-	$.ajax({
+   	  searchUrl=getContextPath()+"/fullVoidBillButtonClick.html?";
+	   $.ajax({
 	        type: "GET",
 	        url: searchUrl,
 	        async:false,
@@ -610,6 +549,7 @@
 		    success: function(response)
 		    {
 		    	funNextFillGrid();
+		    	alert("Void Bill SucessFully");
 				},
 		    error: function(jqXHR, exception) {
 	            if (jqXHR.status === 0) {
@@ -637,9 +577,15 @@
 
  	function funNextFillGrid()
  	{
- 		$('#tblData tbody').empty()
+ 		$('#tblData').remove()
+ 		$('#tblDataFillGrid').remove()
+ 		$("#lblBillNo").text("");
+	  	$("#lblUserCreated").text("");
+    	$("#lblTax").text("0");
+    	$("#lblSubTotlal").text("0");
+    	$("#lblTotal").text("0");
 
- 		var table = document.getElementById("tblData");
+ 		/*var table = document.getElementById("tblData");
  		var rowCount = table.rows.length;
 
  		var row = table.insertRow(rowCount);
@@ -648,9 +594,11 @@
  		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Amount\" value= Amount>";
  		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Item Code\" value=Item Code >";
  		row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"\" value=Select >";
- 	    
+ 	    */
  		funFillGrid();
  	}
+ 	
+ 	
    
 </script>
 
@@ -700,26 +648,18 @@
 			 		<table style="width: 100%;overflow: scroll;background: #2FABE9;color: white;">
 						<thead>
 						  	<tr >
-								<td style="border-right: 1px solid black;width:15%">Description</td>
-								<td style="border-right: 1px solid black;width:15%">Qty</td>
+								<td style="border-right: 1px solid black;width:50%">Description</td>
+								<td style="border-right: 1px solid black;width:12%">Qty</td>
 								<td style="border-right: 1px solid black;width:10%">Amount</td>
-								<td style="border-right: 1px solid black;width:10%">Modifier</td>
-								<td style="width:10%">KOT</td>
+<!-- 								<td style="border-right: 1px solid black;width:0%">Modifier</td> -->
+								<td style="border-right: 1px solid black;width:20%">KOT</td>
+								<td style="width:3%">Del</td>
 						   </tr>
 						</thead>
 					</table>
 					
 					<table id="tblData"	style="width: 100%">
 							<tbody></tbody>
-<!-- 							<tr> -->
-<!-- 								<td colspan="1"></td> -->
-<!-- 								<td colspan="1"></td> -->
-<!-- 								<td colspan="1"></td> -->
-<!-- 								<td colspan="1"></td> -->
-<!-- 								<td colspan="1"></td> -->
-<!-- 								<td colspan="1"></td> -->
-<!-- 							</tr> -->
-							
 							
 					  </table>
 					     
@@ -761,10 +701,10 @@
 	    	  	</div>
 	    	  	<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">	
 	    	  		<div class="element-input col-lg-6" style="width: 25%;"> 
-    		   			<input id="btnDelete" type="button" value="Item Void" onclick="funDeleteRow();"></input>
+    		   			<input id="btnDelete" type="button" value="Item Void" onclick="funVoidItems();"></input>
 	    	  		</div>
 	    	  		<div class="element-input col-lg-6" style="width: 25%;"> 
-    		   			<input id="btnDone" type="button" value="FullVoidKot" onclick="funFullVoidBill();">
+    		   			<input id="btnDone" type="button" value="Full Void" onclick="funFullVoidBill();">
 	    	  		</div>
 	    	  </div>
 	    	  
@@ -787,150 +727,7 @@
 	       </div>
 	       
 	  </div>
-	   
-	   
-<!-- 	   <div> -->
-<!-- 	   <div> -->
-<!-- 	   <table> -->
-<!-- 	 <tr> <td> -->
-<!-- 					<label>Bill No.</label> -->
-<!-- 					&nbsp;&nbsp; -->
-<!-- 					<label id="lblBillNo" /> -->
-					
 
-<!-- 			    </td> -->
-<!-- 			    <td> -->
-<!-- 					<label>User </label> -->
-<!-- 					&nbsp;&nbsp;<label id="lblUserCreated"  /> -->
-
-<!-- 			    </td> -->
-<!-- 			    </tr> -->
-<!-- 			    <tr>   -->
-			 
-<!-- 			 <td> -->
-<!-- 			 	&nbsp;&nbsp;<label>Reson</label></td> -->
-<!-- 			    <td> -->
-
-<%-- 				 <s:select path="strReson" items="${listReson}" --%>
-<%-- 							id="cmbDocType"  cssClass="longTextBox" cssStyle="width:300px"></s:select> --%>
-
-				    	
-			    
-<!-- 			    </td> -->
-<!-- 			    </tr> -->
-<!-- 			    </table> -->
-<!-- 	   </div> -->
-<!-- 	     <div style=" width: 50%; height: 500px;float:left;background-color: #a4d7ff; ">  -->
-<!-- 	     <br> -->
-<!--             <div style=" background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: scroll; overflow-y: scroll; width: 90%;"> -->
-<!-- 					<table id="tblData" -->
-<!-- 							style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll" -->
-<!-- 							class="transTablex col2-right col3-right col4-right col5-right"> -->
-<!-- 							<tr > -->
-<!-- 						<td style="border: 1px  white solid;width:55%"><label>Description</label></td> -->
-<!-- 						<td style="border: 1px  white solid;width:15%"><label>Qty</label></td> -->
-<!-- 						<td style="border: 1px  white solid;width:10%"><label>Amount</label></td> -->
-<!-- 						<td style="border: 1px  white solid;width:10%"><label>Select</label></td> -->
-						
-						
-<!-- 					</tr> -->
-<!-- 					</table> -->
-					
-<!-- 			</div> -->
-<!-- 			<table class=transFormTable > -->
-					
-<!-- 					<tr> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 						 <td > -->
-<!-- 							<label>SubTotal</label> -->
-<!-- 						 <td >	<label id="lblSubTotlal"/></td> -->
-<!-- 						</td> -->
-<!-- 					</tr> -->
-<!-- 						<tr > -->
-<!-- 						<td colspan="1"></td> -->
-					
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 					<td colspan="1"></td> -->
-<!-- 						 <td colspan="1" > -->
-<!-- 							<label >Tax</label> -->
-<!-- 						</td> -->
-<!-- 							<td><label id="lblTax" /> -->
-<!-- 						</td> -->
-<!-- 					</tr> -->
-					
-<!-- 			     </table> -->
-			     
-<!-- 			     <div> -->
-<!-- 			     <table class=transFormTable style="margin-left: auto; margin-right: auto;width: 70%;font-size:11px; -->
-<!-- 							font-weight: bold;"> -->
-<!-- 			       <tr><td > -->
-<!-- 			        <input id="btnUp" type="button" class="smallButton" value="Up" onclick="funMoveSelectedRow(1);" ></input></td> -->
-			       
-<!-- 			        <td><input id="btnDown" type="button" class="smallButton" value="Down" onclick="funMoveSelectedRow(0);"></input></td> -->
-<!-- 			         <td> -->
-<!-- 							<label >Total</label></td> -->
-<!-- 						<td><label id=lblTotal></label></td> -->
-						
-<!-- 			        </tr> -->
-					
-<!-- 					<tr><td><input id="btnDelete" type="button" class="smallButton" value="Item Void" onclick="funDeleteRow();"></input></td> -->
-<!-- 					<td><input id="btnDone type="button" class="smallButton"   value="FullVoidKot" onclick="funFullVoidBill();"></input></td> -->
-<!-- 				   </tr> -->
-
-<!-- 				   </table> -->
-<!-- 			     </div> -->
-            
-<!--         </div> -->
-<!-- 		<div style=" width: 50%; height: 500px; float:right; border-collapse: separate; overflow-x: hidden; overflow-y: scroll; background-color: #C0E2FE;"> -->
-<!-- 		    <br> -->
-<!-- 		   <table class=transFormTable> -->
-			
-<!-- 			<tr> -->
-				 
-			
-<!-- 				<td colspan="4"> -->
-			
-					
-<!-- 				    <input type="text" class="menusearchTextBox" id="txtSearch" style="margin-top: 20px; height: 28px;width: 218px;" ng-model="searchKeyword"></input> -->
-		       
-<!-- 				</td> -->
-<!-- 			</tr> -->
-<!-- 			</table> -->
-<!-- 			<tr> -->
-			
-			
-<!-- 			   <div style=" background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: scroll; overflow-y: scroll; width: 90%;"> -->
-<!-- 					<table id="tblDataFillGrid" -->
-<!-- 							style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll" -->
-<!-- 							class="transTablex col2-right col3-right col4-right col5-right"> -->
-<!-- 							<tr > -->
-
-<!-- 					</tr> -->
-<!-- 					</table> -->
-				
-					
-<!-- 			</div> -->
-			
-<!-- 			</tr> -->
-			
-<!-- 			<br> -->
-<!-- 		</div> -->
-		
-<!-- 	   </div> -->
-
-        
-<!-- 		<br> -->
-<!-- 	  <br> -->
-	
-		
 	</s:form> 
 
     

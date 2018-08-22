@@ -4,30 +4,44 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>
-	<tiles:insertAttribute name="title" ignore="true"></tiles:insertAttribute>
+<title><tiles:insertAttribute name="title" ignore="true"></tiles:insertAttribute>
 </title>
+
 </head>
+
 <body>
-<table border="1" cellpadding="2" cellspacing="2" align="left">
-    <tr>
-        <td colspan="2" align="center">
-        	<tiles:insertAttribute name="header"></tiles:insertAttribute>
-        </td>
-    </tr>
-    <tr>
-        <td>
-        	<tiles:insertAttribute name="menu"></tiles:insertAttribute>
-        </td>
-        <td>
-        	<tiles:insertAttribute name="body"></tiles:insertAttribute>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2"  align="center">
-        	<tiles:insertAttribute name="footer"></tiles:insertAttribute>
-        </td>
-    </tr>
-</table>
+
+
+<div class="row12" >
+    <tiles:insertAttribute name="header"></tiles:insertAttribute>
+    
+ 
+</div>
+<div class="row">
+<tiles:insertAttribute name="banner"></tiles:insertAttribute> 
+</div>
+
+<div class="row container">
+    <div class="content">
+        <div class="sidebar">
+          <tiles:insertAttribute name="menu"></tiles:insertAttribute>
+        </div>
+        <div class="contents">
+           <tiles:insertAttribute name="body"></tiles:insertAttribute>
+        </div>
+    </div>
+    <div id="loginfooter">
+			<!-- id="loginfooter"> -->
+			<tiles:insertAttribute name="footer"></tiles:insertAttribute>
+			<!-- end .footer -->
+		</div>
+</div>
+
+	
+
 </body>
 </html>
+
+
+
+

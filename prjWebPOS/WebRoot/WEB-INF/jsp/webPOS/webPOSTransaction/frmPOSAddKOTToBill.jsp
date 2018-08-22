@@ -360,7 +360,7 @@
 	<s:form name="Add KOT To Bill" method="POST" action="saveAddKOTToBill.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 	
 		<div class="title">
-			<div style=" width: 50%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: scroll;">
+			<div style=" width: 50%; height: 450px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
 					<div class="element-input col-lg-6" style="width: 30%;"> 
 	    				<label class="title" >OPEN KOT</label>
@@ -380,7 +380,7 @@
 		</div>
 		
 		<div class="title">
-			<div style=" width: 50%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: scroll;">
+			<div style=" width: 50%; height: 450px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				<div class="row" style="background-color: #fff;margin-bottom: 20px;display: -webkit-box;">
 					<div class="element-input col-lg-6" style="width: 100%;margin-left: 15px;"> 
 	    				<label class="title" >Bill No</label>
@@ -401,71 +401,6 @@
      		  </p>
    		</div>
 		
-		
-<!-- 		<div> -->
-<!-- 		   <div style=" width: 50%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: scroll; background-color: #C0E2FE; "> -->
-<!-- 			<table class="transFormTable"> -->
-<!-- 			    <tr> -->
-			    
-<!-- 					 <td> -->
-<!-- 					 <br> -->
-<!-- 					    <label>OPEN KOT</label> -->
-<!-- 					     &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; -->
-<!-- 				        <label>Table Name:</label> -->
-<%-- 				        <s:select id="cmbTable" items="${tableList}"  --%>
-<%-- 						onchange="funOnChange();" name="cmbTable"  cssClass="BoxW124px" path="strTableName"> --%>
-<%-- 						</s:select> --%>
-<!-- 						<br> -->
-<!-- 						<br> -->
-<!-- 					</td> -->
-<!-- 				</tr> -->
-				
-<!-- 			</table> -->
-<!-- 			<table id="tblKOT" class="transFormTable"> -->
-<!-- 			</table> -->
-			
-<!-- 		   </div> -->
-		   
-<!-- 		   <div style=" width: 50%; height: 450px; float:right; border-collapse: separate; overflow-x: hidden; overflow-y: scroll; background-color: #C0E2FE;"> -->
-<!-- 		    <table class="transFormTable"> -->
-<!-- 			  <tr> -->
-<!-- 					 <td> -->
-<!-- 					 <br> -->
-<!-- 					 <label>Bill No</label> -->
-<!-- 				        <br /> -->
-<!-- 				        <br /> -->
-<!-- 	                </td> -->
-<!-- 			</tr> -->
-<!-- 			</table> -->
-<!-- 		    <table id="tblBill" class="transFormTable"> -->
-<!-- 			</table> -->
-<!-- 			</div> -->
-			
-<!-- 		</div> -->
-		
-<!-- 			<div> -->
-<!-- 			<div > -->
-<!-- 			<table id="tblKOT3" class="transFormTable"> -->
-<!-- 			</table> -->
-			
-<!-- 		   </div> -->
-		   
-			
-<!-- 		</div> -->
-		
-<!-- 		<br><br> -->
-		
-		
-		
-<!-- 		<br><br><br><br><br><br> -->
-		
-		
-		
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Save" tabindex="3" class="form_button" onclick="return funValidateFields();"/> -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
-<!-- 		<br><br> -->
 
 	</s:form>
 </body>

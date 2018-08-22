@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSCustomerMasterBean;
 import com.sanguine.webpos.model.clsCustomerMasterModel;
@@ -38,9 +36,6 @@ public class clsPOSCustomerMasterController
 
 	@Autowired
 	private clsPOSGlobalFunctionsController objGlobalFun;
-
-	@Autowired
-	private clsBaseServiceImpl objBaseServiceImpl;
 
 	@Autowired
 	private clsPOSUtilityController objUtilityController;
@@ -65,7 +60,7 @@ public class clsPOSCustomerMasterController
 		List cityCode = new ArrayList();
 		List cityName = new ArrayList();
 		List stateName = new ArrayList();
-		List CustomerType = new ArrayList();
+		List customerType = new ArrayList();
 		JSONArray jObj, jObj1, jObj2;
 		JSONArray jArryList, jArryList1, jArryList2;
 
@@ -90,11 +85,11 @@ public class clsPOSCustomerMasterController
 			{
 				objModel = listOfCustomerType.get(cnt);
 
-				CustomerType.add(objModel.getStrCustType());
+				customerType.add(objModel.getStrCustType());
 			}
 			model.put("cityName", cityName);
 			model.put("stateName", stateName);
-			model.put("CustomerType", CustomerType);
+			model.put("customerType", customerType);
 
 		
 		if ("2".equalsIgnoreCase(urlHits))
@@ -113,10 +108,10 @@ public class clsPOSCustomerMasterController
 	}
 
 	@RequestMapping(value = "/checkExternalNo", method = RequestMethod.GET)
-	public @ResponseBody boolean funCheckAreaName(@RequestParam("strCustCode") String strCustCode, @RequestParam("strExternalNo") String Name, HttpServletRequest req)
+	public @ResponseBody boolean funCheckAreaName(@RequestParam("strMobileNo") String strMobileNo, @RequestParam("strCustCode") String strCustCode, HttpServletRequest req)
 	{
-		String clientCode = req.getSession().getAttribute("clientCode").toString();
-		int count = objGlobalFun.funCheckName(Name, strCustCode, clientCode, "POSCustomerMaster");
+		String clientCode = req.getSession().getAttribute("gClientCode").toString();
+		int count = objGlobalFun.funCheckName(strCustCode, strMobileNo, clientCode, "POSCustomerMaster");
 		if (count > 0)
 			return false;
 		else
@@ -128,7 +123,7 @@ public class clsPOSCustomerMasterController
 	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSCustomerMasterBean objBean, BindingResult result, HttpServletRequest req)
 	{
 		String urlHits = "1";
-		JSONObject jSONObject = new JSONObject();
+		
 		try
 		{
 			urlHits = req.getParameter("saddr").toString();
@@ -141,10 +136,7 @@ public class clsPOSCustomerMasterController
 			{
 				long lastNo = 1;
 				String propertCode = clientCode.substring(4);
-				// customerMasterCode =
-				// objCustomerMasterDao.funGenerateCustomerMasterCode(clientCode);
-				// strBuldingCode =
-				// objCustomerMasterDao.funGenerateCustomerMasterBuildingCode();
+				
 
 				List list = objUtilityController.funGetDocumentCode("POSCustomerMaster");
 				if (!list.get(0).toString().equals("0"))
@@ -156,17 +148,12 @@ public class clsPOSCustomerMasterController
 
 					strCode = sb.substring(1, sb.length());
 
-					//System.out.println("strCode-->"+strCode);
-					
 					lastNo = Long.parseLong(strCode);
 					
 					
-					//System.out.println("lastNo-->"+lastNo);
-					
 					lastNo++;
 					customerMasterCode = propertCode + "C" + String.format("%07d", lastNo);
-					
-					//System.out.println("customerMasterCode-->"+ customerMasterCode);
+				
 				}
 				else
 				{
@@ -174,10 +161,7 @@ public class clsPOSCustomerMasterController
 				}
 			}
 			clsCustomerMasterModel objModel = new clsCustomerMasterModel(new clsCustomerMasterModel_ID(customerMasterCode, clientCode));
-			// clsCustomerTypeMasterModel objModel = new
-			// clsCustomerTypeMasterModel(new
-			// clsCustomerTypeMasterModel_ID(customerTypeMasterCode,
-			// clientCode));
+	
 			objModel.setStrCustomerName(objBean.getStrCustomerName());
 			objModel.setStrBuldingCode(strBuildingCode);
 			objModel.setStrBuildingName(objBean.getStrBuildingName());
@@ -207,7 +191,6 @@ public class clsPOSCustomerMasterController
 			objModel.setStrClientCode(clientCode);
 			objModel.setStrUserCreated(webStockUserCode);
 			objModel.setStrUserEdited(webStockUserCode);
-			//System.out.println(objGlobal+"Cusromer master objGlobal.funGetCurrentDateTime(yyyy-MM-dd)-->"+objGlobal.funGetCurrentDateTime());
 			objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setStrCRMId("N");

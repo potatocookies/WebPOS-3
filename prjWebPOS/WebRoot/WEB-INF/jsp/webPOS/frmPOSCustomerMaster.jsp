@@ -80,16 +80,16 @@
 			
 
 			  $("form").submit(function(event){
-				  if (mobilenumber())
-					  {				  					  
+				  if (mobilenumber()) 
+				  {				  					  
 					  flg=funCallFormAction();
 					  return flg;
 				  }
 			
 				  else
-					  {
-					  return false;
-					  }
+				  {
+				  return false;
+				  }
 				  			 
 					 
 				});
@@ -152,9 +152,10 @@
 				var strCustCode=$('#txtCustomerCode').val();
 				
 					var strMobileNo = $('#txtMobileNo').val();
+					var searchurl=getContextPath()+"/checkExternalNo.html?strMobileNo="+strMobileNo+"&strCustCode="+strCustCode;
 					 $.ajax({
 					        type: "GET",
-					        url: getContextPath()+"/checkExternalNo.html?strMobileNo="+strMobileNo+"&strCustCode="+strCustCode,
+					        url: searchurl,
 					        async: false, 
 					        dataType: "text",
 					        success: function(response)

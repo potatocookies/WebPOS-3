@@ -35,7 +35,7 @@ public class clsPOSTransactionService
 	public List funGetKOTDtlForAddKOTTOBill(String posCode, String tableName)
 	{
 		
-		List listRet =null;
+		List listRet = new ArrayList<>();
 		
 		try{
 		
@@ -83,7 +83,7 @@ public class clsPOSTransactionService
 	public List funGetUnsettleBillList(String posCode)
 	{
 		
-		List listRet =null;
+		List listRet =new ArrayList<>();
 		
 		try{
 		
@@ -1286,6 +1286,118 @@ public class clsPOSTransactionService
 //			return jObjAssignHomeDeliveryMaster;
 		}	
 	}
+	
+	
+	
+	
+	   public Map<String,List<clsPOSBillDtl>> funExecute(String posCode,String operationType,String kotFor)
+	   	{
+	    	Map<String,List<clsPOSBillDtl>> hmReprintDtl=new HashMap();
+	    	List<clsPOSBillDtl> listReprintDtl=new ArrayList<>();
+	    	List list = null;
+	    	StringBuilder sql = new StringBuilder(); 
+	    	try
+	    	{
+	    	if (operationType.equalsIgnoreCase("KOT"))
+	        {
+	    		//kotFor="Dina";
+	            if (kotFor.equalsIgnoreCase("Dina"))
+	            {
+	            	sql.append("select a.strKOTNo,TIME_FORMAT(time(a.dteDateCreated),'%h:%i') as Time "
+	                        + ",IFNULL(c.strWShortName,'NA'),ifnull(b.strTableName,'')"
+	                        + ",a.intPaxNo,a.strUserEdited ,a.dblAmount "
+	                        + "from tblitemrtemp a left outer join tbltablemaster b on a.strTableNo=b.strTableNo "
+	                        + "left outer join tblwaitermaster c  on a.strWaiterNo=c.strWaiterNo "
+	                        + "where a.strPOSCode='" + posCode + "' "
+	                        + "group by a.strKOTNo,a.strTableNo  "
+	                        + "order by a.strKOTNo desc");
+	       			list=objBaseService.funGetList(sql, "sql");
+	    			
+	    			 if (list!=null)
+	    				{
+	    					for(int i=0; i<list.size(); i++)
+	    					{
+	    						Object[] obj = (Object[]) list.get(i);
+	    						clsPOSBillDtl objBillDtl=new clsPOSBillDtl();
+	    						objBillDtl.setStrKOTNo(Array.get(obj, 0).toString());
+	    						objBillDtl.setTmeBillTime(Array.get(obj, 1).toString());
+	    						objBillDtl.setStrWShortName(Array.get(obj, 2).toString());
+	    						objBillDtl.setStrTableName(Array.get(obj, 3).toString());
+	    						objBillDtl.setSequenceNo(Array.get(obj, 4).toString());
+	    						objBillDtl.setStrCustomerName(Array.get(obj, 5).toString());
+	    						objBillDtl.setDblAmount(Double.valueOf(Array.get(obj, 6).toString()));
+	    						listReprintDtl.add(objBillDtl);
+	    					}
+	    					hmReprintDtl.put("strOperation", listReprintDtl);
+	       				}
+	            }
+	            else if (kotFor.equalsIgnoreCase("DirectBiller"))
+	            {
+	            	sql.setLength(0);
+	            	sql.append("select a.strbillno ,TIME_FORMAT(time(a.dteBillDate),'%h:%i') as Time  ,b.strPOSName "
+	                        + ",a.dblGrandTotal "
+	                        + " from tblbillhd a ,tblposmaster b "
+	                        + " where a.strPOSCode='" + posCode + "' and a.strPOSCode=b.strPOSCode "
+	                        + " and a.strTableNo='' Or a.strTableNo='TB0000'  "
+	                        + " order by a.strbillno DESC");
+	            	list=objBaseService.funGetList(sql, "sql");
+	    			
+	    			 if (list!=null)
+	    				{
+	    					for(int i=0; i<list.size(); i++)
+	    					{
+	    						Object[] obj = (Object[]) list.get(i);
+	    						clsPOSBillDtl objBillDtl=new clsPOSBillDtl();
+	    						objBillDtl.setStrBillNo(Array.get(obj, 0).toString());
+	    						objBillDtl.setTmeBillTime(Array.get(obj, 1).toString());
+	    						objBillDtl.setStrPosName(Array.get(obj, 2).toString());
+	    						objBillDtl.setDblAmount(Double.valueOf(Array.get(obj, 3).toString()));
+	    						listReprintDtl.add(objBillDtl);
+	    						
+	    					}
+	    					hmReprintDtl.put("strOperation", listReprintDtl);
+	    				}
+	            }
+	        }
+	    	else if (operationType.equalsIgnoreCase("Bill"))
+	        {
+	    		sql.setLength(0);
+	    		sql.append("select a.strbillno ,ifnull(b.strTableName,'ND'),TIME_FORMAT(time(a.dteBillDate),'%h:%i') as Time "
+	                    + ",a.strPOSCode ,a.dblGrandTotal  "
+	                    + "from tblbillhd a left outer join tbltablemaster b on a.strTableNo=b.strTableNo "
+	                    + "where a.strPOSCode='" + posCode + "' "
+	                    + "order by a.strbillno DESC");
+	    		list=objBaseService.funGetList(sql, "sql");
+				 
+				 if (list!=null)
+					{
+						for(int i=0; i<list.size(); i++)
+						{
+							Object[] obj = (Object[]) list.get(i);
+							clsPOSBillDtl objBillDtl=new clsPOSBillDtl();
+	   						objBillDtl.setStrBillNo(Array.get(obj, 0).toString());
+	   						objBillDtl.setStrTableName(Array.get(obj, 1).toString());
+	   						objBillDtl.setTmeBillTime(Array.get(obj, 2).toString());
+	   						objBillDtl.setDblAmount(Double.valueOf(Array.get(obj, 4).toString()));
+	   						listReprintDtl.add(objBillDtl);
+						}
+						hmReprintDtl.put("strOperation", listReprintDtl);
+				
+					}
+
+	        }
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		e.printStackTrace();
+	    	}
+	    	finally
+	    	{
+	         return hmReprintDtl;
+	    	}
+	   	}
+	    
+	 
 	
 	
 	

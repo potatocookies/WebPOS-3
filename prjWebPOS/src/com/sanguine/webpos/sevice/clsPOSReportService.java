@@ -16,10 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.lang.reflect.Array;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.webpos.bean.clsPOSBillDtl;
 import com.sanguine.webpos.bean.clsPOSBillItemDtl;
@@ -48,6 +52,7 @@ import com.sanguine.webpos.comparator.clsPOSSalesFlashComparator;
 import com.sanguine.webpos.comparator.clsVoidBillComparator;
 import com.sanguine.webpos.comparator.clsWaiterWiseSalesComparator;
 import com.sanguine.webpos.util.clsPOSGroupWiseComparator;
+import com.sanguine.webpos.util.clsPOSUtilityController;
 
 @Service
 public class clsPOSReportService {
@@ -69,6 +74,13 @@ public class clsPOSReportService {
 	Map<String, Map<String, clsPOSCommonBeanDtl>> mapPOSModifierWiseSales;
 	Map<String, Map<String, clsPOSCommonBeanDtl>> mapPOSMonthWiseSales;
 	Map<String, List<clsPOSOperatorDtl>> mapOperatorDtls;
+	
+	@Autowired
+	private clsSetupService objSetupService;
+	
+	@Autowired
+	private clsPOSUtilityController objUtilityController;
+
 	double TotSale = 0;
 
 	public List funProcessDayEndReport(String posCode, String fromDate1, String toDate1) {
@@ -15283,5 +15295,230 @@ public class clsPOSReportService {
 			ex.printStackTrace();
 		}
 	}
+	
+	
+	
+	
+	public Map funViewButtonPressed(String code,String transactionType,String kotFor,String posCode,String clientCode,String posName,String webStockUserCode,String POSDate,String PrintVatNoPOS,String vatNo,String printServiceTaxNo,String serviceTaxNo)
+	{
+	 List list = null;
+	 String TableNo =null;
+	 Map jObjRet=new HashMap<>();
+     List jArr =new ArrayList<>();
+     Map hmData=new HashMap<>();
+ 	 StringBuilder sql = new StringBuilder(); 
+     Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gPrintType");
+	 if (transactionType.equalsIgnoreCase("KOT"))
+     {
+         if (kotFor.equalsIgnoreCase("Dina"))
+         {
+        	 try
+             {
+        		 sql.append("select strTableNo from tblitemrtemp "
+                         + "where strKOTNo='" + code + "' "
+                         + "group by strKOTNo ");
+                list=objBaseService.funGetList(sql, "sql");
+     			 
+     			 if (list!=null)
+     				{
+     					for(int i=0; i<list.size(); i++)
+     					{
+     						TableNo =(String) list.get(i);
+     					}
+     				}
+ 			    
+ 			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+ 			    {
+ 			    	 hmData=funRemotePrintUsingTextFile(TableNo, code.trim(), "", "Reprint", "Dina", "N",posCode,clientCode,posName,webStockUserCode);
+ 			    	
+                 }
+                 else
+                 {
+                	 hmData=funRemotePrintUsingTextFile(TableNo, code.trim(), "", "Reprint", "Dina", "N",posCode,clientCode,posName,webStockUserCode);
+                	
+                 }
+ 			  
+             }
+        	 catch (Exception e)
+             {
+                 e.printStackTrace();
+             }
+        	 code = "";
+         }
+         else if (kotFor.equalsIgnoreCase("DirectBiller"))
+         {
+ 			    
+ 			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+				 {
+				 }
+				 else
+				 {
+					 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
+				 }
+        	    code = "";
+            }
+         } 
+         else if (transactionType.equalsIgnoreCase("Bill"))
+         {
+                 if (objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+				 {
+				    // funTextFilePreviewBill(docNo);
+				 }
+				 else
+				 {
+					 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
+				 }
+        	 code = "";
+         }
+         else 
+         {
+             String gDayEndReportForm = "ReprintDayEndReport";
+             try
+             {
+
+                 if (objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+                 {
+                	// jObj1 = objUtilityFunctions.funGenerateTextDayEndReportPreview(code, POSDate, "reprint");
+                 }
+                 else
+                 {
+                	 hmData = objUtilityController.funGenerateTextDayEndReportPreview(posCode, code, "reprint",clientCode,gDayEndReportForm,webStockUserCode);
+                 }
+             }
+             catch (Exception e)
+             {
+                 e.printStackTrace();
+             }
+         }
+         
+   
+	return hmData;
+	 
+}	
+	
+	
+	
+
+	public Map funRemotePrintUsingTextFile(String tableNo, String KOTNo, String billNo, String reprint, String type, String printYN,String POSCode,String clientCode,String posName,String webStockUserCode)
+	{
+		Map hmData=new HashMap<>();
+		StringBuilder sql = new StringBuilder(); 
+	    try
+	    {
+	        String p2="",p3="",p4="",p5="",p6="",p7="";
+	        String c2="",c3="",c4="",c5="",c6="";
+	        switch (type)
+	        {
+	            case "Dina":
+
+	                String areaCodeForAll = "";
+	                sql.append("select strAreaCode from tblareamaster where strAreaName='All'");
+	                List rsAreaCode=objBaseService.funGetList(sql, "sql");
+	               
+	       		 if (rsAreaCode!=null)
+					{
+						for(int i=0; i<rsAreaCode.size(); i++)
+						{
+	                
+	                    areaCodeForAll =(String) rsAreaCode.get(i);
+	                }
+					}
+	       		   sql.setLength(0);
+	       		   sql.append("select a.strItemName,a.strNCKotYN,d.strCostCenterCode,d.strPrimaryPrinterPort,d.strSecondaryPrinterPort,d.strCostCenterName "
+	                        + " ,ifnull(e.strLabelOnKOT,'KOT') strLabelOnKOT "
+	                        + " from tblitemrtemp a "
+	                        + " left outer join tblmenuitempricingdtl c on a.strItemCode = c.strItemCode "
+	                        + " left outer join tblprintersetup d on c.strCostCenterCode=d.strCostCenterCode "
+	                        + " left outer join tblcostcentermaster e on c.strCostCenterCode=e.strCostCenterCode  "
+	                        + " where a.strKOTNo='"+KOTNo+"' and a.strTableNo='"+tableNo+"' and (c.strPosCode='"+POSCode+"' or c.strPosCode='All') "
+	                        + " and (c.strAreaCode IN (SELECT strAreaCode FROM tbltablemaster where strTableNo='"+tableNo+"' ) "
+	                        + " OR c.strAreaCode ='"+areaCodeForAll+"') "
+	                        + " group by d.strCostCenterCode");
+	              List list1 =objBaseService.funGetList(sql, "sql");
+	              if (list1!=null)
+						{
+	            	  for(int i=0; i<list1.size(); i++)
+						{
+	            		    Object[] obj = (Object[]) list1.get(i);
+							p3 = (String) Array.get(obj, 2);
+		            	  	p2 = (String) Array.get(obj, 1);
+		            	  	p4 = (String) Array.get(obj, 3);
+		            	  	p5 = (String) Array.get(obj, 4);
+		            	  	p6 = (String) Array.get(obj, 5);
+		            	  	p7 = (String) Array.get(obj, 6);
+						}	
+					 	
+	            	  	
+	            	  
+	            	  	Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintType");
+	     			    
+	     			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Jasper"))
+	                     {
+	     			    	
+	     			    //	jObj1=funGenerateJasperForTableWiseKOT("Dina", tableNo, p3, "", areaCodeForAll, KOTNo, reprint, p4, p5, p6, printYN, p2, p7,posName,POSCode,clientCode,webStockUserCode);
+	     			    	//jArr.put(jObj1);
+	                     }
+	                    else
+	                    {
+	                        //funGenerateTextFileForTableWiseKOT(tableNo,p3, areaCodeForAll, KOTNo, reprint, p4, p5, p6, printYN, p2, p7,posName,POSCode,clientCode,webStockUserCode);
+	                    }
+	     			    
+	                }
+	              // jObjRet.put("DinajArr", jArr);
+	                break;
+
+	            case "DirectBiller":
+
+	            	 sql.setLength(0);
+	            	 sql.append("select a.strItemName,c.strCostCenterCode,c.strPrimaryPrinterPort "
+	                        + ",c.strSecondaryPrinterPort,c.strCostCenterName,d.strLabelOnKOT "
+	                        + " from tblbilldtl  a,tblmenuitempricingdtl b,tblprintersetup c,tblcostcentermaster d   "
+	                        + " where a.strBillNo='"+billNo+"' "
+	                        + " and  a.strItemCode=b.strItemCode "
+	                        + " and b.strCostCenterCode=c.strCostCenterCode "
+	                        + " and b.strCostCenterCode=d.strCostCenterCode "
+	                        + " and (b.strPosCode='"+POSCode+"' or b.strPosCode='All') "
+	                        + " group by c.strCostCenterCode;");
+	              List rsPrintDirect = objBaseService.funGetList(sql, "sql");
+	              if (rsPrintDirect!=null)
+						{
+	            	  for(int i=0; i<rsPrintDirect.size(); i++)
+							{
+	          		            Object[] obj = (Object[]) rsPrintDirect.get(i);
+						
+			            		 c2 = (String) Array.get(obj,2);
+			            	  	 c3 = (String) Array.get(obj,3);
+			            	  	 c4 = (String) Array.get(obj,4);
+			            	  	 c5 = (String) Array.get(obj,5);
+			            	  	 c6 = (String) Array.get(obj,6);
+							} 	
+	            	  	Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gDirectAreaCode");
+	     			    
+	     			   String directAreaCode = objSetupParameter.get("gDirectAreaCode").toString();
+	                   objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintType");
+	     			    
+	     			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Jasper"))
+	                    {
+	     			    	
+	                    }
+	                    else
+	                    {
+	                        //funGenerateTextFileForKOTDirectBiller(c2, directAreaCode, billNo, reprint, c3, c4, c5, c6,posName,POSCode,clientCode,webStockUserCode);
+	                    }
+	                }
+	                
+	                break;
+	        }
+	    }
+	        catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+	    return hmData;
+	}
+
+
+	
+	
 
 }

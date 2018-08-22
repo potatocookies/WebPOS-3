@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +25,6 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -36,9 +35,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sanguine.controller.clsGlobalFunctions;
-import com.sanguine.webpos.bean.clsPOSBillDtl;
 import com.sanguine.webpos.bean.clsPOSAssignHomeDeliveryBean;
+import com.sanguine.webpos.bean.clsPOSBillDtl;
 import com.sanguine.webpos.bean.clsPOSReprintDocumentsBean;
+import com.sanguine.webpos.model.clsPOSMasterModel;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
+import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.sevice.clsPOSTransactionService;
 
 @Controller
 public class clsPOSReprintController 
@@ -48,13 +51,19 @@ public class clsPOSReprintController
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
 	@Autowired
-	 private ServletContext servletContext;
+	private ServletContext servletContext;
+	@Autowired
+	clsPOSMasterService objMasterService;
+	@Autowired
+	clsPOSTransactionService objTransService;
+	
+	@Autowired
+	clsPOSReportService objReportService;
 	
 	
-	Map map=new HashMap();
-	JSONObject josnObjRet;
+	Map mapPOSName=new HashMap();
 	@RequestMapping(value = "/frmPOSReprint", method = RequestMethod.GET)
-	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSAssignHomeDeliveryBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request)
+	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSAssignHomeDeliveryBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request)throws Exception
 	{
 		String urlHits="1";
 		try{
@@ -63,38 +72,26 @@ public class clsPOSReprintController
 			urlHits="1";
 		}
 		model.put("urlHits",urlHits);
-		
-		
-		
-		String clientCode=request.getSession().getAttribute("gClientCode").toString();
-		
-		List posList= new ArrayList();
-//		posList.add("ALL");
-		
-		JSONArray jArrList=new JSONArray();
-			 jArrList =objPOSGlobal.funGetAllPOSForMaster(clientCode);
-			for(int i =0 ;i<jArrList.size();i++)
-			{
-				JSONObject josnObjRet = (JSONObject) jArrList.get(i);
-				posList.add(josnObjRet.get("strPosName"));
-				map.put(josnObjRet.get("strPosCode"), josnObjRet.get("strPosName"));
-			}
 			
-		model.put("posList",posList);
-		
+		String clientCode=request.getSession().getAttribute("gClientCode").toString();
 		String posCode=request.getSession().getAttribute("loginPOS").toString();
 		
+		List posList= new ArrayList();
 		String strPOSName="";
-		
-		if(map.containsKey(posCode))
+		List list=objMasterService.funFillPOSCombo(clientCode);
+		mapPOSName.put("All", "All");
+		for(int cnt=0;cnt<list.size();cnt++)
 		{
-			strPOSName=(String) map.get(posCode);
+			Object obj=list.get(cnt);
+			posList.add(Array.get(obj, 1).toString());
+			mapPOSName.put(Array.get(obj, 1).toString(),Array.get(obj, 0).toString());
+			if(posCode.equals(Array.get(obj, 0).toString()))
+			{
+				strPOSName=Array.get(obj, 1).toString();
+			}
 		}
+		model.put("posList",posList);
 		request.setAttribute("posName", strPOSName);
-//		List list =loadFunExecute(request);
-//		
-//		model.put("tblheader",list.get(0));
-//		model.put("details",list.get(1));
 		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSReprint_1");
@@ -106,53 +103,27 @@ public class clsPOSReprintController
 }
 	
 	@RequestMapping(value = "/loadFunExecute", method = RequestMethod.GET)
-	public @ResponseBody JSONObject loadFunExecute(HttpServletRequest req)
+	public @ResponseBody Map loadFunExecute(HttpServletRequest req)
 	{
 		List listmain =new ArrayList();
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
-		String posCode=req.getSession().getAttribute("loginPOS").toString();
+		String posCode="";
+		if(mapPOSName.containsKey(req.getParameter("posName")))
+		{
+			posCode=(String) mapPOSName.get(req.getParameter("posName"));
+		}
 		String operationType=req.getParameter("operationType");
 		String kotFor=req.getParameter("kotFor");
-		
-		JSONArray jArrAllTableList=null;
+	
 		List<clsPOSReprintDocumentsBean> listReprintDocsData=new ArrayList<clsPOSReprintDocumentsBean>();
-	
-		JSONObject jObjAllTableData=new JSONObject();
-		
-		JSONArray  jArrForDina=null;
-		JSONArray  jArrForDirectBiller=null;
-		JSONArray  jArrForBill=null;
-		
-		String posUrl = "http://localhost:8080/prjSanguineWebService/WebPOSTransactions/funExecute"
-			+ "?posCode="+posCode+"&oprType="+operationType+"&kotFor="+kotFor;
-	
-			jObjAllTableData =objGlobal.funGETMethodUrlJosnObjectData(posUrl);
-			
-			 String  strOperation=(String) jObjAllTableData.get("strOperation");
-
-		        if(strOperation.equals("Dina"))
-		        {
-		        	 jArrForDina=(JSONArray) jObjAllTableData.get("TblData");
-
-		        }
-		        else if(strOperation.equals("DirectBiller"))
-		        {
-
-		        	jArrForDina=(JSONArray) jObjAllTableData.get("TblData");
-		        }
-		        else
-		        {
-
-		        	jArrForDina=(JSONArray) jObjAllTableData.get("TblData");
-			      }
-		      
-		        
-		        JSONObject jObjTblDataDtl=new JSONObject();
-			       
-		        jObjTblDataDtl.put("AllTblData",jArrForDina);
-		        jObjTblDataDtl.put("strOpr",strOperation);
-		       
-	 			return jObjTblDataDtl;
+   
+        Map mapReprintDtl=new HashMap();
+        Map<String,List<clsPOSBillDtl>> hmReprintDtl=objTransService.funExecute(posCode, operationType, kotFor);
+        List<clsPOSBillDtl> listPreprintDtl=hmReprintDtl.get("strOperation");
+        mapReprintDtl.put("AllTblData",listPreprintDtl);
+        mapReprintDtl.put("strOpr",kotFor);
+              
+	 	return mapReprintDtl;
 				
 		
 	}
@@ -176,7 +147,7 @@ public class clsPOSReprintController
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/frmViewData", method = RequestMethod.GET)	
-	public void funOpenFormViewData(@ModelAttribute("command") clsPOSReprintDocumentsBean objBean, HttpServletResponse resp,HttpServletRequest request)
+	public void funOpenFormViewData(@ModelAttribute("command") clsPOSReprintDocumentsBean objBean, HttpServletResponse resp,HttpServletRequest request) throws Exception
 	{
 		
 		String clientCode=request.getSession().getAttribute("gClientCode").toString();
@@ -187,112 +158,58 @@ public class clsPOSReprintController
 		String posName=null;
 		String webStockUserCode=request.getSession().getAttribute("gUserCode").toString();
 		String strDocType="PDF";
-		String companyName=request.getSession().getAttribute("companyName").toString();
+		String companyName=request.getSession().getAttribute("gCompanyName").toString();
 		
-		String posUrL ="http://localhost:8080/prjSanguineWebService/APOSIntegration/funGetPOSDate"
-				+ "?POSCode="+posCode;
-		JSONObject jObjPosDate=objGlobal.funGETMethodUrlJosnObjectData(posUrL);
-	
-	    String posDate=(String)jObjPosDate.get("POSDate");
-	    String[] output = posDate.split(" ");
-   	 String POSDate=output[0];
+		String posDate= request.getSession().getAttribute("gPOSDate").toString();
+		String PrintVatNoPOS="",vatNo="",printServiceTaxNo="",serviceTaxNo="";
+
+	    /*List listPrintVatNo=objMasterService.funGetPrintVatNoPOS(posCode);
+	   
+	     for(int cnt=0;cnt<listPrintVatNo.size();cnt++)
+		  {
+	    	 PrintVatNoPOS=listPrintVatNo.get(cnt).toString();
+		  }   
+		 
+		 List listVatNo=objMasterService.funGetVatNoPOS(posCode);
+	     for(int cnt=0;cnt<listVatNo.size();cnt++)
+		  {
+	    	 vatNo=listVatNo.get(cnt).toString();
+		  }
+		 	
+	    
+		 List listServiceTaxNo=objMasterService.funPrintServiceTaxNo(posCode);
+	     for(int cnt=0;cnt<listServiceTaxNo.size();cnt++)
+		  {
+	    	 printServiceTaxNo=listServiceTaxNo.get(cnt).toString();
+		  }
+		 
+		 List listServiceTax=objMasterService.funGetServiceTaxNo(posCode);
+	     for(int cnt=0;cnt<listServiceTax.size();cnt++)
+		  {
+	    	 serviceTaxNo=listServiceTax.get(cnt).toString();
+		  }
+	     */
+
 		
-	//============================ this function for pringVatNoPOS ==========================//
-   	 	JSONObject jObjPrintVatNoPOS=new JSONObject();
-		String posUrl = "http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funPrintVatNoPOS"
-			+ "?posCode="+posCode;
-	
-		jObjPrintVatNoPOS =objGlobal.funGETMethodUrlJosnObjectData(posUrl);
-		 String PrintVatNoPOS=(String)jObjPrintVatNoPOS.get("printVatNo");	
-		 
-		 JSONObject jObjVatNoPos=new JSONObject();
-   		 posUrl = "http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funVatNoPOS"
-				+ "?posCode="+posCode;
-		jObjVatNoPos =objGlobal.funGETMethodUrlJosnObjectData(posUrl);	
-		 String vatNo=(String)jObjVatNoPos.get("vatNo");
-		 
-		 JSONObject jObjPintServiceTaxNoPos=new JSONObject();
-   		 posUrl = "http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funPrintServiceTaxNo"
-				+ "?posCode="+posCode;
-   		jObjPintServiceTaxNoPos =objGlobal.funGETMethodUrlJosnObjectData(posUrl);
-		 String printServiceTaxNo=(String)jObjPintServiceTaxNoPos.get("printServiceTaxNo");
-		 
-		 JSONObject jObjServiceTaxNoPos=new JSONObject();
-   		 posUrl = "http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funServiceTaxNoPOS"
-				+ "?posCode="+posCode;
-   		jObjServiceTaxNoPos =objGlobal.funGETMethodUrlJosnObjectData(posUrl);
-		 String serviceTaxNo=(String)jObjServiceTaxNoPos.get("serviceTaxNo");
-				
-			
-   	 
-		JSONArray jArryPosList=new JSONArray();
-	JSONArray jArrList=new JSONArray();
-		 jArrList =objPOSGlobal.funGetPOSName(posCode);
-		if(null!=jArrList)
-		{
-			for(int i =0 ;i<jArrList.size();i++)
-			{
-				JSONObject josnObjRet = (JSONObject) jArrList.get(i);
-			
-				posName=(String) josnObjRet.get("strPosName");
-			}
-		}
+		clsPOSMasterModel objModel=objMasterService.funSelectedPOSMasterData(posCode, clientCode);
+		posName=objModel.getStrPosName();
 		
 		List<List<clsPOSBillDtl>> listData = new ArrayList<>();
 		
 		try
 		{
 			
-//		String urlHits="1";
-//		try{
-//			urlHits=request.getParameter("saddr").toString();
-//		}catch(NullPointerException e){
-//			urlHits="1";
-//		}
-//		model.put("urlHits",urlHits);
-////		JSONArray jArryPosList=new JSONArray();
-//		JSONArray jArrList=new JSONArray();
-//		 jArrList =objPOSGlobal.funGetPOSName(posCode);
-//		for(int i =0 ;i<jArrList.size();i++)
-//		{
-//			JSONObject josnObjRet = (JSONObject) jArrList.get(i);
-//			
-//			posName=(String) josnObjRet.get("strPosName");
-//		}
-//		JSONObject jObjData=new JSONObject();
-//		
-//		 String posUrl = "http://localhost:8080/prjSanguineWebService/WebPOSTransactions/funViewButtonPressed"
-//				 + "?code="+code+"&transactionType="+transactionType+"&kotFor="+kotFor+"&posCode="+posCode+"&clientCode="+clientCode+"&posName="+posName+"&webStockUserCode="+webStockUserCode;
-//			jObjData =objGlobal.funGETMethodUrlJosnObjectData(posUrl);
-//		
-		JSONObject jObjFillter = new JSONObject();
-		jObjFillter.put("clientCode", clientCode);
-		jObjFillter.put("loginPOS", posCode);
-		jObjFillter.put("kotFor", kotFor);
-		jObjFillter.put("code", code);
-		jObjFillter.put("transactionType", transactionType);
-		jObjFillter.put("strPosName", posName);
-		jObjFillter.put("usercode", webStockUserCode);
-		jObjFillter.put("POSDate", POSDate);
-		jObjFillter.put("PrintVatNoPOS", PrintVatNoPOS);
-		jObjFillter.put("vatNo", vatNo);
-		jObjFillter.put("printServiceTaxNo", printServiceTaxNo);
-		jObjFillter.put("serviceTaxNo", serviceTaxNo);
-//		
-//		String posUrL ="http://localhost:8080/prjSanguineWebService/APOSIntegration/funGetPOSDate"
-//				+ "?POSCode="+posCode;
-//		JSONObject jObjForDate=objGlobal.funGETMethodUrlJosnObjectData(posUrL);
-//	
-//	    String posDate=(String)jObjForDate.get("POSDate");
-//	    jObjFillter.put("POSDate", posDate);
-//		
 		String KOT="",kotType="",dublicate="",POS="",hostName="",costCenter="",PAX="",DATE_TIME="",KOTorNC="",tableNo="",waiterName="";
-		
-			JSONObject jObj = objGlobal.funPOSTMethodUrlJosnObjectData("http://localhost:8080/prjSanguineWebService/WebPOSReprintDocuments/funViewButtonPressedReport",jObjFillter);
+			
+			
+		    Map mapViewData=objReportService.funViewButtonPressed(code,transactionType,kotFor,posCode,
+					clientCode, posName,webStockUserCode,posDate,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
+			
+
 			List<clsPOSBillDtl> list =new ArrayList<>();
-			JSONArray jarr = new JSONArray();
-			JSONArray jarr1 = new JSONArray();
-			JSONArray jArrBillDtl = new JSONArray();
+			List listMain=new ArrayList<>();
+			List listMain1=new ArrayList<>();
+			List listBillDtl=new ArrayList<>();
 			String format="";
 			String noOfLines ="", imagePath="";
 			 HashMap hm = new HashMap();
@@ -303,46 +220,39 @@ public class clsPOSReprintController
 			{
 				reportName= servletContext.getRealPath("/WEB-INF/reports/webpos/rptGenrateKOTJasperReport.jrxml");
 				 imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-				 jarr = (JSONArray) jObj.get("jArr");
-				 jarr1 = (JSONArray) jObj.get("listOfItemDtl");
-				 noOfLines =  (String) jObj.get("gNoOfLinesInKOTPrint"); 
+				 listMain=(List) mapViewData.get("jArr");
+				 noOfLines =  (String) mapViewData.get("gNoOfLinesInKOTPrint"); 
 				 
-					if(null!=jarr)
+					if(null!=listMain)
 					{	
-						for(int i=0;i<jarr.size();i++)
+						for(int i=0;i<listMain.size();i++)
 						{
-							JSONObject jObjtemp =(JSONObject) jarr.get(i);
-							KOTorNC = jObjtemp.get("KOTorNC").toString();
-							tableNo = jObjtemp.get("tableNo").toString();
-							KOT=jObjtemp.get("KOT").toString();
-							 kotType=jObjtemp.get("KOTType").toString();
-							 dublicate=jObjtemp.get("dublicate").toString();
-							 POS=jObjtemp.get("POS").toString();
-							 hostName=jObjtemp.get("KOTFrom").toString(); 
-							 waiterName=jObjtemp.get("waiterName").toString();
-							 costCenter=jObjtemp.get("costCenter").toString();
-							 PAX=jObjtemp.get("PAX").toString();
-							 DATE_TIME=jObjtemp.get("DATE_TIME").toString();
+							//JSONObject jObjtemp =(JSONObject) jarr.get(i);
+							Map mapTemp=(Map) listMain.get(i);
+							KOTorNC = mapTemp.get("KOTorNC").toString();
+							tableNo = mapTemp.get("tableNo").toString();
+							KOT=mapTemp.get("KOT").toString();
+							 kotType=mapTemp.get("KOTType").toString();
+							 dublicate=mapTemp.get("dublicate").toString();
+							 POS=mapTemp.get("POS").toString();
+							 hostName=mapTemp.get("KOTFrom").toString(); 
+							 waiterName=mapTemp.get("waiterName").toString();
+							 costCenter=mapTemp.get("costCenter").toString();
+							 PAX=mapTemp.get("PAX").toString();
+							 DATE_TIME=mapTemp.get("DATE_TIME").toString();
 						} 
 					}	
-					if(null!=jarr1)
+					if(null!=listMain1)
 					{
-						for(int i=0;i<jarr1.size();i++)
+						for(int i=0;i<listMain1.size();i++)
 						{
-							 JSONObject jObjtemp1 =(JSONObject) jarr1.get(i);
+							Map mapTemp1 =(Map) listMain1.get(i);
 							
-							clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+							clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 							
-							objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("itemQty").toString()));
-							objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-							
-//							objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp.get("dblAmount").toString()));
-//							objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp.get("dblQuantity").toString()));
-//							objClsBillDtl.setDblSubTotal(Double.parseDouble(jObjtemp.get("dblAmtLessDis").toString()));
-//							objClsBillDtl.setDblDisAmt(Double.parseDouble(jObjtemp.get("dblDiscountAmt").toString()));
-							
-							
-							list.add(objClsBillDtl);
+							objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("itemQty").toString()));
+							objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+							list.add(objclsPOSBillDtl);
 						}
 					 }
 						for (int cntLines = 0; cntLines < Integer.parseInt(noOfLines); cntLines++)
@@ -376,21 +286,20 @@ public class clsPOSReprintController
 			else if(kotFor.equalsIgnoreCase("DirectBiller"))
 			{
 				
-
-				 format =  (String) jObj.get("format"); 
-				boolean flag_DirectBillerBlill =  (boolean) jObj.get("flag_DirectBillerBlill"); 
-				if(format.equalsIgnoreCase("Jasper1"))
-				{
-				 jarr1 = (JSONArray) jObj.get("listOfBillDetail");
-				long result =  (long) jObj.get("result"); 
-				long lengthListOfHomeDeliveryDtl =  (long) jObj.get("lengthListOfHomeDeliveryDtl"); 
+				format =  (String) mapViewData.get("format"); 
+				boolean flag_DirectBillerBlill =  (boolean) mapViewData.get("flag_DirectBillerBlill"); 
+			   if(format.equalsIgnoreCase("Jasper1"))
+			   {
+				listMain1 = (List) mapViewData.get("listOfBillDetail");
+				long result =  (long) mapViewData.get("result"); 
+				long lengthListOfHomeDeliveryDtl =  (long) mapViewData.get("lengthListOfHomeDeliveryDtl"); 
 				
 				String posWiseHeading="",duplicate="",BillType="",ClientName="",ClientAddress1="",ClientAddress2="",ClientAddress3="",ClientCity="",TEL_NO="";
 				String EMAIL_ID="",TAX_INVOICE="",BillNo="",Totl="",name="",address="",mobile_no="",footer="";
 				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
 				
 				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				jarr = (JSONArray) jObj.get("jArr");
+				listMain = (List) mapViewData.get("jArr");
 				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
 				List<clsPOSBillDtl> listOfHomeDeliveryDtl =new ArrayList<>();
 				List<clsPOSBillDtl> listOfServiceVatDetail =new ArrayList<>();
@@ -399,161 +308,158 @@ public class clsPOSReprintController
 				List<clsPOSBillDtl> listOfDiscountDtl = new ArrayList<>();
 				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
 				
-				if(null!=jarr)
+				if(null!=listMain)
 				{	
-					for(int i=0;i<jarr.size();i++)
+					for(int i=0;i<listMain.size();i++)
 					{
-						JSONObject jObjtemp =(JSONObject) jarr.get(i);
+						Map mapTemp =(Map) listMain.get(i);
 						
-						JSONArray jarrTotal = (JSONArray) jObjtemp.get("listOfGrandTotalDtl");
+						List mapTotal = (List) mapTemp.get("listOfGrandTotalDtl");
 						
-						if(null!=jarrTotal)
+						if(null!=mapTotal)
 						{	
-							for(i=0;i<jarrTotal.size();i++)
+							for(i=0;i<mapTotal.size();i++)
 							{
-								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjTot= (JSONObject) jarrTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(jObjTot.get("grandTotal").toString())); 
+								objBillDtl = new clsPOSBillDtl();
+								Map mapTot= (Map) mapTotal.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapTot.get("grandTotal").toString())); 
+								listOfGrandTotal.add(objBillDtl);
+							}
+						}	
+						
+						List listSettle = (List) mapTemp.get("listOfSettlementDetail");
+						
+						if(null!=listSettle)
+						{	
+							for(i=0;i<listSettle.size();i++)
+							{
+								objBillDtl = new clsPOSBillDtl();
+								Map mapSettle= (Map) listSettle.get(i);
+								objBillDtl.setStrItemName(mapSettle.get("settleDesc").toString()); 
+								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("settleAmt").toString()));
+								listOfSettlementDetail.add(objBillDtl);
 								
-								 listOfGrandTotal.add(objBillDtl);
+								objBillDtl = new clsPOSBillDtl();
+								objBillDtl.setStrItemName(mapSettle.get("PaidAmtTxt").toString()); 
+								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("paidAmt").toString())); 
+								listOfSettlementDetail.add(objBillDtl);
 								
 							}
 						}	
 						
-						JSONArray jarrSettle = (JSONArray) jObjtemp.get("listOfSettlementDetail");
+						List listHomeDel = (List) mapTemp.get("listOfHomeDeliveryDtl");
 						
-						if(null!=jarrSettle)
+						if(null!=listHomeDel)
 						{	
-							for(i=0;i<jarrSettle.size();i++)
+							for(i=0;i<listHomeDel.size();i++)
 							{
-								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjSettle= (JSONObject) jarrSettle.get(i);
-								objBillDtl.setStrItemName(jObjSettle.get("settleDesc").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(jObjSettle.get("settleAmt").toString()));
-								listOfSettlementDetail.add(objBillDtl);
-								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName(jObjSettle.get("PaidAmtTxt").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(jObjSettle.get("paidAmt").toString())); 
-								listOfSettlementDetail.add(objBillDtl);
-								
-							}
-						}	
-						
-						JSONArray jarrHomeDel = (JSONArray) jObjtemp.get("listOfHomeDeliveryDtl");
-						
-						if(null!=jarrHomeDel)
-						{	
-							for(i=0;i<jarrHomeDel.size();i++)
-							{
-								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjHomeDel= (JSONObject) jarrHomeDel.get(i);
-								objBillDtl.setStrItemName("Name         : "+jObjHomeDel.get("Name         : ").toString());
+								Map mapHomeDel= (Map) listHomeDel.get(i);
+								objBillDtl.setStrItemName("Name         : "+mapHomeDel.get("Name         : ").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address      : "+jObjHomeDel.get("Address      : ").toString());
+								objBillDtl.setStrItemName("Address      : "+mapHomeDel.get("Address      : ").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("MOBILE_NO  :"+jObjHomeDel.get("MOBILE_NO  :").toString());
-								 listOfHomeDeliveryDtl.add(objBillDtl);
+								objBillDtl.setStrItemName("MOBILE_NO  :"+mapHomeDel.get("MOBILE_NO  :").toString());
+								listOfHomeDeliveryDtl.add(objBillDtl);
 								 
 							}
 						}
 						
-						JSONArray jarrServiceTaxDtl = (JSONArray) jObjtemp.get("listOfServiceVatDetail");
+						List listServiceTaxDtl = (List) mapTemp.get("listOfServiceVatDetail");
 						
-						if(null!=jarrServiceTaxDtl)
+						if(null!=listServiceTaxDtl)
 						{	
-							for(i=0;i<jarrServiceTaxDtl.size();i++)
+							for(i=0;i<listServiceTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjServieTaxDtl= (JSONObject) jarrServiceTaxDtl.get(i);
-								 objBillDtl.setStrItemName("Service Tax No.    :"+jObjServieTaxDtl.get("Service Tax No.:").toString());	
-								 listOfServiceVatDetail.add(objBillDtl);
+								Map jObjServieTaxDtl= (Map) listServiceTaxDtl.get(i);
+								objBillDtl.setStrItemName("Service Tax No.    :"+jObjServieTaxDtl.get("Service Tax No.:").toString());	
+								listOfServiceVatDetail.add(objBillDtl);
 							}
 						}
 						
-						JSONArray jarrFooterDtl = (JSONArray) jObjtemp.get("listOfFooterDtl");
+						List listFooterDtl = (List) mapTemp.get("listOfFooterDtl");
 						
-						if(null!=jarrFooterDtl)
+						if(null!=listFooterDtl)
 						{	
-							for(i=0;i<jarrFooterDtl.size();i++)
+							for(i=0;i<listFooterDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjFooterDtl= (JSONObject) jarrFooterDtl.get(i);
-								objBillDtl.setStrItemName(jObjFooterDtl.get("Thank").toString());	
-								 listOfFooterDtl.add(objBillDtl);
+								Map mapFooterDtl= (Map) listFooterDtl.get(i);
+								objBillDtl.setStrItemName(mapFooterDtl.get("Thank").toString());	
+								listOfFooterDtl.add(objBillDtl);
 							}
 						}
-						JSONArray jarrTaxDtl = (JSONArray) jObjtemp.get("listOfTaxDtl");
+						List listTaxDtl = (List) mapTemp.get("listOfTaxDtl");
 						
-						if(null!=jarrTaxDtl)
+						if(null!=listTaxDtl)
 						{	
-							for(i=0;i<jarrTaxDtl.size();i++)
+							for(i=0;i<listTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjTax= (JSONObject) jarrTaxDtl.get(i);
-								 objBillDtl=new clsPOSBillDtl();
+								Map mapTax= (Map) listTaxDtl.get(i);
+								objBillDtl=new clsPOSBillDtl();
 								
-								 objBillDtl.setDblAmount(Double.parseDouble(jObjTax.get("taxAmount").toString()));
-								 objBillDtl.setStrItemName(jObjTax.get("taxDesc").toString());
+								 objBillDtl.setDblAmount(Double.parseDouble(mapTax.get("taxAmount").toString()));
+								 objBillDtl.setStrItemName(mapTax.get("taxDesc").toString());
 								
 								 listOfTaxDtl.add(objBillDtl);
 							}
 						}	
 						
-						JSONArray jarrDiscountDtl= (JSONArray) jObjtemp.get("listOfDiscountDtl");
+						List listDiscountDtl= (List) mapTemp.get("listOfDiscountDtl");
 						
-						if(null!=jarrDiscountDtl)
+						if(null!=listDiscountDtl)
 						{	
-							for(i=0;i<jarrDiscountDtl.size();i++)
+							for(i=0;i<listDiscountDtl.size();i++)
 							{
-								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjDiscount= (JSONObject) jarrDiscountDtl.get(i);
-								objBillDtl.setStrItemName(jObjDiscount.get("Discount").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("discText").toString());
-								objBillDtl.setDblAmount(Double.parseDouble(jObjDiscount.get("discAmt").toString()));
-								objBillDtl.setStrItemName(jObjDiscount.get("Reason").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("Remark").toString());
+							    objBillDtl = new clsPOSBillDtl();
+								Map mapDiscount= (Map) listDiscountDtl.get(i);
+								objBillDtl.setStrItemName(mapDiscount.get("Discount").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("discText").toString());
+								objBillDtl.setDblAmount(Double.parseDouble(mapDiscount.get("discAmt").toString()));
+								objBillDtl.setStrItemName(mapDiscount.get("Reason").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("Remark").toString());
 								listOfDiscountDtl.add(objBillDtl);
 								
 							}
 						}	
 						
 						
-						posWiseHeading = jObjtemp.get("posWiseHeading").toString();
-						duplicate = jObjtemp.get("duplicate").toString();
-						posName = jObjtemp.get("POS").toString();
-						BillType=jObjtemp.get("BillType").toString();
-						ClientName=jObjtemp.get("ClientName").toString();
-						ClientAddress1=jObjtemp.get("ClientAddress1").toString();
-						ClientAddress2=jObjtemp.get("ClientAddress2").toString();
-						ClientAddress3=jObjtemp.get("ClientAddress3").toString(); 
-						ClientCity=jObjtemp.get("ClientCity").toString();
-						TEL_NO=jObjtemp.get("TEL NO").toString();
-						EMAIL_ID=jObjtemp.get("EMAIL ID").toString();
-						TAX_INVOICE=jObjtemp.get("TAX_INVOICE").toString();
-						DATE_TIME = jObjtemp.get("DATE_TIME").toString();
-						BillNo = jObjtemp.get("BillNo").toString();
+						posWiseHeading = mapTemp.get("posWiseHeading").toString();
+						duplicate = mapTemp.get("duplicate").toString();
+						posName = mapTemp.get("POS").toString();
+						BillType=mapTemp.get("BillType").toString();
+						ClientName=mapTemp.get("ClientName").toString();
+						ClientAddress1=mapTemp.get("ClientAddress1").toString();
+						ClientAddress2=mapTemp.get("ClientAddress2").toString();
+						ClientAddress3=mapTemp.get("ClientAddress3").toString(); 
+						ClientCity=mapTemp.get("ClientCity").toString();
+						TEL_NO=mapTemp.get("TEL NO").toString();
+						EMAIL_ID=mapTemp.get("EMAIL ID").toString();
+						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
+						DATE_TIME = mapTemp.get("DATE_TIME").toString();
+						BillNo = mapTemp.get("BillNo").toString();
 						
 					} 
 				}
 				
-				if(null!=jarr1)
+				if(null!=listMain1)
 				{
-					for(int i=0;i<jarr1.size();i++)
+					for(int i=0;i<listMain1.size();i++)
 					{
-						 JSONObject jObjtemp1 =(JSONObject) jarr1.get(i);
+						 Map maptemp1 =(Map) listMain1.get(i);
 						
-						clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
+						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(maptemp1.get("qty").toString()));
+						objclsPOSBillDtl.setStrItemName(maptemp1.get("itemName").toString());
+						objclsPOSBillDtl.setDblAmount(Double.parseDouble(maptemp1.get("amount").toString()));
 						
-						objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("qty").toString()));
-						objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-						objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("amount").toString()));
-						
-						list.add(objClsBillDtl);
+						list.add(objclsPOSBillDtl);
 					}
 				 }
 				
@@ -614,12 +520,12 @@ public class clsPOSReprintController
 		}
 			else if(format.equalsIgnoreCase("Jasper2"))	
 			{
-				long result =  (long) jObj.get("result"); 
+				int result =  (int) mapViewData.get("result"); 
 //				long listOfHDSize= (long) jObj.get("listOfHDSize");
 
 				
 				
-				 jarr1 = (JSONArray) jObj.get("listOfBillDetail");
+				listMain1 = (List) mapViewData.get("listOfBillDetail");
 				
 //				long lengthListOfHomeDeliveryDtl =  (long) jObj.get("lengthListOfHomeDeliveryDtl"); 
 				
@@ -628,7 +534,7 @@ public class clsPOSReprintController
 				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
 				
 				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				jarr = (JSONArray) jObj.get("jArr");
+				listMain = (List) mapViewData.get("jArr");
 				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
 				List<clsPOSBillDtl> listOfHomeDeliveryDtl =new ArrayList<>();
 				List<clsPOSBillDtl> listOfServiceVatDetail =new ArrayList<>();
@@ -638,183 +544,181 @@ public class clsPOSReprintController
 				List<clsPOSBillDtl> listOfCustomerDtl = new ArrayList<>();
 				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
 				
-				if(null!=jarr)
+				if(null!=listMain)
 				{	
-					for(int i=0;i<jarr.size();i++)
+					for(int i=0;i<listMain.size();i++)
 					{
-						JSONObject jObjtemp =(JSONObject) jarr.get(i);
+						Map mapTemp =(Map) listMain.get(i);
 						
-						JSONArray jarrTotal = (JSONArray) jObjtemp.get("listOfGrandTotalDtl");
+						List mapTotal = (List) mapTemp.get("listOfGrandTotalDtl");
 						
-						if(null!=jarrTotal)
+						if(null!=mapTotal)
 						{	
-							for(i=0;i<jarrTotal.size();i++)
+							for(i=0;i<mapTotal.size();i++)
 							{
-								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjTot= (JSONObject) jarrTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(jObjTot.get("grandTotal").toString())); 
-								
-								 listOfGrandTotal.add(objBillDtl);
-								
+								objBillDtl = new clsPOSBillDtl();
+								Map mapTot= (Map) mapTotal.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapTot.get("grandTotal").toString())); 
+								listOfGrandTotal.add(objBillDtl);
 							}
 						}	
 						
-						JSONArray jarrHomeDel = (JSONArray) jObjtemp.get("listOfHomeDeliveryDtl");
+						List listHomeDel = (List) mapTemp.get("listOfHomeDeliveryDtl");
 						
-						if(null!=jarrHomeDel)
+						if(null!=listHomeDel)
 						{	
-							for(i=0;i<jarrHomeDel.size();i++)
+							for(i=0;i<listHomeDel.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjHomeDel= (JSONObject) jarrHomeDel.get(i);
-								objBillDtl.setStrItemName("Name         : "+jObjHomeDel.get("NAME").toString());
+								Map mapHomeDel= (Map) listHomeDel.get(i);
+								objBillDtl.setStrItemName("Name         : "+mapHomeDel.get("NAME").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address      : "+jObjHomeDel.get("Address").toString());
+								objBillDtl.setStrItemName("Address      : "+mapHomeDel.get("Address").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("MOBILE_NO  :"+jObjHomeDel.get("MOBILE_NO").toString());
+								objBillDtl.setStrItemName("MOBILE_NO  :"+mapHomeDel.get("MOBILE_NO").toString());
 								 listOfHomeDeliveryDtl.add(objBillDtl);
 								 
 							}
 						}
 						
-						JSONArray jarrServiceTaxDtl = (JSONArray) jObjtemp.get("listOfServiceVatDetail");
+						List listServiceTaxDtl = (List) mapTemp.get("listOfServiceVatDetail");
 						
-						if(null!=jarrServiceTaxDtl)
+						if(null!=listServiceTaxDtl)
 						{	
-							for(i=0;i<jarrServiceTaxDtl.size();i++)
+							for(i=0;i<listServiceTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjServieTaxDtl= (JSONObject) jarrServiceTaxDtl.get(i);
-								 objBillDtl.setStrItemName("Service Tax No.    :"+jObjServieTaxDtl.get("Service Tax No.:").toString());	
+								Map mapServieTaxDtl= (Map) listServiceTaxDtl.get(i);
+								 objBillDtl.setStrItemName("Service Tax No.    :"+mapServieTaxDtl.get("Service Tax No.:").toString());	
 								 listOfServiceVatDetail.add(objBillDtl);
 							}
 						}
 						
-						JSONArray jarrFooterDtl = (JSONArray) jObjtemp.get("listOfFooterDtl");
+						List listFooterDtl = (List) mapTemp.get("listOfFooterDtl");
 						
-						if(null!=jarrFooterDtl)
+						if(null!=listFooterDtl)
 						{	
-							for(i=0;i<jarrFooterDtl.size();i++)
+							for(i=0;i<listFooterDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjFooterDtl= (JSONObject) jarrFooterDtl.get(i);
-								objBillDtl.setStrItemName(jObjFooterDtl.get("Thank").toString());	
+								Map mapFooterDtl= (Map) listFooterDtl.get(i);
+								objBillDtl.setStrItemName(mapFooterDtl.get("Thank").toString());	
 								 listOfFooterDtl.add(objBillDtl);
 							}
 						}
-						JSONArray jarrTaxDtl = (JSONArray) jObjtemp.get("listOfTaxDtl");
+						List listTaxDtl = (List) mapTemp.get("listOfTaxDtl");
 						
-						if(null!=jarrTaxDtl)
+						if(null!=listTaxDtl)
 						{	
-							for(i=0;i<jarrTaxDtl.size();i++)
+							for(i=0;i<listTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjTax= (JSONObject) jarrTaxDtl.get(i);
+								Map mapTax= (Map) listTaxDtl.get(i);
 								 objBillDtl=new clsPOSBillDtl();
 								
-								 objBillDtl.setDblAmount(Double.parseDouble(jObjTax.get("taxAmount").toString()));
-								 objBillDtl.setStrItemName(jObjTax.get("taxDesc").toString());
+								 objBillDtl.setDblAmount(Double.parseDouble(mapTax.get("taxAmount").toString()));
+								 objBillDtl.setStrItemName(mapTax.get("taxDesc").toString());
 								
 								 listOfTaxDtl.add(objBillDtl);
 							}
 						}	
 						
-						JSONArray jarrDiscountDtl= (JSONArray) jObjtemp.get("listOfDiscountDtl");
+						List listDiscountDtl= (List) mapTemp.get("listOfDiscountDtl");
 						
-						if(null!=jarrDiscountDtl)
+						if(null!=listDiscountDtl)
 						{	
-							for(i=0;i<jarrDiscountDtl.size();i++)
+							for(i=0;i<listDiscountDtl.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjDiscount= (JSONObject) jarrDiscountDtl.get(i);
-								objBillDtl.setStrItemName(jObjDiscount.get("Discount").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("discText").toString());
-								objBillDtl.setDblAmount(Double.parseDouble(jObjDiscount.get("discAmt").toString()));
-								objBillDtl.setStrItemName(jObjDiscount.get("Reason").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("Remark").toString());
+								Map mapDiscount= (Map) listDiscountDtl.get(i);
+								objBillDtl.setStrItemName(mapDiscount.get("Discount").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("discText").toString());
+								objBillDtl.setDblAmount(Double.parseDouble(mapDiscount.get("discAmt").toString()));
+								objBillDtl.setStrItemName(mapDiscount.get("Reason").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("Remark").toString());
 								listOfDiscountDtl.add(objBillDtl);
 								
 							}
 						}
-						JSONArray jarrSettle = (JSONArray) jObjtemp.get("listOfSettlementDetail");
+						List listSettle = (List) mapTemp.get("listOfSettlementDetail");
 						
-						if(null!=jarrSettle)
+						if(null!=listSettle)
 						{	
-							for(i=0;i<jarrSettle.size();i++)
+							for(i=0;i<listSettle.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjSettle= (JSONObject) jarrSettle.get(i);
-								objBillDtl.setStrItemName(jObjSettle.get("settleDesc").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(jObjSettle.get("settleAmt").toString()));
+								Map mapSettle= (Map) listSettle.get(i);
+								objBillDtl.setStrItemName(mapSettle.get("settleDesc").toString()); 
+								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("settleAmt").toString()));
 								listOfSettlementDetail.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName(jObjSettle.get("PaidAmtTxt").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(jObjSettle.get("paidAmt").toString())); 
+								objBillDtl.setStrItemName(mapSettle.get("PaidAmtTxt").toString()); 
+								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("paidAmt").toString())); 
 								listOfSettlementDetail.add(objBillDtl);
 								
 							}
 						}	
 						
 						
-						JSONArray jarrCustomerDtl= (JSONArray) jObjtemp.get("listOfCustomerDtl");
+						List listCustomerDtl= (List) mapTemp.get("listOfCustomerDtl");
 						
-						if(null!=jarrCustomerDtl)
+						if(null!=listCustomerDtl)
 						{	
-							for(i=0;i<jarrCustomerDtl.size();i++)
+							for(i=0;i<listCustomerDtl.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjDiscount= (JSONObject) jarrCustomerDtl.get(i);
-								objBillDtl.setStrItemName(jObjDiscount.get("CUSTOMER NAME:").toString());
+								Map mapDiscount= (Map) listCustomerDtl.get(i);
+								objBillDtl.setStrItemName(mapDiscount.get("CUSTOMER NAME:").toString());
 				                listOfCustomerDtl.add(objBillDtl);
 				                objBillDtl = new clsPOSBillDtl();
-				                objBillDtl.setStrItemName(jObjDiscount.get("mobileNo").toString());
+				                objBillDtl.setStrItemName(mapDiscount.get("mobileNo").toString());
 				                listOfCustomerDtl.add(objBillDtl);
 								
 							}
 						}
 						
 						
-						posWiseHeading = jObjtemp.get("posWiseHeading").toString();
-						duplicate = jObjtemp.get("duplicate").toString();
-						posName = jObjtemp.get("POS").toString();
-						BillType=jObjtemp.get("BillType").toString();
-						ClientName=jObjtemp.get("ClientName").toString();
-						ClientAddress1=jObjtemp.get("ClientAddress1").toString();
-						ClientAddress2=jObjtemp.get("ClientAddress2").toString();
-						ClientAddress3=jObjtemp.get("ClientAddress3").toString(); 
-						ClientCity=jObjtemp.get("ClientCity").toString();
-						TEL_NO=jObjtemp.get("TEL NO").toString();
-						EMAIL_ID=jObjtemp.get("EMAIL ID").toString();
-						TAX_INVOICE=jObjtemp.get("TAX_INVOICE").toString();
-						DATE_TIME = jObjtemp.get("DATE_TIME").toString();
-						BillNo = jObjtemp.get("BillNo").toString();
+						posWiseHeading =mapTemp.get("posWiseHeading").toString();
+						duplicate = mapTemp.get("duplicate").toString();
+						posName = mapTemp.get("POS").toString();
+						BillType=mapTemp.get("BillType").toString();
+						ClientName=mapTemp.get("ClientName").toString();
+						ClientAddress1=mapTemp.get("ClientAddress1").toString();
+						ClientAddress2=mapTemp.get("ClientAddress2").toString();
+						ClientAddress3=mapTemp.get("ClientAddress3").toString(); 
+						ClientCity=mapTemp.get("ClientCity").toString();
+						TEL_NO=mapTemp.get("TEL NO").toString();
+						EMAIL_ID=mapTemp.get("EMAIL ID").toString();
+						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
+						DATE_TIME = mapTemp.get("DATE_TIME").toString();
+						BillNo = mapTemp.get("BillNo").toString();
 						if(!flag_DirectBillerBlill)
 						{
-						tableName= jObjtemp.get("tableName").toString();
-						waiterName = jObjtemp.get("waiterName").toString();
+						tableName= mapTemp.get("tableName").toString();
+						waiterName = mapTemp.get("waiterName").toString();
 						}
 					} 
 				}
 				
-				if(null!=jarr1)
+				if(null!=listMain1)
 				{
-					for(int i=0;i<jarr1.size();i++)
+					for(int i=0;i<listMain1.size();i++)
 					{
-						 JSONObject jObjtemp1 =(JSONObject) jarr1.get(i);
+						 Map maptemp1 =(Map) listMain1.get(i);
 						
-						clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 						
-						objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("saleQty").toString()));
-						objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-						objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("dblAmount").toString()));
-						objClsBillDtl.setDblRate(Double.parseDouble(jObjtemp1.get("rate").toString()));
-						objClsBillDtl.setDblDiscountAmt(Double.parseDouble(jObjtemp1.get("discountAmt").toString()));
-						list.add(objClsBillDtl);
+						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(maptemp1.get("saleQty").toString()));
+						objclsPOSBillDtl.setStrItemName(maptemp1.get("itemName").toString());
+						objclsPOSBillDtl.setDblAmount(Double.parseDouble(maptemp1.get("dblAmount").toString()));
+						objclsPOSBillDtl.setDblRate(Double.parseDouble(maptemp1.get("rate").toString()));
+						objclsPOSBillDtl.setDblDiscountAmt(Double.parseDouble(maptemp1.get("discountAmt").toString()));
+						list.add(objclsPOSBillDtl);
 					}
 				 }
 				
@@ -873,12 +777,12 @@ public class clsPOSReprintController
 			}
 			else if(format.equalsIgnoreCase("Jasper3"))	
 			{
-				long result =  (long) jObj.get("result"); 
+				int result =  (int) mapViewData.get("result"); 
 //				long listOfHDSize= (long) jObj.get("listOfHDSize");
 
 				
 				
-				 jarr1 = (JSONArray) jObj.get("listOfFoodBillDetail");
+				listMain1 = (List) mapViewData.get("listOfFoodBillDetail");
 				
 //				long lengthListOfHomeDeliveryDtl =  (long) jObj.get("lengthListOfHomeDeliveryDtl"); 
 				
@@ -887,7 +791,7 @@ public class clsPOSReprintController
 				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
 				
 				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				jarr = (JSONArray) jObj.get("jArr");
+				listMain = (List) mapViewData.get("jArr");
 				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
 				List<clsPOSBillDtl> listOfFoodBillDetail = new ArrayList<>();
 				List<clsPOSBillDtl> listOfLiqourBillDetail = new ArrayList<>();
@@ -899,21 +803,21 @@ public class clsPOSReprintController
 				List<clsPOSBillDtl> listSubTotal = new ArrayList<>();
 				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
 				
-				if(null!=jarr)
+				if(null!=listMain)
 				{	
-					for(int i=0;i<jarr.size();i++)
+					for(int i=0;i<listMain.size();i++)
 					{
-						JSONObject jObjtemp =(JSONObject) jarr.get(i);
+						Map mapTemp =(Map) listMain.get(i);
 						
-						JSONArray jarrTotal = (JSONArray) jObjtemp.get("listOfGrandTotalDtl");
+						List mapTotal = (List) mapTemp.get("listOfGrandTotalDtl");
 						
-						if(null!=jarrTotal)
+						if(null!=mapTotal)
 						{	
-							for(i=0;i<jarrTotal.size();i++)
+							for(i=0;i<mapTotal.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjTot= (JSONObject) jarrTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(jObjTot.get("grandTotal").toString())); 
+								Map mapTot= (Map) mapTotal.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapTot.get("grandTotal").toString())); 
 								
 								 listOfGrandTotal.add(objBillDtl);
 								
@@ -921,168 +825,167 @@ public class clsPOSReprintController
 						}	
 						
 						
-						JSONArray jarrLiqur = (JSONArray) jObjtemp.get("listOfLiqourBillDetail");
-						if(null!=jarrLiqur)
+						List listLiqur = (List) mapTemp.get("listOfLiqourBillDetail");
+						if(null!=listLiqur)
 						{
-							for( i=0;i<jarrLiqur.size();i++)
+							for( i=0;i<listLiqur.size();i++)
 							{
-								 JSONObject jObjtemp1 =(JSONObject) jarrLiqur.get(i);
+								 Map mapTemp1 =(Map) listLiqur.get(i);
 								
-								clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+								clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 								
-								objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("saleQty").toString()));
-								objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-								objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("dblAmount").toString()));
-								listOfLiqourBillDetail.add(objClsBillDtl);
+								objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+								objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+								objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+								listOfLiqourBillDetail.add(objclsPOSBillDtl);
 							}
 						 }
 						
-						JSONArray jarrHomeDel = (JSONArray) jObjtemp.get("listOfHomeDeliveryDtl");
+						List listHomeDel = (List) mapTemp.get("listOfHomeDeliveryDtl");
 						
-						if(null!=jarrHomeDel)
+						if(null!=listHomeDel)
 						{	
-							for(i=0;i<jarrHomeDel.size();i++)
+							for(i=0;i<listHomeDel.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjHomeDel= (JSONObject) jarrHomeDel.get(i);
-								objBillDtl.setStrItemName("Name         : "+jObjHomeDel.get("NAME").toString());
+								Map mapHomeDel= (Map) listHomeDel.get(i);
+								objBillDtl.setStrItemName("Name         : "+mapHomeDel.get("NAME").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address      : "+jObjHomeDel.get("Address").toString());
+								objBillDtl.setStrItemName("Address      : "+mapHomeDel.get("Address").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("MOBILE_NO  :"+jObjHomeDel.get("MOBILE_NO").toString());
+								objBillDtl.setStrItemName("MOBILE_NO  :"+mapHomeDel.get("MOBILE_NO").toString());
 								 listOfHomeDeliveryDtl.add(objBillDtl);
 								 
 							}
 						}
 						
-						JSONArray jarrServiceTaxDtl = (JSONArray) jObjtemp.get("listOfServiceVatDetail");
+						List listServiceTaxDtl = (List) mapTemp.get("listOfServiceVatDetail");
 						
-						if(null!=jarrServiceTaxDtl)
+						if(null!=listServiceTaxDtl)
 						{	
-							for(i=0;i<jarrServiceTaxDtl.size();i++)
+							for(i=0;i<listServiceTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjServieTaxDtl= (JSONObject) jarrServiceTaxDtl.get(i);
-								 objBillDtl.setStrItemName("Service Tax No.    :"+jObjServieTaxDtl.get("Service Tax No.:").toString());	
+								Map mapServieTaxDtl= (Map) listServiceTaxDtl.get(i);
+								 objBillDtl.setStrItemName("Service Tax No.    :"+mapServieTaxDtl.get("Service Tax No.:").toString());	
 								 listOfServiceVatDetail.add(objBillDtl);
 							}
 						}
 						
-						JSONArray jarrFooterDtl = (JSONArray) jObjtemp.get("listOfFooterDtl");
+						List listFooterDtl = (List) mapTemp.get("listOfFooterDtl");
 						
-						if(null!=jarrFooterDtl)
+						if(null!=listFooterDtl)
 						{	
-							for(i=0;i<jarrFooterDtl.size();i++)
+							for(i=0;i<listFooterDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjFooterDtl= (JSONObject) jarrFooterDtl.get(i);
-								objBillDtl.setStrItemName(jObjFooterDtl.get("Thank").toString());	
+								Map mapFooterDtl= (Map) listFooterDtl.get(i);
+								objBillDtl.setStrItemName(mapFooterDtl.get("Thank").toString());	
 								 listOfFooterDtl.add(objBillDtl);
 							}
 						}
-						JSONArray jarrTaxDtl = (JSONArray) jObjtemp.get("listOfTaxDtl");
+						List listTaxDtl = (List) mapTemp.get("listOfTaxDtl");
 						
-						if(null!=jarrTaxDtl)
+						if(null!=listTaxDtl)
 						{	
-							for(i=0;i<jarrTaxDtl.size();i++)
+							for(i=0;i<listTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjTax= (JSONObject) jarrTaxDtl.get(i);
-								 objBillDtl=new clsPOSBillDtl();
+								Map mapTax= (Map) listTaxDtl.get(i);
+								objBillDtl=new clsPOSBillDtl();
 								
-								 objBillDtl.setDblAmount(Double.parseDouble(jObjTax.get("taxAmount").toString()));
-								 objBillDtl.setStrItemName(jObjTax.get("taxDesc").toString());
+								 objBillDtl.setDblAmount(Double.parseDouble(mapTax.get("taxAmount").toString()));
+								 objBillDtl.setStrItemName(mapTax.get("taxDesc").toString());
 								
 								 listOfTaxDtl.add(objBillDtl);
 							}
 						}	
 						
-						JSONArray jarrDiscountDtl= (JSONArray) jObjtemp.get("listOfDiscountDtl");
+						List mapDiscountDtl= (List) mapTemp.get("listOfDiscountDtl");
 						
-						if(null!=jarrDiscountDtl)
+						if(null!=mapDiscountDtl)
 						{	
-							for(i=0;i<jarrDiscountDtl.size();i++)
+							for(i=0;i<mapDiscountDtl.size();i++)
 							{
-								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjDiscount= (JSONObject) jarrDiscountDtl.get(i);
-								objBillDtl.setStrItemName(jObjDiscount.get("Discount").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("discText").toString());
-								objBillDtl.setDblAmount(Double.parseDouble(jObjDiscount.get("discAmt").toString()));
-								objBillDtl.setStrItemName(jObjDiscount.get("Reason").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("Remark").toString());
+								objBillDtl = new clsPOSBillDtl();
+								Map mapDiscount= (Map) mapDiscountDtl.get(i);
+								objBillDtl.setStrItemName(mapDiscount.get("Discount").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("discText").toString());
+								objBillDtl.setDblAmount(Double.parseDouble(mapDiscount.get("discAmt").toString()));
+								objBillDtl.setStrItemName(mapDiscount.get("Reason").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("Remark").toString());
 								listOfDiscountDtl.add(objBillDtl);
 								
 							}
 						}
-						JSONArray jarrSettlementDtl = (JSONArray) jObjtemp.get("listOfSettlementDetail");
+						List listSettlementDtl = (List) mapTemp.get("listOfSettlementDetail");
 						
-						if(null!=jarrSettlementDtl)
+						if(null!=listSettlementDtl)
 						{	
-							for(i=0;i<jarrSettlementDtl.size();i++)
+							for(i=0;i<listSettlementDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjSettlementDtl= (JSONObject) jarrSettlementDtl.get(i);
-								 objBillDtl.setStrItemName(jObjSettlementDtl.get("settleDesc").toString());	
-								 objBillDtl.setDblAmount(Double.parseDouble(jObjSettlementDtl.get("settleAmt").toString()));
-								 listOfSettlementDetail.add(objBillDtl);
-								
+								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
+								objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+								objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));
+								listOfSettlementDetail.add(objBillDtl);
 							}
 						}
 						
 						
-						JSONArray jarrSubTotalDtl= (JSONArray) jObjtemp.get("listSubTotal");
+						List listSubTotalDtl= (List) mapTemp.get("listSubTotal");
 						
-						if(null!=jarrSubTotalDtl)
+						if(null!=listSubTotalDtl)
 						{	
-							for(i=0;i<jarrSubTotalDtl.size();i++)
+							for(i=0;i<listSubTotalDtl.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjSubTotal= (JSONObject) jarrSubTotalDtl.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(jObjSubTotal.get("subTotal").toString()));
+								Map mapSubTotal= (Map) listSubTotalDtl.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapSubTotal.get("subTotal").toString()));
 								listSubTotal.add(objBillDtl);
 							}
 						}
 //						
 						
-						posWiseHeading = jObjtemp.get("posWiseHeading").toString();
-						duplicate = jObjtemp.get("duplicate").toString();
-						posName = jObjtemp.get("POS").toString();
-						BillType=jObjtemp.get("BillType").toString();
-						ClientName=jObjtemp.get("ClientName").toString();
-						ClientAddress1=jObjtemp.get("ClientAddress1").toString();
-						ClientAddress2=jObjtemp.get("ClientAddress2").toString();
-						ClientAddress3=jObjtemp.get("ClientAddress3").toString(); 
-						ClientCity=jObjtemp.get("ClientCity").toString();
-						TEL_NO=jObjtemp.get("TEL NO").toString();
-						EMAIL_ID=jObjtemp.get("EMAIL ID").toString();
-						TAX_INVOICE=jObjtemp.get("TAX_INVOICE").toString();
-						DATE_TIME = jObjtemp.get("DATE_TIME").toString();
-						BillNo = jObjtemp.get("BillNo").toString();
+						posWiseHeading = mapTemp.get("posWiseHeading").toString();
+						duplicate = mapTemp.get("duplicate").toString();
+						posName = mapTemp.get("POS").toString();
+						BillType=mapTemp.get("BillType").toString();
+						ClientName=mapTemp.get("ClientName").toString();
+						ClientAddress1=mapTemp.get("ClientAddress1").toString();
+						ClientAddress2=mapTemp.get("ClientAddress2").toString();
+						ClientAddress3=mapTemp.get("ClientAddress3").toString(); 
+						ClientCity=mapTemp.get("ClientCity").toString();
+						TEL_NO=mapTemp.get("TEL NO").toString();
+						EMAIL_ID=mapTemp.get("EMAIL ID").toString();
+						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
+						DATE_TIME = mapTemp.get("DATE_TIME").toString();
+						BillNo = mapTemp.get("BillNo").toString();
 						if(!flag_DirectBillerBlill)
 						{
-						tableName= jObjtemp.get("TABLE NAME").toString();
-						waiterName = jObjtemp.get("waiterName").toString();
+						tableName= mapTemp.get("TABLE NAME").toString();
+						waiterName = mapTemp.get("waiterName").toString();
 						}
 						
 					} 
 				}
 				
-				if(null!=jarr1)
+				if(null!=listMain1)
 				{
-					for(int i=0;i<jarr1.size();i++)
+					for(int i=0;i<listMain1.size();i++)
 					{
-						 JSONObject jObjtemp1 =(JSONObject) jarr1.get(i);
+						 Map mapTemp1 =(Map) listMain1.get(i);
 						
-						clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 						
-						objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("saleQty").toString()));
-						objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-						objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("dblAmount").toString()));
-						list.add(objClsBillDtl);
+						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+						list.add(objclsPOSBillDtl);
 					}
 				 }
 				
@@ -1146,16 +1049,16 @@ public class clsPOSReprintController
 			}
 			else if(kotFor.equalsIgnoreCase("Bill"))
 			{
-				long result =  (long) jObj.get("result"); 
+				int result =  (int) mapViewData.get("result"); 
 //				long listOfHDSize= (long) jObj.get("listOfHDSize");
-				 format =  (String) jObj.get("format"); 
+				 format =  (String) mapViewData.get("format"); 
 				
 				
-				 jarr1 = (JSONArray) jObj.get("listOfBillDetail");
+				 listMain1 = (List) mapViewData.get("listOfBillDetail");
 				
 				
 				 
-				 JSONArray jArrItemDtl = new JSONArray();
+				 List listItemDtl = new ArrayList<>();
 				 
 //				long lengthListOfHomeDeliveryDtl =  (long) jObj.get("lengthListOfHomeDeliveryDtl"); 
 				
@@ -1164,7 +1067,7 @@ public class clsPOSReprintController
 				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
 				
 				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				jarr = (JSONArray) jObj.get("jArr");
+				listMain = (List) mapViewData.get("jArr");
 				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
 				List<clsPOSBillDtl> listOfFoodBillDetail = new ArrayList<>();
 				List<clsPOSBillDtl> listOfLiqourBillDetail = new ArrayList<>();
@@ -1176,186 +1079,186 @@ public class clsPOSReprintController
 				List<clsPOSBillDtl> listSubTotal = new ArrayList<>();
 				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
 				
-				if(null!=jarr)
+				if(null!=listMain)
 				{	
-					for(int i=0;i<jarr.size();i++)
+					for(int i=0;i<listMain.size();i++)
 					{
-						JSONObject jObjtemp =(JSONObject) jarr.get(i);
+						Map mapTemp =(Map) listMain.get(i);
 						
-						JSONArray jarrTotal = (JSONArray) jObjtemp.get("listOfGrandTotalDtl");
+						List listTotal = (List) mapTemp.get("listOfGrandTotalDtl");
 						
-						if(null!=jarrTotal)
+						if(null!=listTotal)
 						{	
-							for(i=0;i<jarrTotal.size();i++)
+							for(i=0;i<listTotal.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjTot= (JSONObject) jarrTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(jObjTot.get("grandTotal").toString())); 
+								Map mapjTot= (Map) listTotal.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapjTot.get("grandTotal").toString())); 
 								
 								 listOfGrandTotal.add(objBillDtl);
 								
 							}
 						}	
 						
-						JSONArray jarrHomeDel = (JSONArray) jObjtemp.get("listOfHomeDeliveryDtl");
+						List listHomeDel = (List) mapTemp.get("listOfHomeDeliveryDtl");
 						
-						if(null!=jarrHomeDel)
+						if(null!=listHomeDel)
 						{	
-							for(i=0;i<jarrHomeDel.size();i++)
+							for(i=0;i<listHomeDel.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjHomeDel= (JSONObject) jarrHomeDel.get(i);
-								objBillDtl.setStrItemName("Name:"+jObjHomeDel.get("NAME").toString());
+								Map mapHomeDel= (Map) listHomeDel.get(i);
+								objBillDtl.setStrItemName("Name:"+mapHomeDel.get("NAME").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address:"+jObjHomeDel.get("Address").toString());
+								objBillDtl.setStrItemName("Address:"+mapHomeDel.get("Address").toString());
 								listOfHomeDeliveryDtl.add(objBillDtl);
 								
 								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Mobile No"+jObjHomeDel.get("MOBILE_NO").toString());
+								objBillDtl.setStrItemName("Mobile No"+mapHomeDel.get("MOBILE_NO").toString());
 								 listOfHomeDeliveryDtl.add(objBillDtl);
 								 
 							}
 						}
 						
-						JSONArray jarrServiceTaxDtl = (JSONArray) jObjtemp.get("listOfServiceVatDetail");
+						List listServiceTaxDtl = (List) mapTemp.get("listOfServiceVatDetail");
 						
-						if(null!=jarrServiceTaxDtl)
+						if(null!=listServiceTaxDtl)
 						{	
-							for(i=0;i<jarrServiceTaxDtl.size();i++)
+							for(i=0;i<listServiceTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjServieTaxDtl= (JSONObject) jarrServiceTaxDtl.get(i);
-								 objBillDtl.setStrItemName("Service Tax No.    :"+jObjServieTaxDtl.get("Service Tax No.:").toString());	
+								Map mapServieTaxDtl= (Map) listServiceTaxDtl.get(i);
+								 objBillDtl.setStrItemName("Service Tax No.    :"+mapServieTaxDtl.get("Service Tax No.:").toString());	
 								 listOfServiceVatDetail.add(objBillDtl);
 							}
 						}
 						
-						JSONArray jarrFooterDtl = (JSONArray) jObjtemp.get("listOfFooterDtl");
+						List listFooterDtl = (List) mapTemp.get("listOfFooterDtl");
 						
-						if(null!=jarrFooterDtl)
+						if(null!=listFooterDtl)
 						{	
-							for(i=0;i<jarrFooterDtl.size();i++)
+							for(i=0;i<listFooterDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjFooterDtl= (JSONObject) jarrFooterDtl.get(i);
-								objBillDtl.setStrItemName(jObjFooterDtl.get("Thank").toString());	
+								Map mapFooterDtl= (Map) listFooterDtl.get(i);
+								objBillDtl.setStrItemName(mapFooterDtl.get("Thank").toString());	
 								 listOfFooterDtl.add(objBillDtl);
 							}
 						}
-						JSONArray jarrTaxDtl = (JSONArray) jObjtemp.get("listOfTaxDtl");
+						List listTaxDtl = (List) mapTemp.get("listOfTaxDtl");
 						
-						if(null!=jarrTaxDtl)
+						if(null!=listTaxDtl)
 						{	
-							for(i=0;i<jarrTaxDtl.size();i++)
+							for(i=0;i<listTaxDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjTax= (JSONObject) jarrTaxDtl.get(i);
+								Map mapTax= (Map) listTaxDtl.get(i);
 								 objBillDtl=new clsPOSBillDtl();
 								
-								 objBillDtl.setDblAmount(Double.parseDouble(jObjTax.get("taxAmount").toString()));
-								 objBillDtl.setStrItemName(jObjTax.get("taxDesc").toString());
+								 objBillDtl.setDblAmount(Double.parseDouble(mapTax.get("taxAmount").toString()));
+								 objBillDtl.setStrItemName(mapTax.get("taxDesc").toString());
 								
 								 listOfTaxDtl.add(objBillDtl);
 							}
 						}	
 						
-						JSONArray jarrDiscountDtl= (JSONArray) jObjtemp.get("listOfDiscountDtl");
+						List listDiscountDtl= (List) mapTemp.get("listOfDiscountDtl");
 						
-						if(null!=jarrDiscountDtl)
+						if(null!=listDiscountDtl)
 						{	
-							for(i=0;i<jarrDiscountDtl.size();i++)
+							for(i=0;i<listDiscountDtl.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjDiscount= (JSONObject) jarrDiscountDtl.get(i);
-								objBillDtl.setStrItemName(jObjDiscount.get("Discount").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("discText").toString());
-								objBillDtl.setDblAmount(Double.parseDouble(jObjDiscount.get("discAmt").toString()));
-								objBillDtl.setStrItemName(jObjDiscount.get("Reason").toString());
-								objBillDtl.setStrItemName(jObjDiscount.get("Remark").toString());
+								Map mapDiscount= (Map) listDiscountDtl.get(i);
+								objBillDtl.setStrItemName(mapDiscount.get("Discount").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("discText").toString());
+								objBillDtl.setDblAmount(Double.parseDouble(mapDiscount.get("discAmt").toString()));
+								objBillDtl.setStrItemName(mapDiscount.get("Reason").toString());
+								objBillDtl.setStrItemName(mapDiscount.get("Remark").toString());
 								listOfDiscountDtl.add(objBillDtl);
 								
 							}
 						}
-						JSONArray jarrSettlementDtl = (JSONArray) jObjtemp.get("listOfSettlementDetail");
+						List listSettlementDtl = (List) mapTemp.get("listOfSettlementDetail");
 						
-						if(null!=jarrSettlementDtl)
+						if(null!=listSettlementDtl)
 						{	
-							for(i=0;i<jarrSettlementDtl.size();i++)
+							for(i=0;i<listSettlementDtl.size();i++)
 							{
 								objBillDtl=new clsPOSBillDtl();
-								JSONObject jObjSettlementDtl= (JSONObject) jarrSettlementDtl.get(i);
-								 objBillDtl.setStrItemName(jObjSettlementDtl.get("settleDesc").toString());	
-								 objBillDtl.setDblAmount(Double.parseDouble(jObjSettlementDtl.get("settleAmt").toString()));
+								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
+								 objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+								 objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));
 								 listOfSettlementDetail.add(objBillDtl);
 								
 							}
 						}
 						
-						JSONArray jarrLiqur = (JSONArray) jObjtemp.get("listOfLiqourBillDetail");
-						if(null!=jarrLiqur)
+						List listLiqur = (List) mapTemp.get("listOfLiqourBillDetail");
+						if(null!=listLiqur)
 						{
-							for( i=0;i<jarrLiqur.size();i++)
+							for( i=0;i<listLiqur.size();i++)
 							{
-								 JSONObject jObjtemp1 =(JSONObject) jarrLiqur.get(i);
+								 Map mapTemp1 =(Map) listLiqur.get(i);
 								
-								clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+								clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 								
-								objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("saleQty").toString()));
-								objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-								objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("dblAmount").toString()));
-								listOfLiqourBillDetail.add(objClsBillDtl);
+								objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+								objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+								objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+								listOfLiqourBillDetail.add(objclsPOSBillDtl);
 							}
 						 }
 						
 						
-						JSONArray jarrSubTotalDtl= (JSONArray) jObjtemp.get("listSubTotal");
+						List listSubTotalDtl= (List) mapTemp.get("listSubTotal");
 						
-						if(null!=jarrSubTotalDtl)
+						if(null!=listSubTotalDtl)
 						{	
-							for(i=0;i<jarrSubTotalDtl.size();i++)
+							for(i=0;i<listSubTotalDtl.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								JSONObject jObjSubTotal= (JSONObject) jarrSubTotalDtl.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(jObjSubTotal.get("subTotal").toString()));
+								Map mapSubTotal= (Map) listSubTotalDtl.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapSubTotal.get("subTotal").toString()));
 								listSubTotal.add(objBillDtl);
 							}
 						}
 //						
 						
-						posWiseHeading = jObjtemp.get("posWiseHeading").toString();
-						duplicate = jObjtemp.get("duplicate").toString();
-						posName = jObjtemp.get("POS").toString();
-						BillType=jObjtemp.get("BillType").toString();
-						ClientName=jObjtemp.get("ClientName").toString();
-						ClientAddress1=jObjtemp.get("ClientAddress1").toString();
-						ClientAddress2=jObjtemp.get("ClientAddress2").toString();
-						ClientAddress3=jObjtemp.get("ClientAddress3").toString(); 
-						ClientCity=jObjtemp.get("ClientCity").toString();
-						TEL_NO=jObjtemp.get("TEL NO").toString();
-						EMAIL_ID=jObjtemp.get("EMAIL ID").toString();
-						TAX_INVOICE=jObjtemp.get("TAX_INVOICE").toString();
-						DATE_TIME = jObjtemp.get("DATE_TIME").toString();
-						BillNo = jObjtemp.get("BillNo").toString();
+						posWiseHeading = mapTemp.get("posWiseHeading").toString();
+						duplicate = mapTemp.get("duplicate").toString();
+						posName = mapTemp.get("POS").toString();
+						BillType=mapTemp.get("BillType").toString();
+						ClientName=mapTemp.get("ClientName").toString();
+						ClientAddress1=mapTemp.get("ClientAddress1").toString();
+						ClientAddress2=mapTemp.get("ClientAddress2").toString();
+						ClientAddress3=mapTemp.get("ClientAddress3").toString(); 
+						ClientCity=mapTemp.get("ClientCity").toString();
+						TEL_NO=mapTemp.get("TEL NO").toString();
+						EMAIL_ID=mapTemp.get("EMAIL ID").toString();
+						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
+						DATE_TIME = mapTemp.get("DATE_TIME").toString();
+						BillNo = mapTemp.get("BillNo").toString();
 						
 					} 
 				}
 				
 				if(format.equalsIgnoreCase("Jasper1"))
 				{	
-				if(null!=jarr1)
+				if(null!=listMain1)
 				{
-					for(int i=0;i<jarr1.size();i++)
+					for(int i=0;i<listMain1.size();i++)
 					{
-						 JSONObject jObjtemp1 =(JSONObject) jarr1.get(i);
+						 Map mapTemp1 =(Map) listMain1.get(i);
 						
-						clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 						
-						objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("qty").toString()));
-						objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-						objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("amount").toString()));
-						list.add(objClsBillDtl);
+						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("qty").toString()));
+						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("amount").toString()));
+						list.add(objclsPOSBillDtl);
 					}
 				 }
 				
@@ -1405,22 +1308,22 @@ public class clsPOSReprintController
 				}
 				else if(format.equalsIgnoreCase("Jasper2"))
 				{	
-					jArrItemDtl = (JSONArray) jObj.get("listOfBillDetail");
+					listItemDtl = (List) mapViewData.get("listOfBillDetail");
 					
-				if(null!=jArrItemDtl)
+				if(null!=listItemDtl)
 				{
-					for(int i=0;i<jArrItemDtl.size();i++)
+					for(int i=0;i<listItemDtl.size();i++)
 					{
-						 JSONObject jObjtemp1 =(JSONObject) jArrItemDtl.get(i);
+						 Map mapTemp1 =(Map) listItemDtl.get(i);
 						
-						clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 						
-						objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("saleQty").toString()));
-						objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-						objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("dblAmount").toString()));
-						objClsBillDtl.setDblRate(Double.parseDouble(jObjtemp1.get("rate").toString()));
-						objClsBillDtl.setDblDiscountAmt(Double.parseDouble(jObjtemp1.get("discountAmt").toString()));
-						list.add(objClsBillDtl);
+						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+						objclsPOSBillDtl.setDblRate(Double.parseDouble(mapTemp1.get("rate").toString()));
+						objclsPOSBillDtl.setDblDiscountAmt(Double.parseDouble(mapTemp1.get("discountAmt").toString()));
+						list.add(objclsPOSBillDtl);
 					}
 				}
 				
@@ -1479,19 +1382,19 @@ public class clsPOSReprintController
 				}
 				else if(format.equalsIgnoreCase("Jasper3"))
 				{	
-					 jArrBillDtl = (JSONArray) jObj.get("listOfFoodBillDetail");
-					if(null!=jArrBillDtl)
+					listBillDtl = (List) mapViewData.get("listOfFoodBillDetail");
+					if(null!=listBillDtl)
 					{
-						for(int i=0;i<jArrBillDtl.size();i++)
+						for(int i=0;i<listBillDtl.size();i++)
 						{
-							 JSONObject jObjtemp1 =(JSONObject) jArrBillDtl.get(i);
+							 Map mapTemp1 =(Map) listBillDtl.get(i);
 							
-							clsPOSBillDtl objClsBillDtl=new clsPOSBillDtl();
+							clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 							
-							objClsBillDtl.setDblQuantity(Double.parseDouble(jObjtemp1.get("saleQty").toString()));
-							objClsBillDtl.setStrItemName(jObjtemp1.get("itemName").toString());
-							objClsBillDtl.setDblAmount(Double.parseDouble(jObjtemp1.get("dblAmount").toString()));
-							list.add(objClsBillDtl);
+							objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+							objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+							objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+							list.add(objclsPOSBillDtl);
 						}
 					 }
 					
@@ -1551,7 +1454,7 @@ public class clsPOSReprintController
 			}
 			else
 			{
-				jarr = (JSONArray) jObj.get("jArr");
+				listMain = (List) mapViewData.get("jArr");
 				
 				String reportHeading="",duplicate="",discount="",posCode1="",POSName="",POSDt="",totalSales="",floatval="";
 				String cash="",advance="",transferIn="",totalReceipt="",payment="",withdrawal="",transferOut="";
@@ -1562,72 +1465,77 @@ public class clsPOSReprintController
 				double taxableAmount=0.00,dblNetTotalPlusTax=0.00;
 				double settlementAmt=0.00;
 				
-				JSONArray listGroupAmtWithTaxDtl =new JSONArray();
+				/*JSONArray listGroupAmtWithTaxDtl =new JSONArray();
 				JSONArray listSettelementBrkUP = new JSONArray();
 				JSONArray listSettelementTaxDtl = new JSONArray();
-				if(null!=jarr)
+				*/
+				List listGroupAmtWithTaxDtl =new ArrayList<>();
+				List listSettelementBrkUP = new ArrayList<>();
+				List listSettelementTaxDtl = new ArrayList<>();
+				
+				if(null!=listMain)
 				{	
-					for(int i=0;i<jarr.size();i++)
+					for(int i=0;i<listMain.size();i++)
 					{
-						JSONObject jObjtemp =(JSONObject) jarr.get(i);
+						Map mapTemp =(Map) listMain.get(i);
 						
-						JSONArray jarrGroupAmtTax = (JSONArray) jObjtemp.get("listGroupAmtWithTaxDtl");
+						List listGroupAmtTax = (List) mapTemp.get("listGroupAmtWithTaxDtl");
 						
-						if(null!=jarrGroupAmtTax)
+						if(null!=listGroupAmtTax)
 						{	
-							for(i=0;i<jarrGroupAmtTax.size();i++)
+							for(i=0;i<listGroupAmtTax.size();i++)
 							{
-								JSONObject jObjRet = new JSONObject();
-								JSONObject jObjTot= (JSONObject) jarrGroupAmtTax.get(i);
+								//Map jObjRet = new JSONObject();
+								Map mapTot= (Map) listGroupAmtTax.get(i);
 //								
 //								groupName =jObjTot.get("groupName").toString();
 //								dblNetTotalPlusTax=Double.parseDouble(jObjTot.get("dblNetTotalPlusTax").toString()); 
 //								
 								clsPOSReprintDocumentsBean objGroupDtl = new clsPOSReprintDocumentsBean();
-								objGroupDtl.setStrgroupName(jObjTot.get("groupName").toString());
-								objGroupDtl.setDblNetTotalPlusTax(Double.parseDouble(jObjTot.get("dblNetTotalPlusTax").toString()));
+								objGroupDtl.setStrgroupName(mapTot.get("groupName").toString());
+								objGroupDtl.setDblNetTotalPlusTax(Double.parseDouble(mapTot.get("dblNetTotalPlusTax").toString()));
 								
 								listGroupAmtWithTaxDtl.add(objGroupDtl);
 								
 							}
 						}	
 						
-						JSONArray jarrSettlementBrkUp = (JSONArray) jObjtemp.get("listSettelementBrkUP");
+						List listSettlementBrkUp = (List) mapTemp.get("listSettelementBrkUP");
 						
-						if(null!=jarrSettlementBrkUp)
+						if(null!=listSettlementBrkUp)
 						{	
-							for(i=0;i<jarrSettlementBrkUp.size();i++)
+							for(i=0;i<listSettlementBrkUp.size();i++)
 							{
-								JSONObject jObjRet = new JSONObject();
-								JSONObject jObjSettleBrkUp= (JSONObject) jarrSettlementBrkUp.get(i);
+								//JSONObject jObjRet = new JSONObject();
+								Map mapSettleBrkUp= (Map) listSettlementBrkUp.get(i);
 //								settlementDesc =jObjSettleBrkUp.get("settlementDesc").toString();
 //								settlementAmt=Double.parseDouble(jObjSettleBrkUp.get("settlementAmt").toString()); 
 								
 								clsPOSReprintDocumentsBean objBillSettleBrkUp = new clsPOSReprintDocumentsBean();
-								objBillSettleBrkUp.setStrSettleDesc(jObjSettleBrkUp.get("settlementDesc").toString());
-								objBillSettleBrkUp.setDblSettleAmt(Double.parseDouble(jObjSettleBrkUp.get("settlementAmt").toString()));
+								objBillSettleBrkUp.setStrSettleDesc(mapSettleBrkUp.get("settlementDesc").toString());
+								objBillSettleBrkUp.setDblSettleAmt(Double.parseDouble(mapSettleBrkUp.get("settlementAmt").toString()));
 			                   
 								listSettelementBrkUP.add(objBillSettleBrkUp);
 								 
 							}
 						}
 						
-						JSONArray jarrSettleTaxDtl = (JSONArray) jObjtemp.get("listSettelementTaxDtl");
+						List listSettleTaxDtl = (List) mapTemp.get("listSettelementTaxDtl");
 						
-						if(null!=jarrSettleTaxDtl)
+						if(null!=listSettleTaxDtl)
 						{	
-							for(i=0;i<jarrSettleTaxDtl.size();i++)
+							for(i=0;i<listSettleTaxDtl.size();i++)
 							{
-								JSONObject jObjRet = new JSONObject();
-								JSONObject jObjSettleTaxDtl= (JSONObject) jarrSettleTaxDtl.get(i);
+								//JSONObject jObjRet = new JSONObject();
+								Map mapSettleTaxDtl= (Map) listSettleTaxDtl.get(i);
 //								taxDesc =jObjSettleTaxDtl.get("taxDesc").toString();
 //								taxableAmount=Double.parseDouble(jObjSettleTaxDtl.get("taxableAmount").toString()); 
 //								taxAmount=Double.parseDouble(jObjSettleTaxDtl.get("taxAmount").toString());
 //								
 								clsPOSReprintDocumentsBean objSettleTaxDtl = new clsPOSReprintDocumentsBean();
-								objSettleTaxDtl.setStrTaxDesc(jObjSettleTaxDtl.get("taxDesc").toString());
-								objSettleTaxDtl.setDblTaxableAmount(Double.parseDouble(jObjSettleTaxDtl.get("taxableAmount").toString()));
-								objSettleTaxDtl.setDblTaxAmount(Double.parseDouble(jObjSettleTaxDtl.get("taxAmount").toString()));
+								objSettleTaxDtl.setStrTaxDesc(mapSettleTaxDtl.get("taxDesc").toString());
+								objSettleTaxDtl.setDblTaxableAmount(Double.parseDouble(mapSettleTaxDtl.get("taxableAmount").toString()));
+								objSettleTaxDtl.setDblTaxAmount(Double.parseDouble(mapSettleTaxDtl.get("taxAmount").toString()));
 								
 								listSettelementTaxDtl.add(objSettleTaxDtl);
 							}
@@ -1635,38 +1543,38 @@ public class clsPOSReprintController
 						
 						
 						
-						reportHeading = jObjtemp.get("reportHeading").toString();
-						duplicate = jObjtemp.get("duplicate").toString();
-						posCode = jObjtemp.get("posCode1").toString();
-						posName = jObjtemp.get("posName").toString();
-						posDate = jObjtemp.get("posDate").toString();
-						totalSales=jObjtemp.get("totalSales").toString();
-						floatval=jObjtemp.get("floatval").toString();
-						cash=jObjtemp.get("cash").toString();
-						advance=jObjtemp.get("advance").toString();
-						transferIn=jObjtemp.get("transferIn").toString(); 
-						totalReceipt=jObjtemp.get("totalReceipt").toString();
-						payment=jObjtemp.get("payment").toString();
-						withdrawal=jObjtemp.get("withdrawal").toString();
-						transferOut=jObjtemp.get("transferOut").toString();
-						totalPayments = jObjtemp.get("totalPayments").toString();
-						cashInHand = jObjtemp.get("cashInHand").toString();
-						homeDelivery = jObjtemp.get("homeDelivery").toString();
-						dining = jObjtemp.get("dining").toString();
-						takeAway = jObjtemp.get("takeAway").toString();
-						noOfBills = jObjtemp.get("noOfBills").toString();
-						noOfVoidedBills = jObjtemp.get("noOfVoidedBills").toString();
-						noOfModifiedBills = jObjtemp.get("noOfModifiedBills").toString();
-						refund = jObjtemp.get("refund").toString();
-						discount = jObjtemp.get("discount").toString();
-						noOfPax = jObjtemp.get("noOfPax").toString();
-						noOfTakeAway = jObjtemp.get("noOfTakeAway").toString();
-						noOfHomeDel = jObjtemp.get("noOfHomeDel").toString();
-						dayEndBy = jObjtemp.get("dayEndBy").toString();
-						noOfNcKot = jObjtemp.get("noOfNcKot").toString();
-						noOfComplimentaryBills = jObjtemp.get("noOfComplimentaryBills").toString();
-						noOfVoidKot = jObjtemp.get("noOfVoidKot").toString();
-						Total = jObjtemp.get("Total").toString();
+						reportHeading = mapTemp.get("reportHeading").toString();
+						duplicate = mapTemp.get("duplicate").toString();
+						posCode = mapTemp.get("posCode1").toString();
+						posName = mapTemp.get("posName").toString();
+						posDate = mapTemp.get("posDate").toString();
+						totalSales=mapTemp.get("totalSales").toString();
+						floatval=mapTemp.get("floatval").toString();
+						cash=mapTemp.get("cash").toString();
+						advance=mapTemp.get("advance").toString();
+						transferIn=mapTemp.get("transferIn").toString(); 
+						totalReceipt=mapTemp.get("totalReceipt").toString();
+						payment=mapTemp.get("payment").toString();
+						withdrawal=mapTemp.get("withdrawal").toString();
+						transferOut=mapTemp.get("transferOut").toString();
+						totalPayments = mapTemp.get("totalPayments").toString();
+						cashInHand = mapTemp.get("cashInHand").toString();
+						homeDelivery = mapTemp.get("homeDelivery").toString();
+						dining = mapTemp.get("dining").toString();
+						takeAway = mapTemp.get("takeAway").toString();
+						noOfBills = mapTemp.get("noOfBills").toString();
+						noOfVoidedBills = mapTemp.get("noOfVoidedBills").toString();
+						noOfModifiedBills = mapTemp.get("noOfModifiedBills").toString();
+						refund = mapTemp.get("refund").toString();
+						discount = mapTemp.get("discount").toString();
+						noOfPax = mapTemp.get("noOfPax").toString();
+						noOfTakeAway = mapTemp.get("noOfTakeAway").toString();
+						noOfHomeDel = mapTemp.get("noOfHomeDel").toString();
+						dayEndBy = mapTemp.get("dayEndBy").toString();
+						noOfNcKot = mapTemp.get("noOfNcKot").toString();
+						noOfComplimentaryBills = mapTemp.get("noOfComplimentaryBills").toString();
+						noOfVoidKot = mapTemp.get("noOfVoidKot").toString();
+						Total = mapTemp.get("Total").toString();
 						
 					} 
 				}

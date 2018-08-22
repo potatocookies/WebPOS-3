@@ -27,28 +27,28 @@
 
 <script type="text/javascript">
 var operationType="";
-var clickedBtn="";
+var selectedPOSName="";
 var btnSelected="";
 $(document).ready(function() 
 {
 	document.all[ 'divKOTAndDina' ].style.display = 'block';
 	var posName="${posName}";
 	
-	if(clickedBtn=="")
+	if(selectedPOSName=="")
 	{
 	document.all[posName].style.backgroundColor = "#595959";
-	clickedBtn=posName;
+	selectedPOSName=posName;
 	}
-	else if(clickedBtn==posName)
+	else if(selectedPOSName==posName)
 	{
          $(this).css('background-color', '#6FB9F6');
-         clickBtn="";
+        // clickBtn="";
     } 
 	else 
 	{
-	document.all[clickedBtn].style.backgroundColor = "#6FB9F6";
+	document.all[selectedPOSName].style.backgroundColor = "#6FB9F6";
 	$(this).css('background-color', '#595959');
-     clickedBtn=posName;
+	selectedPOSName=posName;
     }  
 	
 	var operationType;
@@ -74,7 +74,7 @@ $(document).ready(function()
 	funOnLoad(operationType);
 	
 	
-	    $('.transForm_button').click(function() 
+	$('.transForm_button').click(function() 
     {
     	
      	
@@ -118,22 +118,22 @@ $(document).ready(function()
     	}
     	else
     	{
-    		if(clickedBtn=="")
+    		if(selectedPOSName=="")
         	{
         		$(this).css('background-color', '#595959');
-        		clickedBtn=btnId;
+        		selectedPOSName=btnId;
         	}
         	
-        	else if(clickedBtn==btnId)
+        	else if(selectedPOSName==btnId)
         	{
                  $(this).css('background-color', '#6FB9F6');
-                 clickBtn="";
+                 //clickBtn="";
             } 
         	else 
         	{
     			document.all[clickedBtn].style.backgroundColor = "#6FB9F6";
                 $(this).css('background-color', '#595959');
-             	clickedBtn=btnId;
+                selectedPOSName=btnId;
             }  
     	}	
     });
@@ -288,14 +288,35 @@ function funOnLoad(oprType)
 		document.all[ 'divDayEnd' ].style.display = 'block';
 	}
 	funForAllTableDtl(operationType,kotFor);
+}
+
+function funOnClickPOSName(obj)
+{
+	selectedPOSName=obj.id;
+	if(selectedPOSName=="")
+	{
+		$(this).css('background-color', '#595959');
+	}
+	
+	else 
+	{
+         $(this).css('background-color', '#6FB9F6');
+         //clickBtn="";
+    } 
+	  
 }	
+
+
+
+
 function funForAllTableDtl(operationType,kotFor)
 {
 	var searchurl=getContextPath()+"/loadFunExecute.html";
 	 $.ajax({
 	        type: "GET",
 	        data:{ operationType : operationType,
-	        	kotFor : kotFor,
+	        	   kotFor : kotFor,
+	        	   posName:selectedPOSName,
 			},
 	        url: searchurl,
 	        dataType: "json",
@@ -316,7 +337,7 @@ function funForAllTableDtl(operationType,kotFor)
 	        		
 	        	 $.each(response.AllTblData, function(i,item)
 	 					{			
-	        		 	funFillTableForKOTAndDina(item.KOTNo,item.Time,item.WaiterName,item.TableName,item.PaxNo,item.UserCreated,item.Amount);
+	        		 	funFillTableForKOTAndDina(item.strKOTNo,item.tmeBillTime,item.strWShortName,item.strTableName,item.sequenceNo,item.strCustomerName,item.dblAmount);
 	 			   
 	 				  	});
 	        	}
@@ -329,7 +350,7 @@ function funForAllTableDtl(operationType,kotFor)
 	        		
 	        		 $.each(response.AllTblData, function(i,item)
 	 	 					{	
-	        		funFillTableForDirectBiller(item.BillNo,item.Time,item.POS,item.TotalAmount);
+	        		funFillTableForDirectBiller(item.strBillNo,item.tmeBillTime,item.strPosName,item.dblAmount);
 	 	 					}); 
 	        	}
 	        	else
@@ -341,7 +362,7 @@ function funForAllTableDtl(operationType,kotFor)
 	        		
 	        		 $.each(response.AllTblData, function(i,item)
 		 	 					{	
-	        		funFillTableForBill(item.BillNo,item.TableName,item.Time,item.TotalAmount);
+	        		funFillTableForBill(item.strBillNo,item.strTableName,item.tmeBillTime,item.dblAmount);
 		 	 					}); 
 	        	}
 			},
@@ -434,20 +455,20 @@ function funRemoveTableRows(tableId)
 			<div style="margin-left: 30px;width:100%;height:195px;float:left;padding: 2px;">
 				<c:forEach items="${posList}" var="posList1">
 				
-					<input type="button" id="${posList1}" value="${posList1}" style="margin-bottom:5px" onclick=""/>	
+					<input type="button" id="${posList1}" value="${posList1}" style="margin-bottom:5px" onclick="funOnClickPOSName(this)"/>	
 					
 				</c:forEach>
 			</div>
 			
 			<div style="margin-left: 30px;width:100%;height:200px;float:left;padding: 2px;">
 		
-				<input type="button" id="KOT" name="KOT" value="KOT" tabindex="3" style="margin-bottom:5px"/>
-				<input type="button" id="Bill" name="Bill" value="Bill" tabindex="3" style="margin-bottom:5px"/>
-				<input type="button" id="DayEnd" name="DayEnd" value="DayEnd" tabindex="3" style="margin-bottom:5px"/>
+				<input type="button" id="KOT" name="KOT" value="KOT" tabindex="3" style="margin-bottom:5px" onclick="funOnLoad('KOT');"/>
+				<input type="button" id="Bill" name="Bill" value="Bill" tabindex="3" style="margin-bottom:5px" onclick="funOnLoad('Bill');"/>
+				<input type="button" id="DayEnd" name="DayEnd" value="DayEnd" tabindex="3" style="margin-bottom:5px" onclick="funOnLoad('DayEnd');"/>
 				
 				<div style="width:100%;height:400px;margin:auto;float:left">
-					<input type="button" id="Dina" name="Dina" value="Dina" tabindex="3" style="margin-bottom:5px"/>
-					<input type="button" id="DirectBiller" name="DirectBiller" value="DirectBiller" tabindex="3" style="margin-bottom:5px"/>
+					<input type="button" id="Dina" name="Dina" value="Dina" tabindex="3" style="margin-bottom:5px" onclick="funOnLoad('Dina');"/>
+					<input type="button" id="DirectBiller" name="DirectBiller" value="DirectBiller" tabindex="3" style="margin-bottom:5px" onclick="funOnLoad('DirectBiller');"/>
 				</div>
 				
 			</div>
@@ -528,7 +549,7 @@ function funRemoveTableRows(tableId)
 						</thead>
 				</table>
 				
-				<div style="display: block; height: 500px; margin: auto;width: 100%; border: 1px solid #ccc;">
+				<div style="display: block; height: 600px; margin: auto;width: 100%; border: 1px solid #ccc;">
 					 
 					 <table id="tblBillDtl" style="width: 100%;">
 							<tbody style="border-top: none;">    

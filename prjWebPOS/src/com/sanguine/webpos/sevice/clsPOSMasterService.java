@@ -834,5 +834,12 @@ public class clsPOSMasterService {
 		    return objModifierMasterModel; 	
 		 }
 	 
+	 public List <clsGroupMasterModel> funLoadGrouptData(String strClientCode)throws Exception
+	 {
+			List <clsGroupMasterModel> list=null;
+			list=obBaseService.funLoadAll(new clsGroupMasterModel(),strClientCode);
+			return list;
+	 }
+	 
 }
 

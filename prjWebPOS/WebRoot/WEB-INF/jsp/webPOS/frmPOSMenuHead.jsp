@@ -50,12 +50,18 @@ $(document).ready(function()
 	   	$("#wait").css("display","none");
 	});
 	
-	 $("form").submit(function(event){
+	 $("form").submit(function(event)
+	 {
+		  txtVal=activeTab;
 		  if($("#txtMenuHeadName").val().trim()=="")
 		  {
 				alert("Please Enter Menu Head Name");
 				return false;
 		  }
+		  else if(($("#txtMenuHeadName").val().trim()=="") && (txtVal=="tab3"))
+		  {
+			  alert("vcv");
+		  }  
 		 else
 		 {
 			 

@@ -131,7 +131,7 @@ public class clsPOSMasterController {
 		    objModel.setStrEnableShift("N");
 		    objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 		    objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-		 
+		    objModel.setStrPlayZonePOS(objGlobal.funIfNull(objBean.getStrPlayZonePOS(),"N","Y"));
 		    objModel.setStrUserCreated(webStockUserCode);
 		    objModel.setStrUserEdited(webStockUserCode);
 		    
@@ -232,7 +232,7 @@ public class clsPOSMasterController {
 		objPOSMaster.setStrDiscount(objPOSMasterModel.getStrDiscount());
 		objPOSMaster.setStrWSLocationCode(objPOSMasterModel.getStrWSLocationCode());
 		objPOSMaster.setStrExciseLicenceCode(objPOSMasterModel.getStrExciseLicenceCode());
-		
+		objPOSMaster.setStrPlayZonePOS(objPOSMasterModel.getStrPlayZonePOS());
 		// POS Settlement Details
 		Set<clsPosSettlementDetailsModel> listSettlementDtl =objPOSMasterModel.getListsettlementDtl();
 		Iterator itr = listSettlementDtl.iterator();

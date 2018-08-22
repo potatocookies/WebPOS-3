@@ -53,7 +53,11 @@
 					alert("Please Enter POS Name");
 					return false;
 				}
-			
+			 else
+				 {
+					 flg=funCallFormAction();
+					  return flg;
+				  }
 			});
 	});
 </script>
@@ -231,7 +235,11 @@
 				        	$("#txtDiscount").val(response.strDiscount);
 				        	$("#txtWSLocationCode").val(response.strWSLocationCode);
 				        	$("#txtExciseLicenceCode").val(response.strExciseLicenceCode);
-				        
+				        	if(response.strPlayZonePOS=='Y')
+			        		{
+				        		$("#chkPlayZonePOS").prop('checked',true);
+			        		}
+				        	
 				        	funFillSettlement(response.listSettlementDtl);
 					    	funRemoveTableRows("tblTime");
 					    	var table = document.getElementById("tblTime");
@@ -523,10 +531,6 @@
 	
 	<s:form name="POSForm" method="POST" action="savePOSMaster.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 
-<!-- 		<table -->
-<!-- 				style="border: 0px solid black; width: 85%; height:130%; margin-left: auto; margin-right: auto;background-color:#C0E4FF;"> -->
-<!-- 				<tr> -->
-<!-- 					<td> -->
 		<div style="margin-left: 20%;">
 		
 			<div id="tab_container" style="height: 80%; overflow: hidden;" >
@@ -578,7 +582,7 @@
 	    					<label class="title">Debit Card Transaction</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 10px;"> 
-							<s:select id="cmbStyleOfOp" path="strPosType" >
+							<s:select id="cmbDebitCardTrans" path="strDebitCardTransactionYN" >
 								<option value="No">No</option>
 						    	<option value="Yes">Yes</option>
 						    </s:select>
@@ -665,7 +669,14 @@
 							<s:input class="large" colspan="3" type="text" id="txtTaxNo" path="strServiceTaxNo" />
 						</div>
 					</div>
-				
+					<div class="row" style="background-color: #fff; display: inline-flex;">
+						<div class="element-input col-lg-6" style="width: 20%; margin-left: 12px;">
+							<label class="title" style="width: 100%">Play Zone POS</label>
+						</div>
+		    			<div class="element-input col-lg-6" style="width: 8%;">
+		    				<s:input type="checkbox"  id="chkPlayZonePOS" path="strPlayZonePOS"></s:input>
+						</div>
+					</div>	
 				<br/>
 			</div>
 			
@@ -931,319 +942,6 @@
    </div>
    	
 </s:form>
-				
-		<!-- 	End  of Link Up Tab -->
-
-
-					
-<!-- 								<table  class="masterTable"> -->
-																		
-<!-- 									<tr> -->
-<!-- 				<td width="140px">POS Code</td> -->
-<%-- 				<td><s:input id="txtPOSCode" path="strPosCode" --%>
-<%-- 						cssClass="searchTextBox jQKeyboard form-control" readonly="true" ondblclick="funHelp('POSMaster')" /></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>POS Name</label></td> -->
-<%-- 				<td><s:input colspan="3" type="text" id="txtPOSName"  --%>
-<%-- 						name="txtPOSName" path="strPosName" required="true" --%>
-<%-- 						cssStyle="text-transform: uppercase;" cssClass="longTextBox jQKeyboard form-control"  />  --%>
-<!-- 		       </td> -->
-<!-- 			<tr> -->
-<!-- 			<td><label>Style of Operation</label></td> -->
-<%-- 				<td><s:select id="cmbStyleOfOp" name="cmbStyleOfOp" path="strPosType" cssClass="BoxW124px" > --%>
-<!-- 				<option value="Direct Biller">Direct Biller</option> -->
-<!-- 				 <option value="Dina">Dina</option> -->
- 				 
-<%-- 				 </s:select></td> --%>
-				
-<!-- 			</tr> -->
-		
-<!-- 			<tr> -->
-<!-- 			<td><label>Debit Card Transaction</label></td> -->
-<%-- 				<td><s:select id="cmbDebitCardTrans" name="cmbDebitCardTrans" path="strDebitCardTransactionYN" cssClass="BoxW124px" > --%>
-<!-- 				<option value="No">No</option> -->
-<!-- 				 <option value="Yes">Yes</option> -->
- 				
-<%-- 				 </s:select></td> --%>
-				
-<!-- 			</tr> -->
-<!-- 				<tr> -->
-<!-- 			<td><label>Property POS Code</label></td> -->
-				
-<%-- 				<td><s:input colspan="3" type="text" id="txtPropertyPOSCode"  --%>
-<%-- 						name="txtPropertyPOSCode" path="strPropertyPOSCode"  --%>
-<%-- 						cssStyle="text-transform: uppercase;" cssClass="longTextBox jQKeyboard form-control"  />  --%>
-<!-- 		       </td> -->
-<!-- 			</tr> -->
-			
-<!-- 			<tr> -->
-<!-- 			<td><label>Counter Wise Billing</label></td> -->
-				
-<!-- 				<td> -->
-<%-- 						<s:checkbox element="li" id="chkCountryWiseBilling" path="strCounterWiseBilling" value="Yes" /> --%>
-<!-- 						&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-<!-- 		       <label>Delayed Settlement</label> &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 						<s:checkbox element="li" id="chkDelayedSettlement" path="strDelayedSettlementForDB" value="Yes" /> --%>
-<!-- 		       </td> -->
-<!-- 			</tr> -->
-			
-<!-- 			<tr> -->
-<!-- 			<td><label>Bill Printer Name</label></td> -->
-<%-- 				<td><s:select id="cmbBillPrinterName" name="cmbBillPrinterName" items="${printerList}" path="strBillPrinterPort" cssClass="BoxW124px" > --%>
-				
- 				
-<%-- 				 </s:select> &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --%>
-<!-- 				<input type="submit" value="TEST" class="form_button"/> -->
-<!-- 				</td> -->
-<!-- 			</tr> -->
-			
-<!-- 			<tr> -->
-<!-- 			<td><label>Adv. Receipt Printer Name</label></td> -->
-<%-- 				<td><s:select id="cmbAdvRecPrinterName" name="cmbAdvRecPrinterName" items="${printerList}" path="strAdvReceiptPrinterPort" cssClass="BoxW124px" > --%>
-				
- 				
-<%-- 				 </s:select>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --%>
-<!-- 				<input type="submit" value="TEST" class="form_button"/> -->
-<!-- 				</td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			  <td><label>Operational</label></td> -->
-				
-<!-- 				<td>  -->
-<%-- 						<s:checkbox element="li" id="chkOperational" path="strOperationalYN" value="Yes" /> --%>
-<!-- 		       </td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			  <td><label>Print VAT No</label></td> -->
-				
-<!-- 				<td>  -->
-<%-- 						<s:checkbox element="li" id="chkPrintVatNo" path="strPrintVatNo" value="Yes" /> --%>
-<!-- 		       &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 		       <s:input colspan="" type="text" id="txtVatNo"  --%>
-<%-- 						name="txtVatNo" path="strVatNo"  --%>
-<%-- 						cssStyle="text-transform: uppercase;" cssClass="longTextBox jQKeyboard form-control"  />  --%>
-<!-- 		       </td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			  <td><label>Print Service Tax No</label></td> -->
-				
-<!-- 				<td>  -->
-<%-- 						<s:checkbox element="li" id="chkPrintTaxNo" path="strPrintServiceTaxNo" value="Yes" /> --%>
-<!-- 		       &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 		       <s:input  type="text" id="txtTaxNo"  --%>
-<%-- 						name="txtTaxNo" path="strServiceTaxNo"  --%>
-<%-- 						cssStyle="text-transform: uppercase;" cssClass="longTextBox jQKeyboard form-control"  />  --%>
-<!-- 		       </td> -->
-<!-- 			</tr> -->
-<!-- 						</table> -->
-
-						
-			
-<!-- 										<table border="1" class="myTable" style="width:80%;margin: auto;" > -->
-<!-- 										<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th>SettleMent Code</th> -->
-<!-- 											<th>SettleMent Name</th> -->
-<!-- 											<th>Applicable</th> -->
-<!-- 										</tr> -->
-										
-<!-- 										</thead> -->
-<!-- 										</table> -->
-<!-- 										<div style="background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 150px; -->
-<!-- 			    				margin: auto;overflow-x: hidden; overflow-y: scroll;width: 80%;"> -->
-<!-- 									<table id="tblSettlement" class="transTablex col5-center" style="width: 100%;"> -->
-<!-- 									<tbody>     -->
-<%-- 											<col style="width:38%"><!--  COl1   --> --%>
-<%-- 											<col style="width:39%"><!--  COl2   --> --%>
-<%-- 											<col style="width:23%"><!--  COl3   -->								 --%>
-<!-- 									</tbody>							 -->
-<!-- 									</table> -->
-									
-						
-<!-- 							</div> -->
-<!-- 							</div> -->
-										
-<!-- 									
-							
-							
-<!-- 									<table  class="masterTable"> -->
-<!-- 							<tr> -->
-<!-- 			<td><label>From Time</label></td> -->
-<%-- 				<td><s:select id="cmbHH" name="cmbHH" path="" cssStyle="width:20%" cssClass="BoxW124px" > --%>
-<!-- 				<option value="HH">HH</option> -->
-<!-- 				<option value="1">1</option> -->
-<!-- 				<option value="2">2</option> -->
-<!-- 				<option value="3">3</option> -->
-<!-- 				<option value="4">4</option> -->
-<!-- 				<option value="5">5</option> -->
-<!-- 				<option value="6">6</option> -->
-<!-- 				<option value="7">7</option>  -->
-<!-- 				<option value="8">8</option> -->
-<!-- 				<option value="9">9</option> -->
-<!-- 				<option value="10">10</option> -->
-<!-- 				<option value="11">11</option> -->
-<!-- 				<option value="12">12</option> -->
-<%-- 				 </s:select> --%>
-<!-- 				 &nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 				 <s:select id="cmbMM" name="cmbMM" path="" cssStyle="width:20%" cssClass="BoxW124px" > --%>
-<!-- 				<option value="MM">MM</option><option value="00">00</option><option value="01">01</option> -->
-<!-- 				<option value="02">02</option><option value="03">03</option><option value="04">04</option> -->
-<!-- 				<option value="05">05</option><option value="06">06</option><option value="07">07</option>  -->
-<!-- 				<option value="08">08</option><option value="09">09</option><option value="10">10</option> -->
-<!-- 				<option value="11">11</option><option value="12">12</option><option value="13">13</option> -->
-<!-- 				<option value="14">14</option><option value="15">15</option><option value="16">16</option> -->
-<!-- 				<option value="17">17</option><option value="18">18</option><option value="19">19</option> -->
-<!-- 				<option value="20">20</option><option value="21">21</option><option value="22">22</option> -->
-<!-- 				<option value="23">23</option><option value="24">24</option><option value="25">25</option> -->
-<!-- 				<option value="26">26</option><option value="27">27</option><option value="28">28</option> -->
-<!-- 				<option value="29">29</option><option value="30">30</option><option value="31">31</option> -->
-<!-- 				<option value="32">32</option><option value="33">33</option><option value="34">34</option> -->
-<!-- 				<option value="35">35</option><option value="36">36</option><option value="37">37</option> -->
-<!-- 				<option value="38">38</option><option value="39">39</option><option value="41">41</option> -->
-<!-- 				<option value="42">42</option><option value="43">43</option><option value="44">44</option> -->
-<!-- 				<option value="45">45</option><option value="46">46</option><option value="47">47</option> -->
-<!-- 				<option value="48">48</option><option value="49">49</option><option value="50">50</option> -->
-<!-- 				<option value="51">51</option><option value="52">52</option><option value="53">53</option> -->
-<!-- 				<option value="54">54</option><option value="55">55</option><option value="56">56</option> -->
-<!-- 				<option value="57">57</option><option value="58">58</option><option value="59">59</option> -->
-<%-- 				 </s:select> --%>
-<!-- 				 &nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 				 <s:select id="cmbAMPM" name="cmbAMPM" path="" cssStyle="width:20%" cssClass="BoxW124px" > --%>
-<!-- 				<option value="AM">AM</option> -->
-<!-- 				 <option value="PM">PM</option> -->
- 				 
-<%-- 				 </s:select></td> --%>
-				 
-<!-- 				 <td><label>To Time</label></td> -->
-<%-- 				<td><s:select id="cmbToHH" name="cmbToHH" path="" cssStyle="width:20%" cssClass="BoxW124px" > --%>
-<!-- 				<option value="HH">HH</option> -->
-<!-- 				 <option value="1">1</option> -->
-<!-- 				<option value="2">2</option> -->
-<!-- 				<option value="3">3</option> -->
-<!-- 				<option value="4">4</option> -->
-<!-- 				<option value="5">5</option> -->
-<!-- 				<option value="6">6</option> -->
-<!-- 				<option value="7">7</option>  -->
-<!-- 				<option value="8">8</option> -->
-<!-- 				<option value="9">9</option> -->
-<!-- 				<option value="10">10</option> -->
-<!-- 				<option value="11">11</option> -->
-<!-- 				<option value="12">12</option> -->
-<%-- 				 </s:select> --%>
-<!-- 				 &nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 				 <s:select id="cmbToMM" name="cmbToMM" path="" cssStyle="width:20%" cssClass="BoxW124px" > --%>
-<!-- 				<option value="MM">MM</option><option value="00">00</option><option value="01">10</option> -->
-<!-- 				<option value="02">02</option><option value="03">03</option><option value="04">04</option> -->
-<!-- 				<option value="05">05</option><option value="06">06</option><option value="07">07</option>  -->
-<!-- 				<option value="08">08</option><option value="09">09</option><option value="10">10</option> -->
-<!-- 				<option value="11">11</option><option value="12">12</option><option value="13">13</option> -->
-<!-- 				<option value="14">14</option><option value="15">15</option><option value="16">16</option> -->
-<!-- 				<option value="17">17</option><option value="18">18</option><option value="19">19</option> -->
-<!-- 				<option value="20">20</option><option value="21">21</option><option value="22">22</option> -->
-<!-- 				<option value="23">23</option><option value="24">24</option><option value="25">25</option> -->
-<!-- 				<option value="26">26</option><option value="27">27</option><option value="28">28</option> -->
-<!-- 				<option value="29">29</option><option value="30">30</option><option value="31">31</option> -->
-<!-- 				<option value="32">32</option><option value="33">33</option><option value="34">34</option> -->
-<!-- 				<option value="35">35</option><option value="36">36</option><option value="37">37</option> -->
-<!-- 				<option value="38">38</option><option value="39">39</option><option value="41">41</option> -->
-<!-- 				<option value="42">42</option><option value="43">43</option><option value="44">44</option> -->
-<!-- 				<option value="45">45</option><option value="46">46</option><option value="47">47</option> -->
-<!-- 				<option value="48">48</option><option value="49">49</option><option value="50">50</option> -->
-<!-- 				<option value="51">51</option><option value="52">52</option><option value="53">53</option> -->
-<!-- 				<option value="54">54</option><option value="55">55</option><option value="56">56</option> -->
-<!-- 				<option value="57">57</option><option value="58">58</option><option value="59">59</option> -->
-<%-- 				 </s:select> --%>
-<!-- 				 &nbsp;&nbsp;&nbsp;&nbsp; -->
-<%-- 				 <s:select id="cmbToAMPM" name="cmbToAMPM" path="" cssStyle="width:20%" cssClass="BoxW124px" > --%>
-<!-- 				<option value="AM">AM</option> -->
-<!-- 				 <option value="PM">PM</option> -->
- 				 
-<%-- 				 </s:select></td> --%>
-				
-<!-- 			</tr> -->
-<!-- 			<tr><td></td></tr> -->
-<!-- 			<tr> -->
-			
-<!-- 			 <td colspan="4"><input id="btnAdd" type="button" class="smallButton" value="Add" onclick="return funBtnAddOnClick();"></input> -->
-<!-- 			 &nbsp;&nbsp;&nbsp;&nbsp; -->
-<!-- 			  &nbsp;&nbsp;&nbsp;&nbsp; -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/></td> -->
-<!-- 			</tr> -->
-						
-<!-- 			</table> -->
-<!-- 			<br> -->
-<!-- 				<table style="width: 80%;" class="transTablex col5-center"> -->
-<!-- 								<tr> -->
-<!-- 									<td style="width:50%">From Time</td> -->
-<!-- 									<td style="width:50%">To Time</td> -->
-									
-<!-- 								</tr>							 -->
-<!-- 							</table> -->
-<!-- 							<div style="background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 150px; -->
-<!-- 			    				margin: auto;overflow-x: hidden; overflow-y: scroll;width: 80%;"> -->
-<!-- 									<table id="tblTime" class="transTablex col5-center" style="width: 100%;"> -->
-<!-- 									<tbody>     -->
-<%-- 											<col style="width:50%"><!--  COl1   --> --%>
-<%-- 											<col style="width:50%"><!--  COl2   --> --%>
-																			
-<!-- 									</tbody>							 -->
-<!-- 									</table> -->
-<!-- 							</div>					 -->
-<!-- 	</div> -->
-
-							
-							
-							
-<!-- 										<table  class="masterTable"> -->
-																		
-<!-- 									<tr> -->
-<!-- 				<td width="140px">Round Off</td> -->
-<%-- 				<td><s:input id="txtRoundOff" path="strRoundOff" --%>
-<%-- 						cssClass="searchTextBox" ondblclick="funOpenWebBooksAccSearch('RoundOFF')" /></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td width="140px">Tip</td> -->
-<%-- 				<td><s:input id="txtTip" path="strTip" --%>
-<%-- 						cssClass="searchTextBox" ondblclick="funOpenWebBooksAccSearch('Tip')" /></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td width="140px">Discount</td> -->
-<%-- 				<td><s:input id="txtDiscount" path="strDiscount" --%>
-<%-- 						cssClass="searchTextBox" ondblclick="funOpenWebBooksAccSearch('Discount')" /></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td width="140px">Enter WebStock Location Code</td> -->
-<%-- 				<td><s:input id="txtWSLocationCode" path="strWSLocationCode" --%>
-<%-- 						cssClass="searchTextBox" ondblclick="funOpenWebBooksAccSearch('WSLocationCode')" /></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td width="140px">Enter Excise Licence Code</td> -->
-<%-- 				<td><s:input id="txtExciseLicenceCode" path="strExciseLicenceCode" --%>
-<%-- 						cssClass="searchTextBox" ondblclick="funHelp('ExciseLicenseMaster')" /></td> --%>
-<!-- 			</tr> -->
-			
-		
-<!-- 						</table> -->
-<!-- 							</div> -->
-<!-- 							End  of Link Up Tab -->
-
-
-
-<!-- 							Start of Mobile Applications Tab -->
-<!-- 							<div id="tab4" class="tab_content">This is my Mobile -->
-<!-- 								Applications Tab</div> -->
-<!-- 							End of Mobile Applications Tab -->
-							
-		
-
-<!-- 						</div> -->
-<!-- 					</td> -->
-<!-- 				</tr> -->
-<!-- 			</table> -->
-						
-		 
-		
 
 </body>
 </html>

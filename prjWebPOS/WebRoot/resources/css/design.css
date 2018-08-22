@@ -1322,6 +1322,12 @@ large buttons
    
     font-weight: normal;
 }
+.transForm_redButton:hover {	 
+ background: #3da3f5;
+}	
+.transForm_redButton:active {	 
+ background: #0c81e0;
+}
 .transForm_SelectedBtn{
    
    background-size: 120px 120px;

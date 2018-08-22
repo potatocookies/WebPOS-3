@@ -38,7 +38,7 @@ public class clsModifierMasterHdModel extends clsBaseModel implements Serializab
 		strClientCode = objModelID.getStrClientCode();
 	}
 
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblitemmodofier" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strModifierCode")})
 	@Id	
 	@AttributeOverrides({

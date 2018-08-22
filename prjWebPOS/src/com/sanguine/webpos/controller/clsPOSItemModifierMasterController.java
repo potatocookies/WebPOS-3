@@ -7,8 +7,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -28,8 +31,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.service.clsGlobalFunctionsService;
+import com.sanguine.webpos.bean.clsPOSAreaMasterBean;
 import com.sanguine.webpos.bean.clsPOSItemModifierMasterBean;
 import com.sanguine.webpos.bean.clsPOSMenuItemMasterBean;
+import com.sanguine.webpos.bean.clsPOSSettlementMasterBean;
+import com.sanguine.webpos.model.clsAreaMasterModel;
+import com.sanguine.webpos.model.clsAreaMasterModel_ID;
+import com.sanguine.webpos.model.clsItemModifierMasterModel;
+import com.sanguine.webpos.model.clsItemModifierMasterModel_ID;
+import com.sanguine.webpos.model.clsMenuHeadMasterModel;
+import com.sanguine.webpos.model.clsMenuItemPricingHdModel;
+import com.sanguine.webpos.model.clsModifierGroupMasterHdModel;
+import com.sanguine.webpos.model.clsModifierMasterHdModel;
+import com.sanguine.webpos.model.clsModifierMasterModel_ID;
+import com.sanguine.webpos.model.clsSettlementMasterModel;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
+import com.sanguine.webpos.util.clsPOSUtilityController;
 
 
 @Controller
@@ -42,14 +59,17 @@ public class clsPOSItemModifierMasterController{
 	private clsGlobalFunctionsService objGlobalFunctionsService;
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
+	@Autowired
+	private clsPOSMasterService objMasterService;
+	@Autowired
+	private clsPOSUtilityController objUtilityController;
 	
-	Map<String,String> hmModifierGroupName=null;
-	Map<String,String> hmModifierGroupCode=null;
+	Map<String,String> hmModifierGroupName=new HashMap<>();
 	Map<String, Double>  mapSelectedItems = new HashMap<>();
-//Open ItemModifierMaster
+	//Open ItemModifierMaster
 	
 	@RequestMapping(value = "/frmPOSItemModifier", method = RequestMethod.GET)
-	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)
+	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request) throws Exception
 	{
 		String urlHits="1";
 		try{
@@ -64,11 +84,19 @@ public class clsPOSItemModifierMasterController{
 		//load modifierGroup
 		String clientCode=request.getSession().getAttribute("gClientCode").toString();
 		List<String> lstModGroup=new ArrayList<String>();
-		
+		lstModGroup.add("--SELECT--");
+		List list=objMasterService.funLoadAllModifierGroup(clientCode);
+		if(list!=null)
+		{
+		for (int cnt = 0; cnt < list.size(); cnt++)
+		{
+			clsModifierGroupMasterHdModel objModel= (clsModifierGroupMasterHdModel) list.get(cnt);
+			lstModGroup.add(objModel.getStrModifierGroupName());
+			hmModifierGroupName.put(objModel.getStrModifierGroupCode(),objModel.getStrModifierGroupName() );
+		}
+		}
 		model.put("ModifierGroup", lstModGroup);
-		//return new ModelAndView("frmPOSGroupMaster");
-		
-		
+	
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSItemModifierMaster_1","command", new clsPOSItemModifierMasterBean());
 		}else if("1".equalsIgnoreCase(urlHits)){
@@ -84,189 +112,101 @@ public class clsPOSItemModifierMasterController{
 	
 	//load menu table
 	@RequestMapping(value = "/LoadMenuDetails", method = RequestMethod.GET)
-	public @ResponseBody List<clsPOSItemModifierMasterBean> funGetMenuDetails(HttpServletRequest req)
+	public @ResponseBody List funGetMenuDetails(HttpServletRequest req) throws Exception
 	{
 		List<clsPOSItemModifierMasterBean> lstMenuDtl=new ArrayList<clsPOSItemModifierMasterBean>();
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
-		clsPOSItemModifierMasterBean objItemModifierMasterBean=null;
-		
-		JSONObject jObjSearchDetails=new JSONObject();
-		String posUrl ="http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funLoadMenuHeadMaster"
-			+ "?masterName="+"POSMenuHeadMaster"+"&gClientCode="+clientCode; 
-				
-			/*	"http://localhost:8080/prjSanguineWebService/APOSSearchIntegration/funGetPOSMenuDtl"
-				+ "?masterName="+"POSMenuHeadMaster"+"&clientCode="+clientCode;*/
-		System.out.println(posUrl);
-		
-		try {
-			URL url = new URL(posUrl);
-		
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			String output = "", op = "";
-			while ((output = br.readLine()) != null)
-			{
-			    op += output;
-			}
-			System.out.println("Obj="+op);
-			conn.disconnect();
-								
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(op);
-	        jObjSearchDetails = (JSONObject) obj;
-	        
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-				
-		JSONArray jArrSearchList=(JSONArray) jObjSearchDetails.get("POSMenuHeadMaster");
-		JSONObject subJsonObject = new JSONObject();
-		if(null!=jArrSearchList)
+		clsPOSItemModifierMasterBean objItemModifierMasterBean = new clsPOSItemModifierMasterBean();
+		List listForMenuHeadMaster = objMasterService.funLoadAllMenuHeadForMaster(clientCode);
+		List retList=new ArrayList();
+		if(listForMenuHeadMaster!=null)
 		{
-			for(int i=0;i<jArrSearchList.size();i++)
-			{				
-                subJsonObject = (JSONObject) jArrSearchList.get(i);
-			
-                objItemModifierMasterBean=new clsPOSItemModifierMasterBean();
-                
-                objItemModifierMasterBean.setStrMenuCode((String) subJsonObject.get("strMenuCode"));
-                objItemModifierMasterBean.setStrMenuName((String) subJsonObject.get("strMenuName"));
-			
-			lstMenuDtl.add(objItemModifierMasterBean);
-		
-			}
+		for (int cnt = 0; cnt < listForMenuHeadMaster.size(); cnt++)
+		{
+		objItemModifierMasterBean=new clsPOSItemModifierMasterBean();	
+		Object[] obj = (Object[]) listForMenuHeadMaster.get(cnt);
+		objItemModifierMasterBean.setStrMenuCode( obj[0].toString());
+		objItemModifierMasterBean.setStrMenuName(obj[1].toString());
+		retList.add(objItemModifierMasterBean);
 		}
+		}
+		
+		
 		if(null==objItemModifierMasterBean)
 		{
 			objItemModifierMasterBean=new clsPOSItemModifierMasterBean();
 			objItemModifierMasterBean.setStrMenuCode("Data not found");
+			retList.add(objItemModifierMasterBean);
 		}
-	return lstMenuDtl;
+		
+	return retList;
 	}
-	
 
 	//load Menu wise Item Details
 	@RequestMapping(value = "/loadMenuWiseItemDetail", method = RequestMethod.GET)
-	public @ResponseBody List<clsPOSItemModifierMasterBean> funGetMenuWiseItemDetail(@RequestParam("MenuCode") String MenuCode,HttpServletRequest req)
+	public @ResponseBody List funGetMenuWiseItemDetail(@RequestParam("MenuCode") String menuCode,@RequestParam("modifierCode") String modifierCode,HttpServletRequest req) throws Exception
 	{
 		List<clsPOSItemModifierMasterBean> lstItemDtl=new ArrayList<clsPOSItemModifierMasterBean>();
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		clsPOSItemModifierMasterBean objItemModifierMasterBean=null;
-		System.out.println(MenuCode);
-		JSONObject jObjSearchDetails=new JSONObject();
-		String posUrl ="http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funLoadItemPricing"
-			+ "?MenuCode="+MenuCode; 
-		System.out.println(posUrl);
-		try {
-			URL url = new URL(posUrl);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			String output = "", op = "";
-			while ((output = br.readLine()) != null)
-			{
-			    op += output;
-			}
-			System.out.println("Obj="+op);
-			conn.disconnect();
-								
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(op);
-	        jObjSearchDetails = (JSONObject) obj;
-	        
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-				
-		JSONArray jArrSearchList=(JSONArray) jObjSearchDetails.get("MenuItemPricing");
-		JSONObject subJsonObject = new JSONObject();
-		if(null!=jArrSearchList)
+		clsMenuItemPricingHdModel objMenuItemPricingHdModel = null;
+		
+		List listForMenuItemPricingMaster = objMasterService.funLoadItemPricingMasterData(menuCode,modifierCode,clientCode);
+		List retList=new ArrayList();
+		if(listForMenuItemPricingMaster!=null)
 		{
-			for(int i=0;i<jArrSearchList.size();i++)
-			{				
-                subJsonObject = (JSONObject) jArrSearchList.get(i);
-			
-                objItemModifierMasterBean=new clsPOSItemModifierMasterBean();
-                
-                objItemModifierMasterBean.setStrItemCode((String) subJsonObject.get("ItemCode"));
-                objItemModifierMasterBean.setStrItemName((String) subJsonObject.get("ItemName"));
-			
-			lstItemDtl.add(objItemModifierMasterBean);
-			}
+		for (int cnt = 0; cnt < listForMenuItemPricingMaster.size(); cnt++)
+		{
+			objItemModifierMasterBean=new clsPOSItemModifierMasterBean();	
+		Object[] obj = (Object[])listForMenuItemPricingMaster.get(cnt);
+		objItemModifierMasterBean.setStrMenuCode( obj[1].toString());
+		objItemModifierMasterBean.setStrMenuName(obj[0].toString());
+		objItemModifierMasterBean.setStrModifierCode(obj[2].toString());
+		objItemModifierMasterBean.setStrSelectAll(obj[4].toString());//selected or not
+		objItemModifierMasterBean.setStrDeselectAll(obj[3].toString());// default modifier
+		retList.add(objItemModifierMasterBean);
 		}
+		}
+		
+		
 		if(null==objItemModifierMasterBean)
 		{
 			objItemModifierMasterBean=new clsPOSItemModifierMasterBean();
-			objItemModifierMasterBean.setStrItemCode("Data not found");
+			objItemModifierMasterBean.setStrMenuCode("Data not found");
+			retList.add(objItemModifierMasterBean);
 		}
-	return lstItemDtl;
+		
+		return retList;
+		
 	}
 
 	// load all data
 	@RequestMapping(value = "/loadModifierCode", method = RequestMethod.GET)
-	public @ResponseBody clsPOSItemModifierMasterBean funSetSearchFields(@RequestParam("modCode") String modCode,HttpServletRequest req)
+	public @ResponseBody clsPOSItemModifierMasterBean funSetSearchFields(@RequestParam("modCode") String modCode,HttpServletRequest req) throws Exception
 	{
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
-		clsPOSItemModifierMasterBean objPOSItemModifierMasterBean = null;
+		clsPOSItemModifierMasterBean objPOSItemModifierMasterBean = new clsPOSItemModifierMasterBean();
+		Map<String,String> hmParameters=new HashMap<String,String>();
+		hmParameters.put("modCode",modCode);
+		hmParameters.put("clientCode",clientCode);
+	    
+		clsModifierMasterHdModel objModifierMasterHdModel = objMasterService.funGetItemModifierMasterData(hmParameters);
 		
-		JSONObject jObjSearchDetails=new JSONObject();
-		String posUrl = "http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funGetItemModifierMasterData"
-			+ "?modCode="+modCode+"&gClientCode="+clientCode;
-		System.out.println(posUrl);
+		Set<clsItemModifierMasterModel> listItemModifierDtl = objModifierMasterHdModel.getSetItemModifierDtl();
+		Iterator itr = listItemModifierDtl.iterator();
 		
-		try {
-			URL url = new URL(posUrl);
-		
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			String output = "", op = "";
-			while ((output = br.readLine()) != null)
-			{
-			    op += output;
-			}
-			System.out.println("Obj="+op);
-			conn.disconnect();
-								
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(op);
-	        jObjSearchDetails = (JSONObject) obj;
-	        
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		JSONArray jArrSearchList=(JSONArray) jObjSearchDetails.get("POSItemModifierMaster");
-		if(null!=jArrSearchList)
-		{
-			if(jArrSearchList.size()==4){
-				objPOSItemModifierMasterBean = new clsPOSItemModifierMasterBean();
-				objPOSItemModifierMasterBean.setStrModifierCode((String) jArrSearchList.get(0));
-				objPOSItemModifierMasterBean.setStrModifierName((String) jArrSearchList.get(1));
-				objPOSItemModifierMasterBean.setStrModifierDescription((String) jArrSearchList.get(2));
-				objPOSItemModifierMasterBean.setStrModifierGroup(hmModifierGroupCode.get(jArrSearchList.get(3).toString()));
-				
-			}else{
-				objPOSItemModifierMasterBean = new clsPOSItemModifierMasterBean();
-				objPOSItemModifierMasterBean.setStrModifierCode((String) jArrSearchList.get(0));
-				objPOSItemModifierMasterBean.setStrModifierName((String) jArrSearchList.get(1));
-				objPOSItemModifierMasterBean.setStrModifierDescription((String) jArrSearchList.get(2));
-				objPOSItemModifierMasterBean.setStrModifierGroup(hmModifierGroupCode.get(jArrSearchList.get(3).toString()));
-				objPOSItemModifierMasterBean.setDblRate(Double.parseDouble(jArrSearchList.get(4).toString()));
-				objPOSItemModifierMasterBean.setStrApplicable((String) jArrSearchList.get(5));
-				objPOSItemModifierMasterBean.setStrChargable((String) jArrSearchList.get(6));
-				
-			}
-			
-		}
-		
+		objPOSItemModifierMasterBean.setStrModifierCode(objModifierMasterHdModel.getStrModifierCode());
+		objPOSItemModifierMasterBean.setStrModifierName(objModifierMasterHdModel.getStrModifierName());
+		objPOSItemModifierMasterBean.setStrModifierDescription(objModifierMasterHdModel.getStrModifierDesc());
+		objPOSItemModifierMasterBean.setStrModifierGroup(objModifierMasterHdModel.getStrModifierGroupCode());
+		if(itr.hasNext())
+        {
+		 	clsItemModifierMasterModel objItemModifierMasterModel=(clsItemModifierMasterModel)itr.next();
+		 	objPOSItemModifierMasterBean.setDblRate(objItemModifierMasterModel.getDblRate());
+		 	objPOSItemModifierMasterBean.setStrApplicable(objItemModifierMasterModel.getStrApplicable());
+		 	objPOSItemModifierMasterBean.setStrChargable(objItemModifierMasterModel.getStrChargable());
+        }
+	
 		if(null==objPOSItemModifierMasterBean)
 		{
 			objPOSItemModifierMasterBean = new clsPOSItemModifierMasterBean();
@@ -276,110 +216,115 @@ public class clsPOSItemModifierMasterController{
 		return objPOSItemModifierMasterBean;
 	}
 	
-	//Save or Update ItemModifierMaster
 	@RequestMapping(value = "/saveItemModifierMaster", method = RequestMethod.POST)
 	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSItemModifierMasterBean objBean,BindingResult result,HttpServletRequest req)
-	{	
-		
-		String urlHits="1";
-		
+	{
 		try
 		{
-			urlHits=req.getParameter("saddr").toString();
+			
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
 			String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
-	
+			String modifierCode = "",modifierName="";
 			List<clsPOSMenuItemMasterBean> listItem=objBean.getListObjItemBean();
-				
-			System.out.println(listItem.size()+" listItem :"+listItem);
+			modifierCode = objBean.getStrModifierCode();
 			
-			clsPOSMenuItemMasterBean objItem;
-			JSONObject jObjData = new JSONObject();
-			JSONArray jArrData = new JSONArray();
-			//JSONArray jArrDataRow = new JSONArray();
 			
-			for(int i=0;i<listItem.size();i++)
-			{
-				try{
-				objItem=listItem.get(i);
-				if(objItem.getStrSelect().equals("Tick"))
+			if (modifierCode.trim().isEmpty())
+		    {
+				if(objBean.getStrModifierName().startsWith("-->")){
+		    		modifierName=objBean.getStrModifierName().substring(0, 3);
+		    	}
+				else
 				{
-					
-					JSONObject jObj = new JSONObject();
-					jObj.put("strItemCode", objItem.getStrItemCode());
-					jObj.put("strItemName", objItem.getStrItemName());
-					jObj.put("dblRate", objItem.getDblPurchaseRate());
-					jArrData.add(jObj);
-					
+					modifierName="-->" +objBean.getStrModifierName();
 				}
-				else if(objItem.getStrSelect()==null)
-				{}
-				}catch(Exception e){
-				}
-			
-			}
-			//jObjData.put("ModifierItems", jArrData);
-			
-			
-				JSONObject jObjItemModifierMaster=new JSONObject();
-				
-				jObjItemModifierMaster.put("ModifierCode", objBean.getStrModifierCode());
-				jObjItemModifierMaster.put("ModifierName", objBean.getStrModifierName());
-				jObjItemModifierMaster.put("ModifierDescription", objBean.getStrModifierDescription());
-				jObjItemModifierMaster.put("ModifierGroup", hmModifierGroupName.get(objBean.getStrModifierGroup()));
-				jObjItemModifierMaster.put("Rate", objBean.getDblRate());
-				jObjItemModifierMaster.put("Applicable", objGlobalFunctions.funIfNull(objBean.getStrApplicable(),"n","y"));
-				jObjItemModifierMaster.put("Chargable",objGlobalFunctions.funIfNull(objBean.getStrChargable(),"n","y"));
-				
-				jObjItemModifierMaster.put("User", webStockUserCode);
-				jObjItemModifierMaster.put("gClientCode", clientCode);
-				jObjItemModifierMaster.put("dteDateCreated", objGlobalFunctions.funGetCurrentDateTime("yyyy-MM-dd"));
-				jObjItemModifierMaster.put("dteDateEdited", objGlobalFunctions.funGetCurrentDateTime("yyyy-MM-dd"));
-				
-			//add item details
-				if(jArrData.size()>0)
-	        	{
-					jObjItemModifierMaster.put("ItemDtls", jArrData);
-	        	}
-				
-				System.out.println("jObjItemModifierMaster "+jObjItemModifierMaster);
-				/*JSONObject jObjItemModifierAll=new JSONObject();
-				
-				jObjItemModifierAll.put("ModifierItem",jObjData);
-				jObjItemModifierAll.put("ModifierItemAll",jObjItemModifierMaster);*/
-				
-				String posURL = "http://localhost:8080/prjSanguineWebService/APOSMastersIntegration/funSaveItemModifierMaster";
-				URL url = new URL(posURL);
-	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	            conn.setDoOutput(true);
-	            conn.setRequestMethod("POST");
-	            conn.setRequestProperty("Content-Type", "application/json");
-	            OutputStream os = conn.getOutputStream();
-	            os.write(jObjItemModifierMaster.toString().getBytes());
-	            os.flush();
-	            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED)
-	            {
-	                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-	            }
-	            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-	            String output = "", op = "";
+				List list=objUtilityController.funGetDocumentCode("POSItemModifierMaster");
+		    	if (!list.get(0).toString().equals("0"))
+				{
+				    String strCode = "0";
+				    String code = list.get(0).toString();
+				    StringBuilder sb = new StringBuilder(code);
+				    String ss = sb.delete(0, 1).toString();
+				      for (int i = 0; i < ss.length(); i++)
+	                {
+	                    if (ss.charAt(i) != '0')
+	                    {
+	                        strCode = ss.substring(i, ss.length());
+	                        break;
+	                    }
+	                }
+	                int intCode = Integer.parseInt(strCode);
+	                intCode++;
+	                if (intCode < 10)
+	                {
+	                	modifierCode = "M00" + intCode;
+	                }
+	                else if (intCode < 100)
+	                {
+	                	modifierCode = "M0" + intCode;
+	                }
+	                else
+	                {
+	                	modifierCode = "M" + intCode;
+	                }
 
-	            while ((output = br.readLine()) != null)
-	            {
-	                op += output;
 	            }
-	            System.out.println("Result= " + op);
-	            conn.disconnect();
-							
-				req.getSession().setAttribute("success", true);
-				req.getSession().setAttribute("successMessage"," "+op);
+	            else
+	            {
+	            	modifierCode = "M001";
+	            }
+				
+		     }
+			else
+			{
+				modifierName=objBean.getStrModifierName();
+			}
+			
+			clsModifierMasterHdModel objModel = new clsModifierMasterHdModel(new clsModifierMasterModel_ID(modifierCode, clientCode));
+			objModel.setStrModifierName(modifierName);
+		    objModel.setDocCode(modifierCode);
+		    objModel.setStrModifierDesc(objBean.getStrModifierDescription());
+		    objModel.setStrModifierGroupCode(hmModifierGroupName.get(objBean.getStrModifierGroup()));
+		    objModel.setStrUserCreated(webStockUserCode);
+		    objModel.setStrUserEdited(webStockUserCode);
+		    objModel.setDteDateCreated(objGlobalFunctions.funGetCurrentDateTime("yyyy-MM-dd"));
+		    objModel.setDteDateEdited(objGlobalFunctions.funGetCurrentDateTime("yyyy-MM-dd"));
+		    objModel.setStrDataPostFlag("N");
+		    
+		    Set<clsItemModifierMasterModel> setItemModifierDtl = new HashSet<clsItemModifierMasterModel>();
+		    if(listItem!=null)
+		    {
+			    for(int i=0;i<listItem.size();i++)
+			    {
+			    	clsPOSMenuItemMasterBean objItem=listItem.get(i);
+			    	
+			    		    	
+			    	clsItemModifierMasterModel objItemModel = new clsItemModifierMasterModel();
+			    	objItemModel.setStrItemCode(objItem.getStrItemCode());
+			    	objItemModel.setStrApplicable(objGlobalFunctions.funIfNull(objBean.getStrApplicable(),"n","y"));
+			    	objItemModel.setStrChargable(objGlobalFunctions.funIfNull(objBean.getStrChargable(),"n","y"));
+			    	objItemModel.setDblRate(objItem.getDblPurchaseRate());
+			    	objItemModel.setStrDefaultModifier("N");
+			    	
+			    	
+			    	if(objItem.getStrSelect()!=null && objItem.getStrSelect().equalsIgnoreCase("Tick"))
+			    	{
+			    		setItemModifierDtl.add(objItemModel);
+			    	}
+			    		
+			    }
+		    }
+		    objModel.setSetItemModifierDtl(setItemModifierDtl);
+		    objMasterService.funSaveUpdateItemModifierMaster(objModel);
+		    
+			req.getSession().setAttribute("success", true);
+			req.getSession().setAttribute("successMessage"," "+modifierCode);
 										
 				
-				return new ModelAndView("redirect:/frmPOSItemModifier.html?saddr="+urlHits);
+				return new ModelAndView("redirect:/frmPOSItemModifier.html");
 			}
 			catch(Exception ex)
 			{
-				urlHits="1";
 				ex.printStackTrace();
 				return new ModelAndView("redirect:/frmPOSItemModifier.html");
 			}

@@ -112,6 +112,7 @@
 	    			<value>com.sanguine.webpos.model.clsDiscountMasterModel</value>
 	    			<value>com.sanguine.webpos.model.clsPOSConfigSettingHdModel</value>
 	    			<value>com.sanguine.webpos.model.clsModifierGroupMasterHdModel</value>
+	    			<value>com.sanguine.webpos.model.clsMenuItemPricingHdModel</value> 
 	    			
 				</list>
 			</property>

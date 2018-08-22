@@ -20,6 +20,8 @@
 	 $(document).ready(function () {
 		  $('input#txtRate').mlKeyboard({layout: 'en_US'});
 		  $('input#txtModifierCode').mlKeyboard({layout: 'en_US'});
+		  
+		  
 		  $('input#txtModifierName').mlKeyboard({layout: 'en_US'});
 		  $('textarea#txtModifierDescription').mlKeyboard({layout: 'en_US'});
 		  
@@ -171,6 +173,7 @@
 
 	function funfillMenuDetail(strMenuCode,strMenuName)
 	{
+		
 		var table = document.getElementById("tblMenuDet");
 		var rowCount = table.rows.length;
 		var row = table.insertRow(rowCount);
@@ -179,7 +182,7 @@
 
 	}
 	
-	function funfillItemDetail(strItemName,strItemCode,StrMenuCode)
+	function funfillItemDetail(strItemName,strItemCode,strMenuCode,strSelectAll,strDeselectAll,strModifierCode)
 	{
 		var table = document.getElementById("tblItemDet");
 		var rowCount = table.rows.length;
@@ -189,7 +192,14 @@
 	    row.insertCell(0).innerHTML= "<input readonly=\"readonly\" class=\"Box\" size=\"50%\" name=\"listObjItemBean["+(rowCount)+"].strItemName\" id=\"strItemName."+(rowCount)+"\" value='"+strItemName+"'>";
 	    row.insertCell(1).innerHTML= "<input readonly=\"readonly\" class=\"Box\" size=\"15%\" name=\"listObjItemBean["+(rowCount)+"].strItemCode\" id=\"strItemCode."+(rowCount)+"\" value='"+strItemCode+"'>";
 	/*     row.insertCell(2).innerHTML= "<input id=\"strSelect."+(rowCount)+"\" type=\"checkbox\" class=\"GCheckBoxClass\" name\"listObjItemBean["+(rowCount)+"].strSelect\" value='"+rate+"' >"; */
+		if(strSelectAll=="Y")
+		{
+	    row.insertCell(2).innerHTML= "<input id=\"cbItemSel."+(rowCount)+"\" type=\"checkbox\" class=\"GCheckBoxClass\" name=\"listObjItemBean["+(rowCount)+"].strSelect\" size=\"15%\" checked=\"checked\"  value=\"Tick\" />";
+		}
+		else
+		{
 	    row.insertCell(2).innerHTML= "<input id=\"cbItemSel."+(rowCount)+"\" type=\"checkbox\" class=\"GCheckBoxClass\" name=\"listObjItemBean["+(rowCount)+"].strSelect\" size=\"15%\" value=\"Tick\" />";
+		}
 	    row.insertCell(3).innerHTML= "<input readonly=\"readonly\" class=\"Box\" style=\"text-align:right;\" size=\"12%\"name=\"listObjItemBean["+(rowCount)+"].dblPurchaseRate\" id=\"dblPurchaseRate."+(rowCount)+"\" value='"+rate+"'>";
 	    row.insertCell(4).innerHTML= "<input id=\"cbDefMod."+(rowCount)+"\" type=\"checkbox\" class=\"GCheckBoxClass\"  name=\"listObjItemBean["+(rowCount)+"].DefMod\" size=\"20%\"  value='Tick' >";
 	     
@@ -210,8 +220,8 @@
 
 	function funGetSelectedRowIndex(menuCode)
 	{
-		
-		var searchurl=getContextPath()+"/loadMenuWiseItemDetail.html?MenuCode="+menuCode;
+		var modifierCode = $("#txtModifierCode").val();
+		var searchurl=getContextPath()+"/loadMenuWiseItemDetail.html?MenuCode="+menuCode+"&modifierCode="+modifierCode;
 		 $.ajax({
 		        type: "GET",
 		        url: searchurl,
@@ -219,7 +229,7 @@
 		        success: function (response) {
 		        	funRemoveProductRows("tblItemDet");
 		            	$.each(response,function(i,item){
-		            		funfillItemDetail(response[i].strItemName,response[i].strItemCode,menuCode);
+		            		funfillItemDetail(response[i].strMenuName,response[i].strMenuCode,menuCode,response[i].strSelectAll,response[i].strDeselectAll,response[i].strModifierCode);
 		            	   
 		            	});
 		    
@@ -354,8 +364,8 @@
 
 <br/>
 <br/> 
-	<s:form name="ItemModifierMaster" method="POST" action="saveItemModifierMaster.html?saddr=${urlHits}"  class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;" > 
-	
+	 
+	<s:form name="ItemModifierMaster" method="POST" action="saveItemModifierMaster.html"  class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;" >
 		<div class="title"><h2></h2>
 		
 			<div class="row" style="background-color: #fff;">
@@ -388,7 +398,7 @@
 						<label><s:input type="checkbox"  id="chkChargable" path="strChargable" style="width: 8%"></s:input>
 						Chargeable</label>
 					</div>
-				<!-- </div> -->
+				
 					</div>	
 				
 						<div class="element-textarea col-lg-6"><label class="title">Modifier Description</label>
@@ -403,11 +413,11 @@
 			</div>
 		</div>
 		
-	</s:form>
+	
 			
 	 <div class="container" style="background-color: #fff;">
 <!--  	 <div class="row" style="background-color: #fff;"> -->
-		 <div class="col-xs-4" style="margin-left: 5%;">
+		 <div class="col-xs-4" style="margin-left: 0%;">
       	 	<div id="tableLoad">	
 			
 				<table class="scroll" style="width: 100%;border: 1px solid #ccc;">
@@ -454,26 +464,21 @@
 <!--     </div> -->
     </div>
     
-    	<s:form class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
-
-   			<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;">
-     
-            	<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Submit"/></div>
-          
-           		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="Reset" onclick="funResetFields()"></div>
-     
-   			</div>
+   	<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;">
+    	<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Submit"/></div>
+        <div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="Reset" onclick="funResetFields()"></div>
+	</div>
    
-   			<div class="element-radio col-lg-2 col-sm-2 col-xs-2">
-    			<label class="title"></label>
-    				<div class="column column1">
-    					<label><input type="radio" name="radio" value="Applicable" id="rdbSelectAll" path="strSelectAll" value="Y" onclick="funSelectAllChkBox()" /><span>Select All</span></label>
-    					<label><input type="radio" name="radio" value="Chargeable" id="rdbDeselectAll" path="strDeselectAll" value="Y" onclick="funDeSelectAllChkBox()" /><span>Deselect All</span></label>
-    				</div>
-<%--     <span class="clearfix"></span> --%>
-  			</div>
+	<div class="element-radio col-lg-2 col-sm-2 col-xs-2">
+    	<label class="title"></label>
+    	<div class="column column1">
+    		<label><input type="radio" name="radio" value="Applicable" id="rdbSelectAll" path="strSelectAll" value="Y" onclick="funSelectAllChkBox()" /><span>Select All</span></label>
+    		<label><input type="radio" name="radio" value="Chargeable" id="rdbDeselectAll" path="strDeselectAll" value="Y" onclick="funDeSelectAllChkBox()" /><span>Deselect All</span></label>
+    	</div>
+
+	</div>
   
-  		</s:form>
+</s:form>
 
 <script>
 // Change the selector if needed

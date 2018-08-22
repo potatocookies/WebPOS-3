@@ -20,7 +20,7 @@ import com.sanguine.base.model.clsBaseModel;
 @Entity
 @Table(name="tblmenuitempricingdtl")
 @NamedQueries({ @NamedQuery (name="MenuItemPricingHdModel",
-		query="select m.strItemName,m.strItemCode from clsMenuItemPricingHdModel m where strMenuCode=:clientCode" )
+		query="select m.strItemName,m.strItemCode from clsMenuItemPricingHdModel m where strMenuCode=:menuCode and  strClientCode=:clientCode" )
 			
 }) // pass  MenuCod in clientCode
 @IdClass(clsMenuItemPricingModel_ID.class)

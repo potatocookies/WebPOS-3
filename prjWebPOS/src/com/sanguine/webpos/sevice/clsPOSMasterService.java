@@ -24,6 +24,8 @@ import com.sanguine.webpos.model.clsDiscountMasterModel;
 import com.sanguine.webpos.model.clsGroupMasterModel;
 import com.sanguine.webpos.model.clsMenuHeadMasterModel;
 import com.sanguine.webpos.model.clsMenuItemMasterModel;
+import com.sanguine.webpos.model.clsModifierGroupMasterHdModel;
+import com.sanguine.webpos.model.clsModifierMasterHdModel;
 import com.sanguine.webpos.model.clsPOSMasterModel;
 import com.sanguine.webpos.model.clsPricingMasterHdModel;
 import com.sanguine.webpos.model.clsReasonMasterModel;
@@ -276,10 +278,12 @@ public class clsPOSMasterService {
 		return objPOSModel;
 	}
 	
-	public List<clsMenuHeadMasterModel> funLoadAllMenuHeadForMaster(String clientCode) throws Exception
+	public List funLoadAllMenuHeadForMaster(String strClientCode)throws Exception
 	{
-		List<clsMenuHeadMasterModel> list =null;
-		list =obBaseService.funLoadAll(new clsMenuHeadMasterModel(),clientCode);
+		List list = null;
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("select strMenuCode, strMenuName from tblmenuhd where strOperational='Y' ORDER by intSequence");  
+        list=obBaseService.funGetList(sqlBuilder, "sql");
 		return list;
 	}
 	public List<clsSubMenuHeadMasterModel> funLoadAllSubMenuHeadMaster(String clientCode)throws Exception
@@ -793,5 +797,42 @@ public class clsPOSMasterService {
 	    return listModel;
 	 }
 	 
+	 public List<clsModifierGroupMasterHdModel> funLoadAllModifierGroup(String strClientCode) throws Exception
+		{
+						
+			List<clsModifierGroupMasterHdModel> list =null;
+			list =obBaseService.funLoadAll(new clsModifierGroupMasterHdModel(),strClientCode);
+			return list;
+			
+		}
+	 
+	 public List funLoadItemPricingMasterData(String menuCode,String modifierCode,String clientCode)throws Exception
+	 {
+		 List list = null;
+		 StringBuilder sqlBuilder = new StringBuilder();
+		 sqlBuilder.append("SELECT m.strItemName,m.strItemCode,ifnull(n.strModifierCode,''),ifnull(n.strDefaultModifier,''),if(n.strItemCode is Null,'N','Y')\n" 
+		       + " FROM tblmenuitempricingdtl m \n" 
+			   + " left outer join tblitemmodofier n on m.strItemCode=n.strItemCode and  n.strModifierCode='"+modifierCode+"' \n" 
+		 	   + " WHERE m.strMenuCode='"+menuCode+"' ");
+	
+		 
+		 list=obBaseService.funGetList(sqlBuilder, "sql");
+		 return list;
+	 }
+	 
+	 public void funSaveUpdateItemModifierMaster(clsBaseModel objBaseModel)throws Exception
+	 {
+		 obBaseService.funSave(objBaseModel); 
+	 } 
+	 
+	 public clsModifierMasterHdModel funGetItemModifierMasterData(Map hmParameters)throws Exception
+		{
+		 clsModifierMasterHdModel objModifierMasterModel = null;
+			
+		 objModifierMasterModel = (clsModifierMasterHdModel) obBaseService.funGetAllMasterDataByDocCodeWise("getModifierMaster", hmParameters);			
+			System.out.println();
+		    return objModifierMasterModel; 	
+		 }
 	 
 }
+

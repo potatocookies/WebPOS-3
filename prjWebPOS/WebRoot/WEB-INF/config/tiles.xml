@@ -988,9 +988,9 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSWaiterWiseItemReport.jsp" />
 	</definition>
 	
-	<definition name="frmBillSettlementTemp" extends="base.definition8">
+	<definition name="frmWebPOSBilling" extends="base.definition8">
 		<put-attribute name="title" value="Bill Settlement"></put-attribute>
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmBilling.jsp"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmWebPOSBilling.jsp"></put-attribute>
 	</definition>	
 
 	<definition name="frmCallCenter" extends="base.definition6">

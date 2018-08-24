@@ -242,7 +242,7 @@ public class clsPOSMakeKOTController
 
 		model.put("urlHits", urlHits);
 
-		return new ModelAndView("frmBillSettlementMakeKOT", "command", obBillSettlementBean);//frmBillSettlementTemp//frmBillSettlementMakeKOT
+		return new ModelAndView("frmBillSettlementMakeKOT", "command", obBillSettlementBean);//frmWebPOSBilling//frmBillSettlementMakeKOT
 	}
 
 	public void funLoadAllReasonMasterData(HttpServletRequest request)
@@ -2763,7 +2763,7 @@ public class clsPOSMakeKOTController
 
 		//return funOpenForm(model, request);
 		
-		return new ModelAndView("redirect:/frmBillSettlementTemp.html");
+		return new ModelAndView("redirect:/frmWebPOSBilling.html");
 	}
 
 	// generate bill no.

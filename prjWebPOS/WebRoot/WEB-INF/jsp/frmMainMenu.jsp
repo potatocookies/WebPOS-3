@@ -15,6 +15,8 @@
     	
     	$("#Desktop").attr('src', s+'Desktop.png');
     	$("#Desktop").attr('title','Desktop');
+    	
+    	
 	});
     
     </script> 

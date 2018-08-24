@@ -1175,7 +1175,7 @@
 		        	 /*  window.location ="frmPOSRestaurantBill.html"; */
 		        	// location.reload(false); //loads from browser's cache 
 		        	 /* location.reload(true); //loads from server */
-		        	 window.location ="frmBillSettlementTemp.html"
+		        	 window.location ="frmWebPOSBilling.html"
 		        	 alert("KOT Save Successfully. KOT NO: "+ $("#txtKOTNo").text());
 	        	}
 	        	else

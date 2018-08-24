@@ -83,7 +83,7 @@ public class clsPOSBillSettlementController
 	private Map<String, clsPOSPromotionItems> hmPromoItem = new HashMap<String, clsPOSPromotionItems>();
 
 	// for Direct Biller
-	@RequestMapping(value = "/frmBillSettlementTemp", method = RequestMethod.GET)
+	@RequestMapping(value = "/frmWebPOSBilling", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest request)
 	{					
 		String urlHits = "1";
@@ -247,7 +247,7 @@ public class clsPOSBillSettlementController
 			gApplyDiscountOn = obj[1].toString();
 		}
 
-		return new ModelAndView("frmBillSettlementTemp", "command", obBillSettlementBean);
+		return new ModelAndView("frmWebPOSBilling", "command", obBillSettlementBean);
 
 	}
 
@@ -1073,7 +1073,7 @@ public class clsPOSBillSettlementController
 
 		objTextFileGeneration.funGenerateAndPrintBill(voucherNo, posCode, clientCode);
 		// return new
-		// ModelAndView("frmBillSettlementTemp","command",obBillSettlementBean);
+		// ModelAndView("frmWebPOSBilling","command",obBillSettlementBean);
 		return funOpenForm(model, req);
 
 	}

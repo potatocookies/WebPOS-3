@@ -734,80 +734,7 @@ public class clsUserController
 				strPosModuleName="Reports";
 			}
 			
-			HashMap hmPendingForms=new HashMap<>();
-			hmPendingForms.put("frmAdvanceOrderTypeMaster","frmAdvanceOrderTypeMaster");
-			hmPendingForms.put("frmLoyaltyPointMaster","frmLoyaltyPointMaster");
-			hmPendingForms.put("frmBulkMenuItemPricing","frmBulkMenuItemPricing");
-			hmPendingForms.put("frmCounterMaster","frmCounterMaster");
-			hmPendingForms.put("frmDebitCardMaster","frmDebitCardMaster");
-			hmPendingForms.put("frmGiftVoucherMaster","frmGiftVoucherMaster");
-			hmPendingForms.put("frmModifierGroupMaster","frmModifierGroupMaster");
-			hmPendingForms.put("frmPromationMaster","frmPromationMaster");
-			hmPendingForms.put("frmRecipeMaster","frmRecipeMaster");
-			hmPendingForms.put("frmDebitCardMaster","frmDebitCardMaster");
-			hmPendingForms.put("frmReOrderTime","frmReOrderTime");
-			hmPendingForms.put("frmTDH","frmTDH");
-			hmPendingForms.put("frmZoneMaster","frmZoneMaster");
-			hmPendingForms.put("frmUserCardSwipe","frmUserCardSwipe");
-			hmPendingForms.put("frmOrderMaster","frmOrderMaster");
-			hmPendingForms.put("frmCharactersticsMaster","frmCharactersticsMaster");
-			hmPendingForms.put("frmFactoryMaster","frmFactoryMaster");
-			hmPendingForms.put("frmLinkupMaster","frmLinkupMaster");
-			hmPendingForms.put("frmTallyLinkupMaster","frmTallyLinkupMaster");
-			hmPendingForms.put("frmPromotionGroupMaster","frmPromotionGroupMaster");
-			hmPendingForms.put("frmSupplierMaster","frmSupplierMaster");
-			hmPendingForms.put("frmUomMaster","frmUomMaster");
-			hmPendingForms.put("frmPaymentInterfaceMaster","frmPaymentInterfaceMaster");
-			hmPendingForms.put("frmPlayZonePricingMaster","frmPlayZonePricingMaster");
-			hmPendingForms.put("frmAdvanceBooking","frmAdvanceBooking");
-			hmPendingForms.put("frmAssignHomeDelivery","frmAssignHomeDelivery");
-			hmPendingForms.put("frmAvdBookReceipt","frmAvdBookReceipt");
-			hmPendingForms.put("frmBillFromKOTs","frmBillFromKOTs");
-			hmPendingForms.put("frmCloseProductionOrder","frmCloseProductionOrder");
-			hmPendingForms.put("frmGiftVoucherIssue","frmGiftVoucherIssue");
-			hmPendingForms.put("frmKitchenDisplaySystem","frmKitchenDisplaySystem");
-			hmPendingForms.put("frmMultiCostCenterKDS","frmMultiCostCenterKDS");
-			hmPendingForms.put("frmPhysicalStkPosting","frmPhysicalStkPosting");
-			hmPendingForms.put("frmPostDataToHO","frmPostDataToHO");
-			hmPendingForms.put("frmPostPOSDataToCMS","frmPostPOSDataToCMS");
-			hmPendingForms.put("frmRechargeDebitCard","frmRechargeDebitCard");
-			hmPendingForms.put("frmStkAdjustment","frmStkAdjustment");
-			hmPendingForms.put("frmStkIn","frmStkIn");
-			hmPendingForms.put("frmStkOut","frmStkOut");
-			hmPendingForms.put("frmVoidAdvanceOrder","frmVoidAdvanceOrder");
-			hmPendingForms.put("frmVoidStock","frmVoidStock");
-			hmPendingForms.put("frmPostPOSSalesDataToMMS","frmPostPOSSalesDataToMMS");
-			hmPendingForms.put("frmCustomerDisplaySystem","frmCustomerDisplaySystem");
-			hmPendingForms.put("frmGenrateMallInterfaceText","frmGenrateMallInterfaceText");
-			hmPendingForms.put("frmSendBulkSMS","frmSendBulkSMS");
-			hmPendingForms.put("frmShowCard","frmShowCard");
-			hmPendingForms.put("frmPlaceOrder","frmPlaceOrder");
-			hmPendingForms.put("frmPullOrder","frmPullOrder");
-			hmPendingForms.put("frmBarcodeGeneration","frmBarcodeGeneration");
-			hmPendingForms.put("frmPostPOSSalesDataToExcise","frmPostPOSSalesDataToExcise");
-			hmPendingForms.put("frmJioMoneyRefund","frmJioMoneyRefund");
-			hmPendingForms.put("frmCustomerOrder","frmCustomerOrder");
-			hmPendingForms.put("frmPurchaseOrder","frmPurchaseOrder");
-			hmPendingForms.put("frmMiniMakeKOT","frmMiniMakeKOT");
-			hmPendingForms.put("frmKPS","frmKPS");
-			hmPendingForms.put("frmComplimentaryItems","frmComplimentaryItems");
-			hmPendingForms.put("frmAdvanceOrderFlash","frmAdvanceOrderFlash");
-			hmPendingForms.put("frmDebitCardFlashReports","frmDebitCardFlashReports");
-			hmPendingForms.put("frmDeliveryboyIncentive","frmDeliveryboyIncentive");
-			hmPendingForms.put("frmLoyaltyPointReport","frmLoyaltyPointReport");
-			hmPendingForms.put("frmOrderAnalysisReport","frmOrderAnalysisReport");
-			hmPendingForms.put("frmPromationFlash","frmPromationFlash");
-			hmPendingForms.put("frmPurchaseOrder","frmPurchaseOrder");
-			hmPendingForms.put("frmStkInOutFlash","frmStkInOutFlash");
-			hmPendingForms.put("frmUnusedCardBalanceReport","frmUnusedCardBalanceReport");
-			hmPendingForms.put("frmPlacedOrderReport","frmPlacedOrderReport");
-			hmPendingForms.put("frmAdvanceOrderReport","frmAdvanceOrderReport");
-			hmPendingForms.put("frmVoidAdvanceOrderReport","frmVoidAdvanceOrderReport");
-			hmPendingForms.put("frmPhysicalStockFlash","frmPhysicalStockFlash");
-			hmPendingForms.put("frmJioMoneyTransactionFlash","frmJioMoneyTransactionFlash");
-			hmPendingForms.put("frmPOSSaleVSPurchase","frmPOSSaleVSPurchase");
-			hmPendingForms.put("frmFoodCosting","frmFoodCosting");
-			hmPendingForms.put("frmPurchaseOrderReport","frmPurchaseOrderReport");
+			HashMap hmPendingForms=funGetAllPendingForms();
 			
 			
 			
@@ -1143,83 +1070,14 @@ public class clsUserController
 		List<clsUserDesktopUtil> listMenu=null;
 		List listMainMenuForms=null;
 		JSONArray jArr = new JSONArray();
-		try {
+		try 
+		{
 			listMainMenuForms = objMainMenuService.funGetMainMenuForms(posModule, superUserYN, POSCode, userCode, clientCode,fromNameText);
 			
-			HashMap hmPendingForms=new HashMap<>();
-			hmPendingForms.put("frmAdvanceOrderTypeMaster","frmAdvanceOrderTypeMaster");
-			hmPendingForms.put("frmLoyaltyPointMaster","frmLoyaltyPointMaster");
-			hmPendingForms.put("frmBulkMenuItemPricing","frmBulkMenuItemPricing");
-			hmPendingForms.put("frmCounterMaster","frmCounterMaster");
-			hmPendingForms.put("frmDebitCardMaster","frmDebitCardMaster");
-			hmPendingForms.put("frmGiftVoucherMaster","frmGiftVoucherMaster");
-			hmPendingForms.put("frmModifierGroupMaster","frmModifierGroupMaster");
-			hmPendingForms.put("frmPromationMaster","frmPromationMaster");
-			hmPendingForms.put("frmRecipeMaster","frmRecipeMaster");
-			hmPendingForms.put("frmDebitCardMaster","frmDebitCardMaster");
-			hmPendingForms.put("frmReOrderTime","frmReOrderTime");
-			hmPendingForms.put("frmTDH","frmTDH");
-			hmPendingForms.put("frmZoneMaster","frmZoneMaster");
-			hmPendingForms.put("frmUserCardSwipe","frmUserCardSwipe");
-			hmPendingForms.put("frmOrderMaster","frmOrderMaster");
-			hmPendingForms.put("frmCharactersticsMaster","frmCharactersticsMaster");
-			hmPendingForms.put("frmFactoryMaster","frmFactoryMaster");
-			hmPendingForms.put("frmLinkupMaster","frmLinkupMaster");
-			hmPendingForms.put("frmTallyLinkupMaster","frmTallyLinkupMaster");
-			hmPendingForms.put("frmPromotionGroupMaster","frmPromotionGroupMaster");
-			hmPendingForms.put("frmSupplierMaster","frmSupplierMaster");
-			hmPendingForms.put("frmUomMaster","frmUomMaster");
-			hmPendingForms.put("frmPaymentInterfaceMaster","frmPaymentInterfaceMaster");
-			hmPendingForms.put("frmPlayZonePricingMaster","frmPlayZonePricingMaster");
-			hmPendingForms.put("frmAdvanceBooking","frmAdvanceBooking");
-			hmPendingForms.put("frmAssignHomeDelivery","frmAssignHomeDelivery");
-			hmPendingForms.put("frmAvdBookReceipt","frmAvdBookReceipt");
-			hmPendingForms.put("frmBillFromKOTs","frmBillFromKOTs");
-			hmPendingForms.put("frmCloseProductionOrder","frmCloseProductionOrder");
-			hmPendingForms.put("frmGiftVoucherIssue","frmGiftVoucherIssue");
-			hmPendingForms.put("frmKitchenDisplaySystem","frmKitchenDisplaySystem");
-			hmPendingForms.put("frmMultiCostCenterKDS","frmMultiCostCenterKDS");
-			hmPendingForms.put("frmPhysicalStkPosting","frmPhysicalStkPosting");
-			hmPendingForms.put("frmPostDataToHO","frmPostDataToHO");
-			hmPendingForms.put("frmPostPOSDataToCMS","frmPostPOSDataToCMS");
-			hmPendingForms.put("frmRechargeDebitCard","frmRechargeDebitCard");
-			hmPendingForms.put("frmStkAdjustment","frmStkAdjustment");
-			hmPendingForms.put("frmStkIn","frmStkIn");
-			hmPendingForms.put("frmStkOut","frmStkOut");
-			hmPendingForms.put("frmVoidAdvanceOrder","frmVoidAdvanceOrder");
-			hmPendingForms.put("frmVoidStock","frmVoidStock");
-			hmPendingForms.put("frmPostPOSSalesDataToMMS","frmPostPOSSalesDataToMMS");
-			hmPendingForms.put("frmCustomerDisplaySystem","frmCustomerDisplaySystem");
-			hmPendingForms.put("frmGenrateMallInterfaceText","frmGenrateMallInterfaceText");
-			hmPendingForms.put("frmSendBulkSMS","frmSendBulkSMS");
-			hmPendingForms.put("frmShowCard","frmShowCard");
-			hmPendingForms.put("frmPlaceOrder","frmPlaceOrder");
-			hmPendingForms.put("frmPullOrder","frmPullOrder");
-			hmPendingForms.put("frmBarcodeGeneration","frmBarcodeGeneration");
-			hmPendingForms.put("frmPostPOSSalesDataToExcise","frmPostPOSSalesDataToExcise");
-			hmPendingForms.put("frmJioMoneyRefund","frmJioMoneyRefund");
-			hmPendingForms.put("frmCustomerOrder","frmCustomerOrder");
-			hmPendingForms.put("frmPurchaseOrder","frmPurchaseOrder");
-			hmPendingForms.put("frmMiniMakeKOT","frmMiniMakeKOT");
-			hmPendingForms.put("frmKPS","frmKPS");
-			hmPendingForms.put("frmComplimentaryItems","frmComplimentaryItems");
-			hmPendingForms.put("frmAdvanceOrderFlash","frmAdvanceOrderFlash");
-			hmPendingForms.put("frmDebitCardFlashReports","frmDebitCardFlashReports");
-			hmPendingForms.put("frmDeliveryboyIncentive","frmDeliveryboyIncentive");
-			hmPendingForms.put("frmLoyaltyPointReport","frmLoyaltyPointReport");
-			hmPendingForms.put("frmOrderAnalysisReport","frmOrderAnalysisReport");
-			hmPendingForms.put("frmPromationFlash","frmPromationFlash");
-			hmPendingForms.put("frmPurchaseOrder","frmPurchaseOrder");
-			hmPendingForms.put("frmStkInOutFlash","frmStkInOutFlash");
-			hmPendingForms.put("frmUnusedCardBalanceReport","frmUnusedCardBalanceReport");
-			hmPendingForms.put("frmPlacedOrderReport","frmPlacedOrderReport");
-			hmPendingForms.put("frmAdvanceOrderReport","frmAdvanceOrderReport");
-			hmPendingForms.put("frmVoidAdvanceOrderReport","frmVoidAdvanceOrderReport");
-			hmPendingForms.put("frmPhysicalStockFlash","frmPhysicalStockFlash");
-			hmPendingForms.put("frmJioMoneyTransactionFlash","frmJioMoneyTransactionFlash");
-			hmPendingForms.put("frmPOSSaleVSPurchase","frmPOSSaleVSPurchase");
-			hmPendingForms.put("frmFoodCosting","frmFoodCosting");
-			hmPendingForms.put("frmPurchaseOrderReport","frmPurchaseOrderReport");
+		
+			HashMap hmPendingForms=funGetAllPendingForms();
+			
+			
 			
 			
 			if(null!=listMainMenuForms)
@@ -1250,6 +1108,95 @@ public class clsUserController
 			}
 	    
 		return jArr;
+	}
+
+
+	private HashMap funGetAllPendingForms() 
+	{
+		HashMap hmPendingForms=new HashMap<>();
+		
+		
+		hmPendingForms.put("frmAdvanceOrderTypeMaster","frmAdvanceOrderTypeMaster");
+		hmPendingForms.put("frmLoyaltyPointMaster","frmLoyaltyPointMaster");
+		hmPendingForms.put("frmBulkMenuItemPricing","frmBulkMenuItemPricing");
+		hmPendingForms.put("frmCounterMaster","frmCounterMaster");
+		hmPendingForms.put("frmDebitCardMaster","frmDebitCardMaster");
+		hmPendingForms.put("frmGiftVoucherMaster","frmGiftVoucherMaster");
+		hmPendingForms.put("frmModifierGroupMaster","frmModifierGroupMaster");
+		hmPendingForms.put("frmPromationMaster","frmPromationMaster");
+		hmPendingForms.put("frmRecipeMaster","frmRecipeMaster");
+		hmPendingForms.put("frmDebitCardMaster","frmDebitCardMaster");
+		hmPendingForms.put("frmReOrderTime","frmReOrderTime");
+		hmPendingForms.put("frmTDH","frmTDH");
+		hmPendingForms.put("frmZoneMaster","frmZoneMaster");
+		hmPendingForms.put("frmUserCardSwipe","frmUserCardSwipe");
+		hmPendingForms.put("frmOrderMaster","frmOrderMaster");
+		hmPendingForms.put("frmCharactersticsMaster","frmCharactersticsMaster");
+		hmPendingForms.put("frmFactoryMaster","frmFactoryMaster");
+		hmPendingForms.put("frmLinkupMaster","frmLinkupMaster");
+		hmPendingForms.put("frmTallyLinkupMaster","frmTallyLinkupMaster");
+		hmPendingForms.put("frmPromotionGroupMaster","frmPromotionGroupMaster");
+		hmPendingForms.put("frmSupplierMaster","frmSupplierMaster");
+		hmPendingForms.put("frmUomMaster","frmUomMaster");
+		hmPendingForms.put("frmPaymentInterfaceMaster","frmPaymentInterfaceMaster");
+		hmPendingForms.put("frmPlayZonePricingMaster","frmPlayZonePricingMaster");
+		hmPendingForms.put("frmAdvanceBooking","frmAdvanceBooking");
+		hmPendingForms.put("frmAssignHomeDelivery","frmAssignHomeDelivery");
+		hmPendingForms.put("frmAvdBookReceipt","frmAvdBookReceipt");
+		hmPendingForms.put("frmBillFromKOTs","frmBillFromKOTs");
+		hmPendingForms.put("frmCloseProductionOrder","frmCloseProductionOrder");
+		hmPendingForms.put("frmGiftVoucherIssue","frmGiftVoucherIssue");
+		hmPendingForms.put("frmKitchenDisplaySystem","frmKitchenDisplaySystem");
+		hmPendingForms.put("frmMultiCostCenterKDS","frmMultiCostCenterKDS");
+		hmPendingForms.put("frmPhysicalStkPosting","frmPhysicalStkPosting");
+		hmPendingForms.put("frmPostDataToHO","frmPostDataToHO");
+		hmPendingForms.put("frmPostPOSDataToCMS","frmPostPOSDataToCMS");
+		hmPendingForms.put("frmRechargeDebitCard","frmRechargeDebitCard");
+		hmPendingForms.put("frmStkAdjustment","frmStkAdjustment");
+		hmPendingForms.put("frmStkIn","frmStkIn");
+		hmPendingForms.put("frmStkOut","frmStkOut");
+		hmPendingForms.put("frmVoidAdvanceOrder","frmVoidAdvanceOrder");
+		hmPendingForms.put("frmVoidStock","frmVoidStock");
+		hmPendingForms.put("frmPostPOSSalesDataToMMS","frmPostPOSSalesDataToMMS");
+		hmPendingForms.put("frmCustomerDisplaySystem","frmCustomerDisplaySystem");
+		hmPendingForms.put("frmGenrateMallInterfaceText","frmGenrateMallInterfaceText");
+		hmPendingForms.put("frmSendBulkSMS","frmSendBulkSMS");
+		hmPendingForms.put("frmShowCard","frmShowCard");
+		hmPendingForms.put("frmPlaceOrder","frmPlaceOrder");
+		hmPendingForms.put("frmPullOrder","frmPullOrder");
+		hmPendingForms.put("frmBarcodeGeneration","frmBarcodeGeneration");
+		hmPendingForms.put("frmPostPOSSalesDataToExcise","frmPostPOSSalesDataToExcise");
+		hmPendingForms.put("frmJioMoneyRefund","frmJioMoneyRefund");
+		hmPendingForms.put("frmCustomerOrder","frmCustomerOrder");
+		hmPendingForms.put("frmPurchaseOrder","frmPurchaseOrder");
+		hmPendingForms.put("frmMiniMakeKOT","frmMiniMakeKOT");
+		hmPendingForms.put("frmKPS","frmKPS");
+		hmPendingForms.put("frmComplimentaryItems","frmComplimentaryItems");
+		hmPendingForms.put("frmAdvanceOrderFlash","frmAdvanceOrderFlash");
+		hmPendingForms.put("frmDebitCardFlashReports","frmDebitCardFlashReports");
+		hmPendingForms.put("frmDeliveryboyIncentive","frmDeliveryboyIncentive");
+		hmPendingForms.put("frmLoyaltyPointReport","frmLoyaltyPointReport");
+		hmPendingForms.put("frmOrderAnalysisReport","frmOrderAnalysisReport");
+		hmPendingForms.put("frmPromationFlash","frmPromationFlash");
+		hmPendingForms.put("frmPurchaseOrder","frmPurchaseOrder");
+		hmPendingForms.put("frmStkInOutFlash","frmStkInOutFlash");
+		hmPendingForms.put("frmUnusedCardBalanceReport","frmUnusedCardBalanceReport");
+		hmPendingForms.put("frmPlacedOrderReport","frmPlacedOrderReport");
+		hmPendingForms.put("frmAdvanceOrderReport","frmAdvanceOrderReport");
+		hmPendingForms.put("frmVoidAdvanceOrderReport","frmVoidAdvanceOrderReport");
+		hmPendingForms.put("frmPhysicalStockFlash","frmPhysicalStockFlash");
+		hmPendingForms.put("frmJioMoneyTransactionFlash","frmJioMoneyTransactionFlash");
+		hmPendingForms.put("frmPOSSaleVSPurchase","frmPOSSaleVSPurchase");
+		hmPendingForms.put("frmFoodCosting","frmFoodCosting");
+		hmPendingForms.put("frmPurchaseOrderReport","frmPurchaseOrderReport");
+		
+		/**
+		 *Both forms are included in on form named frmBilling 
+		 */
+		hmPendingForms.put("frmDirectBiller","frmDirectBiller");
+		hmPendingForms.put("frmRestaurantBill","frmRestaurantBill");
+		
+		return hmPendingForms;
 	}
 	
 }

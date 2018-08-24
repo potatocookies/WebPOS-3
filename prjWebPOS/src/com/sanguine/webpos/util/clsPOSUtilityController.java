@@ -348,7 +348,7 @@ public class clsPOSUtilityController
         {
         	clsPOSItemDetailFrTaxBean objItemDtl = arrListItemDtl.get(cnt);
         	StringBuilder  sqlBuilder=new StringBuilder();
-  		  sqlBuilder.append("select strTaxIndicator from tblitemmaster "
+  		  sqlBuilder.append("select ifnull(strTaxIndicator,'NA') from tblitemmaster "
                     + "where strItemCode='" + objItemDtl.getItemCode().substring(0, 7) + "' "
                     + "and strTaxIndicator='" + indicator + "'");
             
@@ -375,7 +375,7 @@ public class clsPOSUtilityController
         {
         	clsPOSItemDetailFrTaxBean objItemDtl = arrListItemDtl.get(cnt);
         	StringBuilder  sqlBuilder=new StringBuilder();
-    		  sqlBuilder.append( "select strTaxIndicator from tblitemmaster "
+    		  sqlBuilder.append( "select ifnull(strTaxIndicator,'NA') from tblitemmaster "
                     + "where strItemCode='" + objItemDtl.getItemCode().substring(0, 7) + "' "
                     + "and strTaxIndicator='" + indicator + "'");
   
@@ -704,7 +704,7 @@ public class clsPOSUtilityController
         StringBuilder sbSql = new StringBuilder();
         sbSql.setLength(0);
         sbSql.append("select a.strTaxCode,a.strTaxDesc,a.strTaxOnSP,a.strTaxType,a.dblPercent"
-                + ",a.dblAmount,a.strTaxOnGD,a.strTaxCalculation,ifnull(a.strTaxIndicator,' '),a.strAreaCode,a.strOperationType"
+                + ",a.dblAmount,a.strTaxOnGD,a.strTaxCalculation,ifnull(a.strTaxIndicator,'NA'),a.strAreaCode,a.strOperationType"
                 + ",a.strItemType,a.strTaxOnTax,a.strTaxOnTaxCode "
                 + "from tbltaxhd a,tbltaxposdtl b "
                 + "where a.strTaxCode=b.strTaxCode and b.strPOSCode='" + POSCode + "' ");
@@ -907,7 +907,7 @@ public class clsPOSUtilityController
                         {
 
                             StringBuilder sqlTaxOnTax = new StringBuilder();
-                            sqlTaxOnTax.append("select a.strTaxCode,a.strTaxDesc,a.strTaxOnSP,a.strTaxType,a.dblPercent,a.dblAmount,a.dteValidFrom,a.dteValidTo,a.strTaxOnGD,a.strTaxCalculation,a.strTaxIndicator "
+                            sqlTaxOnTax.append("select a.strTaxCode,a.strTaxDesc,a.strTaxOnSP,a.strTaxType,a.dblPercent,a.dblAmount,a.dteValidFrom,a.dteValidTo,a.strTaxOnGD,a.strTaxCalculation,ifnull(a.strTaxIndicator,'NA') "
                                     + ",a.strTaxRounded,a.strTaxOnTax,a.strTaxOnTaxCode "
                                     + "from tbltaxhd a "
                                     + "where a.strTaxCode='" + spTaxOnTaxCode[t] + "' ");
@@ -1030,7 +1030,7 @@ public class clsPOSUtilityController
 
         StringBuilder sqlBuilder=new StringBuilder();
         sqlBuilder.setLength(0);
-	  	sqlBuilder.append ( "select a.strTaxCode,b.dblPercent,b.strTaxIndicator,b.strTaxCalculation,b.strTaxOnGD,b.strTaxOnTax "
+	  	sqlBuilder.append ( "select a.strTaxCode,b.dblPercent,ifnull(b.strTaxIndicator,'NA'),b.strTaxCalculation,b.strTaxOnGD,b.strTaxOnTax "
                 + " ,b.strTaxOnTaxCode,a.dblTaxAmount,a.dblTaxableAmount "
                 + " from " + billTaxDtl + " a,tbltaxhd b "
                 + " where a.strTaxCode=b.strTaxCode "
@@ -1058,7 +1058,7 @@ public class clsPOSUtilityController
             double billTaxableAmt = Double.parseDouble( obj[8].toString());
 
             sqlBuilder.setLength(0);
-    	  	sqlBuilder.append ( "select a.strItemCode,a.dblAmount,b.strTaxIndicator,a.strKOTNo,a.dblDiscountAmt "
+    	  	sqlBuilder.append ( "select a.strItemCode,a.dblAmount,ifnull(b.strTaxIndicator,'NA'),a.strKOTNo,a.dblDiscountAmt "
                     + " from " + billDtl + " a,tblitemmaster b "
                     + " where a.strItemCode=b.strItemCode "
                     + " and a.strBillNo='" + billNo + "'"
@@ -1096,14 +1096,17 @@ public class clsPOSUtilityController
         		if(listItemModDtl!=null && listItemModDtl.size()>0)
         		{
         			
-        		Object []objItemModDtl=(Object[])listItemModDtl.get(i);
-               
-                    itemAmt += Double.parseDouble(objItemModDtl[0].toString());
-                    if (taxOnGD.equalsIgnoreCase("Discount"))
-                    {
-                        itemAmt -=  Double.parseDouble(objItemModDtl[1].toString());
-                    }
-
+        			for(int j=0;j<listItemModDtl.size();j++)
+        			{
+        				Object []objItemModDtl=(Object[])listItemModDtl.get(j);
+        	               
+                        itemAmt += Double.parseDouble(objItemModDtl[0].toString());
+                        if (taxOnGD.equalsIgnoreCase("Discount"))
+                        {
+                            itemAmt -=  Double.parseDouble(objItemModDtl[1].toString());
+                        }
+        			}
+        		
                 }
                
 

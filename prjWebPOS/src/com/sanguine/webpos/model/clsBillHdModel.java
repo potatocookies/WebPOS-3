@@ -30,14 +30,14 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	public clsBillHdModel(){}
 	
 	public clsBillHdModel(clsBillHdModel_ID objModelID){
-		strBillNo = objModelID.getStrBillNo();
-		strClientCode = objModelID.getStrClientCode();
+		strBillNo = objModelID.getStrBillNo();		
 		dtBillDate = objModelID.getDtBillDate();
+		strClientCode = objModelID.getStrClientCode();
 	}
 	
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbilldtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dtBillDate")})
+    @JoinTable(name="tblbilldtl" , joinColumns={@JoinColumn(name="dtBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -48,7 +48,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	private List<clsBillDtlModel> listBillDtlModel= new ArrayList<clsBillDtlModel>();
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbilldiscdtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dteBillDate")})
+    @JoinTable(name="tblbilldiscdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -59,7 +59,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	private List<clsBillDiscDtlModel> listBillDiscDtlModel= new ArrayList<clsBillDiscDtlModel>();
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbillmodifierdtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dteBillDate")})
+    @JoinTable(name="tblbillmodifierdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -70,7 +70,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	private List<clsBillModifierDtlModel> listBillModifierDtlModel= new ArrayList<clsBillModifierDtlModel>();
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbillcomplementrydtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dtBillDate")})
+    @JoinTable(name="tblbillcomplementrydtl" , joinColumns={@JoinColumn(name="dtBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -80,7 +80,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	private List<clsBillComplementaryDtlModel> listBillComplementaryDtlModel= new ArrayList<clsBillComplementaryDtlModel>();
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbillpromotiondtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dteBillDate")})
+    @JoinTable(name="tblbillpromotiondtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -92,7 +92,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbilltaxdtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dteBillDate")})
+    @JoinTable(name="tblbilltaxdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -103,7 +103,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	private List<clsBillTaxDtl> listBillTaxDtl= new ArrayList<clsBillTaxDtl>();
 	
 	@CollectionOfElements(fetch=FetchType.LAZY)
-    @JoinTable(name="tblbillsettlementdtl" , joinColumns={@JoinColumn(name="strClientCode"),@JoinColumn(name="strBillNo"),@JoinColumn(name="dteBillDate")})
+    @JoinTable(name="tblbillsettlementdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
 		@AttributeOverride(name="strClientCode",column=@Column(name="strClientCode")),
@@ -117,16 +117,12 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	
 		@Column(name="strBillNo")
 	    private String strBillNo;
-		
 		@Column(name="strAdvBookingNo")
 	    private String strAdvBookingNo;
-		
 		@Column(name="dteBillDate")
 	    private String dteBillDate;
-		
 		@Column(name="strPOSCode")
 	    private String strPOSCode;
-		
 		@Column(name="strSettelmentMode")
 	    private String strSettelmentMode;
 		@Column(name="dblDiscountAmt")
@@ -151,10 +147,8 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	    private String dteDateCreated;
 		@Column(name="dteDateEdited")
 	    private String dteDateEdited;
-		
 		@Column(name="strClientCode")
 	    private String strClientCode;
-		
 		@Column(name="strTableNo")
 	    private String strTableNo;
 		@Column(name="strWaiterNo")
@@ -211,10 +205,8 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	    private double dblRoundOff;
 		@Column(name="intBillSeriesPaxNo",columnDefinition="Int(8) default '0'")
 	    private int intBillSeriesPaxNo;
-		
 		@Column(name="dtBillDate")
 	    private String dtBillDate;
-		
 		@Column(name="intOrderNo",columnDefinition="Int(8) default '0'")
 	    private int intOrderNo;
 

@@ -28,7 +28,7 @@
 //for Tabs
 
 var fieldName,searchForm,selectedRowIndex=0;
-
+var activeTab="";
 //Initialize tab Index or which tab is Active
 $(document).ready(function() 
 {		
@@ -39,8 +39,9 @@ $(document).ready(function()
 		$("ul.tabs li").removeClass("active");
 		$(this).addClass("active");
 		$(".tab_content").hide();
-		var activeTab = $(this).attr("data-state");
+		activeTab = $(this).attr("data-state");
 		$("#" + activeTab).fadeIn();
+	
 	});
 		
 	$(document).ajaxStart(function(){
@@ -52,23 +53,42 @@ $(document).ready(function()
 	
 	 $("form").submit(function(event)
 	 {
-		  txtVal=activeTab;
-		  if($("#txtMenuHeadName").val().trim()=="")
+		 var txtVal=activeTab;
+		 if(txtVal=="tab1")
+		 {	 
+		 if(($("#txtMenuHeadName").val().trim()==""))
 		  {
 				alert("Please Enter Menu Head Name");
 				return false;
 		  }
-		  else if(($("#txtMenuHeadName").val().trim()=="") && (txtVal=="tab3"))
-		  {
-			  alert("vcv");
-		  }  
-		 else
+		  }
+		 else if(txtVal=="tab2")
 		 {
+			 if(($("#txtSubMenuHeadName").val().trim()==""))
+			  {
+					alert("Please Enter Sub Menu Head Name");
+					return false;
+			  } 
+			 else
+			{
+				 flg= funForSubMenuHeadValidation();
+				 return flg;
+			}	 
+	   	 }
 			 
-			  funForSubMenuHeadValidation();
+		  if(txtVal=="tab3")
+		  {
+			funForSubMenuHeadValidation();
 			  flg=funCallFormAction();
 			  return flg;
 		  }
+		  else
+			{
+			  flg=funCallFormAction();
+			  return flg;
+			}	  
+		 
+		 
 		});
 });
 
@@ -102,13 +122,20 @@ function funResetFields()
 
 function funForSubMenuHeadValidation()
 {
+	var flg=true;
 		if($("#txtSubMenuHeadName").val().trim() != "")
 		{
 		if($("#txtSubMenuHeadShortName").val().trim()=="")
 		{
 			  alert("Please Enter Short Name For Sub Menu");
 				return false; 
-		}	   
+		}	 
+		if($("#txtMenuHeadCodeInSub").val().trim()=="")
+		{
+			  alert("Please Enter Menu Head Name");
+				return false; 
+		}
+		flg=false;
 		}
 	
 }
@@ -202,7 +229,7 @@ function funLoadMenuHeadData()
 		           // for (var i in response){		            	
 		            	$.each(response,function(i,item){
 		            	
-		            		funfillMenuDetail(response[i].strMenuHeadCode,response[i].strMenuHeadName);
+		            		funfillMenuDetail(response[i].sequenceNo,response[i].strMenuHeadCode,response[i].strMenuHeadName);
 		            	});
 		    
 		            },
@@ -229,13 +256,14 @@ function funLoadMenuHeadData()
 	 });
 }
 
-function funfillMenuDetail(strMenuHeadCode,strMenuHeadName)
+function funfillMenuDetail(strSequenceNo,strMenuHeadCode,strMenuHeadName)
 {
 	var table = document.getElementById("tblMenuDet");
 	var rowCount = table.rows.length;
 	var row = table.insertRow(rowCount);
-
-      row.insertCell(0).innerHTML= "<input name=\"listMenuMasterDtl["+(rowCount)+"].sequenceNo\" readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value='"+(rowCount+1)+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+	var i=1;
+	var seqNo = parseInt(strSequenceNo)+i;
+      row.insertCell(0).innerHTML= "<input name=\"listMenuMasterDtl["+(rowCount)+"].sequenceNo\" readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value='"+seqNo+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
 	  row.insertCell(1).innerHTML= "<input name=\"listMenuMasterDtl["+(rowCount)+"].strMenuHeadCode\" readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"txtMenuHeadCode."+(rowCount)+"\" value='"+strMenuHeadCode+"'onclick=\"funGetSelectedRowIndex(this)\"/>";
 	  row.insertCell(2).innerHTML= "<input name=\"listMenuMasterDtl["+(rowCount)+"].strMenuHeadName\" readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"txtMenuHeadName."+(rowCount)+"\" value='"+strMenuHeadName+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
 	
@@ -585,7 +613,7 @@ function funRemoveProductRows()
 	</div>
 
 
-	<s:form name="MenuHead" method="POST" action="saveMenuHeadMaster.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+	<s:form name="MenuHead" method="POST" action="saveMenuHeadMaster.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 		<br> 
 		<br>
 	<div style="margin-left: 190px;">
@@ -706,7 +734,7 @@ function funRemoveProductRows()
 	<br><br>
 	
 		 <div class="container" style="background-color: #fff; width: 100%;">
-		 	<div class="col-xs-4" style="margin-left: -31%; width: 100%;">
+		 	<div class="col-xs-4" style="margin-left: 0%; width: 88%;">
       	 		<div id="tableLoad">	
 			
 					<table class="scroll" style="width: 70%;border: 1px solid #ccc;"" >
@@ -751,153 +779,7 @@ function funRemoveProductRows()
    
    </div>
   </div>
-				
-								
-<!-- 					<table class="masterTable"> -->
-<!-- 					<tr> -->
-<!-- 					<td></td> -->
-<!-- 					<td></td> -->
-<!-- 					<td></td> -->
-<!-- 					</tr> -->
-<!-- 						<tr> -->
-<!-- 							<td width="20%"><label>Menu Head Code</label></td> -->
-<%-- 							<td width="40%"><s:input id="txtMenuHeadCode" path="strMenuHeadCode" cssClass="searchTextBox" ondblclick="funHelp('POSMenuHeadMaster')" /></td>				 --%>
-<!-- 							<td></td> -->
-<!-- 						</tr> -->
-<!-- 						<tr> -->
-<!-- 			    			<td width="20%"><label>Menu Head Name</label></td> -->
-<%-- 							<td width="40%"><s:input id="txtMenuHeadName" path="strMenuHeadName" cssClass="longTextBox" /></td>				 --%>
-<!-- 			    		<td></td> -->
-<!-- 						</tr> -->
-<!-- 						<tr> -->
-<!-- 							<td><label>Operational</label></td> -->
-<!-- 				 				<td> -->
-<%-- 				 				<s:select id="cmbOperational" path="strOperational" cssClass="BoxW124px"> --%>
-<!-- 				    			<option selected="selected" value="Y">Yes</option> -->
-<!-- 			        			<option value="N">No</option> -->
-<%-- 		         			</s:select> --%>
-<!-- 							</td> -->
-<!-- 							<td></td> -->
-<!-- 						</tr> -->
-<!-- 				<tr></tr> -->
-<!-- 				<tr></tr> -->
-<!-- 				<tr> -->
-<%-- 				<td><s:input colspan="3" type="hidden"  id="txtOperationType" value="N" name="txtOperationType" path="strOperationType"/> --%>
-<!-- 				<td></td>  -->
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-<!-- 						</table> -->
-				
-						
-						<!-- Menu Head Master Tab End -->
-				
-				<!--Sub Menu Head Master Tab Start -->
-				
-<!-- 				<div id="tab2" class="tab_content" style="height: 400px"> -->
-<!-- 				<br>  -->
-<!-- 					<br>					 -->
-<!-- 					<table class="masterTable"> -->
-<!-- 					<tr> -->
-<!-- 					<td></td> -->
-<!-- 					<td></td> -->
-<!-- 					<td></td> -->
-<!-- 					</tr>		  -->
-<!-- 						<tr> -->
-<!-- 							<td width="20%"><label>Sub Menu Head Code</label></td> -->
-<%-- 							<td width="40%"><s:input id="txtSubMenuHeadCode" path="strSubMenuHeadCode" cssClass="searchTextBox" ondblclick="funHelp('POSSubMenuHeadMaster')" /></td>				 --%>
-<!-- 							<td></td> -->
-<!-- 						</tr> -->
-<!-- 						<tr> -->
-<!-- 			    			<td width="20%"><label>Sub Menu Head Name</label></td> -->
-<%-- 							<td width="40%"><s:input id="txtSubMenuHeadName" path="strSubMenuHeadName" cssClass="longTextBox" /></td>				 --%>
-<!-- 			    		<td></td> -->
-<!-- 						</tr> -->
-<!-- 						<tr> -->
-<!-- 			    			<td width="20%"><label>Sub Menu Head Short Name</label></td> -->
-<%-- 							<td width="40%"><s:input id="txtSubMenuHeadShortName" path="strSubMenuHeadShortName" cssClass="longTextBox" /></td>				 --%>
-<!-- 			    		<td></td> -->
-<!-- 						</tr> -->
-<!-- 						<tr> -->
-<!-- 							<td width="20%"><label>MenuHead Code</label></td> -->
-<%-- 							<td width="40%"><s:input id="txtMenuHeadCodeInSub" path="strMenuHeadCodeInSub" cssClass="searchTextBox" ondblclick="funHelp('POSMenuHeadMaster')" /></td>				 --%>
-<!-- 							<td></td> -->
-<!-- 						</tr> -->
-<!-- 						<tr> -->
-<!-- 							<td><label>Operational</label></td> -->
-<!-- 				 				<td> -->
-<%-- 				 				<s:select id="cmbSubMenuOperational" path="strSubMenuOperational" cssClass="BoxW124px"> --%>
-<!-- 				    			<option selected="selected" value="Y">Yes</option> -->
-<!-- 			        			<option value="N">No</option> -->
-<%-- 		         			</s:select> --%>
-<!-- 							</td> -->
-<!-- 							<td></td> -->
-<!-- 						</tr> -->
-<!-- 				<tr></tr> -->
-<!-- 				<tr></tr> -->
-<!-- 							<tr> -->
-<%-- 				<td><s:input colspan="3" type="hidden"  id="txtOperationType" value="N" name="txtOperationType" path="strOperationType"/> --%>
-<!-- 				<td></td>  -->
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-<%-- 				<s:hidden path="listMenuMasterDtl" id="hiddenlist"/> --%>
-<!-- 						</table> -->
-<!-- 						<p align="center"> -->
-<!-- 						<br> -->
-<!-- 	</div>	 -->
-						
-				<!--Sub Menu Head Master Tab End -->
-				
-				<!-- Menu Head Sequence Tab Start -->
-				
-				
-<!-- 	<div id="tab3" class="tab_content" style="height: 400px" onload="funLoadMenuHeadData()">    -->
-<!-- 					<br>  -->
-<!-- 					<br> -->
-<!-- 					<table class=""> -->
-<!-- 					<tr></tr> -->
-<!-- 					<tr> -->
-<!-- 					<td width="120px"></td> -->
-<!-- 					<td> -->
-					
-<!-- 			<div id="tableLoad" align="center" class="" style="width: 400px; height: 300px; margin-left: 80px;"> -->
-<!-- 			<table style="height: 20px; border: #0F0;width: 100%;font-size:11px; -->
-<!-- 			font-weight: bold;"> -->
-<!-- 				<tr bgcolor="#72BEFC"> -->
-<!-- 					<td width="85px"><label style ="text-align:center;"> Sequence No.</label></td>					 -->
-<!-- 					<td width="115px">Menu Head Code</td>	 -->
-<!-- 					<td width="130px">Menu Head Name</td> -->
-<!-- 				</tr> -->
-<!-- 			</table> -->
-			
-<!-- 			<div style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 263px;width: 350px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 99.80%;"> -->
-<!-- 					<table id="tblMenuDet" -->
-<!-- 					style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll" -->
-<!-- 					class="transTablex col11-center"> -->
-<!-- 					<tbody> -->
-<%-- 					<col style="width:85px">					 --%>
-<%-- 					<col style="width:115px"> --%>
-<%-- 					<col style="width:130px"> --%>
-					
-<!-- 					</tbody> -->
-<!-- 				</table> -->
-<!-- 			</div> -->
-			
-<!-- 			<div> -->
-<%-- 			 <img  src="../${pageContext.request.contextPath}/resources/images/imgMoveUp.png" onclick="funMoveSelectedRow(1)"> --%>
-<%-- 			 <img  src="../${pageContext.request.contextPath}/resources/images/imgMoveDown.png" onclick="funMoveSelectedRow(0)"> --%>
-<!-- 			</div> -->
-			
-<!-- 		</div> -->
-<!-- </td> -->
-<!-- 		</tr> -->
-<!-- 				</table>		 -->
-<!-- 		</div> -->
-<!-- 			<div id="wait" style="display:none;width:60px;height:60px;border:0px solid black;position:absolute;top:45%;left:45%;padding:2px;"> -->
-<%-- 					<img src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif" width="60px" height="60px" /> --%>
-<!-- 			</div> -->
-<!-- 	</div> -->
 
-		
 			 </s:form>
 </body>
 </html>

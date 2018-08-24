@@ -8,7 +8,7 @@
 <title>SUBGROUP MASTER</title>
 
 <script type="text/javascript">
-//	var fieldName;
+
 
 	$(function() 
 	{
@@ -48,9 +48,7 @@
 				        	$("#txtSubGroupName").val(response.strSubGroupName);
 				        	$("#txtSubGroupName").focus();
 				        	$("#txtIncentives").val(response.strIncentives);
-				        //	$("#txtOperational").val(response.strSuper);
-				        //	$("#txtOperational").val(response.strOperational);
-			        	}
+				      }
 					},
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {
@@ -72,11 +70,7 @@
 		      });
 	}
 
-// 		switch(fieldName){
 
-// 		}
-	
-		
 		
 		/**
 		* Success Message After Saving Record
@@ -164,7 +158,6 @@
 	function funHelp(transactionName)
 	{
 		fieldName=transactionName;
-	//	window.showModalDialog("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;");
 		window.open("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
 	}
 </script>
@@ -218,7 +211,7 @@
     				<label class="title">Incentives</label>
     			</div>
     			<div class="element-input col-lg-6" style="margin-bottom: 10px;" > 
-					<s:input type="text" id="txtIncentives" path="strIncentives" />
+					<s:input type="text" id="txtIncentives" path="strIncentives" value="0.0"/>
 				</div>
 			 </div>
 			 
@@ -233,67 +226,6 @@
    			 </div>
 			 
 		</div>
-		
-		
-<!-- 		<div id="jquery-script-menu"> -->
-
-<!-- 		</div> -->
-
-<!-- 		<table class="masterTable"> -->
-<!-- 			<tr> -->
-				
-<!-- 				<td width="140px">Sub Group Code</td> -->
-<%-- 				<td><s:input id="txtSubGroupCode" path="strSubGroupCode" --%>
-<%-- 						cssClass="searchTextBox jQKeyboard form-control" ondblclick="funHelp('POSSubGroupMaster')" /></td>	 --%>
-<!-- 				<td></td>		 -->
-<!-- 			</tr> -->
-			
-<!-- 			<tr>	 -->
-			   
-<!-- 			    <td ><label>Sub Group Name</label></td>		 -->
-<%-- 				<td><s:input type="text" id="txtSubGroupName"  --%>
-<%--  						name="txtSubGroupCode" path="strSubGroupName" required="true"  --%>
-<%-- 						cssStyle="text-transform: uppercase; width :200px;" cssClass="longTextBox jQKeyboard form-control"  /> </td>  --%>
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-			
-<!-- 			<tr> -->
-<!-- 			<td><label>Group Code</label></td> -->
-<%-- 				<td><s:select id="cmbGroupCode" name="cmbGroupCode" path="strGroupCode" --%>
-<%-- 				 cssClass="BoxW124px" >  		   --%>
-<%-- 				 </s:select></td>  --%>
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-			
-						
-<!-- 			<tr>	 -->
-			   
-<!-- 			 <td ><label>Incentives</label></td>		 -->
-<%-- 		     <td><s:input colspan="3" type="text" id="txtIncentives"  --%>
-<%--  						name="txtIncentives" path="strIncentives" required="true"  --%>
-<%--  						cssStyle="text-transform: uppercase;width :200px;" cssClass="longTextBox jQKeyboard form-control"   /> </td>  --%>
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-			
-			
-		
-<!-- 			<tr> -->
-<%-- 				<td><s:input colspan="3" type="hidden"  id="txtGroupCode" value="N" name="txtGroupCode" path="strGroupCode"/> </td> --%>
-		
-<!-- 			</tr> -->
-			
-<!-- 			<tr> -->
-<%-- 				<td><s:input colspan="3" type="hidden"  id="txtIncentives" value="N" name="txtIncentives" path="strIncentives"/> </td> --%>
-<!-- 			</tr> -->
-			
-<!-- 		</table> -->
-
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button" /> -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
 
 	</s:form>
 </body>

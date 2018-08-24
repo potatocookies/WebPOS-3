@@ -6,12 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,10 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sanguine.base.service.clsBaseServiceImpl;
-import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSMoveTableBean;
 import com.sanguine.webpos.bean.clsPOSTableMasterBean;
-import com.sanguine.webpos.bean.clsPOSUserAccessBean;
 
 
 
@@ -34,17 +29,6 @@ import com.sanguine.webpos.bean.clsPOSUserAccessBean;
 public class clsPOSMoveTableController {
 	
 	
-	@Autowired
-	private clsGlobalFunctions objGlobal;
-	@Autowired
-	private clsPOSGlobalFunctionsController objPOSGlobal;
-	
-	@Autowired
-	private clsPOSGlobalFunctionsController objPOSGlobalFunctionsController; 
-
-	 @Autowired
-	 private ServletContext servletContext;
-	 
 	 @Autowired 
 	 private clsBaseServiceImpl objBaseServiceImpl;
 	
@@ -54,8 +38,7 @@ public class clsPOSMoveTableController {
 	@RequestMapping(value = "/frmPOSMoveTable", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)
 	{
-		String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
-		String posCode=request.getSession().getAttribute("loginPOS").toString();
+	
 		String urlHits="1";
 		try{
 			urlHits=request.getParameter("saddr").toString();
@@ -81,21 +64,14 @@ public class clsPOSMoveTableController {
 	@RequestMapping(value = "/saveMoveTable", method = RequestMethod.POST)
 	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSMoveTableBean objBean,BindingResult result,HttpServletRequest req)
 	{
-		String urlHits="1";
 		
 		try
 		{
-			urlHits=req.getParameter("saddr").toString();
-			String clientCode=req.getSession().getAttribute("gClientCode").toString();
-			String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
 			
-		    JSONObject jObj=new JSONObject();
-		    clsPOSUserAccessBean obj=null;
 		    List<clsPOSTableMasterBean> listAllTable=objBean.getListOfAllTable();
 		    List<clsPOSTableMasterBean> listOccupiedTable=objBean.getListOfOccupiedTable();
 		    String movedFromTableName="",movedFromTableNo="",movedToTableName="",movedToTableNo="";
-	    	JSONArray jArrKOTList = new JSONArray();
-		    
+	    			    
 		    if(null!=listOccupiedTable)
 		    {
 		    	for(int i=0;i<listOccupiedTable.size();i++)
@@ -146,8 +122,7 @@ public class clsPOSMoveTableController {
                     + "from tbltablemaster where strTableNo='"+movedFromTableNo+"' ");
 		    
 			list = objBaseServiceImpl.funGetList(sqlBuilder,"sql");
-		    
-			JSONArray jArrTableData=new JSONArray();
+
 			 if (list!=null)
 				{
 					for(int i=0; i<list.size(); i++)
@@ -155,7 +130,6 @@ public class clsPOSMoveTableController {
 						Object obj1=list.get(i);
 					    String status=(String) Array.get(obj1, 0);
 	                    int pax=(int) Array.get(obj1, 1);
-	                    String tableName=(String) Array.get(obj1, 2);
 	                    String pos=(String) Array.get(obj1, 3);
 	                    
 	                    sql="update tbltablemaster set strStatus='"+status+"',intPaxNo="+pax+" "
@@ -177,13 +151,12 @@ public class clsPOSMoveTableController {
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+retResult);
 		
-			return new ModelAndView("redirect:/frmPOSMoveTable.html?saddr="+urlHits);
+			return new ModelAndView("redirect:/frmPOSMoveTable.html?saddr");
 			
 			
 		}
 		catch(Exception ex)
 		{
-			urlHits="1";
 			ex.printStackTrace();
 			return new ModelAndView("redirect:/frmFail.html");
 		}
@@ -194,14 +167,9 @@ public class clsPOSMoveTableController {
 	@RequestMapping(value = "/LoadMoveTableData", method = RequestMethod.GET)
 	public @ResponseBody clsPOSMoveTableBean funLoadTableData(@RequestParam("TableStatus") String tableStatus,HttpServletRequest req)
 	{
-		String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		String posCode=req.getSession().getAttribute("loginPOS").toString();
 		clsPOSMoveTableBean obj=new clsPOSMoveTableBean();
-//		obj=funGetTableList(posCode,tableStatus);
-//		return obj;
-		JSONArray jArrTableList=null;
 		List<clsPOSTableMasterBean> listTableData=new ArrayList<clsPOSTableMasterBean>();
-		JSONObject jObjTableData=new JSONObject();
 		List list =null;
 		
 		try
@@ -220,7 +188,7 @@ public class clsPOSMoveTableController {
 		sqlBuilder.append( "  order by intSequence ");
 	 
 		list =objBaseServiceImpl.funGetList(sqlBuilder, "sql");
-		JSONArray jArrTableData=new JSONArray();
+		
 		 if (list!=null)
 			{
 				for(int i=0; i<list.size(); i++)
@@ -228,7 +196,7 @@ public class clsPOSMoveTableController {
 					Object obj1=list.get(i);
 				
 					clsPOSTableMasterBean objTableDtl = new clsPOSTableMasterBean();
-					JSONObject objTable=new JSONObject();
+					
 					String tableNo="",tableName="",tblStatus="";
 					tableNo= (String) Array.get(obj1, 0);
 					tableName= (String) Array.get(obj1, 1);
@@ -273,9 +241,7 @@ public class clsPOSMoveTableController {
  private clsPOSMoveTableBean funGetTableList(String posCode,String tableStatus)
  {
 	clsPOSMoveTableBean obj=new clsPOSMoveTableBean();
-	JSONArray jArrTableList=null;
 	List<clsPOSTableMasterBean> listTableData=new ArrayList<clsPOSTableMasterBean>();
-	JSONObject jObjTableData=new JSONObject();
 	List list =null;
 	
 	try
@@ -294,7 +260,6 @@ public class clsPOSMoveTableController {
 	sqlBuilder.append( "  order by intSequence ");
  
 	list =objBaseServiceImpl.funGetList(sqlBuilder, "sql");
-	JSONArray jArrTableData=new JSONArray();
 	 if (list!=null)
 		{
 			for(int i=0; i<list.size(); i++)
@@ -302,7 +267,6 @@ public class clsPOSMoveTableController {
 				Object obj1=list.get(i);
 			
 				clsPOSTableMasterBean objTableDtl = new clsPOSTableMasterBean();
-				JSONObject objTable=new JSONObject();
 				String tableNo="",tableName="",tblStatus="";
 				tableNo= (String) Array.get(obj1, 0);
 				tableName= (String) Array.get(obj1, 1);

@@ -305,15 +305,17 @@ public class clsPOSItemModifierMasterController{
 			    	objItemModel.setStrChargable(objGlobalFunctions.funIfNull(objBean.getStrChargable(),"n","y"));
 			    	objItemModel.setDblRate(objItem.getDblPurchaseRate());
 			    	objItemModel.setStrDefaultModifier("N");
-			    	
+			    	System.out.println(objItemModel);
 			    	
 			    	if(objItem.getStrSelect()!=null && objItem.getStrSelect().equalsIgnoreCase("Tick"))
 			    	{
 			    		setItemModifierDtl.add(objItemModel);
 			    	}
+			    	  
 			    		
 			    }
 		    }
+		    System.out.println(setItemModifierDtl);
 		    objModel.setSetItemModifierDtl(setItemModifierDtl);
 		    objMasterService.funSaveUpdateItemModifierMaster(objModel);
 		    

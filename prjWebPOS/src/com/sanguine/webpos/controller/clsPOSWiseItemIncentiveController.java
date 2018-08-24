@@ -80,11 +80,11 @@ public class clsPOSWiseItemIncentiveController {
 	@RequestMapping(value ="/savePOSWiseItemIncentive", method = RequestMethod.POST)
 	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSWiseItemIncentiveBean objBean,BindingResult result,HttpServletRequest req)
 	{
-		String urlHits="1";
+		
 		System.out.println(objBean);
 		try
 		{
-			urlHits=req.getParameter("saddr").toString();
+			
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
 			List<clsPOSWiseItemIncentiveDtlBean> listdata=objBean.getListItemIncentive();
 			clsPOSWiseItemIncentiveDtlBean obj; 
@@ -116,11 +116,10 @@ public class clsPOSWiseItemIncentiveController {
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," ");
 									
-			return new ModelAndView("redirect:/frmPOSWiseItemIncentive.html?saddr="+urlHits);
+			return new ModelAndView("redirect:/frmPOSWiseItemIncentive.html");
 		}
 		catch(Exception ex)
 		{
-			urlHits="1";
 			ex.printStackTrace();
 			return new ModelAndView("redirect:/frmFail.html");
 		}

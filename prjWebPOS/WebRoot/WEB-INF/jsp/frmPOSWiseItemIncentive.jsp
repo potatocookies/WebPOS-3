@@ -136,7 +136,7 @@
 <br/>
 <br/>
 
-	<s:form name="POSWiseItemIncentive" method="POST" action="savePOSWiseItemIncentive.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;" >
+	<s:form name="POSWiseItemIncentive" method="POST" action="savePOSWiseItemIncentive.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;" >
 		
 		<div class="title" style="margin-left: 100px;">
 		

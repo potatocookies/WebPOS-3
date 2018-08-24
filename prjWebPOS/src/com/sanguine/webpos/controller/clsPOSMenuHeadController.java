@@ -5,14 +5,14 @@ import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSMenuHeadBean;
+import com.sanguine.webpos.comparator.clsPOSMenuHeadSequenceComparator;
 import com.sanguine.webpos.model.clsMenuHeadMasterModel;
 import com.sanguine.webpos.model.clsMenuHeadMasterModel_ID;
 import com.sanguine.webpos.model.clsSubMenuHeadMasterModel;
@@ -39,8 +40,6 @@ public class clsPOSMenuHeadController {
 	@Autowired
 	private clsGlobalFunctions objGlobal;
 	
-	@Autowired
-	private clsGlobalFunctions objGlobalFunctions;
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
 	
@@ -65,9 +64,6 @@ public class clsPOSMenuHeadController {
 		}
 		model.put("urlHits",urlHits);
 		
-		//return new ModelAndView("frmPOSMenuMaster");
-		
-		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSMenuHead_1","command", new clsPOSMenuHeadBean());
 		}
@@ -80,21 +76,41 @@ public class clsPOSMenuHeadController {
 	
 	
 	@RequestMapping(value = "/saveMenuHeadMaster", method = RequestMethod.POST)
-	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSMenuHeadBean objBean,BindingResult result,HttpServletRequest req)
+	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSMenuHeadBean objBean,BindingResult result,HttpServletRequest req) throws Exception
 	{
-		String urlHits="1";
-		// save data of Menu Head
+		
+		if(objBean.getStrMenuHeadName()=="")
+		{
+			if(objBean.getStrSubMenuHeadName()=="")
+			{
+			List<clsPOSMenuHeadBean> listOfBean = objBean.getListMenuMasterDtl();
+			if(listOfBean.size()>0)
+			{
+				for(int i=0;i<listOfBean.size();i++)
+				{
+					clsPOSMenuHeadBean obj = listOfBean.get(i);
+					StringBuilder sql = new StringBuilder("update tblmenuhd set intSequence=" + i + " where strMenuCode='" + obj.getStrMenuHeadCode() + "'");
+					objSer.funExecuteUpdate(sql.toString(), "sql");
+				}
+			}
+			req.getSession().setAttribute("success", true);
+			req.getSession().setAttribute("successMessage"," "+"Sequence Updated Successfully");
+									
+			return new ModelAndView("redirect:/frmPOSMenuHead.html");
+			}
+		}
+		
 		if(objBean.getStrSubMenuHeadName()!="")
 		{	try
 		{
-			urlHits=req.getParameter("saddr").toString();
+			
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
 			String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
 			String subMenuCode = objBean.getStrSubMenuHeadCode();
 			
 			if (subMenuCode.trim().isEmpty())
 			{
-				//subMenuCode = objSubMenuHeadMasterDao.funGenerateSubMenuCode();
+				
 				List list=objUtilityController.funGetDocumentCode("POSSubMenuHead");
 				if (!list.get(0).toString().equals("0"))
 				{
@@ -161,11 +177,10 @@ public class clsPOSMenuHeadController {
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+subMenuCode);
 									
-			return new ModelAndView("redirect:/frmPOSMenuHead.html?saddr="+urlHits);
+			return new ModelAndView("redirect:/frmPOSMenuHead.html");
 		}
 		catch(Exception ex)
 		{
-			urlHits="1";
 			ex.printStackTrace();
 			return new ModelAndView("redirect:/frmFail.html");
 		}				
@@ -175,14 +190,13 @@ public class clsPOSMenuHeadController {
 		else if(objBean.getStrMenuHeadName()!="")
 		{
 			try
-			  {
-				urlHits=req.getParameter("saddr").toString();
+			{
 				String clientCode=req.getSession().getAttribute("gClientCode").toString();
 				String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
 				String menuCode = objBean.getStrMenuHeadCode();
 				if (menuCode.trim().isEmpty())
 				{
-					//MenuCode = objMenuHeadMasterDao.funGenerateMenuCode();
+					
 					List list=objUtilityController.funGetDocumentCode("POSMenuHeadMaster");
 					
 					if (!list.get(0).toString().equals("0"))
@@ -245,14 +259,13 @@ public class clsPOSMenuHeadController {
 				req.getSession().setAttribute("success", true);
 				req.getSession().setAttribute("successMessage"," "+menuCode);
 										
-				return new ModelAndView("redirect:/frmPOSMenuHead.html?saddr="+urlHits);
-			  }
-			  catch(Exception ex)
-			  {
-				urlHits="1";
-				ex.printStackTrace();
-				return new ModelAndView("redirect:/frmFail.html");
-			  }
+				return new ModelAndView("redirect:/frmPOSMenuHead.html");
+		  }
+		  catch(Exception ex)
+		  {
+			ex.printStackTrace();
+			return new ModelAndView("redirect:/frmFail.html");
+		  }
 			
 		}
 		else
@@ -342,20 +355,32 @@ public class clsPOSMenuHeadController {
 		try
 		{
 		clsMenuHeadMasterModel objModel = new clsMenuHeadMasterModel();
-	    JSONObject jObjLoadData = new JSONObject();
-		JSONArray jArrData = new JSONArray();
-		    List list =objSer.funLoadAll(objModel,clientCode);
+	
+		 List list =objSer.funLoadAll(objModel,clientCode);
 			clsMenuHeadMasterModel objMenuHeadModel = null;
 			for (int cnt = 0; cnt < list.size(); cnt++)
 			{
 				objMenuHeadModel = (clsMenuHeadMasterModel) list.get(cnt);
 				objPOSMenuHeadBean=new clsPOSMenuHeadBean();
-                
-				objPOSMenuHeadBean.setStrMenuHeadCode(objMenuHeadModel.getStrMenuCode());
+                objPOSMenuHeadBean.setStrMenuHeadCode(objMenuHeadModel.getStrMenuCode());
 				objPOSMenuHeadBean.setStrMenuHeadName(objMenuHeadModel.getStrMenuName());
-				
+				objPOSMenuHeadBean.setSequenceNo(String.valueOf(objMenuHeadModel.getIntSequence()));
 				lstMenuDtl.add(objPOSMenuHeadBean);
+				
 			}
+			 Comparator<clsPOSMenuHeadBean> menuHeadSequenceComparator = new Comparator<clsPOSMenuHeadBean>()
+             {
+
+                 @Override
+                 public int compare(clsPOSMenuHeadBean o1, clsPOSMenuHeadBean o2)
+                 {
+                     return o1.getSequenceNo().compareTo(o2.getSequenceNo());
+                 }
+             };
+
+             Collections.sort(lstMenuDtl, new clsPOSMenuHeadSequenceComparator(
+            		 menuHeadSequenceComparator
+             ));
 		
 		if(null==objPOSMenuHeadBean)
 		{
@@ -376,10 +401,8 @@ public class clsPOSMenuHeadController {
 	{
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		
-		
-		JSONArray jArrMenuHeadList=null;
 		List<clsPOSMenuHeadBean> listMenuHedaData=new ArrayList<clsPOSMenuHeadBean>();
-		JSONObject jObjMenuHeadData=new JSONObject();
+		
 		clsMenuHeadMasterModel objModel = new clsMenuHeadMasterModel(); 
 		try
 		{
@@ -485,7 +508,5 @@ public class clsPOSMenuHeadController {
 		};
 		 return blob;
 	 }
-	 
-
-
+	
 }

@@ -191,7 +191,6 @@
 		
 	    row.insertCell(0).innerHTML= "<input readonly=\"readonly\" class=\"Box\" size=\"50%\" name=\"listObjItemBean["+(rowCount)+"].strItemName\" id=\"strItemName."+(rowCount)+"\" value='"+strItemName+"'>";
 	    row.insertCell(1).innerHTML= "<input readonly=\"readonly\" class=\"Box\" size=\"15%\" name=\"listObjItemBean["+(rowCount)+"].strItemCode\" id=\"strItemCode."+(rowCount)+"\" value='"+strItemCode+"'>";
-	/*     row.insertCell(2).innerHTML= "<input id=\"strSelect."+(rowCount)+"\" type=\"checkbox\" class=\"GCheckBoxClass\" name\"listObjItemBean["+(rowCount)+"].strSelect\" value='"+rate+"' >"; */
 		if(strSelectAll=="Y")
 		{
 	    row.insertCell(2).innerHTML= "<input id=\"cbItemSel."+(rowCount)+"\" type=\"checkbox\" class=\"GCheckBoxClass\" name=\"listObjItemBean["+(rowCount)+"].strSelect\" size=\"15%\" checked=\"checked\"  value=\"Tick\" />";
@@ -265,9 +264,6 @@
 	{
 		 $('input#rdbDeselectAll').prop('checked', false);
 		
-		 /*  $('ItemSel').prop('checked', true);
-		 $('input#cbItem.'+i).prop('checked', true);  */
-		 
 		 var table = document.getElementById("tblItemDet");
 		 var rowCount = table.rows.length;
 		 for(i=0; i<rowCount; i++)
@@ -461,7 +457,7 @@
      		 </div>
     	</div>
     
-<!--     </div> -->
+
     </div>
     
    	<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;">

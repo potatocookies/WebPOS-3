@@ -530,7 +530,7 @@ public class clsPOSMasterService {
 		 obBaseService.funSave(objBaseModel); 
 	} 
 
-		public List funGetListItemWiseIncentive(String clientCode,String posCode)throws Exception 
+	public List funGetListItemWiseIncentive(String clientCode,String posCode)throws Exception 
 	{
 		List listRet = new ArrayList();
 		boolean flgPreviousRecordFound=false;
@@ -538,17 +538,17 @@ public class clsPOSMasterService {
 		StringBuilder hqlQuery = new StringBuilder();
 	 	hqlQuery.setLength(0);
 	 	hqlQuery.append("SELECT a.strItemCode,a.strItemName,a.strPOSCode,b.strPosName,a.strIncentiveType,a.dblIncentiveValue,e.strGroupName,d.strSubGroupName "
-             + " FROM tblposwiseitemwiseincentives a  left outer join tblposmaster b on (a.strPosCode=b.strPosCode"); 
+             + " FROM tblposwiseitemwiseincentives a  left outer join tblposmaster b on (a.strPosCode=b.strPosCode or a.strPosCode='All') "
+             + " JOIN tblitemmaster c ON a.strItemCode=c.strItemCode "  
+             + " JOIN tblsubgrouphd d ON c.strSubGroupCode=d.strSubGroupCode "  
+             + " JOIN tblgrouphd e ON d.strGroupCode=e.strGroupCode"); 
 	 		
 	 		if(!posCode.equalsIgnoreCase("All"))
          {
 	 			
-	 			hqlQuery.append(" OR a.strPOSCode='").append(posCode).append("' "); 
+	 			hqlQuery.append(" where a.strPOSCode='").append(posCode).append("' "); 
          }
-	 		hqlQuery.append(") JOIN tblitemmaster c ON a.strItemCode=c.strItemCode\n" 
-	 				+ "JOIN tblsubgrouphd d ON c.strSubGroupCode=d.strSubGroupCode\n"  
-	 				+ "JOIN tblgrouphd e ON d.strGroupCode=e.strGroupCode\n" 
-	 				+ "ORDER BY a.strItemCode,e.strGroupName,d.strSubGroupName,b.strPosName");
+	 		hqlQuery.append(" ORDER BY a.strItemCode,e.strGroupName,d.strSubGroupName,b.strPosName");
          
 	 		list=obBaseService.funGetList(hqlQuery, "sql");
  		if(list.size()>0)
@@ -644,7 +644,6 @@ public class clsPOSMasterService {
  		  }
 		return listRet;
 	}
-
 
 	public List funGetAllReasonMaster(String clientCode)throws Exception 
 	{
@@ -813,7 +812,7 @@ public class clsPOSMasterService {
 		 sqlBuilder.append("SELECT m.strItemName,m.strItemCode,ifnull(n.strModifierCode,''),ifnull(n.strDefaultModifier,''),if(n.strItemCode is Null,'N','Y')\n" 
 		       + " FROM tblmenuitempricingdtl m \n" 
 			   + " left outer join tblitemmodofier n on m.strItemCode=n.strItemCode and  n.strModifierCode='"+modifierCode+"' \n" 
-		 	   + " WHERE m.strMenuCode='"+menuCode+"' ");
+		 	   + " WHERE m.strMenuCode='"+menuCode+"' group by m.strItemCode");
 	
 		 
 		 list=obBaseService.funGetList(sqlBuilder, "sql");

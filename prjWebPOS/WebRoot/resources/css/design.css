@@ -23,7 +23,7 @@ body {
 
 
 a:link {
-	text-decoration: none;
+	text-decoration: none;b
 	color: black;
 }
 
@@ -1311,7 +1311,8 @@ large buttons
 .transForm_button:active {	 
  background: #0c81e0;
 }
-.transForm_redButton{
+
+.transForm_redbutton{
    
    background-size: 120px 120px;
     cursor:pointer;
@@ -1322,12 +1323,33 @@ large buttons
    
     font-weight: normal;
 }
-.transForm_redButton:hover {	 
+
+.transForm_redbutton:hover {	 
  background: #3da3f5;
 }	
-.transForm_redButton:active {	 
+.transForm_redbutton:active {	 
  background: #0c81e0;
 }
+
+.transForm_graybutton{
+   
+   background-size: 120px 120px;
+    cursor:pointer;
+    border:none;
+    width:90px;
+    height:90px;
+     background: #a9a8a8;
+   
+    font-weight: normal;
+}
+
+.transForm_graybutton:hover {	 
+ background: #a9a8a8;
+}	
+.transForm_graybutton:active {	 
+ background: #a9a8a8;
+}
+
 .transForm_SelectedBtn{
    
    background-size: 120px 120px;

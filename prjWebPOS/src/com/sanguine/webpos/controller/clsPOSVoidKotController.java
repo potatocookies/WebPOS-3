@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSItemDetailFrTaxBean;
+import com.sanguine.webpos.bean.clsPOSTaxCalculationBean;
 import com.sanguine.webpos.bean.clsPOSVoidKotBean;
 import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
 import com.sanguine.webpos.util.clsPOSUtilityController;
@@ -603,10 +604,17 @@ public class clsPOSVoidKotController {
          
          
         double taxAmt = 0;
-        List<clsPOSTaxCalculationDtls> arrListTaxDtl = objUtility.funCalculateTax(arrListItemDtl, POSCode, POSDate, areaCode, "DineIn", subTotalAmt, 0, "Void KOT", "Cash");
-        for (clsPOSTaxCalculationDtls objTaxDtl : arrListTaxDtl)
+        List<clsPOSTaxCalculationBean> arrListTaxDtl = objUtility.funCalculateTax(arrListItemDtl, POSCode, POSDate, areaCode, "DineIn", subTotalAmt, 0, "Void KOT", "S01");
+        if(arrListTaxDtl.size()>0)
         {
-            taxAmt += objTaxDtl.getTaxAmount();
+        for (int i=0;i<arrListTaxDtl.size();i++)
+        {
+        	clsPOSTaxCalculationBean objBean = arrListTaxDtl.get(i);
+        	if(i==(arrListTaxDtl.size() - 1))
+            {
+        	taxAmt += objBean.getTaxAmount();
+            }
+        }
         }
         arrListTaxDtl = null;
       double totalAmount=  subTotalAmt + taxAmt;

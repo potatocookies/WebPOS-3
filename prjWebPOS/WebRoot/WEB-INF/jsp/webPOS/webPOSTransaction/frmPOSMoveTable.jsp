@@ -175,32 +175,32 @@ function funLoadData()
     	    }
     	    else if(obj1==(""))
     	    {   var row=table.insertRow();
-    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"   value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"   value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
     	    	row.insertCell(1).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    	row.insertCell(2).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    }
     	    else if(obj2==(""))
     	    {   var row=table.insertRow();
-    	    	row.insertCell(0).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(1).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(2).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-    	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
+    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
+    	    	row.insertCell(1).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
+    	    	row.insertCell(2).innerHTML= "<input style=\"background: #ff0d0d;\" text=\"readonly\" class=\"Box \"   value='' >";
+    	    	row.insertCell(3).innerHTML= "<input style=\"background: #ff0d0d;\" text=\"readonly\" class=\"Box \"   value='' >";
     	    }
     	    else if(obj3==(""))
     	    {   var row=table.insertRow();
-    	    	row.insertCell(0).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"   value='"+tbl1Data[0]+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(1).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(2).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"   value='"+tbl1Data[0]+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
+    	    	row.insertCell(1).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
+    	    	row.insertCell(2).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
     	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    }
     	    else 
     	    {
     	    	var row=table.insertRow();
-    	    	row.insertCell(0).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(1).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(2).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-    	    	row.insertCell(3).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+tbl4Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
+    	    	row.insertCell(1).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
+    	    	row.insertCell(2).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
+    	    	row.insertCell(3).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+tbl4Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
     	    }
         }
         else
@@ -213,11 +213,11 @@ function funLoadData()
     	    {   var row=table.insertRow();
 	    	    if(tbl1Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input  style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 	    	    }
 	    	    else
     	    	{
-    	    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+    	    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
     	    	}
 	    	    row.insertCell(1).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    	row.insertCell(2).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
@@ -227,19 +227,19 @@ function funLoadData()
     	    {   var row=table.insertRow();
 	    	    if(tbl1Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    if(tbl2Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    row.insertCell(2).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
@@ -248,27 +248,27 @@ function funLoadData()
     	    {   var row=table.insertRow();
 	    	    if(tbl1Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    if(tbl2Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    if(tbl3Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
     	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
     	    }
@@ -277,35 +277,35 @@ function funLoadData()
     	    	var row=table.insertRow();
     	    	if(tbl1Data[1]=="Occupied")
     	    	{
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl1Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    if(tbl2Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl2Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    if(tbl3Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl3Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
 	    	    if(tbl4Data[1]=="Occupied")
 		        {
-	    	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl4Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+	    	    	row.insertCell(0).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\"  class = \"transForm_redbutton\"    value='"+tbl4Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\"  />";
 	    	    }
 	    	    else
 		    	{
-		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl4Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
+		    	 row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+tbl4Data[0]+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" />";
 		    	}
     	    }
         }	
@@ -328,7 +328,7 @@ function funLoadData()
 		 var row = tableName.rows[index]
 		 var rowCount = tableName.rows.length;
 		 
-		 if(table=="tblOccupiedTable")
+		 if(table.includes("tblOccupiedTable"))
 		 {
 			 if(prevRow==null)
 		 	  {
@@ -349,14 +349,10 @@ function funLoadData()
 			 
 			 if(prevRow==index && prevCell==cellIndex)
 			  {
-				 if(btnType!="transForm_redbutton")
-				 {
-					// row.insertCell(cellIndex).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
-				 }
-				 else
+				 if(btnType="transForm_redbutton")
 				 {
 					 row.deleteCell(cellIndex);
-					 row.insertCell(cellIndex).innerHTML= "<input  name=\"listOfOccupiedTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" style=\"width: 100px;height: 100px; background: #595959;\" id=\"btnKot."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 row.insertCell(cellIndex).innerHTML= "<input style=\"width: 100px;height: 100px; background: #a9a8a8;\" name=\"listOfOccupiedTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\"  id=\"btnKot."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" />";
 					 nxtRow=index;
 					 nxtCell=cellIndex;
 					 movedFromTable=code;
@@ -372,16 +368,12 @@ function funLoadData()
 				 var code1=data1[0].substring(1, (data1[0].length-2));
 				 var row1 = tableName.rows[prevRow];
 				 row1.deleteCell(prevCell);
-				 row1.insertCell(prevCell).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+code1+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+				 row1.insertCell(prevCell).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+code1+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" />";
 				 
-				 if(btnType!="transForm_redbutton")
-				 {
-					// row.insertCell(cellIndex).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
-				 }
-				 else
+				 if(btnType=="transForm_redbutton")
 				 {
 					 row.deleteCell(cellIndex);
-					 row.insertCell(cellIndex).innerHTML= "<input  name=\"listOfOccupiedTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" style=\"width: 100px;height: 100px; background: #595959;\" id=\"btnKot."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 row.insertCell(cellIndex).innerHTML= "<input style=\"width: 100px;height: 100px; background: #a9a8a8;\" name=\"listOfOccupiedTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" id=\"btnKot."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" />";
 					 nxtRow=index;
 					 nxtCell=cellIndex;
 					 movedFromTable=code;
@@ -415,7 +407,7 @@ function funLoadData()
 				 if(btnType=="transForm_redbutton")
 				 {
 					 row.deleteCell(cellIndex);
-					 row.insertCell(cellIndex).innerHTML= "<input  name=\"listOfAllTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" style=\"width: 100px;height: 100px; background: #ff0d0d;\" id=\"btnBill."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 row.insertCell(cellIndex).innerHTML= "<input style=\"width: 100px;height: 100px; background: #ff0d0d;\" name=\"listOfAllTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" id=\"btnBill."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" style=\"width: 100px;height: 100px; background: #ff0d0d;\"/>";
 					 nxtRow1=index;
 					 nxtCell1=cellIndex;
 					 cellStatus="Occupied"+"#"+nxtRow1+"#"+nxtCell1;
@@ -423,13 +415,10 @@ function funLoadData()
 				 }
 				 else
 				 {
-					 if(btnType!="transForm_button")
-					 {  
-						// row.insertCell(cellIndex).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
-					 }
-					 else
-					 {   row.deleteCell(cellIndex);
-						 row.insertCell(cellIndex).innerHTML= "<input  name=\"listOfAllTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" style=\"width: 100px;height: 100px; background: #ff0d0d;\" id=\"btnBill."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 if(btnType=="transForm_button")
+					 {
+						 row.deleteCell(cellIndex);
+						 row.insertCell(cellIndex).innerHTML= "<input style=\"width: 100px;height: 100px; background: #ff0d0d;\" name=\"listOfAllTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\"  id=\"btnBill."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" />";
 						 nxtRow1=index;
 						 nxtCell1=cellIndex;
 						 cellStatus="Normal"+"#"+nxtRow1+"#"+nxtCell1;
@@ -449,21 +438,17 @@ function funLoadData()
 				 row1.deleteCell(prevCell1);
 				 if(cellData[0]=="Occupied" && cellData[1]==prevRow1 && cellData[2]==prevCell1)
 				  {
-					 row1.insertCell(prevCell1).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+code1+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 row1.insertCell(prevCell1).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"    value='"+code1+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" />";
 				  }
 				 else
 				  {
-					 row1.insertCell(prevCell1).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+code1+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 row1.insertCell(prevCell1).innerHTML= "<input style=\"background: #ff0d0d;\" type=\"button\" class = \"transForm_redbutton\"  class=\"transForm_button\"  value='"+code1+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
 				  }
 				  
-				 if(btnType!="transForm_button")
-				 {
-					// row.insertCell(cellIndex).innerHTML= "<input type=\"button\" class = \"transForm_redbutton\"    value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
-				 }
-				 else
+				 if(btnType=="transForm_button")
 				 {
 					 row.deleteCell(cellIndex);
-					 row.insertCell(cellIndex).innerHTML= "<input  name=\"listOfAllTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\" style=\"width: 100px;height: 100px; background: #595959;\" id=\"btnBill."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\"/>";
+					 row.insertCell(cellIndex).innerHTML= "<input style=\"width: 100px;height: 100px; background: #ff0d0d;\" name=\"listOfAllTable["+0+"].strTableName\"  readonly=\"readonly\" class=\"transForm_graybutton\"  id=\"btnBill."+0+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this,"+table+")\" />";
 					 nxtRow1=index;
 					 nxtCell1=cellIndex;
 					 movedToTable=code;
@@ -521,7 +506,7 @@ function funLoadData()
 	  <s:form name="Move Table" method="POST" action="saveMoveTable.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 	     
 	     <div class="title">
-			<div style=" width: 50%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: scroll;">
+			<div style=" width: 50%; height: 600px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 30px;">
 					<div class="element-input col-lg-6" style="width: 30%;"> 
 	    				<label class="title" >OPEN Tables</label>
@@ -535,7 +520,7 @@ function funLoadData()
 		</div>
 		
 		<div class="title">
-			<div style=" width: 50%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: scroll;">
+			<div style=" width: 50%; height: 600px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 30px;">
 					<div class="element-input col-lg-6" style="width: 30%;"> 
 	    				<label class="title" >All Tables</label>
@@ -543,15 +528,16 @@ function funLoadData()
 				</div>
 				
 				<table id="tblAllTable" class="transFormTable">
+
 				</table>
 			</div>
 		</div>
-	
+
 		
 		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
      		  <p align="center">
             		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Save" onclick="return funValidateData();"/></div>
-            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="Reset" onclick="funResetFields()"></div>
+            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="Close" onclick="funPOSHome()"></div>
      		  </p>
    		 </div>
 

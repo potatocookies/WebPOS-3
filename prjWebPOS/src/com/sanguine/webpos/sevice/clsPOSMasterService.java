@@ -537,7 +537,7 @@ public class clsPOSMasterService {
 		List list = new ArrayList();
 		StringBuilder hqlQuery = new StringBuilder();
 	 	hqlQuery.setLength(0);
-	 	hqlQuery.append("SELECT a.strItemCode,a.strItemName,a.strPOSCode,b.strPosName,a.strIncentiveType,a.dblIncentiveValue,e.strGroupName,d.strSubGroupName "
+	 	hqlQuery.append("SELECT a.strItemCode,a.strItemName,a.strPOSCode,ifnull(b.strPosName,''),a.strIncentiveType,a.dblIncentiveValue,e.strGroupName,d.strSubGroupName "
              + " FROM tblposwiseitemwiseincentives a  left outer join tblposmaster b on (a.strPosCode=b.strPosCode or a.strPosCode='All') "
              + " JOIN tblitemmaster c ON a.strItemCode=c.strItemCode "  
              + " JOIN tblsubgrouphd d ON c.strSubGroupCode=d.strSubGroupCode "  
@@ -570,7 +570,7 @@ public class clsPOSMasterService {
  		}
  		
  		hqlQuery.setLength(0);
-	 	hqlQuery.append("SELECT distinct(a.strItemCode),a.strItemName,a.strPosCode,b.strPosName "
+	 	hqlQuery.append("SELECT distinct(a.strItemCode),a.strItemName,a.strPosCode,ifnull(b.strPosName,'') "
 	 			    + ",e.strGroupName,d.strSubGroupName "
 	 			    + " FROM tblmenuitempricingdtl a  "
 	 			    + " left outer join tblposmaster b on (a.strPosCode=b.strPosCode or a.strPosCode='All') "
@@ -607,7 +607,7 @@ public class clsPOSMasterService {
  		 if(!flgPreviousRecordFound)
           {
  			 hqlQuery.setLength(0);
- 			 	hqlQuery.append("SELECT distinct(a.strItemCode),a.strItemName,a.strPosCode,b.strPosName,e.strGroupName,d.strSubGroupName \n"  
+ 			 	hqlQuery.append("SELECT distinct(a.strItemCode),a.strItemName,a.strPosCode,ifnull(b.strPosName,''),e.strGroupName,d.strSubGroupName \n"  
  					    + " FROM tblmenuitempricingdtl a \n" 
  					    + " left outer join tblposmaster b on a.strPosCode=b.strPosCode \n"  
  					    + " join tblitemmaster c on a.strItemCode=c.strItemCode \n" 

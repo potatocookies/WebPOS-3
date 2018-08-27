@@ -997,21 +997,24 @@
                  return;
              }
          }
-		 var tblBillItemDtl=document.getElementById('tblBillItemDtl');
-			
+		 
+			var tblBillItemDtl=document.getElementById('tblBillItemDtl');				
 			var rowCount = tblBillItemDtl.rows.length;
-			if(rowCount==0)
-			{
-				alert("Please Select item!");
-				return;
-			}
 			
 			
-			 $("#txtTakeAway").val(gTakeAway);
+			
+			$("#txtTakeAway").val(gTakeAway);
 			 
 			 
 			if(operationName=="Dine In")
 			{
+				if(rowCount <= 2)
+				{
+					alert("No item to save.");
+					return;
+				}
+				
+				
 				ncKot = "N";
 				if (isNCKOT) //NC KOT
 	       		 {
@@ -1024,6 +1027,12 @@
 			}
 			else if(operationName=="Home Delivery")
 			{
+				if(rowCount <= 1)
+				{
+					alert("No item to save.");
+					return;
+				}
+				
 				if (arrDirectBilleritems.length > 0)
 				{ 
 					if (gCustomerCode.trim().length == 0)
@@ -1050,6 +1059,13 @@
 			}
 			else if(operationName=="Take Away")
 			{
+				
+				if(rowCount <= 1)
+				{
+					alert("No item to save.");
+					return;
+				}
+				
 				if (arrDirectBilleritems.length > 0)
 				{ 
 					/**
@@ -1065,6 +1081,88 @@
 			}
 	}
 	
+	
+	function funGetCostCenterListForKOT(tableNo,kotNo)
+	{
+		
+		var searchurl=getContextPath()+"/funGetCostCenterListForKOT.html?tableNo="+tableNo+"&kotNo="+kotNo  ;
+		$.ajax({
+			 type: "GET",
+		        url: searchurl,
+		        contentType: 'application/json',
+		        async: true,
+		    success: function (response)
+		    {
+		    	alert(response); 	
+		    	for(var j=0;j<response.length;j++)
+		    	{
+		    		funPrintKOT(response[j].strItemCode,response[j].strItemName,response[j].strArea,tableNo,kotNo)
+		    	}
+		    },
+		    error: function(jqXHR, exception)
+		    {
+		        if (jqXHR.status === 0) {
+		            alert('Not connect.n Verify Network.');
+		        } else if (jqXHR.status == 404) {
+		            alert('Requested page not found. [404]');
+		        } else if (jqXHR.status == 500) {
+		            alert('Internal Server Error [500].');
+		        } else if (exception === 'parsererror') {
+		            alert('Requested JSON parse failed.');
+		        } else if (exception === 'timeout') {
+		            alert('Time out error.');
+		        } else if (exception === 'abort') {
+		            alert('Ajax request aborted.');
+		        } else {
+		            alert('Uncaught Error.n' + jqXHR.responseText);
+		        }		            
+		    }
+
+       });
+		
+   }
+
+
+
+function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
+	{
+		
+		var searchurl=getContextPath()+"/downloadPDF.html?fileName=kotSlip.pdf"+"&tableNo="+tableNo+"&kotNo="+kotNo+"&costCenterCode="+costCenterCode				+"&costCenterName="+costCenterName+"&areaCode="+areaCode;
+		$.ajax({
+			 type: "GET",
+		        url: searchurl,
+		        contentType: 'application/json',
+		        async: true,
+		    success: function (response)
+		    {
+		    	 window.location.href=searchurl;
+		    	 var w= window.open(getContextPath()+"/printPDF.html?fileName=kotSlip.pdf");
+				 w.print();  	
+		    },
+		    error: function(jqXHR, exception)
+		    {
+		        if (jqXHR.status === 0) {
+		            alert('Not connect.n Verify Network.');
+		        } else if (jqXHR.status == 404) {
+		            alert('Requested page not found. [404]');
+		        } else if (jqXHR.status == 500) {
+		            alert('Internal Server Error [500].');
+		        } else if (exception === 'parsererror') {
+		            alert('Requested JSON parse failed.');
+		        } else if (exception === 'timeout') {
+		            alert('Time out error.');
+		        } else if (exception === 'abort') {
+		            alert('Ajax request aborted.');
+		        } else {
+		            alert('Uncaught Error.n' + jqXHR.responseText);
+		        }		            
+		    }
+
+                       });
+		
+   }
+	
+	//Done button for Make KOT
 	function funDoneBtnKOT(ncKot,gTakeAway,globalDebitCardNo,cmsMemCode,cmsMemName,reasonCode,homeDeliveryForTax,arrListHomeDelDetails,total)
     {
 		 
@@ -1175,13 +1273,46 @@
 		        	 /*  window.location ="frmPOSRestaurantBill.html"; */
 		        	// location.reload(false); //loads from browser's cache 
 		        	 /* location.reload(true); //loads from server */
-		        	 window.location ="frmWebPOSBilling.html"
 		        	 alert("KOT Save Successfully. KOT NO: "+ $("#txtKOTNo").text());
+		        	 
+		        	funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
+		        	
+		        	 if(gMultiWaiterSelOnMakeKOT=="")
+		    		{
+		    			gMultiWaiterSelOnMakeKOT="N";
+		    		}
+		    		
+		    		$("#txtItemSearch").keyup(function()
+		    		{
+		    					searchTable($(this).val());
+		    		});
+		    		 document.getElementById("divItemDtl").style.display='block';
+		    		 document.getElementById("divPLU").style.display='none';
+		    		 
+		    		 document.getElementById("divBillItemDtl").style.display='block';
+		    		 document.getElementById("divTotalDtl").style.display='block';
+		    		 
+		    		 document.getElementById("divTopButtonDtl").style.display='block';
+		    		 document.getElementById("divMenuHeadDtl").style.display='block';
+		    		 funRemoveTableRows("tblBillItemDtl");
+		    		 
+					 $('#tblOldKOTItemDtl').empty();
+					 
+			    	 if(operationName=="Dine In")
+			    	  {
+			    			funDineInButtonClicked();
+			    	  }
+
 	        	}
 	        	else
 	        	{	        		
 	        		 alert("KOT Not Save ");
 	        	}
+	        	
+	        	
+	        	
+	        	
+	        	
 	      
 	        },
 	        error: function(jqXHR, exception)
@@ -1261,13 +1392,33 @@
 		
 		var jsonArrForTableDtl=${command.jsonArrForTableDtl};	
 		
+		/**
+		*Free Table
+		*Busy/Occupied Table border: 5px solid #a94442;
+		*Billed Table border: 5px solid #2ba5cc;
+		*/
+		
+		
+		
+		
 		$.each(jsonArrForTableDtl, function(i, obj) 
 		{	
+			var style=" width: 100px;height: 100px; white-space: normal;  border-radius: 40px; ";
+			if(obj.strStatus=="Occupied")
+			{
+				style=" width: 100px;height: 100px; white-space: normal; border:5px solid #a94442; border-radius: 40px; ";
+			}
+			if(obj.strStatus=="Billed")
+			{				
+				style=" width: 100px;height: 100px; white-space: normal; border:5px solid #2ba5cc; border-radius: 40px; ";
+			}
+			
 			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
 			{
 				var col=insertTR.insertCell(insertCol);
-				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funTableNoClicked(this,"+i+")\" class=\"btn btn-primary\" /></td>";
+				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'    style='"+style+"'  onclick=\"funTableNoClicked(this,"+i+")\" class=\"btn btn-primary\" /></td>";
 				col.style.padding = "5px";
+
 				insertCol++;
 			}
 			else
@@ -1275,8 +1426,11 @@
 				insertTR=tblMenuItemDtl.insertRow();									
 				insertCol=0;
 				var col=insertTR.insertCell(insertCol);
-				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funTableNoClicked(this,"+i+")\" class=\"btn btn-primary\" /></td>";
+				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'   style='"+style+"'   onclick=\"funTableNoClicked(this,"+i+")\" class=\"btn btn-primary\" /></td>";
 				col.style.padding = "5px";
+				
+				
+				
 				insertCol++;
 			}							
 			  
@@ -1301,10 +1455,12 @@
 		
 		$.each(jsonArrForWaiterDtl, function(i, obj) 
 		{	
+			var style=" width: 100px;height: 100px;white-space: normal;border-top-right-radius: 40px;border-top-left-radius: 40px; "
+			
 			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
 			{
 				var col=insertTR.insertCell(insertCol);
-				col.innerHTML = "<td><input type=\"button\" id="+obj.strWaiterNo+" value='"+obj.strWShortName+"'    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funWaiterClicked(this)\" class=\"btn btn-primary\" /></td>";
+				col.innerHTML = "<td><input type=\"button\" id="+obj.strWaiterNo+" value='"+obj.strWShortName+"'  style='"+style+"'     onclick=\"funWaiterClicked(this)\" class=\"btn btn-primary\" /></td>";
 				col.style.padding = "5px";
 				insertCol++;
 			}
@@ -1313,7 +1469,7 @@
 				insertTR=tblMenuItemDtl.insertRow();									
 				insertCol=0;
 				var col=insertTR.insertCell(insertCol);
-				col.innerHTML = "<td><input type=\"button\" id="+obj.strWaiterNo+" value='"+obj.strWShortName+"'    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funWaiterClicked(this)\" class=\"btn btn-primary\" /></td>";
+				col.innerHTML = "<td><input type=\"button\" id="+obj.strWaiterNo+" value='"+obj.strWShortName+"'    style='"+style+"'  onclick=\"funWaiterClicked(this)\" class=\"btn btn-primary\" /></td>";
 				col.style.padding = "5px";
 				insertCol++;
 			}							
@@ -1678,8 +1834,10 @@
 	{
 		$("#txtTableNo").text("");	
 		$("#txtWaiterNo").text("");
+		$("#txtWaiterName").text("");
 		$("#txtPaxNo").text("");
 		$("#txtKOTNo").text("");
+		$("#txtTotal").val("0");
 		
 		gTableNo="";
 		gTableNo="";
@@ -3249,10 +3407,16 @@
 	function funDeleteBtnClicked()
 	{
 		var table = document.getElementById("tblBillItemDtl");
-		
-			table.deleteRow(selectedRowIndex);
+		var rowCount = table.rows.length;
+		if(rowCount > 2)
+		{			
+			table.deleteRow(rowCount-1);
 			funFillKOTList();
-		
+		}
+		else
+		{
+			alert("No item for delete.");	
+		}	
 	}
 	function funChgQtyBtnClicked()
 	{
@@ -3337,7 +3501,7 @@
 	{
 		 var index = obj.parentNode.parentNode.rowIndex;
 		 var table = document.getElementById("tblBillItemDtl");
-		 if((selectedRowIndex>0) && (index!=selectedRowIndex))
+		 if((selectedRowIndex >0 ) && (index!=selectedRowIndex))
 		 {
 				 row = table.rows[selectedRowIndex];
 				 row.style.backgroundColor='#C0E4FF';
@@ -3527,214 +3691,71 @@
 		});
 	}
 			
-	function funMoveSelectedRow(count)
-	{
-		if(count==1)
+	function funMoveSelectedRow(objThisBtn)
+	{		
+		
+		
+		var tblBillItemDtl=document.getElementById('tblBillItemDtl');
+		var rowCount = tblBillItemDtl.rows.length;
+		var value=objThisBtn.value;
+		
+		for(i=0;i<rowCount;i++)
+		{
+			var v=tblBillItemDtl.rows[i].cells[0].children[0];
+			
+			v.style.border="";
+		}
+		
+		if(operationType=="Dine In")
+		{
+			
+			if(value=="Up")
 			{
-				if (selectedRowIndex == 0)
-				{
-					//do nothing
-				}
-				else
-				{
-					 var tblBillItemDtl = document.getElementById("tblBillItemDtl");
-				
-					var itemName=tblBillItemDtl.rows[selectedRowIndex].cells[0].children[0].value;
-					var itemQty=tblBillItemDtl.rows[selectedRowIndex].cells[1].children[0].value;
-					var itemAmt=tblBillItemDtl.rows[selectedRowIndex].cells[2].children[0].value;
-					var itemCode=tblBillItemDtl.rows[selectedRowIndex].cells[3].children[0].value;
-					var itemDiscAmt=tblBillItemDtl.rows[selectedRowIndex].cells[4].children[0].value;
-			 		var groupcode=tblBillItemDtl.rows[selectedRowIndex].cells[5].innerHTML;
-			 		var subgroupcode=tblBillItemDtl.rows[selectedRowIndex].cells[6].innerHTML;
-			 		var subgroupName=tblBillItemDtl.rows[selectedRowIndex].cells[7].innerHTML;
-			 		var groupName=tblBillItemDtl.rows[selectedRowIndex].cells[8].innerHTML;
-					
-			 		var gCode = groupcode.split('value=');
-					var strGroupCode=gCode[1].substring(1, (gCode[1].length-2));
-					
-					var sgCode= subgroupcode.split('value=');
-					var strSubGroupCode=sgCode[1].substring(1, (sgCode[1].length-2));
-					
-					var gName= groupName.split('value=');
-					var strGroupName=gName[1].substring(1, (gName[1].length-2));
-					
-					var sgName= subgroupName.split('value=');
-					var strSGName=sgName[1].substring(1, (sgName[1].length-2));
-					
-					
-					var itemName1=tblBillItemDtl.rows[selectedRowIndex-1].cells[0].children[0].value;
-					var itemQty1=tblBillItemDtl.rows[selectedRowIndex-1].cells[1].children[0].value;
-					var itemAmt1=tblBillItemDtl.rows[selectedRowIndex-1].cells[2].children[0].value;
-					var itemCode1=tblBillItemDtl.rows[selectedRowIndex-1].cells[3].children[0].value;
-					var itemDiscAmt1=tblBillItemDtl.rows[selectedRowIndex-1].cells[4].children[0].value;
-			 		var groupcode1=tblBillItemDtl.rows[selectedRowIndex-1].cells[5].innerHTML;
-			 		var subgroupcode1=tblBillItemDtl.rows[selectedRowIndex-1].cells[6].innerHTML;
-			 		var subgroupName1=tblBillItemDtl.rows[selectedRowIndex-1].cells[7].innerHTML;
-			 		var groupName1=tblBillItemDtl.rows[selectedRowIndex-1].cells[8].innerHTML;
-					
-			 		var gCode1 = groupcode1.split('value=');
-					var strGroupCode1=gCode1[1].substring(1, (gCode1[1].length-2));
-					
-					var sgCode1= subgroupcode1.split('value=');
-					var strSubGroupCode1=sgCode1[1].substring(1, (sgCode1[1].length-2));
-					
-					var gName1= groupName1.split('value=');
-					var strGroupName1=gName1[1].substring(1, (gName1[1].length-2));
-					
-					var sgName1= subgroupName1.split('value=');
-					var strSGName1=sgName1[1].substring(1, (sgName1[1].length-2));
-					
-				  
-				  funMoveRowUp(itemName,itemQty,itemAmt,0.0,itemDiscAmt,strGroupCode,strSubGroupCode,gName,strSGName,itemCode,itemName1,itemQty1,itemAmt1,0.0,itemDiscAmt1,strGroupCode1,strSubGroupCode1,gName1,strSGName1,itemCode1,selectedRowIndex);
-				}
-				
+				selectedRowIndex=selectedRowIndex-1;
 			}
-			else
+			else//Down
 			{
-				 var tblBillItemDtl = document.getElementById("tblBillItemDtl");
-				var rowCount = tblBillItemDtl.rows.length;
-				if(rowCount>0)
-				{
-
-					var itemName=tblBillItemDtl.rows[selectedRowIndex].cells[0].children[0].value;
-					var itemQty=tblBillItemDtl.rows[selectedRowIndex].cells[1].children[0].value;
-					var itemAmt=tblBillItemDtl.rows[selectedRowIndex].cells[2].children[0].value;
-					var itemCode=tblBillItemDtl.rows[selectedRowIndex].cells[3].children[0].value;
-					var itemDiscAmt=tblBillItemDtl.rows[selectedRowIndex].cells[4].children[0].value;
-			 		var groupcode=tblBillItemDtl.rows[selectedRowIndex].cells[5].innerHTML;
-			 		var subgroupcode=tblBillItemDtl.rows[selectedRowIndex].cells[6].innerHTML;
-			 		var subgroupName=tblBillItemDtl.rows[selectedRowIndex].cells[7].innerHTML;
-			 		var groupName=tblBillItemDtl.rows[selectedRowIndex].cells[8].innerHTML;
-					
-			 		var gCode = groupcode.split('value=');
-					var strGroupCode=gCode[1].substring(1, (gCode[1].length-2));
-					
-					var sgCode= subgroupcode.split('value=');
-					var strSubGroupCode=sgCode[1].substring(1, (sgCode[1].length-2));
-					
-					var gName= groupName.split('value=');
-					var strGroupName=gName[1].substring(1, (gName[1].length-2));
-					
-					var sgName= subgroupName.split('value=');
-					var strSGName=sgName[1].substring(1, (sgName[1].length-2));
-					
-					
-					var itemName1=tblBillItemDtl.rows[selectedRowIndex-1].cells[0].children[0].value;
-					var itemQty1=tblBillItemDtl.rows[selectedRowIndex-1].cells[1].children[0].value;
-					var itemAmt1=tblBillItemDtl.rows[selectedRowIndex-1].cells[2].children[0].value;
-					var itemCode1=tblBillItemDtl.rows[selectedRowIndex-1].cells[3].children[0].value;
-					var itemDiscAmt1=tblBillItemDtl.rows[selectedRowIndex-1].cells[4].children[0].value;
-			 		var groupcode1=tblBillItemDtl.rows[selectedRowIndex-1].cells[5].innerHTML;
-			 		var subgroupcode1=tblBillItemDtl.rows[selectedRowIndex-1].cells[6].innerHTML;
-			 		var subgroupName1=tblBillItemDtl.rows[selectedRowIndex-1].cells[7].innerHTML;
-			 		var groupName1=tblBillItemDtl.rows[selectedRowIndex-1].cells[8].innerHTML;
-					
-			 		var gCode1 = groupcode1.split('value=');
-					var strGroupCode1=gCode1[1].substring(1, (gCode1[1].length-2));
-					
-					var sgCode1= subgroupcode1.split('value=');
-					var strSubGroupCode1=sgCode1[1].substring(1, (sgCode1[1].length-2));
-					
-					var gName1= groupName1.split('value=');
-					var strGroupName1=gName1[1].substring(1, (gName1[1].length-2));
-					
-					var sgName1= subgroupName1.split('value=');
-					var strSGName1=sgName1[1].substring(1, (sgName1[1].length-2));
-					
-					  funMoveRowDown(itemName,itemQty,itemAmt,0.0,itemDiscAmt,strGroupCode,strSubGroupCode,gName,strSGName,itemCode,itemName1,itemQty1,itemAmt1,0.0,itemDiscAmt1,strGroupCode1,strSubGroupCode1,gName1,strSGName1,itemCode1,selectedRowIndex);
-				}
-				
+				selectedRowIndex=selectedRowIndex+1;
 			}
+			
+			if(selectedRowIndex < 2 || selectedRowIndex >= rowCount)
+			{
+				selectedRowIndex=2;
+			}
+			
+			
+			var row = tblBillItemDtl.rows[selectedRowIndex];
+			
+			var v=tblBillItemDtl.rows[selectedRowIndex].cells[0].children[0];
+			
+			v.style.border="2px solid green"; 
+							
+		}
+		else//Home Delivery,Take Away
+		{
+			if(selectedRowIndex < 1)
+			{
+				selectedRowIndex=1;
+			}
+			if(selectedRowIndex > rowCount)
+			{
+				selectedRowIndex = rowCount-1 ;
+			}
+			
+			
+			if(rowCount > 1 )
+			{
+				selectedRowIndex
+			}
+		}
 	}
 	
-	  function funMoveRowUp(itemName,qty,amount,itemDiscPer,itemDiscAmt,strGroupCode,strSubGroupCode,strGroupName,strSubGroupName,itemCode,itemName1,qty1,amount1,itemDiscPer1,itemDiscAmt1,strGroupCode1,strSubGroupCode1,strGroupName1,strSubGroupName1,itemCode1,rowCount)
-		{
-		
-			
-
-			
-			var tblBillItemDtl = document.getElementById("tblBillItemDtl");
-			tblBillItemDtl.deleteRow(rowCount);
-		    var row = tblBillItemDtl.insertRow(rowCount-1);
-		    row = tblBillItemDtl.rows[rowCount-1];
-
-	    
-		    row.insertCell(0).innerHTML= "<input readonly=\"readonly\" size=\"32px\"  class=\"itemName\"    style=\"text-align: left; color:blue;\"    id=\"itemName."+(rowCount)+"\" value='"+itemName+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-		    row.insertCell(1).innerHTML= "<input readonly=\"readonly\" size=\"3.5px\"   class=\"itemQty\"      style=\"text-align: right; color:blue;\"   id=\"quantity."+(rowCount)+"\" value='"+parseFloat(qty)+"' onclick=\"funChangeQty(this)\"/>";
-		    row.insertCell(2).innerHTML= "<input readonly=\"readonly\" size=\"4px\"   class=\"itemAmt\"      style=\"text-align: right; color:blue;\"   id=\"amount."+(rowCount)+"\" value='"+amount+"'/>";
-		    row.insertCell(3).innerHTML= "<input readonly=\"readonly\" size=\"10px\" class=\"itemCode\"     style=\"text-align: left; color:blue;\"    id=\"itemCode."+(rowCount)+"\" value='"+itemCode+"' />";
-		    row.insertCell(4).innerHTML= "<input readonly=\"readonly\" size=\"9px\"   class=\"itemDiscAmt\"  style=\"text-align: right; color:blue;\"   id=\"strSerialNo."+(rowCount-1)+"\" value='"+rowCount+"' />";
-		    row.insertCell(5).innerHTML= "<input type=\"hidden\"  size=\"0px\"   class=\"groupcode\"  style=\"text-align: right; color:blue;\"  id=\"strGroupcode."+(rowCount-1)+"\" value='"+strGroupCode+"' />";	    
-		    row.insertCell(6).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subgroupcode\"  id=\"strSubGroupCode."+(rowCount)+"\" value='"+strSubGroupCode+"' />";
-		    row.insertCell(7).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subGroupName\"   id=\"strSubGroupName."+(rowCount)+"\" value='"+strSubGroupName+"' />";
-		    row.insertCell(8).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"groupName\"   id=\"strGroupName."+(rowCount)+"\" value='"+strGroupName+"' />";
-		      
-		   	   
-		    row = tblBillItemDtl.rows[rowCount-1];
-			row.style.backgroundColor='#ffd966';
-			selectedRowIndex=rowCount-1;
-			var row1 = tblBillItemDtl.insertRow(rowCount+1);
-
-		    row1.insertCell(0).innerHTML= "<input readonly=\"readonly\" size=\"32px\"  class=\"itemName\"    style=\"text-align: left; color:blue;\"    id=\"itemName."+(rowCount)+"\" value='"+itemName1+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-		    row1.insertCell(1).innerHTML= "<input readonly=\"readonly\" size=\"3.5px\"   class=\"itemQty\"      style=\"text-align: right; color:blue;\"   id=\"quantity."+(rowCount)+"\" value='"+parseFloat(qty1)+"' onclick=\"funChangeQty(this)\"/>";
-		    row1.insertCell(2).innerHTML= "<input readonly=\"readonly\" size=\"4px\"   class=\"itemAmt\"      style=\"text-align: right; color:blue;\"   id=\"amount."+(rowCount)+"\" value='"+amount1+"'/>";
-		    row1.insertCell(3).innerHTML= "<input readonly=\"readonly\" size=\"10px\" class=\"itemCode\"     style=\"text-align: left; color:blue;\"    id=\"itemCode."+(rowCount)+"\" value='"+itemCode1+"' />";
-		    row1.insertCell(4).innerHTML= "<input readonly=\"readonly\" size=\"9px\"   class=\"itemDiscAmt\"  style=\"text-align: right; color:blue;\"   id=\"strSerialNo."+(rowCount-1)+"\" value='"+rowCount+"' />";
-		    row1.insertCell(5).innerHTML= "<input type=\"hidden\"  size=\"0px\"   class=\"groupcode\"  style=\"text-align: right; color:blue;\"  id=\"strGroupcode."+(rowCount-1)+"\" value='"+strGroupCode1+"' />";	    
-		    row1.insertCell(6).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subgroupcode\"  id=\"strSubGroupCode."+(rowCount)+"\" value='"+strSubGroupCode1+"' />";
-		    row1.insertCell(7).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subGroupName\"   id=\"strSubGroupName."+(rowCount)+"\" value='"+strSubGroupName1+"' />";
-		    row1.insertCell(8).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"groupName\"   id=\"strGroupName."+(rowCount)+"\" value='"+strGroupName1+"' />";
-		    tblBillItemDtl.deleteRow(rowCount);
-		}
-	  
-	  
-		function funMoveRowDown(itemName,qty,amount,itemDiscPer,itemDiscAmt,strGroupCode,strSubGroupCode,strGroupName,strSubGroupName,itemCode,itemName1,qty1,amount1,itemDiscPer1,itemDiscAmt1,strGroupCode1,strSubGroupCode1,strGroupName1,strSubGroupName1,itemCode1,rowCount)
-		{
-
-
-			var tblBillItemDtl = document.getElementById("tblBillItemDtl");
-			tblBillItemDtl.deleteRow(rowCount);
-		    var row = tblBillItemDtl.insertRow(rowCount+1);
-		    row = tblBillItemDtl.rows[rowCount+1];
-		    
-	
-		    row.insertCell(0).innerHTML= "<input readonly=\"readonly\" size=\"32px\"  class=\"itemName\"    style=\"text-align: left; color:blue;\"    id=\"itemName."+(rowCount)+"\" value='"+itemName+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-		    row.insertCell(1).innerHTML= "<input readonly=\"readonly\" size=\"3.5px\"   class=\"itemQty\"      style=\"text-align: right; color:blue;\"   id=\"quantity."+(rowCount)+"\" value='"+parseFloat(qty)+"' onclick=\"funChangeQty(this)\"/>";
-		    row.insertCell(2).innerHTML= "<input readonly=\"readonly\" size=\"4px\"   class=\"itemAmt\"      style=\"text-align: right; color:blue;\"   id=\"amount."+(rowCount)+"\" value='"+amount+"'/>";
-		    row.insertCell(3).innerHTML= "<input readonly=\"readonly\" size=\"10px\" class=\"itemCode\"     style=\"text-align: left; color:blue;\"    id=\"itemCode."+(rowCount)+"\" value='"+itemCode+"' />";
-		    row.insertCell(4).innerHTML= "<input readonly=\"readonly\" size=\"9px\"   class=\"itemDiscAmt\"  style=\"text-align: right; color:blue;\"   id=\"strSerialNo."+(rowCount-1)+"\" value='"+rowCount+"' />";
-		    row.insertCell(5).innerHTML= "<input type=\"hidden\"  size=\"0px\"   class=\"groupcode\"  style=\"text-align: right; color:blue;\"  id=\"strGroupcode."+(rowCount-1)+"\" value='"+strGroupCode+"' />";	    
-		    row.insertCell(6).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subgroupcode\"  id=\"strSubGroupCode."+(rowCount)+"\" value='"+strSubGroupCode+"' />";
-		    row.insertCell(7).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subGroupName\"   id=\"strSubGroupName."+(rowCount)+"\" value='"+strSubGroupName+"' />";
-		    row.insertCell(8).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"groupName\"   id=\"strGroupName."+(rowCount)+"\" value='"+strGroupName+"' />";
-		      
-		
-			  
-			
-			     row = tblBillItemDtl.rows[rowCount+1];
-				row.style.backgroundColor='#ffd966';
-				selectedRowIndex=rowCount+1;
-				var row1 = tblBillItemDtl.insertRow(rowCount);
-
-			    row1.insertCell(0).innerHTML= "<input readonly=\"readonly\" size=\"32px\"  class=\"itemName\"    style=\"text-align: left; color:blue;\"    id=\"itemName."+(rowCount)+"\" value='"+itemName1+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-			    row1.insertCell(1).innerHTML= "<input readonly=\"readonly\" size=\"3.5px\"   class=\"itemQty\"      style=\"text-align: right; color:blue;\"   id=\"quantity."+(rowCount)+"\" value='"+parseFloat(qty1)+"' onclick=\"funChangeQty(this)\"/>";
-			    row1.insertCell(2).innerHTML= "<input readonly=\"readonly\" size=\"4px\"   class=\"itemAmt\"      style=\"text-align: right; color:blue;\"   id=\"amount."+(rowCount)+"\" value='"+amount1+"'/>";
-			    row1.insertCell(3).innerHTML= "<input readonly=\"readonly\" size=\"10px\" class=\"itemCode\"     style=\"text-align: left; color:blue;\"    id=\"itemCode."+(rowCount)+"\" value='"+itemCode1+"' />";
-			    row1.insertCell(4).innerHTML= "<input readonly=\"readonly\" size=\"9px\"   class=\"itemDiscAmt\"  style=\"text-align: right; color:blue;\"   id=\"strSerialNo."+(rowCount-1)+"\" value='"+rowCount+"' />";
-			    row1.insertCell(5).innerHTML= "<input type=\"hidden\"  size=\"0px\"   class=\"groupcode\"  style=\"text-align: right; color:blue;\"  id=\"strGroupcode."+(rowCount-1)+"\" value='"+strGroupCode1+"' />";	    
-			    row1.insertCell(6).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subgroupcode\"  id=\"strSubGroupCode."+(rowCount)+"\" value='"+strSubGroupCode1+"' />";
-			    row1.insertCell(7).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"subGroupName\"   id=\"strSubGroupName."+(rowCount)+"\" value='"+strSubGroupName1+"' />";
-			    row1.insertCell(8).innerHTML= "<input type=\"hidden\" size=\"0px\"   class=\"groupName\"   id=\"strGroupName."+(rowCount)+"\" value='"+strGroupName1+"' />";
-			    tblBillItemDtl.deleteRow(rowCount);
-			}
-		
-		
-		function funOnCloseBtnClick()
-		{
-			document.getElementById("divItemDtl").style.display='block';
-			 document.getElementById("divPLU").style.display='none';
-		
-		}
+	function funOnCloseBtnClick()
+	{
+		document.getElementById("divItemDtl").style.display='block';
+		document.getElementById("divPLU").style.display='none';
+	}	
+				
 	
 </script>
 
@@ -3774,7 +3795,7 @@
 										<tbody>
 											<tr>
 												<th style="width: 150px;"><label>TABLE</label></th>
-												<th style="width: 150px;"><label>WATER</label></th>
+												<th style="width: 150px;"><label>WAITER</label></th>
 												<th style="width: 50px;"><label>PAX</label></th>
 												<th style="width: 100px;"><label>KOT NO</label></th>
 											</tr>
@@ -3810,15 +3831,15 @@
 							<div id="divTotalDtl" style="border: 1px solid rgb(204, 204, 204);height: 70px;width: 100%;margin-bottom:  2px;display: block;">									
 									<table style="border-collapse: separate;">
 										<tr>
-											<td style="padding-right:  3px; padding-left:  3px;"><input type="button" id="chgQty" value="CHG QTY" style="width: 80px;height: 30px; white-space: normal; " onclick="funChgQtyBtnClicked()" class="btn btn-warning" /></td>
-											<td style="padding-right:  3px; padding-left:  3px;" ><input type="button" id="delete" value="Delete" style="width: 80px;height: 30px; " onclick="funDeleteBtnClicked()" class="btn btn-warning" /></td>
+											<td style="padding-right:  3px; padding-left:  3px;"><input type="button" id="chgQty" value="CHG QTY" style="width: 60px;height: 30px; white-space: normal;" onclick="funChgQtyBtnClicked()" class="btn btn-warning" /></td>
+											<td style="padding-right:  3px; padding-left:  3px;" ><input type="button" id="delete" value="Delete" style="width: 60px;height: 30px; " onclick="funDeleteBtnClicked()" class="btn btn-warning" /></td>
 											<td style="padding-right:  3px; padding-left:  3px;">&nbsp;&nbsp;&nbsp;<label >TOTAL</label></td>
 											<td>&nbsp;&nbsp;&nbsp;</td>
-											<td style="padding-right:  3px; padding-left:  3px;"><input  disabled type="text"  id="txtTotal" style="width: 120px;text-align: right;" class="longTextBox jQKeyboard form-control"  class="btn btn-btn-warning" /></td>
+											<td style="padding-right:  3px; padding-left:  3px;"><input  disabled type="text"  id="txtTotal" style="width: 160px;text-align: right;" class="longTextBox jQKeyboard form-control"  class="btn btn-btn-warning" /></td>
 										</tr>
 										<tr>	
-											<td style="padding-right:  3px; padding-left:  3px;" ><input  type="button" id="btnUp"  style="width: 80px;height: 30px;" value="Up" onclick="funMoveSelectedRow(1);" class="btn btn-warning" ></input></td>
-					        				<td style="padding-right:  3px; padding-left:  3px;" ><input id="btnDown" type="button" style="width: 80px;height: 30px;" value="Down" onclick="funMoveSelectedRow(0);" class="btn btn-warning"></input></td>
+											<td style="padding-right:  3px; padding-left:  3px;" ><input  type="button" id="btnUp"  style="width: 60px;height: 30px;" value="Up" onclick="funMoveSelectedRow(this);" class="btn btn-warning" ></input></td>
+					        				<td style="padding-right:  3px; padding-left:  3px;" ><input id="btnDown" type="button" style="width: 60px;height: 30px;" value="Down" onclick="funMoveSelectedRow(this);" class="btn btn-warning"></input></td>
 										</tr>
 										<tr></tr>																		
 								</table>
@@ -3873,7 +3894,7 @@
 													{
 												%>														
 														<c:if test="${itemCounter lt sizeOfTables}">																																		
-															<td style="padding: 5px;"><input type="button" id="${command.jsonArrForTableDtl[itemCounter].strTableNo}"  value="${command.jsonArrForTableDtl[itemCounter].strTableName}" style=" width: 100px; height: 100px; white-space: normal;" class="btn btn-primary "  onclick="funTableNoClicked(this,${itemCounter})"  /></td>																																																			
+															<td style="padding: 5px;"><input type="button" id="${command.jsonArrForTableDtl[itemCounter].strTableNo}"  value="${command.jsonArrForTableDtl[itemCounter].strTableName}" style=" width: 100px; height: 100px; white-space: normal;border-radius: 40px;" class="btn btn-primary "  onclick="funTableNoClicked(this,${itemCounter})"  /></td>																																																			
 														<c:set var="itemCounter" value="${itemCounter +1}"></c:set>
 														</c:if>													
 												<%  }

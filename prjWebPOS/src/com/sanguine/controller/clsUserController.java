@@ -995,7 +995,7 @@ public class clsUserController
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strLockDataOnShift","N");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strWSClientCode","");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strPOSCode","P01");
-	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strEnableBillSeries","N");
+	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strEnableBillSeries",objSetupHdModel.getStrEnableBillSeries());
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("EnablePMSIntegrationYN","N");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strPrintTimeOnBill","Y");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strPrintTDHItemsInBill","N");
@@ -1113,7 +1113,7 @@ public class clsUserController
 
 	private HashMap funGetAllPendingForms() 
 	{
-		HashMap hmPendingForms=new HashMap<>();
+		HashMap<Object, Object> hmPendingForms=new HashMap<>();
 		
 		
 		hmPendingForms.put("frmAdvanceOrderTypeMaster","frmAdvanceOrderTypeMaster");

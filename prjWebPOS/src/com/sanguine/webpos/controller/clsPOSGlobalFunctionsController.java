@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.controller.clsUserController;
+import com.sanguine.webpos.bean.clsPOSBillItemDtl;
 import com.sanguine.webpos.bean.clsPOSSalesFlashReportsBean;
 
 @Controller
@@ -1269,7 +1270,10 @@ public class clsPOSGlobalFunctionsController
 	         return (int) (o2.getSeqNo() - o1.getSeqNo());
 	        }
 	    };
-	
+	    
+	    
+	    
+	   
 	
 
 }

@@ -13,6 +13,7 @@ public class clsPOSKOTItemDtl {
     private String  strItemName;
     private double dblItemQuantity;
     private double dblAmount;
+    private double dblRate;
     private String strWaiterNo;
     private String strKOTNo;
     private int intPaxNo;
@@ -33,6 +34,9 @@ public class clsPOSKOTItemDtl {
     private String dblCreditLimit;
     private String strCounterCode;
     private String strPromoCode;
+    private String strKOTDateTime;
+    private String strOrderProcessTime;
+    private String strOrderPickupTime;
 
 
     
@@ -284,4 +288,48 @@ public class clsPOSKOTItemDtl {
     public void setStrPromoCode(String strPromoCode) {
         this.strPromoCode = strPromoCode;
     }
+
+	public double getDblRate()
+	{
+		return dblRate;
+	}
+
+	public void setDblRate(double dblRate)
+	{
+		this.dblRate = dblRate;
+	}
+
+	public String getStrKOTDateTime()
+	{
+		return strKOTDateTime;
+	}
+
+	public void setStrKOTDateTime(String strKOTDateTime)
+	{
+		this.strKOTDateTime =
+							strKOTDateTime;
+	}
+
+	public String getStrOrderProcessTime()
+	{
+		return strOrderProcessTime;
+	}
+
+	public void setStrOrderProcessTime(String strOrderProcessTime)
+	{
+		this.strOrderProcessTime = strOrderProcessTime;
+	}
+
+	public String getStrOrderPickupTime()
+	{
+		return strOrderPickupTime;
+	}
+
+	public void setStrOrderPickupTime(String strOrderPickupTime)
+	{
+		this.strOrderPickupTime =
+								strOrderPickupTime;
+	}
+    
+    
 }

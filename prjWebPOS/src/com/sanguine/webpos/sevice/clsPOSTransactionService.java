@@ -8,9 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.webpos.bean.clsPOSBillDtl;
@@ -90,7 +92,7 @@ public class clsPOSTransactionService
 			StringBuilder sql = new StringBuilder(); 
 			sql.append("select strBillNo from tblbillhd"
 	                + " where strBillNo not in (select strBillNo from tblbillsettlementdtl) and strTableNo<>'' "
-	                + " and strOperationType='Dine In' and strPOSCode='" + posCode + "' ");
+	                + " and strOperationType='DineIn' and strPOSCode='" + posCode + "' ");
 		
 			List list = objBaseService.funGetList(sql, "sql");
 			
@@ -98,9 +100,9 @@ public class clsPOSTransactionService
 				{
 					for(int i=0; i<list.size(); i++)
 					{
-						Object[] obj=(Object[])list.get(i);
+						//Object[] obj=(Object[])list.get(i);
 						clsPOSBillDtl objBean = new clsPOSBillDtl();
-						objBean.setStrBillNo(obj[0].toString());
+						objBean.setStrBillNo((String) list.get(i));
 						listRet.add(objBean);
 					}
 					

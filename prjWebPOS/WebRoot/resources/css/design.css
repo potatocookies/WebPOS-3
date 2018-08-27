@@ -1312,6 +1312,35 @@ large buttons
  background: #0c81e0;
 }
 
+
+.transForm_bluebutton:hover {	 
+ background: #3da3f5;
+}	
+.transForm_bluebutton:active {	 
+ background: #043359;
+}
+
+
+.transForm_bluebutton{
+   
+   background-size: 120px 120px;
+    cursor:pointer;
+    border:none;
+    width:90px;
+    height:90px;
+     background: #6FB9F6;
+   
+    font-weight: normal;
+}
+
+.transForm_bluebutton:hover {	 
+ background: #3da3f5;
+}	
+.transForm_bluebutton:active {	 
+ background: #043359;
+}
+
+
 .transForm_redbutton{
    
    background-size: 120px 120px;

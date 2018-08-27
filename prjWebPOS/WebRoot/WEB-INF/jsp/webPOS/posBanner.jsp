@@ -14,7 +14,9 @@
 	<%-- <link rel="stylesheet" type="text/css" href="<spring:url value="/resources/newdesign/css/font.css"/>"/> --%>
 	<%-- <link rel="stylesheet" type="text/css" href="<spring:url value="/resources/newdesign/css/styles.css"/>"/> --%>
 	<link rel="stylesheet" type="text/css" href="<spring:url value="/resources/newdesign/itemform_files/formoid1/formoid-default-skyblue.css" />"/>
-	
+	<!-- Fibotalk Script start --> 
+	<script type='text/javascript'>!function(t,e,a,c,r,n){t._ft_=t._ft_||{},t._ft_.rcl='0efa4b70a77b23';var s=e.createElement('script');s.src='https://cdn.fibotalk.com/widget.js',s.async=1,s.type='text/javascript';var f=e.getElementsByTagName('script')[0];f.parentNode.insertBefore(s,f)}(window,document);</script>
+ 	<!-- Fibotalk Script ends -->
 	
 	
 	

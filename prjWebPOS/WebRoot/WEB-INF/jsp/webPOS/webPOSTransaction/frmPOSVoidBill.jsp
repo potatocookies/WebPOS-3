@@ -182,6 +182,33 @@
 			 row.style.backgroundColor='#ffd966';
 			 row.hilite = true;
 		 }
+		 var originalQty=document.getElementById("txtQty."+index).value;
+		 var amount = document.getElementById("txtAmount."+index).value;;
+		 var rate = amount/originalQty;
+		 var index = obj.parentNode.parentNode.rowIndex;
+		    var qty="",newamount="";
+		    var person = prompt("Please enter quantity to void:", "");
+		    if (person != null || person != "") 
+		    {
+		    	qty = originalQty - person ;
+		    }
+		    else
+		    {
+		    	qty = originalQty - document.getElementById("txtQty."+index).value;
+		    }
+		    var amt = qty * rate;
+		    newamount = amount-amt;
+		    if(qty!="" || qty > 0)
+		    {
+		    	document.getElementById("txtQty."+index).value=(parseFloat(qty));
+		    	document.getElementById("txtAmount."+index).value=(parseFloat(amt));
+		    	var voidedItemDtl=document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtItemName."+index).value+"#"+document.getElementById("txtItemCode."+index).value+"#"+qty+"#"+newamount;
+			    arrVoidedItemDtlList[count]=voidedItemDtl;
+			    count++;	    
+
+		    }
+
+		   
 	}
 	
 	
@@ -321,7 +348,7 @@
 		table.deleteRow(rowCount);
 	}
 
-	
+
 	function funFillGrid()
 	{
 	    var searchUrl="";
@@ -365,7 +392,7 @@
 	}
 	
 	function funAddFullRow(data){
-		$('#tblDataFillGrid tbody').empty()
+		$('#tblDataFillGrid tbody').empty();
 		var table = document.getElementById("tblDataFillGrid");
 		var rowCount = table.rows.length;
 		var row = table.insertRow(rowCount);
@@ -463,7 +490,7 @@
  	    	row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtAmount."+ (rowCount) +"\" style=\"text-align: right\" value='"+rowData[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
  	    	row.insertCell(3).innerHTML= "<input type=\"hidden\" class=\"Box \" size=\"0%\" id=\"txtItemCode."+ (rowCount) +"\" value='"+rowData[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
  	    	row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"11%\" id=\"txtKOT."+ (rowCount) +"\"style=\"text-align: left\" value='"+rowData[4]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
- 	    	 row.insertCell(5).innerHTML= "<input type=\"button\" class=\"deletebutton\" size=\"5%\" style=\"text-align: center;width:100%;font-size: 8px\" value = \"Del\" onClick=\"Javacsript:funDeleteRow(this)\"/>";
+ 	    	// row.insertCell(5).innerHTML= "<input type=\"button\" class=\"deletebutton\" size=\"5%\" style=\"text-align: center;width:100%;font-size: 8px\" value = \"Del\" onClick=\"Javacsript:funDeleteRow(this)\"/>";
             rowCount++;
  	    }
 	  	$("#lblBillNo").text(bill);
@@ -481,7 +508,7 @@
 	    var remarks = prompt("Enter Remarks", "");
     	var reasonCode=$("#cmbDocType").val();
       
-    	//searchUrl=getContextPath()+"/voidItem.html?voidedItemList="+myMap;
+
     	searchUrl=getContextPath()+"/voidItem.html?";
 		$.ajax({
 			
@@ -524,12 +551,26 @@
 	{
  		var index = obj.parentNode.parentNode.rowIndex;
 	    var table = document.getElementById("tblData");  
+	    var qty;
+	    var person = prompt("Please enter quantity to void:", "");
+	    if (person != null || person != "") 
+	    {
+	    	qty = person ;
+	    }
+	    else
+	    {
+	    	qty = document.getElementById("txtQty."+index).value;
+	    }
+	    if(qty!="" || qty > 0)
+	    {
+	    	var voidedItemDtl=document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtItemName."+index).value+"#"+document.getElementById("txtItemCode."+index).value+"#"+qty+"#"+document.getElementById("txtAmount."+index).value;
+		    //arrVoidedItemDtlList.push(voidedItemDtl);
+		    arrVoidedItemDtlList[count]=voidedItemDtl;
+		    count++;	    
+		   
+	    }
+	  
 	    
-	    var voidedItemDtl=document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtItemName."+index).value+"#"+document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtQty."+index).value+"#"+document.getElementById("txtAmount."+index).value;
-	    //arrVoidedItemDtlList.push(voidedItemDtl);
-	    arrVoidedItemDtlList[count]=voidedItemDtl;
-	    count++;	    
-	    table.deleteRow(index);
 	}
  	
  	function funFullVoidBill()
@@ -577,24 +618,13 @@
 
  	function funNextFillGrid()
  	{
- 		$('#tblData').remove()
- 		$('#tblDataFillGrid').remove()
+ 		$('#tblData').remove();
  		$("#lblBillNo").text("");
 	  	$("#lblUserCreated").text("");
     	$("#lblTax").text("0");
     	$("#lblSubTotlal").text("0");
     	$("#lblTotal").text("0");
 
- 		/*var table = document.getElementById("tblData");
- 		var rowCount = table.rows.length;
-
- 		var row = table.insertRow(rowCount);
- 		row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"50%\" id=\"Description\" value=Description >";
- 		row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Quantity\" value=Qty >";
- 		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Amount\" value= Amount>";
- 		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Item Code\" value=Item Code >";
- 		row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"\" value=Select >";
- 	    */
  		funFillGrid();
  	}
  	
@@ -701,7 +731,7 @@
 	    	  	</div>
 	    	  	<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">	
 	    	  		<div class="element-input col-lg-6" style="width: 25%;"> 
-    		   			<input id="btnDelete" type="button" value="Item Void" onclick="funVoidItems();"></input>
+    		   			<input id="btnDelete" type="button" value="Save" onclick="funVoidItems();"></input>
 	    	  		</div>
 	    	  		<div class="element-input col-lg-6" style="width: 25%;"> 
     		   			<input id="btnDone" type="button" value="Full Void" onclick="funFullVoidBill();">

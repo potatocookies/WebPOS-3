@@ -610,7 +610,7 @@ public class clsPOSVoidKotController {
         for (int i=0;i<arrListTaxDtl.size();i++)
         {
         	clsPOSTaxCalculationBean objBean = arrListTaxDtl.get(i);
-        	if(i==(arrListTaxDtl.size() - 1))
+        	if(i!=(arrListTaxDtl.size() - 1))
             {
         	taxAmt += objBean.getTaxAmount();
             }

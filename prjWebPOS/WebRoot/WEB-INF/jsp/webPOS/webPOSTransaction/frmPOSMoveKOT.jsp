@@ -468,7 +468,7 @@ function funSearchTables()
 		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
      		  <p align="center">
             		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Submit" onclick="return funValidateFields();"/></div>
-            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="Close" onclick="funPOSHome()()"></div>
+            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="Close" onclick="funPOSHome()"></div>
      		  </p>
    		 </div>
 	

@@ -840,5 +840,12 @@ public class clsPOSMasterService {
 			return list;
 	 }
 	 
+	 public List funFillAllItemList(String strClientCode)throws Exception 
+		{
+			List list=null;
+			list=obBaseService.funLoadAll(new clsMenuItemMasterModel(),strClientCode);
+			return list;
+		}
+	 
 }
 

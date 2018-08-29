@@ -182,31 +182,7 @@
 			 row.style.backgroundColor='#ffd966';
 			 row.hilite = true;
 		 }
-		 var originalQty=document.getElementById("txtQty."+index).value;
-		 var amount = document.getElementById("txtAmount."+index).value;;
-		 var rate = amount/originalQty;
-		 var index = obj.parentNode.parentNode.rowIndex;
-		    var qty="",newamount="";
-		    var person = prompt("Please enter quantity to void:", "");
-		    if (person != null || person != "") 
-		    {
-		    	qty = originalQty - person ;
-		    }
-		    else
-		    {
-		    	qty = originalQty - document.getElementById("txtQty."+index).value;
-		    }
-		    var amt = qty * rate;
-		    newamount = amount-amt;
-		    if(qty!="" || qty > 0)
-		    {
-		    	document.getElementById("txtQty."+index).value=(parseFloat(qty));
-		    	document.getElementById("txtAmount."+index).value=(parseFloat(amt));
-		    	var voidedItemDtl=document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtItemName."+index).value+"#"+document.getElementById("txtItemCode."+index).value+"#"+qty+"#"+newamount;
-			    arrVoidedItemDtlList[count]=voidedItemDtl;
-			    count++;	    
-
-		    }
+		 
 
 		   
 	}
@@ -423,10 +399,10 @@
 	
 	
 	
-	
+	 var deletedIndex;
      function funGetSelectedRowData(obj)
      {
-    	
+    	deletedIndex="";
     	var index = obj.parentNode.parentNode.rowIndex;
     	var tableName = document.getElementById("tblDataFillGrid");
        	var dataBilNo= tableName.rows[index].cells[0].innerHTML; 
@@ -490,14 +466,14 @@
  	    	row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtAmount."+ (rowCount) +"\" style=\"text-align: right\" value='"+rowData[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
  	    	row.insertCell(3).innerHTML= "<input type=\"hidden\" class=\"Box \" size=\"0%\" id=\"txtItemCode."+ (rowCount) +"\" value='"+rowData[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
  	    	row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"11%\" id=\"txtKOT."+ (rowCount) +"\"style=\"text-align: left\" value='"+rowData[4]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
- 	    	// row.insertCell(5).innerHTML= "<input type=\"button\" class=\"deletebutton\" size=\"5%\" style=\"text-align: center;width:100%;font-size: 8px\" value = \"Del\" onClick=\"Javacsript:funDeleteRow(this)\"/>";
+ 	    	row.insertCell(5).innerHTML= "<input type=\"button\" class=\"deletebutton\" size=\"5%\" style=\"text-align: center;width:100%;font-size: 8px\" value = \"Del\" onClick=\"Javacsript:funDeleteRow(this)\"/>";
             rowCount++;
  	    }
 	  	$("#lblBillNo").text(bill);
 	  	$("#lblUserCreated").text(userCreated);
-    	$("#lblTax").text(taxAmt);
-    	$("#lblSubTotlal").text(subTotalAmt);
-    	$("#lblTotal").text(totalAmount);
+    	$("#lblTax").text(taxAmt.toFixed(2));
+    	$("#lblSubTotlal").text(subTotalAmt.toFixed(2));
+    	$("#lblTotal").text(totalAmount.toFixed(2));
  	}
      
 
@@ -545,32 +521,53 @@
 	
 	 }
  	
- 	
+    
  	//Function to Delete Selected Row From Grid
 	function funDeleteRow(obj)
 	{
- 		var index = obj.parentNode.parentNode.rowIndex;
-	    var table = document.getElementById("tblData");  
-	    var qty;
-	    var person = prompt("Please enter quantity to void:", "");
-	    if (person != null || person != "") 
-	    {
-	    	qty = person ;
-	    }
-	    else
-	    {
-	    	qty = document.getElementById("txtQty."+index).value;
-	    }
-	    if(qty!="" || qty > 0)
-	    {
-	    	var voidedItemDtl=document.getElementById("txtItemCode."+index).value+"#"+document.getElementById("txtItemName."+index).value+"#"+document.getElementById("txtItemCode."+index).value+"#"+qty+"#"+document.getElementById("txtAmount."+index).value;
-		    //arrVoidedItemDtlList.push(voidedItemDtl);
-		    arrVoidedItemDtlList[count]=voidedItemDtl;
-		    count++;	    
-		   
-	    }
-	  
-	    
+ 		if(deletedIndex=="")
+ 		{	
+ 			deletedIndex = obj.parentNode.parentNode.rowIndex;
+ 		}
+ 		var table = document.getElementById("tblData");
+ 		var originalQty=((document.getElementById("txtQty."+deletedIndex)||{}).value)||"";
+		 var amount = ((document.getElementById("txtAmount."+deletedIndex)||{}).value)||"";
+		 var rate = amount/originalQty;
+		 var qty="",newamount="",person="";
+		    if(originalQty>1)
+		    {
+		    person = prompt("Please enter quantity to void:", "");
+		    }
+		    else
+		    {
+	    	person = 1;
+		    }	
+		    if (person != null || person != "") 
+		    {
+		    	qty = originalQty - person ;
+		    }
+		    else
+		    {
+		    	qty = originalQty - document.getElementById("txtQty."+deletedIndex).value;
+		    }
+		    var amt = qty * rate;
+		    newamount = amount-amt;
+		    if(qty!="" || qty > 0)
+		    {
+		    	document.getElementById("txtQty."+deletedIndex).value=(parseFloat(qty));
+		    	document.getElementById("txtAmount."+deletedIndex).value=(parseFloat(amt));
+		    	var voidedItemDtl=document.getElementById("txtItemCode."+deletedIndex).value+"#"+document.getElementById("txtItemName."+deletedIndex).value+"#"+document.getElementById("txtItemCode."+deletedIndex).value+"#"+qty+"#"+amt;
+			    arrVoidedItemDtlList[count]=voidedItemDtl;
+			    count++;	
+		    }
+		    else
+		    {
+		    	 table.deleteRow(deletedIndex);
+		    }	
+		  	if(person!=null)
+		 	{
+		  		deletedIndex++;
+		 	}
 	}
  	
  	function funFullVoidBill()

@@ -1233,9 +1233,7 @@ public class clsPOSVoidBillController {
 		       	     
 		       	       if(listSqlbill.size()>0)
 		       	       {
-		        	     Object[] obj = (Object[]) listSqlbill.get(0);
-			         
-			            sqlDelete = "delete from tblbillpromotiondtl "
+		        	     sqlDelete = "delete from tblbillpromotiondtl "
 			                    + " where strBillNo='" + billNo + "' and strItemCode='" + itemCodeForVoid + "' ";
 			            objBaseServiceImpl.funExecuteUpdate(sqlDelete, "sql"); 
 			        }

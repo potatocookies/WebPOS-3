@@ -455,14 +455,11 @@
     	    		row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowItemData[1]+"\" value='"+rowItemData[1]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
     	    		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowItemData[2]+"\" value='"+rowItemData[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
     	    		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowItemData[3]+"\" value='"+rowItemData[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-//     	    		row.insertCell(4).innerHTML= "<input type=\checkbox\ class=\"check \" size=\"15%\" id=\"j\"  />";
-//     	    		row.insertCell(4).innerHTML= "<input id=\"cbSGSel."+(rowCount)+"\" type=\"checkbox\" checked=\"checked\" name=\"itemGroupthemes\" value='"+rowItemData[3]+"' class=\"SGCheckBoxClass\" />";
     	    		rowCount++;
     	    		
     	    		$("#lblUserCreated").text(rowItemData[4]);
     	    		$("#lblDateTime").text(rowItemData[5]);
-//     	    		 row.insertCell(j).innerHTML= "<input type=\"hidden\" readonly=\"readonly\" class=\"cell\" value='"+rowData[j]+"' />";
-    	    	 
+
     	    	}
     	    	if(rowCount<=2)
     	    	{
@@ -480,9 +477,9 @@
     	   		}
     	    	$("#lblKotNo").text(KotNo);
     	    	
-    	    	$("#lblTax").text(taxAmt);
-    	    	$("#lblSubTotlal").text(subTotalAmt);
-    	    	$("#lblTotal").text(totalAmount);
+    	    	$("#lblTax").text(taxAmt.toFixed(2));
+    	    	$("#lblSubTotlal").text(subTotalAmt.toFixed(2));
+    	    	$("#lblTotal").text(totalAmount.toFixed(2));
     	 
      }
 
@@ -495,17 +492,9 @@
 	    var count=$('#tblData tr').length-1;
 	    var delRowNo="";
 	    var i=selectedRowIndex;
-// 	    for(var i=1;i<=count;i++)
-// 	    {
          var a="";
-//         if(document.all("cbSGSel."+i).checked==true)
-//         	{
-//         	if(delRowNo=="")
-//         	{
-//         		delRowNo="del"+i;
-//         	}else{
-        		delRowNo=delRowNo+"del"+i;
-//         	}
+			delRowNo=delRowNo+"del"+i;
+
         	var tableName = document.getElementById("tblData");
 	       	var itemcode= tableName.rows[i].cells[3].innerHTML; 
 	       	
@@ -532,8 +521,6 @@
 	        var quantity=btnBackgroundqty[1].split("onclick");
 	        delQuatity=delQuatity+"aa"+quantity[0].substring(1, (quantity[0].length-2));
 
-//         	}
-// 	    }
 	   var delreow= delRowNo.split("del");
 	  
 	   for(var i=1;i<delreow.length;i++) {
@@ -600,7 +587,6 @@
 		    	$('#tblData tbody').empty();
 		    	funFillGrid();	   
 		    	
-// 		    	funNextFillGrid();
 				},
 		    error: function(jqXHR, exception) {
 	            if (jqXHR.status === 0) {
@@ -773,136 +759,9 @@
 								
 						     </div>
 						     
-					  </div>
-					 
-					 
-					 
-		</div>
-	  
-	  
-	  
-	  
-<!-- 	   <div> -->
-<!-- 	   <div> -->
-<!-- 	   <table> -->
-<!-- 	 <tr> <td> -->
-<!-- 					<label>KOT No.</label> -->
-<!-- 					&nbsp;&nbsp; -->
-<!-- 					<label id="lblKotNo" /> -->
-					
+					  </div>	 
+	</div>
 
-<!-- 			    </td> -->
-<!-- 			    <td> -->
-<!-- 					<label>User Created</label> -->
-<!-- 					&nbsp;&nbsp;<label id="lblUserCreated"  /> -->
-
-<!-- 			    </td> -->
-<!-- 			    </tr> -->
-<!-- 			    <tr>   -->
-<!-- 			    <td> -->
-<!-- 					<label>Date & Time</label> -->
-<!-- 					&nbsp;&nbsp;<label id="lblDateTime"  /> -->
-<%-- 					<s:input type="hidden" id="textTableNo" name="textTableNo" value="textTableNo"  path="strTables"/> --%>
-<!-- 			    </td> -->
-<!-- 			 <td> -->
-<!-- 			 	&nbsp;&nbsp;<label>Reason</label></td> -->
-<!-- 			    <td> -->
-<%-- 		 <s:select path="strReson" items="${listReson}" --%>
-<%-- 							id="cmbDocType"  cssClass="longTextBox" cssStyle="width:300px"></s:select> --%>
-			    
-<!-- 			    </td> -->
-<!-- 			    </tr> -->
-<!-- 			    </table> -->
-<!-- 	   </div> -->
-<!-- 	     <div style=" width: 50%; height: 500px;float:left;background-color: #a4d7ff; ">  -->
-<!-- 	     <br> -->
-<!--             <div style=" background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: scroll; overflow-y: scroll; width: 90%;"> -->
-<!-- 					<table id="tblData" -->
-<!-- 							style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll" -->
-<!-- 							class="transTablex col2-right col3-right col4-right col5-right"> -->
-<!-- 							<tr > -->
-<!-- 						<td style="border: 1px  white solid;width:55%"><label>Description</label></td> -->
-<!-- 						<td style="border: 1px  white solid;width:15%"><label>Qty</label></td> -->
-<!-- 						<td style="border: 1px  white solid;width:10%"><label>Amount</label></td> -->
-<!-- <!-- 						<td style="border: 1px  white solid;width:10%"><label>Select</label></td> --> 
-						
-						
-<!-- 					</tr> -->
-<!-- 					</table> -->
-					
-<!-- 			</div> -->
-<!-- 			<table class=transFormTable > -->
-					
-<!-- 					<tr> -->
-<!-- 						 <td> -->
-<!-- 							<label>SubTotal</label> -->
-<!-- 							<label id="lblSubTotlal"/> -->
-<!-- 						</td> -->
-<!-- 					</tr> -->
-<!-- 						<tr > -->
-<!-- 						 <td > -->
-<!-- 							<label >Tax</label> -->
-<!-- 						</td> -->
-<!-- 							<td>&nbsp;&nbsp;<label id="lblTax" /> -->
-<!-- 						</td> -->
-<!-- 					</tr> -->
-					
-<!-- 			     </table> -->
-			     
-<!-- 			     <div> -->
-<!-- 			     <table class=transFormTable> -->
-<!-- 			       <tr><td> -->
-<!-- 			        <input id="btnUp" type="button" class="smallButton" value="Up" onclick="funMoveSelectedRow(1);"></input></td> -->
-			       
-<!-- 			        <td><input id="btnDown" type="button" class="smallButton" value="Down" onclick="funMoveSelectedRow(0);"></input></td> -->
-<!-- 			         <td> -->
-<!-- 							<label >Total</label> -->
-<!-- 						<label id=lblTotal></label></td> -->
-						
-<!-- 			        </tr> -->
-					
-<!-- 					<tr><td><input id="btnDelete" type="button" class="smallButton" value="Delete" onclick="funDeleteRow();"></input></td> -->
-<!-- 					<td><input id="btnDone" type="button" class="smallButton"   value="FullVoidKot" onclick="funFullVoidKot();"></input></td> -->
-<!-- 				   </tr> -->
-
-<!-- 				   </table> -->
-<!-- 			     </div> -->
-            
-<!--         </div> -->
-
-<!-- 		<div style=" width: 50%; height: 500px; float:right; border-collapse: separate; overflow-x: hidden; overflow-y: scroll; background-color: #C0E2FE;"> -->
-<!-- 		    <br> -->
-<!-- 		   <table class=transFormTable> -->
-			
-<!-- 			<tr> -->
-<!-- 				<td colspan="4"> -->
-<%-- 					 <s:select id="cmbType" path="strTables" cssClass="BoxW124px"  items="${tableData}"  onchange="funFillGrid()"> --%>
-					
-				    
-<%-- 		         </s:select>  --%>
-<!-- 				</td> -->
-<!-- 			</tr> -->
-<!-- 			</table> -->
-<!-- 			<tr> -->
-<!-- 			 <div style=" background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: scroll; overflow-y: scroll; width: 90%;"> -->
-<!-- 					<table id="tblDataFillGrid" -->
-<!-- 							style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll" -->
-<!-- 							class="transTablex col2-right col3-right col4-right col5-right"> -->
-<!-- 							<tr > -->
-
-<!-- 					</tr> -->
-<!-- 					</table> -->
-<!-- 					<br/> -->
-<!-- 					<br/> -->
-<!-- 					<br/>	 -->
-<!-- 			</div> -->
-<!-- 			</tr> -->
-<!-- 			<br> -->
-<!-- 		</div> -->
-		
-<!-- 	   </div>   -->
-<!-- 		<br> <br> -->
-		
 	</s:form> 
     
 <br /><br />       

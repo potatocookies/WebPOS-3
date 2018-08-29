@@ -637,7 +637,16 @@ public class clsSearchFormController
 				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
 				break;
 			}
-			
+			case "POSUnSettleBill":
+			{   
+				String posCode=req.getSession().getAttribute("loginPOS").toString();
+				String posDate = req.getSession().getAttribute("gPOSDate").toString();
+				listColumnNames="Bill No,Table Name,Grand Total,Settle Mode,User Created,Remarks";
+				searchFormTitle="Unsettle Bill";
+				JSONObject jObjSearchData = funGetPOSSearchDetails(formName,clientCode+"#"+posCode+"#"+posDate);
+				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
+				break;
+			}
 			
 		}
 		
@@ -1481,13 +1490,9 @@ public class clsSearchFormController
 			                        + " from tblbillhd a inner join tblbillsettlementdtl b on a.strbillno=b.strbillno"
 			                        + " inner join tblsettelmenthd c on b.strSettlementCode=c.strSettelmentCode"
 			                        + " left outer join tbltablemaster d on a.strTableNo=d.strTableNo"
-			                        + " where date(a.dteBillDate)='" + splitCleientCode[2] + "' "
-			                        + " and a.strPOSCode='" + splitCleientCode[1] + "'  ");
+			                        + " where date(a.dteBillDate)='" + splitCleientCode[2] + "'  and c.strSettelmentType!='Complementary' "
+			                        + " and a.strPOSCode='" + splitCleientCode[1] + "'  ") ;
 				    		
-				    		 if (false)
-			                  {
-				    			 hqlQuery.append(" and a.strUserCreated='" + splitCleientCode[3] + "' ");
-			                  }
 				    		 hqlQuery.append(" group by a.strbillno order by a.strbillno DESC");
 				    		 
 				    		 list=objBaseService.funGetList(hqlQuery, "sql");	

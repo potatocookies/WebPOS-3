@@ -215,7 +215,7 @@ public class clsPOSUnSettleBillTransactionController {
 			                    int unsettleExc= objBaseService.funExecuteUpdate(sql.toString(),"sql");
 			                    
 			                    sql.setLength(0);          
-			                    sql.append("update tblbillhd set strDataPostFlag='N' where strBillNo='"+BillNo+"'");
+			                    sql.append("update tblbillhd set strDataPostFlag='N',strSettelmentMode='' where strBillNo='"+BillNo+"'");
 			                    objBaseService.funExecuteUpdate(sql.toString(),"sql");
 			                    
 			                    sql.setLength(0);

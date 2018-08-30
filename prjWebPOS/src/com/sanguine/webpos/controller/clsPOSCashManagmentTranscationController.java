@@ -46,6 +46,8 @@ public class clsPOSCashManagmentTranscationController{
 	
 	@Autowired
 	private intfBaseService objBaseService;
+	
+	
 
 	Map mapReason=new HashMap();
 
@@ -187,7 +189,7 @@ public class clsPOSCashManagmentTranscationController{
 				    strCashManagementCode =funGenerateCashManagementCode();
 			    	clsPOSCashManagmentTranscationModel objModel = new clsPOSCashManagmentTranscationModel(new clsPOSCashManagmentTranscationModel_ID(strCashManagementCode,clientCode));
 			        objModel.setStrTransType(strTransType);
-				    objModel.setDteTransDate(strTransDate);
+				    objModel.setDteTransDate(strTransDate+" "+dateTime.split(" ")[1]);
 				    objModel.setDblAmount(dblAmount);
 				    objModel.setStrReasonCode(strReasonCode);
 				    objModel.setStrCurrencyType(strCurrencyType);
@@ -330,13 +332,13 @@ public class clsPOSCashManagmentTranscationController{
 	        	clsPOSCashManagementDtlBean objCashMgmtDtl=new clsPOSCashManagementDtlBean();
                 if(hmCashMgmtDtl.containsKey(obj1[0]))
                 {
-                    objCashMgmtDtl=hmCashMgmtDtl.get(obj1[0]);
+                    objCashMgmtDtl=hmCashMgmtDtl.get(obj1[0].toString());
                     objCashMgmtDtl.setSaleAmt(objCashMgmtDtl.getSaleAmt()+Double.parseDouble(obj1[1].toString()));
                     hmCashMgmtDtl.put(obj1[0].toString(),objCashMgmtDtl);
                 }
                 else
                 {
-                    objCashMgmtDtl.setSaleAmt(Double.parseDouble(obj[1].toString()));
+                    objCashMgmtDtl.setSaleAmt(Double.parseDouble(obj1[1].toString()));
                     hmCashMgmtDtl.put(obj[0].toString(),objCashMgmtDtl);
                 }
             }

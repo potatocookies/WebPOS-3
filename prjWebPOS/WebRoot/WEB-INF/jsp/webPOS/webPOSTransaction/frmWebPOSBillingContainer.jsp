@@ -179,12 +179,28 @@ function funDoneBtnDirectBiller()
 	grandTotal=taxTotal+netTotal;
 	funFillTableFooterDtl("GrandTotal",grandTotal);
 	funFillTableFooterDtl("PaymentMode","");   
-    $('#txtAmount').val(grandTotal);
- 	$('#txtPaidAmount').val(grandTotal);
- 	$('#hidSubTotal').val(subTotalonAmt);
- 	$('#hidDiscountTotal').val(discountonAmt);
- 	$('#hidNetTotal').val(netTotal);
- 	$('#hidGrandTotal').val(grandTotal);
+   
+	
+	
+	
+	/* Setting for only Direct Biller Global variables */
+	/* For Make KOT use frmBilling form to set global variables */
+ 	
+ 	$('#txtAmount').val(grandTotal);
+	$('#txtPaidAmount').val(grandTotal);
+	$('#hidSubTotal').val(subTotalonAmt);
+	$('#hidDiscountTotal').val(discountonAmt);
+	$('#hidNetTotal').val(netTotal);
+	$('#hidGrandTotal').val(grandTotal);
+	 	
+	$("#hidTakeAway").val(gTakeAway);
+	$("#hidCustomerCode").val(gCustomerCode);
+ 	$("#hidCustomerName").val(gCustomerName);
+ 	$("#hidBillTransType").val(operationName);
+ 	$("#hidAreaCode").val(gAreaCode);
+ 	
+ 	$("#hidTableNo").val(gTableNo);
+	$("#hidWaiterNo").val(gWaiterNo);
 	
 }
 
@@ -456,14 +472,19 @@ $(document).ready(function(){
 						</ul>
 						<!--General Tab  Start-->
 						<div id="tab1" class="tab_content" style="width: 100%;height: 700px;">
-							<jsp:include page="frmPOSDirectBiller.jsp" />
-			    </div>
+							<jsp:include page="frmBilling.jsp" />
+			   	 </div>
+			   	 
+			   	 
 			    
 			    <div id="tab2" class="tab_content" style="height: 700px">
 
 			   			<jsp:include page="frmPOSBillSettlement.jsp" />
 			   	
 			    </div>
+			    
+			    
+			    
 			    
 
 			    

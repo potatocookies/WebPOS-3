@@ -35,6 +35,7 @@ public class clsPOSBillSettlementBean
     private String strDeliveryBoyName;
     private String strSubGroupCode;
     private String strGroupCode;
+    private String strAreaCode;
     private double dblRate;
 
     
@@ -600,5 +601,15 @@ public class clsPOSBillSettlementBean
 	public void setDblRate(double dblRate) {
 		this.dblRate = dblRate;
 	}
+	public String getStrAreaCode()
+	{
+		return strAreaCode;
+	}
+	public void setStrAreaCode(String strAreaCode)
+	{
+		this.strAreaCode = strAreaCode;
+	}
+	
+	
 	
 }

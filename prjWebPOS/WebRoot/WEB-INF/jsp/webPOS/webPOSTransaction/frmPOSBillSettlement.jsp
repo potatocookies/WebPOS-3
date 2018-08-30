@@ -369,7 +369,7 @@
                        /*  lblCreditCustCode.setText(data[0].toString());
                         customerCodeForCredit = lblCreditCustCode.getText();
                         txtCoupenAmt.setText(String.valueOf(dblSettlementAmount));
-                        txtCustomerName.setText(data[1].toString()); */
+                        hidCustomerName.setText(data[1].toString()); */
                         gSearchItemClicked = false;
                     } 
                     
@@ -734,7 +734,7 @@
 		  		    $("#lblCreditCustCode").val(code);
 				    customerCodeForCredit = code;
 				    $("#txtCoupenAmt").val(dblSettlementAmount);
-				  //  $("#txtCustomerName").val(code)
+				  //  $("#hidCustomerName").val(code)
 			 }
 			
 			
@@ -775,10 +775,10 @@
 			        dataType: "json",
 			        success: function(response)
 			        {
-			        	$("#txtCustomerName").val(response.strCustomerName);
+			        	$("#hidCustomerName").val(response.strCustomerName);
 			        	//gCustomerCode=response.strCustomerCode;
 			        	$("#lblCreditCustCode").val(code);
-			        	//$("#txtCustomerName").val(response.strCustomerName);
+			        	//$("#hidCustomerName").val(response.strCustomerName);
 				    },
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {
@@ -1997,11 +1997,12 @@
 // 		  document.forms["frmBillSettlement"].submit();
 		 if(operationName=="Dine In")
 		 {
-			 $("#strTableNo").val(gTableNo);
-			 $("#strWaiterNo").val(gWaiterNo);
+			/*  $("#hidTableNo").val(gTableNo);
+			 $("#hidWaiterNo").val(gWaiterNo);
 			 
-			 
-			 $("#billTransType").val("Dine In");
+			 $("#hidCustomerCode").val(gCustomerCode);			 
+			 $("#hidBillTransType").val("Dine In");
+			 $("#hidAreaCode").val(gAreaCode); */
 			 
 			 var tableName=gTableName;
 			 
@@ -2020,7 +2021,7 @@
 	      }
 		 else  if(operationName=="Home Delivery")
 		 {
-			 $("#billTransType").val("Home Delivery");
+			 $("#hidBillTransType").val("Home Delivery");
 			 
 	    	 document.frmBillSettlement.action = "actionBillSettlement.html";
 	    	 document.frmBillSettlement.method = "POST";
@@ -2028,7 +2029,7 @@
 	      }
 		 else  if(operationName=="Take Away")
 		 {
-			 $("#billTransType").val("Take Away");
+			 $("#hidBillTransType").val("Take Away");
 			 
 	    	 document.frmBillSettlement.action = "actionBillSettlement.html";
 	    	 document.frmBillSettlement.method = "POST";
@@ -2515,7 +2516,7 @@
 			 		<table style="width:95%;height:28px;font-size:11px; font-weight: bold;">
 						<tr>
 							<td><label id="lblCustName" style=" display: inline-block;width: 100%;text-align: left;">Customer Name</label></td>
-					 		<td><s:input  type="text"  id="txtCustomerName" path="" cssStyle="width:150px;" cssClass="longTextBox jQKeyboard form-control"  /> </td>
+					 		<td><s:input  type="text"  id="hidCustomerName" path="" cssStyle="width:150px;" cssClass="longTextBox jQKeyboard form-control"  /> </td>
 				 		</tr>
 					</table>
 					
@@ -2761,15 +2762,18 @@
  		 		<s:hidden id="hidBalanceAmt" path=""/> 
  		 		
  		 		
- 		 		<s:hidden id="txtCustMobileNo" path="custMobileNo"/>
-		 		<s:hidden id="txtCustomerCode" path="strCustomerCode"/>
-		 		<s:hidden id="txtCustomerName" path="customerName"/>
-		 		<s:hidden id="billTransType" path="billTransType"/>
-		 		<s:hidden id="txtTakeAway" path="takeAway"/>
+ 		 		<s:hidden id="hidCustMobileNo" path="custMobileNo"/>
+		 		<s:hidden id="hidCustomerCode" path="strCustomerCode"/>
+		 		<s:hidden id="hidCustomerName" path="customerName"/>
+		 		<s:hidden id="hidBillTransType" path="billTransType"/>
+		 		<s:hidden id="hidTakeAway" path="takeAway"/>
 		 		<s:hidden id="hidDeliveryBoyCode" path="strDeliveryBoyCode"/>
 		 		<s:hidden id="hidDeliveryBoyName" path="strDeliveryBoyName"/>
-		 		<s:hidden id="strTableNo" path="strTableNo"/>
-				<s:hidden id="strWaiterNo" path="strWaiter"/>
+		 		<s:hidden id="hidTableNo" path="strTableNo"/>
+				<s:hidden id="hidWaiterNo" path="strWaiter"/>
+				<s:hidden id="hidAreaCode" path="strAreaCode"   />
+				
+				
 				
 				
 				

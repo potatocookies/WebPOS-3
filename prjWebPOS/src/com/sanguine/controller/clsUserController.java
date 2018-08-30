@@ -272,8 +272,11 @@ public class clsUserController
 						objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
 					}
 				}
-                catch (ParseException e) {
+                catch (ParseException e) 
+                {
                 	e.printStackTrace();
+                	map.put("invalid", "1");
+					objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
 				}
 			}
 			else

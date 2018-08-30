@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillItemDtl;
+import com.sanguine.webpos.bean.clsPOSBillSeriesBillDtl;
 import com.sanguine.webpos.bean.clsPOSKOTItemDtl;
 import com.sanguine.webpos.bean.clsPOSSettelementOptions;
 import com.sanguine.webpos.util.clsPOSSetupUtility;
@@ -594,9 +595,9 @@ public class clsPOSBillingAPIController
 							else
 							{
 								List<clsPOSKOTItemDtl> listBillSeriesDtl = new ArrayList<clsPOSKOTItemDtl>();
-								
+
 								listBillSeriesDtl.add(objBillItemDtl);
-								
+
 								hmBillSeriesItemList.put(billSeries, listBillSeriesDtl);
 							}
 							break;
@@ -612,9 +613,9 @@ public class clsPOSBillingAPIController
 						else
 						{
 							List<clsPOSKOTItemDtl> listBillSeriesDtl = new ArrayList<clsPOSKOTItemDtl>();
-							
+
 							listBillSeriesDtl.add(objBillItemDtl);
-							
+
 							hmBillSeriesItemList.put("NoBillSeries", listBillSeriesDtl);
 						}
 					}
@@ -671,6 +672,7 @@ public class clsPOSBillingAPIController
 
 	/**
 	 * This method calculates the paxes based on no bills are there.
+	 * 
 	 * @param totalPAX
 	 * @param totalBills
 	 * @return
@@ -706,40 +708,122 @@ public class clsPOSBillingAPIController
 
 		return mapPAXPerBill;
 	}
-	
+
 	/**
 	 * This method updated the table status based on KOT,Billed or settle.
+	 * 
 	 * @param tableNo
 	 * @param status
 	 */
-	public void funUpdateTableStatus(String tableNo,String status)
+	public void funUpdateTableStatus(String tableNo, String status)
 	{
 		try
 		{
-			String sqlTableStatus = "update tbltablemaster set strStatus='"+status+"' where strTableNo='" +tableNo+ "';";
+			String sqlTableStatus = "update tbltablemaster set strStatus='" + status + "' where strTableNo='" + tableNo + "';";
 			objBaseService.funExecuteUpdate(sqlTableStatus, "sql");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
-		}		
+		}
 	}
+
 	/**
 	 * This method is used to clear KOT temp table after billed or full voided.
+	 * 
 	 * @param tableNo
 	 * @param posCode
 	 */
-	public void funClearRTempTable(String tableNo,String posCode)
+	public void funClearRTempTable(String tableNo, String posCode)
 	{
 		try
 		{
 			String sqlDeleteKOT = "delete from tblitemrtemp where strTableNo='" + tableNo + "' and strPOSCode='" + posCode + "'";
 			objBaseService.funExecuteUpdate(sqlDeleteKOT, "sql");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
-		}		
+		}
+	}
+
+	/**
+	 * This method takes bill Series Prefix as F,L etc.
+	 * 
+	 * @param billSeriesPrefix
+	 * @return billNo for this bill series prefix
+	 */
+	public String funGetBillSeriesBillNo(String billSeriesPrefix, String posCode)
+	{
+		String billSeriesBillNo = "";
+
+		try
+		{
+			int billSeriesLastNo = 0;
+
+			sqlBuilder.setLength(0);
+			sqlBuilder.append("select a.intLastNo " + "from tblbillseries a " + "where a.strBillSeries='" + billSeriesPrefix + "' " + "and (a.strPOSCode='" + posCode + "' OR a.strPOSCode='All') ");
+
+			List listOfBillSeriesLatNo = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfBillSeriesLatNo != null && listOfBillSeriesLatNo.size() > 0)
+			{
+				billSeriesLastNo = Integer.parseInt(listOfBillSeriesLatNo.get(0).toString());
+			}
+
+			billSeriesBillNo = billSeriesPrefix + "" + posCode + "" + String.format("%05d", (billSeriesLastNo + 1));
+
+			// update last bill series last no
+			String sqlUpdate = "update tblbillseries " + "set intLastNo='" + (billSeriesLastNo + 1) + "' " + "where (strPOSCode='" + posCode + "' OR strPOSCode='All') " + "and strBillSeries='" + billSeriesPrefix + "' ";
+			objBaseService.funExecuteUpdate(sqlUpdate, "sql");
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			return billSeriesBillNo;
+		}
+	}
+
+	/**
+	 * 
+	 * @param listBillSeriesBillDtl
+	 * @param hdBillNo
+	 * @return all other bill nos than hdbillno
+	 */
+	public String funGetBillSeriesDtlBillNos(List<clsPOSBillSeriesBillDtl> listBillSeriesBillDtl, String hdBillNo)
+	{
+		StringBuilder sbDtllBillNos = new StringBuilder("");
+		try
+		{
+			for (int i = 0; i < listBillSeriesBillDtl.size(); i++)
+			{
+				if (listBillSeriesBillDtl.get(i).getStrHdBillNo().equals(hdBillNo))
+				{
+					continue;
+				}
+				else
+				{
+					if (sbDtllBillNos.length() == 0)
+					{
+						sbDtllBillNos.append(listBillSeriesBillDtl.get(i).getStrHdBillNo());
+					}
+					else
+					{
+						sbDtllBillNos.append(",");
+						sbDtllBillNos.append(listBillSeriesBillDtl.get(i).getStrHdBillNo());
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{			
+			e.printStackTrace();
+		}
+
+		return sbDtllBillNos.toString();
 	}
 
 }

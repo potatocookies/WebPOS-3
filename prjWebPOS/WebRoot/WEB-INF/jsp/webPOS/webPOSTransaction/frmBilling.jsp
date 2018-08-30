@@ -90,6 +90,7 @@
 	 var gWaiterNo="";
 	 var gPAX=0;
 	 var gLastKOTNo="";
+	 var gAreaCode="";
 
 	var gMobileNo="";
 	var fieldName;
@@ -128,6 +129,14 @@
 	
 	var gSelectWaiterFromCardSwipe="${gSelectWaiterFromCardSwipe}";
 	
+	var gPOSCode="${gPOSCode}";
+	var gClientCode="${gClientCode}";
+	
+	
+	$(document).ready(function () 
+	{
+		  $('input#txtItemSearch').mlKeyboard({layout: 'en_US'});
+	});
 	
 	
 	//start PLU Search funactionality
@@ -290,6 +299,8 @@
 		}
 		
 		
+		
+		
 		if (rowCount == 1)
         {
            alert("Please select Items");
@@ -304,7 +315,7 @@
               //  clsTextFileGeneratorForPrinting ob = new clsTextFileGeneratorForPrinting();
                // ob.fun_CkeckKot_TextFile(globalTableNo, txtWaiterNo.getText().trim());
                
-              $("#txtTakeAway").val(gTakeAway);
+              $("#hidTakeAway").val(gTakeAway);
                funMakeBillBtnKOT(ncKot,gTakeAway,globalDebitCardNo,cmsMemCode,cmsMemName,reasonCode,homeDeliveryForTax,arrListHomeDelDetails);
 //             	}
         	}
@@ -471,12 +482,26 @@
 	 	    grandTotal=taxTotal+netTotal;
 	 	    funFillTableFooterDtl("GrandTotal",grandTotal);
 	 	    funFillTableFooterDtl("PaymentMode","");
+	 	    
+	 	    
+	 	    /* Setting for only Make KOT Global variables */
+	 	    /* For direct biller use frmPOSBillingContainer form to set global variables */
+	 	    
 		    $('#txtAmount').val(grandTotal);
 		 	$('#txtPaidAmount').val(grandTotal);
 		 	$('#hidSubTotal').val(subTotalonAmt);
 		 	$('#hidDiscountTotal').val(discountonAmt);
 		 	$('#hidNetTotal').val(netTotal);
 		 	$('#hidGrandTotal').val(grandTotal);
+		 	
+		 	$("#hidTakeAway").val(gTakeAway);
+			$("#hidCustomerCode").val(gCustomerCode);
+	    	$("#hidCustomerName").val(gCustomerName);
+	    	$("#hidBillTransType").val(operationName);
+	    	$("#hidAreaCode").val(gAreaCode);
+	    	
+	    	$("#hidTableNo").val(gTableNo);
+	    	$("#hidWaiterNo").val(gWaiterNo);
 		
 		
 	}
@@ -970,7 +995,7 @@
 	        }
 		 else if (!((gCustomerCode.trim().length==0) && homeDeliveryForTax=="Y"))
          {
-            // billTransType = "Home Delivery";
+            // hidBillTransType = "Home Delivery";
             var totalBillAmount = 0.00;
 		 	 if ($("#txtTotal").val().trim().length > 0)
        		 {
@@ -1003,7 +1028,9 @@
 			
 			
 			
-			$("#txtTakeAway").val(gTakeAway);
+			
+        	
+        	
 			 
 			 
 			if(operationName=="Dine In")
@@ -1093,7 +1120,7 @@
 		        async: true,
 		    success: function (response)
 		    {
-		    	alert(response); 	
+		    	 	
 		    	for(var j=0;j<response.length;j++)
 		    	{
 		    		funPrintKOT(response[j].strItemCode,response[j].strItemName,response[j].strArea,tableNo,kotNo)
@@ -1255,8 +1282,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		 
 			
 				
-		var custcode=$("#txtCustomerCode").val();
-   		var custName=$("#txtCustomerName").val();	
+		var custcode=$("#hidCustomerCode").val();
+   		var custName=$("#hidCustomerName").val();	
 		var searchurl=getContextPath()+"/saveKOT.html?ncKot="+ncKot+"&takeAway="+gTakeAway+"&globalDebitCardNo="+globalDebitCardNo+"&cmsMemCode="+cmsMemCode+"&cmsMemName="+cmsMemName+"&reasonCode="+reasonCode+"&homeDeliveryForTax="+homeDeliveryForTax+
 				"&arrListHomeDelDetails="+arrListHomeDelDetails+"&total="+total+"&custcode="+custcode+"&custName="+custName;
 		$.ajax({
@@ -1275,7 +1302,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		        	 /* location.reload(true); //loads from server */
 		        	 alert("KOT Save Successfully. KOT NO: "+ $("#txtKOTNo").text());
 		        	 
-		        	funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
+		        	
+		        	/* Disable while in development */ 
+		        	//funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
 		        	
 		        	 if(gMultiWaiterSelOnMakeKOT=="")
 		    		{
@@ -1294,6 +1323,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		    		 
 		    		 document.getElementById("divTopButtonDtl").style.display='block';
 		    		 document.getElementById("divMenuHeadDtl").style.display='block';
+		    		 
 		    		 funRemoveTableRows("tblBillItemDtl");
 		    		 
 					 $('#tblOldKOTItemDtl').empty();
@@ -1397,11 +1427,83 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		*Busy/Occupied Table border: 5px solid #a94442;
 		*Billed Table border: 5px solid #2ba5cc;
 		*/
+		var searchurl=getContextPath()+"/funLoadTablesForMakeKOT.html?clientCode="+gClientCode+"&posCode="+gPOSCode;
+
+		var delCharges=0;  
+		$.ajax({
+			 type: "GET",
+			        url: searchurl,
+			        dataType: "json",
+			        async: false,
+			        success: function(response)
+			        {
+			        	$.each(response, function(i, obj) 
+			        	{
+			        		//removed border-radius: 40px;
+			        		var style=" width: 100px;height: 100px; white-space: normal;   ";
+			        		
+			        		var cssClass="btn btn-primary";
+			        		
+			        		
+			        		//removed border:5px solid #a94442; border-radius: 40px; 
+			    			if(obj.strStatus=="Occupied")
+			    			{
+			    				style=" width: 100px;height: 100px; white-space: normal;  ";
+			    				cssClass="btn btn-danger";
+			    			}
+			    			
+			    			//removed border:5px solid #2ba5cc; border-radius: 40px; 
+			    			if(obj.strStatus=="Billed")
+			    			{				
+			    				style=" width: 100px;height: 100px; white-space: normal; ";
+			    				cssClass="btn btn-info";
+			    			}
+			    			
+			    			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
+			    			{
+			    				var col=insertTR.insertCell(insertCol);
+			    				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'    style='"+style+"'  onclick=\"funTableNoClicked(this,"+i+")\" class='"+cssClass+"' /></td>";
+			    				col.style.padding = "5px";
+
+			    				insertCol++;
+			    			}
+			    			else
+			    			{					
+			    				insertTR=tblMenuItemDtl.insertRow();									
+			    				insertCol=0;
+			    				var col=insertTR.insertCell(insertCol);
+			    				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'   style='"+style+"'   onclick=\"funTableNoClicked(this,"+i+")\" class='"+cssClass+"' /></td>";
+			    				col.style.padding = "5px";
+			    				
+			    				
+			    				
+			    				insertCol++;
+			    			}
+			        	});
+					},
+					error: function(jqXHR, exception) {
+			            if (jqXHR.status === 0) {
+			                alert('Not connect.n Verify Network.');
+			            } else if (jqXHR.status == 404) {
+			                alert('Requested page not found. [404]');
+			            } else if (jqXHR.status == 500) {
+			                alert('Internal Server Error [500].');
+			            } else if (exception === 'parsererror') {
+			                alert('Requested JSON parse failed.');
+			            } else if (exception === 'timeout') {
+			                alert('Time out error.');
+			            } else if (exception === 'abort') {
+			                alert('Ajax request aborted.');
+			            } else {
+			                alert('Uncaught Error.n' + jqXHR.responseText);
+			            }		            
+			        }
+		      });
 		
 		
 		
 		
-		$.each(jsonArrForTableDtl, function(i, obj) 
+		/* $.each(jsonArrForTableDtl, function(i, obj) 
 		{	
 			var style=" width: 100px;height: 100px; white-space: normal;  border-radius: 40px; ";
 			if(obj.strStatus=="Occupied")
@@ -1434,7 +1536,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				insertCol++;
 			}							
 			  
-		});
+		}); */
 	}		
 	
 	
@@ -1455,7 +1557,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		
 		$.each(jsonArrForWaiterDtl, function(i, obj) 
 		{	
-			var style=" width: 100px;height: 100px;white-space: normal;border-top-right-radius: 40px;border-top-left-radius: 40px; "
+			//removed border-top-right-radius: 40px;border-top-left-radius: 40px;
+			var style=" width: 100px;height: 100px;white-space: normal; "
 			
 			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
 			{
@@ -1524,11 +1627,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        success: function(response)
 			        {	
 			        	funAddPopularItemsData(response.PopularItems);
+			        	
 			        	if(gMenuItemSortingOn!="NA")
-			        		{
+			        	{
 			        		flagPopular="Popular";
+			        	
 			        		funFillTopButtonList(flagPopular);
-			        		}
+			        	}
 					},
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {
@@ -1565,7 +1670,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				{
 					index=rowCount*4+insertCol;
 					var col=insertTR.insertCell(insertCol);
-					col.innerHTML = "<td><input type=\"button\" id="+obj.strItemCode+" value="+obj.strItemName+"    style=\"width: 100px;height: 100px; white-space:normal;\"  onclick=\"funMenuItemClicked(this,"+index+")\" /></td>";
+					col.innerHTML = "<td><input type=\"button\" id="+obj.strItemCode+" value='"+obj.strItemName+"'    style=\"width: 100px;height: 100px; white-space:normal;\"  onclick=\"funMenuItemClicked(this,"+index+")\" class=\"btn btn-primary\" /></td>";
+					col.style.padding = "5px";
 					
 					insertCol++;
 				}
@@ -1575,7 +1681,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 					insertCol=0;
 					index=rowCount*4+insertCol;				
 					var col=insertTR.insertCell(insertCol);
-					col.innerHTML = "<td><input type=\"button\" id="+obj.strItemCode+" value="+obj.strItemName+"    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funMenuItemClicked(this,"+index+")\" /></td>";
+					col.innerHTML = "<td><input type=\"button\" id="+obj.strItemCode+" value='"+obj.strItemName+"'    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funMenuItemClicked(this,"+index+")\" class=\"btn btn-primary\" /></td>";
+					col.style.padding = "5px";
 					
 					insertCol++;
 				}							
@@ -1740,7 +1847,10 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        		/* document.all[ 'tblPaxNo' ].style.display = 'block'; */
 			        		funAddWaiterDtl();
 			        	}
+			        	
+			        	gAreaCode=response.AreaCode;
 			        	$("#txtAreaName").text(response.AreaName);
+			        	
 			         	if(gCMSIntegrationYN=="Y")
 			        	{
 			        		cmsMemCode=response.CustomerCode;
@@ -1849,6 +1959,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		var $rows = $('#tblMenuHeadDtl').empty();
 		var $rows = $('#tblTopButtonDtl').empty();
 		document.getElementById("divPLU").style.display='none';
+		
 		funDisplayNCKOTButton(false);
 		 
 	}
@@ -1903,7 +2014,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		
 		 homeDeliveryForTax = "N";
 		 operationType="Take Away";
-		 $("#billTransType").val(operationType);
+		 $("#hidBillTransType").val(operationType);
 		 gTakeAway="Yes";
 		 
 		 
@@ -1987,6 +2098,20 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
         	window.location ="frmGetPOSSelection.html?strPosCode="+loginPOS;
         }	
     }
+	
+	
+	/**
+	* Sets the home delivery datda 
+	*/	
+	function funClearDineInData()
+	{
+		funResetDineInFields();
+		
+		$('#tblBillItemDtl').empty();
+		$('#tblOldKOTItemDtl').empty();
+	}
+	
+	
 	function funHomeDeliveryBtnClicked()
 	{
 		
@@ -2002,16 +2127,12 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			}
 			else
 			{
-				funRemoveTableRows("tblBillItemDtl");
-				$('#tblOldKOTItemDtl').empty();
-				var $rows = $('#tblMenuHeadDtl').empty();
+				funClearDineInData();
 			}
 		}
 		else
 		{
-			funRemoveTableRows("tblBillItemDtl");
-			$('#tblOldKOTItemDtl').empty();
-			var $rows = $('#tblMenuHeadDtl').empty();
+			funClearDineInData();
 		}		
 		
 		var objDnieInButton=document.getElementById("Dine In");
@@ -2040,7 +2161,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		if (arrListHomeDelDetails.length == 0)
         {
 			operationType="Home Delivery";
-			$("#billTransType").val(operationType);
+			$("#hidBillTransType").val(operationType);
         
             arrListHomeDelDetails[0]=gCustomerCode;
             arrListHomeDelDetails[1]=gCustomerName;
@@ -2055,7 +2176,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		{
         	
         	operationType="Dine In";
-			$("#billTransType").val(operationType);
+			$("#hidBillTransType").val(operationType);
         	homeDeliveryForTax = "N";
         	arrListHomeDelDetails= new Array();	
         	document.getElementById("Home Delivery").style.backgroundColor = "";
@@ -2099,7 +2220,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			 var strMobNo = prompt("Enter Mobile number", "");
 			 if(strMobNo.trim().length>0)
 				 funSetCustMobileNo(strMobNo);
-			 $("#txtCustMobileNo").val(strMobNo);
+			 $("#hidCustMobileNo").val(strMobNo);
 			
        	}
 		else
@@ -2440,7 +2561,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		 <%session.setAttribute("frmName", "frmPOSRestaurantBill");%>
 
 		
-		window.open("frmPOSCustomerMaster.html","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;");
+		window.open("frmPOSCustomerMaster.html?intlongMobileNo="+strMobNo,"","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;");
 	}
 	 function funSetCustomerDataForHD(code)
 		{
@@ -2455,6 +2576,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				        	$("#Customer").val(response.strCustomerName);
 				        	gCustomerCode=response.strCustomerCode;
 				        	gCustomerName=response.strCustomerName;
+				        	
+				        	
+				        	
 				        	
 				        	funSetHomeDeliveryData(response.strCustomerCode,response.strCustomerName,response.strBuldingCode,"","");
 						},
@@ -2922,8 +3046,10 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				{
 					index=rowCount*4+insertCol;
 					var col=insertTR.insertCell(insertCol);
-					col.innerHTML = "<td><input type=\"button\" id="+obj.strItemCode+" value="+obj.strItemName+"    style=\"width: 100px;height: 100px; white-space:normal;\"  onclick=\"funMenuItemClicked(this,"+index+")\" /></td>";
+					
+					col.innerHTML = "<td  ><input type=\"button\" id='"+obj.strItemCode+"' value='"+obj.strItemName+"'    style=\"width: 100px;height: 100px; white-space:normal; \"  onclick=\"funMenuItemClicked(this,"+index+")\" class=\"btn btn-primary \" /></td>";
 					col.style.padding = "5px";
+					
 					insertCol++;
 				}
 				else
@@ -2933,8 +3059,10 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 					insertCol=0;
 					index=rowCount*4+insertCol;				
 					var col=insertTR.insertCell(insertCol);
-					col.innerHTML = "<td><input type=\"button\" id="+obj.strItemCode+" value="+obj.strItemName+"    style=\"width: 100px;height: 100px; white-space: normal;\"  onclick=\"funMenuItemClicked(this,"+index+")\" /></td>";
+					
+					col.innerHTML = "<td  ><input type=\"button\" id='"+obj.strItemCode+"' value='"+obj.strItemName+"'    style=\"width: 100px;height: 100px; white-space:normal; \"  onclick=\"funMenuItemClicked(this,"+index+")\" class=\"btn btn-primary \" /></td>";
 					col.style.padding = "5px";
+					
 					insertCol++;
 				}	
 				itemPriceDtlList[index]=obj;
@@ -3112,7 +3240,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	}	
 		
 	
-	function funAddPopularItemsData()
+	/* function funAddPopularItemsData()
 	{
 		funFillTopButtonList("Popular");
 		var jsonArrForPopularItems=${command.jsonArrForPopularItems};	
@@ -3122,7 +3250,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		{									
 				itemPriceDtlList[i]=obj;
 		});
-	}
+	} */
 	
 	function deleteTableRows()
 	{
@@ -3406,17 +3534,40 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	
 	function funDeleteBtnClicked()
 	{
-		var table = document.getElementById("tblBillItemDtl");
-		var rowCount = table.rows.length;
-		if(rowCount > 2)
-		{			
-			table.deleteRow(rowCount-1);
+		var table = document.getElementById("tblBillItemDtl");			
+		
+		
+		var v=tblBillItemDtl.rows[selectedRowIndex].cells[0].children[0];
+		
+		
+		
+		if(v.style.border=="2px solid green")
+		{
+			table.deleteRow(selectedRowIndex);
+			var rowCount = table.rows.length;
+			
+			for(i=selectedRowIndex;i<rowCount;i++)
+			{
+				if(tblBillItemDtl.rows[i].cells[0].children[0].value.startsWith("-->"))
+				{
+					table.deleteRow(i);
+					
+					rowCount = table.rows.length;
+				}
+				else
+				{
+					break;
+				}
+			}
+			
 			funFillKOTList();
 		}
 		else
 		{
-			alert("No item for delete.");	
-		}	
+			alert("Please select item.");	
+		}
+		
+		selectedRowIndex=-1;
 	}
 	function funChgQtyBtnClicked()
 	{
@@ -3627,7 +3778,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	
 	function funFreeFlowModifierClicked(objMenuItemButton,objIndex,itemCode)
 	{
-		var itmName=prompt("Enter Name", "");
+		var itmName=prompt("Enter Modifier Name", "");
 		if(itmName.trim().length>0)
 			{
 			itmName="-->"+itmName;
@@ -3907,7 +4058,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 						</table>
 								</div>
 							<div id="divPLU" style=" border: 1px solid #ccc; height: 425px;  overflow-x: auto; overflow-y: auto; width: 445px;">
-								<s:input type="text"  id="txtItemSearch" path=""  cssStyle="width:175px; height:20px;display:none;" cssClass="searchTextBox jQKeyboard form-control" />
+								<s:input type="text"  id="txtItemSearch" path=""  cssStyle="width:175px; height:20px;display:block;" cssClass="searchTextBox jQKeyboard form-control" />
 								<input type="button" id="btnClose"  value="Close" onclick="funOnCloseBtnClick()"  style="width:175px; height:20px;  class="btn btn-primary""/>
 				     		<table id="tblItems" class="transTablex" style="width: 100%; border-collapse: separate;"></table>
 							
@@ -3960,18 +4111,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 								<td style="padding-right: 5px;"><input type="button"  id="Make Bill"    value="Make Bill"    	style="width: 100px;height: 50px; white-space: normal; display:none;"   onclick="funFooterButtonClicked(this)" class="btn btn-outline-success"/></td>
 						    </tr>																																				 									   				   									   									   						
 					</table>			
-		 		<!-- </div> -->	
-<%-- 		 		<s:hidden id="txtCustMobileNo" path="custMobileNo"/> --%>
-<%-- 		 		<s:hidden id="txtCustomerCode" path="strCustomerCode"/> --%>
-<%-- 		 		<s:hidden id="txtCustomerName" path="customerName"/> --%>
-<%-- 		 		<s:hidden id="billTransType" path="billTransType"/> --%>
-<%-- 		 		<s:hidden id="txtTakeAway" path="takeAway"/> --%>
-<%-- 		 		<s:hidden id="hidDeliveryBoyCode" path="strDeliveryBoyCode"/> --%>
-<%-- 		 		<s:hidden id="hidDeliveryBoyName" path="strDeliveryBoyName"/> --%>
+		 		
+		 		
+		 		<!-- Don't use hidden fields here -->
+		 		<!-- Instead of use these fields in frmPOSBillSettlement -->
 		 		
 		 		
 		 		
-		 		<%--<s:hidden id="txtCondition" path="strCondition"/> --%>	
 		 				 		 				 																					
 			</div>
 			</div>

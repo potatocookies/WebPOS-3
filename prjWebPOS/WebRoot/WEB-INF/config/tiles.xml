@@ -990,7 +990,7 @@
 	
 	<definition name="frmWebPOSBilling" extends="base.definition8">
 		<put-attribute name="title" value="Bill Settlement"></put-attribute>
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmWebPOSBilling.jsp"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmWebPOSBillingContainer.jsp"></put-attribute>
 	</definition>	
 
 	<definition name="frmCallCenter" extends="base.definition6">

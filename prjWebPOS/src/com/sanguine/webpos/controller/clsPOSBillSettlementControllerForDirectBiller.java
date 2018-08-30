@@ -54,7 +54,7 @@ import com.sanguine.webpos.util.clsPOSUtilityController;
 
 
 @Controller
-public class clsPOSBillSettlementController
+public class clsPOSBillSettlementControllerForDirectBiller
 {
 
 	private List listItemCode;
@@ -78,7 +78,7 @@ public class clsPOSBillSettlementController
 	clsPOSBillingAPIController objBillingAPIController;
 	
 	@Autowired
-	clsPOSMakeKOTController objMakeKOT;
+	clsPOSBillSettlementControllerForMakeKOT objMakeKOT;
 
 	private Map<String, clsPOSPromotionItems> hmPromoItem = new HashMap<String, clsPOSPromotionItems>();
 
@@ -137,7 +137,8 @@ public class clsPOSBillSettlementController
 		
 		
 		
-		
+		model.put("gPOSCode", posCode);
+		model.put("gClientCode", clientCode);
 		
 		
 		model.put("urlHits", urlHits);
@@ -555,8 +556,7 @@ public class clsPOSBillSettlementController
 			String date = (dt.getYear() + 1900) + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
 			clsPOSTaxCalculation objTaxCalculation = new clsPOSTaxCalculation();
 
-			List<clsPOSTaxCalculationDtls> arrListTaxDtl = objUtility.funCalculateTax(arrListItemDtls, posCode
-					, posDate, areaCode, operationType, subTotalForTax, 0.0, "");
+			List<clsPOSTaxCalculationDtls> arrListTaxDtl = objUtility.funCalculateTax(arrListItemDtls, posCode, posDate, areaCode, operationType, subTotalForTax, 0.0, "");
 			
 			
 			
@@ -866,7 +866,7 @@ public class clsPOSBillSettlementController
 		clsBillHdModel objBillHd = new clsBillHdModel(new clsBillHdModel_ID(voucherNo, posDate, clientCode));
 		//objBillHd.setStrBillNo(voucherNo);
 		objBillHd.setStrAdvBookingNo("");
-		objBillHd.setDteBillDate(posDate);
+		objBillHd.setDteBillDate(dateTime);
 		objBillHd.setStrPOSCode(posCode);
 
 		objBillHd.setDblDiscountAmt(objBean.getDblDiscountAmt());
@@ -896,10 +896,10 @@ public class clsPOSBillSettlementController
 		objBillHd.setDteSettleDate(posDate);
 		objBillHd.setStrCounterCode("");
 		objBillHd.setDblDeliveryCharges(objBean.getDblDeliveryCharges());
-		objBillHd.setStrAreaCode("");
+		objBillHd.setStrAreaCode(objBean.getStrAreaCode());
 		objBillHd.setStrDiscountRemark("");
 		objBillHd.setStrTakeAwayRemarks("");
-		objBillHd.setStrTransactionType("");
+		objBillHd.setStrTransactionType(objBean.getBillTransType());
 		objBillHd.setIntOrderNo(0);
 		objBillHd.setStrCouponCode("");
 		objBillHd.setStrJioMoneyRRefNo("");

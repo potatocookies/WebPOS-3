@@ -19,15 +19,11 @@ import com.sanguine.base.model.clsBaseModel;
 @Entity
 @Table(name = "tblmenuitempricingdtl")
 @NamedQueries({@NamedQuery(name="getMenuItemPricing",query="from clsPricingMasterHdModel where longPricingId=:longPricingId and strClientCode=:clientCode"),
-	
-		@NamedQuery(name = "getALLItemPricing", query = "select m.strItemCode,m.strItemName"
-				+ " from clsPricingMasterHdModel m where m.strMenuCode=:clientCode"),
-				
-	@NamedQuery(name="getItemPricingLoad",query="from clsPricingMasterHdModel  where strItemCode=:ItemCode and strClientCode=:clientCode"),
-	
-	@NamedQuery(name="getItemList",query="from clsPricingMasterHdModel  where strMenuCode=:MenuCode and strClientCode=:clientCode"),
-	
-	@NamedQuery(name="checkDuplicateItemPricing",query="from clsPricingMasterHdModel where (strPosCode= :strPosCode OR strPosCode='All' ) AND strItemCode= :strItemCode AND strAreaCode= :strAreaCode AND strHourlyPricing= :strHourlyPricing")
+@NamedQuery(name = "getALLItemPricing", query = "select m.strItemCode,m.strItemName"
++ " from clsPricingMasterHdModel m where m.strMenuCode=:clientCode"),
+@NamedQuery(name="getItemPricingLoad",query="from clsPricingMasterHdModel  where strItemCode=:ItemCode and strClientCode=:clientCode"),
+@NamedQuery(name="getItemList",query="from clsPricingMasterHdModel  where strMenuCode=:MenuCode and strClientCode=:clientCode"),
+@NamedQuery(name="checkDuplicateItemPricing",query="from clsPricingMasterHdModel where (strPosCode= :strPosCode OR strPosCode='All' ) AND strItemCode= :strItemCode AND strAreaCode= :strAreaCode AND strHourlyPricing= :strHourlyPricing")
 })
 /*	@NamedQuery(name="getItemList",query="select m.strItemCode,m.strItemName from clsPricingMasterHdModel m where strMenuCode=:MenuCode and strClientCode=:clientCode")
 	})*/

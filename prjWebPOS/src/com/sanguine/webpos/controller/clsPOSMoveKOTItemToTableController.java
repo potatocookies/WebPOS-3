@@ -11,8 +11,6 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,10 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sanguine.base.service.clsBaseServiceImpl;
-import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.webpos.bean.clsPOSItemDetailFrTaxBean;
 import com.sanguine.webpos.bean.clsPOSKOTItemdtlBean;
 import com.sanguine.webpos.bean.clsPOSMoveKOTItemsToTableBean;
-import com.sanguine.webpos.bean.clsPOSItemDetailFrTaxBean;
 import com.sanguine.webpos.bean.clsPOSTaxCalculation;
 import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
 import com.sanguine.webpos.model.clsMakeKOTHdModel;
@@ -36,11 +33,6 @@ import com.sanguine.webpos.util.clsPOSUtilityController;
 @Controller
 public class clsPOSMoveKOTItemToTableController {
 
-	@Autowired
-	private clsGlobalFunctions objGlobal;
-	
-	@Autowired
-	private clsPOSGlobalFunctionsController objPOSGlobal;
 	
 	@Autowired
 	private clsBaseServiceImpl objBaseServiceImpl;
@@ -103,14 +95,13 @@ public class clsPOSMoveKOTItemToTableController {
 	@RequestMapping(value = "/saveMoveKOTItemsToTable", method = RequestMethod.POST)
 	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSMoveKOTItemsToTableBean objBean,BindingResult result,HttpServletRequest req)
 	{
-		 String loginPosCode=req.getSession().getAttribute("loginPOS").toString();
-		 String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
-		 String strClientCode=req.getSession().getAttribute("gClientCode").toString();	
+		String loginPosCode=req.getSession().getAttribute("loginPOS").toString();
+		String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
 		try
 		{
 			String strTableNo=objBean.getStrTableNo();
  		    List<clsPOSKOTItemdtlBean> list=objBean.getItemDtlList();
-		    JSONArray jArrList = new JSONArray();
+		    List listData = new ArrayList();
 		    if(null!=list)
 		    {
 			    for(int i=0; i<list.size(); i++)
@@ -118,13 +109,13 @@ public class clsPOSMoveKOTItemToTableController {
 			    	clsPOSKOTItemdtlBean obj= new clsPOSKOTItemdtlBean();
 			    	obj=(clsPOSKOTItemdtlBean)list.get(i);
 			    	
-			    		JSONObject jObjData = new JSONObject();
-			    		jObjData=(JSONObject)map.get(obj.getStrItemCode());
-			    		jObjData.remove("dblItemQuantity");
-			    		jObjData.put("dblItemQuantity",obj.getDblItemQuantity());
-			    		jObjData.remove("dblAmount");
-			    		jObjData.put("dblAmount",obj.getDblAmount());
-			    		jArrList.add(jObjData);
+			    		Map mapObjData = new HashMap();
+			    		mapObjData=(Map) map.get(obj.getStrItemCode());
+			    		mapObjData.remove("dblItemQuantity");
+			    		mapObjData.put("dblItemQuantity",obj.getDblItemQuantity());
+			    		mapObjData.remove("dblAmount");
+			    		mapObjData.put("dblAmount",obj.getDblAmount());
+			    		listData.add(mapObjData);
 			    }
 		    }
 			    
@@ -133,13 +124,13 @@ public class clsPOSMoveKOTItemToTableController {
 		        List<clsPOSItemDetailFrTaxBean> arrListItemDtl = new ArrayList<clsPOSItemDetailFrTaxBean>();
 				 try{
 					 double taxAmt = 0,subTotalAmt=0;
-					 for (int i = 0; i < jArrList.size(); i++) 
+					 for (int i = 0; i < listData.size(); i++) 
 						{
 						    clsPOSItemDetailFrTaxBean objItemDtl=new clsPOSItemDetailFrTaxBean();
-						    JSONObject jObj = (JSONObject) jArrList.get(i);
-						    String itemCode=(String) jObj.get("strItemCode");
-					    	String itemName=jObj.get("strItemName").toString();
-					    	double itemAmt=Double.parseDouble(jObj.get("dblAmount").toString());
+						    Map mapObj = (Map) listData.get(i);
+						    String itemCode=(String) mapObj.get("strItemCode");
+					    	String itemName=mapObj.get("strItemName").toString();
+					    	double itemAmt=Double.parseDouble(mapObj.get("dblAmount").toString());
 					    	subTotalAmt=subTotalAmt+itemAmt;
 					    	objItemDtl.setItemCode(itemCode);
 					    	objItemDtl.setItemName(itemName);
@@ -172,20 +163,18 @@ public class clsPOSMoveKOTItemToTableController {
 		             }
 					  	String kotNo=funGenerateKOTNo();
 			            double KOTAmt=0;
-			            int cnt=0;
-			            
-			            for(int i=0; i<jArrList.size(); i++)
+			           
+			            for(int i=0; i<listData.size(); i++)
 					    {
-			            	String redeemAmt="";
-			            	JSONObject jObj = new JSONObject();
-					    	jObj=(JSONObject)jArrList.get(i);
-					    	String itemCode=jObj.get("strItemCode").toString();
-					    	String itemName=jObj.get("strItemName").toString();
-					    	double itemQty=Double.parseDouble(jObj.get("dblItemQuantity").toString());
-					    	double itemAmt=Double.parseDouble(jObj.get("dblAmount").toString());
-					    	String waiterNo=jObj.get("strWaiterNo").toString();
-					    	String createdDate=jObj.get("dteDateCreated").toString();
-					    	String serialNo=jObj.get("strSerialNo").toString();
+			            	
+			            	Map mapObj = new HashMap();
+			            	mapObj=(Map)listData.get(i);
+					    	String itemCode=mapObj.get("strItemCode").toString();
+					    	String itemName=mapObj.get("strItemName").toString();
+					    	double itemQty=Double.parseDouble(mapObj.get("dblItemQuantity").toString());
+					    	double itemAmt=Double.parseDouble(mapObj.get("dblAmount").toString());
+					    	String waiterNo=mapObj.get("strWaiterNo").toString();
+					    	String serialNo=mapObj.get("strSerialNo").toString();
 					    	
 					    	clsMakeKOTHdModel objModel=new clsMakeKOTHdModel(new clsMakeKOTModel_ID(serialNo, strTableNo, itemCode, itemName, kotNo));
 							   
@@ -229,9 +218,9 @@ public class clsPOSMoveKOTItemToTableController {
 			             }
 			            if(taxAmt>0)
 			            {
-				              String sql="insert into tblkottaxdtl "
-				            		  	+ "values ('"+strTableNo+"','"+kotNo+"',"+KOTAmt+","+taxAmt+")";
-				            objBaseServiceImpl.funExecuteUpdate(sql, "sql");
+				              StringBuilder sqlBuilder=new StringBuilder("insert into tblkottaxdtl "
+				            		  	+ "values ('"+strTableNo+"','"+kotNo+"',"+KOTAmt+","+taxAmt+")");
+				            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(), "sql");
 			            }
 			            funUpdateKOT(strTableNo,kotNo);
 			            
@@ -257,8 +246,8 @@ public class clsPOSMoveKOTItemToTableController {
 	private void funUpdateKOT(String tempTableNO, String KOTNo) 
     {
 	    try{
-	          String sql = "update tbltablemaster set strStatus='Occupied' where strTableNo='" + tempTableNO + "'";
-	         objBaseServiceImpl.funExecuteUpdate(sql, "sql");
+	          StringBuilder sqlBuilder = new StringBuilder("update tbltablemaster set strStatus='Occupied' where strTableNo='" + tempTableNO + "'");
+	         objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(), "sql");
 	      } 
 	      catch (Exception e){
 	          e.printStackTrace();
@@ -269,13 +258,13 @@ public class clsPOSMoveKOTItemToTableController {
    }
 	 
 	@RequestMapping(value = "/loadOpenKOTsForMoveKOTItem", method = RequestMethod.GET)
-	public @ResponseBody JSONObject loadKOTData(HttpServletRequest req)
+	public @ResponseBody Map loadKOTData(HttpServletRequest req)
 	{
 		String loginPosCode=req.getSession().getAttribute("loginPOS").toString();
 		String tableNo=req.getParameter("tableNo");
 		
 		List list =null;
-		JSONObject jObjKotData=new JSONObject();
+		Map mapObjKotData=new HashMap();
 		try{
 		
 			StringBuilder sqlBuilder = new StringBuilder();
@@ -290,39 +279,39 @@ public class clsPOSMoveKOTItemToTableController {
             }
 			
 			list = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
-			JSONArray jArrKOTData=new JSONArray();
+			List listKOTData=new ArrayList();
 			if (list!=null)
 			{
 				for(int i=0; i<list.size(); i++)
 				{
 					Object obj=list.get(i);
 			
-					JSONObject objSettle=new JSONObject();
-					objSettle.put("KOTNo",Array.get(obj, 0));
-					objSettle.put("TableNo",Array.get(obj, 1));
-					jArrKOTData.add(Array.get(obj, 0));
+					Map mapObjSettle=new HashMap();
+					mapObjSettle.put("KOTNo",Array.get(obj, 0));
+					mapObjSettle.put("TableNo",Array.get(obj, 1));
+					listKOTData.add(Array.get(obj, 0));
 					map.put(Array.get(obj, 0),Array.get(obj, 1));
 				}
 	           
-				jObjKotData.put("KOTList", jArrKOTData);
+				mapObjKotData.put("KOTList", listKOTData);
 		      }
 		  }catch(Exception ex)
 		  {
 				ex.printStackTrace();
 		  }
-			return jObjKotData;
+			return mapObjKotData;
 	
 	}
 
 @RequestMapping(value = "/loadKOTItemsDtl", method = RequestMethod.GET)
-public @ResponseBody JSONArray funGetKOTItemsDtl(HttpServletRequest req)
+public @ResponseBody List funGetKOTItemsDtl(HttpServletRequest req)
 {
 	String loginPosCode=req.getSession().getAttribute("loginPOS").toString();
 	String KOTNo=req.getParameter("KOTNo");
 	String tableNo=(String)map.get(KOTNo);
 	
 	List list =null;
-	JSONArray jArrData=new JSONArray();
+	List listData=new ArrayList();
 	try{
 	
 		StringBuilder sqlBuilder = new StringBuilder();
@@ -356,22 +345,22 @@ public @ResponseBody JSONArray funGetKOTItemsDtl(HttpServletRequest req)
 						Object[] obj=(Object[])list.get(i);
 					
 				
-						JSONObject objSettle=new JSONObject();
-						objSettle.put("strItemName",obj[0]);
-						objSettle.put("dblItemQuantity",obj[1]);
-						objSettle.put("dblAmount",obj[2]);
-						objSettle.put("strItemCode",obj[3]);
-						objSettle.put("strWaiterNo",obj[4]);
-						objSettle.put("dteDateCreated",obj[5]);
-						objSettle.put("strSerialNo",obj[6]);
-						objSettle.put("dblRedeemAmt",obj[7]);
-						objSettle.put("strCustomerCode",obj[8]);
-						jArrData.add(objSettle);
+						Map mapObjSettle=new HashMap();
+						mapObjSettle.put("strItemName",obj[0]);
+						mapObjSettle.put("dblItemQuantity",obj[1]);
+						mapObjSettle.put("dblAmount",obj[2]);
+						mapObjSettle.put("strItemCode",obj[3]);
+						mapObjSettle.put("strWaiterNo",obj[4]);
+						mapObjSettle.put("dteDateCreated",obj[5]);
+						mapObjSettle.put("strSerialNo",obj[6]);
+						mapObjSettle.put("dblRedeemAmt",obj[7]);
+						mapObjSettle.put("strCustomerCode",obj[8]);
+						listData.add(mapObjSettle);
 					}
-					for(int i=0; i<jArrData.size();i++)
+					for(int i=0; i<listData.size();i++)
 			        {
-						JSONObject jobj=(JSONObject) jArrData.get(i);
-						map.put((String)jobj.get("strItemCode"),jobj);
+						Map mapObj=(Map) listData.get(i);
+						map.put((String)mapObj.get("strItemCode"),mapObj);
 				    }
 		      }
 		
@@ -382,7 +371,7 @@ public @ResponseBody JSONArray funGetKOTItemsDtl(HttpServletRequest req)
 			
 		}
 	
-        return jArrData;
+        return listData;
 }
 
 
@@ -390,8 +379,6 @@ public @ResponseBody JSONArray funGetKOTItemsDtl(HttpServletRequest req)
 public @ResponseBody String funGetKOTItemMap(HttpServletRequest req )
 {
 	String loginPosCode=req.getSession().getAttribute("loginPOS").toString();
-	Map arrKOTNo=req.getParameterMap();
-	
 	return loginPosCode;
 }
 
@@ -415,9 +402,9 @@ private String funGenerateKOTNo()
 	        {
 	            kotNo = "KT0000001";
 	        }
-       
-		String sql = "update tblinternal set dblLastNo='" + code + "' where strTransactionType='KOTNo'";
-        objBaseServiceImpl.funExecuteUpdate(sql, "sql");
+		sqlBuilder.setLength(0);
+		sqlBuilder.append("update tblinternal set dblLastNo='" + code + "' where strTransactionType='KOTNo'");
+        objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(), "sql");
 
     }
     catch (Exception e)

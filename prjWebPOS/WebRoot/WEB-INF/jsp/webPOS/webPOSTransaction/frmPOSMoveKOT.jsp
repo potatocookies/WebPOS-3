@@ -420,7 +420,7 @@ function funSearchTables()
 	<div id="formHeading">
 		<label>Move KOT To Table</label>
 	</div>
-	<s:form name="frmMoveKOT" method="POST" action="saveMoveKOT.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+	<s:form name="frmMoveKOT" method="POST" action="saveMoveKOT.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 
 		<br />
 		<br />

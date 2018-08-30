@@ -200,6 +200,7 @@ public class clsPOSCashManagmentTranscationController{
 				    objModel.setStrDataPostFlag("N");
 				    objModel.setStrAgainst(against);
 				    objModel.setStrPOSCode(posCode);
+				    objModel.setDblRollingAmt(rollingAmount);
 			        strCashManagementCode =funSavePOSCashManagmentTranscation(objModel);
 			        strCashManagementCode=strCashManagementCode+"#True";
 		    }

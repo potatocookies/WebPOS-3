@@ -1514,7 +1514,7 @@ public class clsSearchFormController
 				    				 jArrData.add(jArrDataRow);
 				    			 }
 							}
-						jObjSearchData.put(masterName, jArrData);
+						      jObjSearchData.put(masterName, jArrData);
 						    
 							break;
 			 
@@ -1686,16 +1686,19 @@ public class clsSearchFormController
 				    		 list=objBaseService.funGetList(hqlQuery, "sql");	
 				    		 if(null != list)	
 				    		 {
-					    	for(int cnt=0;cnt<list.size();cnt++)
-							{
-								Object[] objArr = (Object[]) list.get(cnt);
-							    jArrData.add(objArr[0].toString());
-							    jArrData.add(objArr[1].toString());
-							    jArrData.add(objArr[2].toString());
-							    jArrData.add(objArr[3].toString());
-							    jArrData.add(objArr[4].toString());
-							    jArrData.add(objArr[5].toString());
-							}
+						    	for(int cnt=0;cnt<list.size();cnt++)
+								{
+									Object[] objArr = (Object[]) list.get(cnt);
+									JSONArray jArrDataRow = new JSONArray();
+									jArrDataRow.add(objArr[0].toString());
+									jArrDataRow.add(objArr[1].toString());
+									jArrDataRow.add(objArr[2].toString());
+									jArrDataRow.add(objArr[3].toString());
+									jArrDataRow.add(objArr[4].toString());
+									jArrDataRow.add(objArr[5].toString());
+								    
+								    jArrData.add(jArrDataRow);
+								}
 				    		 }
 							jObjSearchData.put(masterName, jArrData);
 							break;	

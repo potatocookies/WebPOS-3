@@ -29,48 +29,38 @@
 <script type="text/javascript">
 	$(document).ready(function() 
 		{
-		 $('input#txtTableNo').mlKeyboard({layout: 'en_US'});
+		 
+		  $('input#txtTableNo').mlKeyboard({layout: 'en_US'});
 		  $('input#txtTableName').mlKeyboard({layout: 'en_US'});
 		  $('input#txtPaxNo').mlKeyboard({layout: 'en_US'});
 		  
-		 	$("#txtdteFrom").datepicker({ dateFormat: 'yy-mm-dd' });
-			$("#txtdteFrom" ).datepicker('setDate', 'today');
-			$("#txtdteFrom").datepicker();
-			
-	        $("#txtdteTo").datepicker({ dateFormat: 'yy-mm-dd' });
-	        $("#txtdteTo" ).datepicker('setDate', 'today');
-	        $("#txtdteTo").datepicker();
-	         
-	        $("#txtdteDate").datepicker({ dateFormat: 'yy-mm-dd' });
-	        $("#txtdteDate" ).datepicker('setDate', 'today');
-	        $("#txtdteDate").datepicker();
-	            
-		$(".tab_content").hide();
-		$(".tab_content:first").show();
-
-		$("ul.tabs li").click(function() {
-			$("ul.tabs li").removeClass("active");
-			$(this).addClass("active");
 			$(".tab_content").hide();
-
-			var activeTab = $(this).attr("data-state");
-			$("#" + activeTab).fadeIn();
-		});
+			$(".tab_content:first").show();
+	
+			$("ul.tabs li").click(function() {
+				$("ul.tabs li").removeClass("active");
+				$(this).addClass("active");
+				$(".tab_content").hide();
+	
+				var activeTab = $(this).attr("data-state");
+				$("#" + activeTab).fadeIn();
+			});
+			
+			$("#tab").click(function() {
+				var fromDate = $("#txtdteFrom").val();
+				var toDate = $("#txtdteTo").val();
+	
+				if (fromDate.trim() == '' && fromDate.trim().length == 0) {
+					alert("Please Enter From Date");
+					return false;
+				}
+				if (toDate.trim() == '' && toDate.trim().length == 0) {
+					alert("Please Enter To Date");
+					return false;
+				}
 		
-		$("#tab").click(function() {
-			var fromDate = $("#txtdteFrom").val();
-			var toDate = $("#txtdteTo").val();
-
-			if (fromDate.trim() == '' && fromDate.trim().length == 0) {
-				alert("Please Enter From Date");
-				return false;
-			}
-			if (toDate.trim() == '' && toDate.trim().length == 0) {
-				alert("Please Enter To Date");
-				return false;
-			}
-		
-				if(CalculateDateDiff(fromDate,toDate)){
+				if(CalculateDateDiff(fromDate,toDate))
+				{
 					if(timeDifference())
 					{
 					fDate=fromDate;
@@ -97,6 +87,8 @@
 			   		return false;
 				}
 			});
+		
+		  
 		 
 		  $("#btnExecute").click(function(event) {
 			  var fromDate = $("#txtdteFrom").val();
@@ -126,14 +118,13 @@
 					if(CalculateDateDiff(fromDate,toDate)){
 						if(timeDifference())
 							{
-						fDate=fromDate;
-						tDate=toDate;
-						funLoadReservations();
+								fDate=fromDate;
+								tDate=toDate;
+								funLoadReservations();
 							}
 					}
 				
-			});
-		   
+			}); 
 	});
 	
 	 
@@ -346,7 +337,6 @@ $(document).ready(function()
 				        	$("#txtBldgCode").val(response.strBldgCode);
 				        	$("#txtBldgName").val(response.strBldgName);
 				        	$("#cmbCity").val(response.strCity);
-				        	
 				        	$("#txtTableNo").val(response.strTableNo);
 							$("#txtTableName").val(response.strTableName);
 				        	$("#txtPax").val(response.intPax); 
@@ -381,39 +371,23 @@ $(document).ready(function()
 
 	function funSetDate()
 	{
+		var POSDate="${gPOSDate}";
+	  	var Date = POSDate.split(" ");
+		var arr = Date[0].split("-");
+		Dat=arr[2]+"-"+arr[1]+"-"+arr[0];
+	
+		$("#txtdteFrom").datepicker({ dateFormat: 'dd-mm-yy' });
+		$("#txtdteFrom" ).datepicker('setDate', Dat);
+		$("#txtdteTo").datepicker({ dateFormat: 'dd-mm-yy' });
+		$("#txtdteTo" ).datepicker('setDate', Dat);
 		
-		var searchurl=getContextPath()+"/getPOSDate.html";
-		 $.ajax({
-			        type: "GET",
-			        url: searchurl,
-			        dataType: "json",
-			        success: function(response)
-			        {
-			        	var dateTime=response.POSDate;
-			        	var date=dateTime.split(" ");
-			        	posDate=date[0];
-			        	$("#txtdteFrom").val(date[0]);
-			        	$("#txtdteTo").val(date[0]);
-			        },
-			        error: function(jqXHR, exception)
-			        {
-			            if (jqXHR.status === 0) {
-			                alert('Not connect.n Verify Network.');
-			            } else if (jqXHR.status == 404) {
-			                alert('Requested page not found. [404]');
-			            } else if (jqXHR.status == 500) {
-			                alert('Internal Server Error [500].');
-			            } else if (exception === 'parsererror') {
-			                alert('Requested JSON parse failed.');
-			            } else if (exception === 'timeout') {
-			                alert('Time out error.');
-			            } else if (exception === 'abort') {
-			                alert('Ajax request aborted.');
-			            } else {
-			                alert('Uncaught Error.n' + jqXHR.responseText);
-			            }		            
-			        }
-		 });
+		$("#txtdteDate").datepicker({ dateFormat: 'dd-mm-yy' });
+	    $("#txtdteDate").datepicker('setDate', Dat);
+	    var fromDate = $("#txtdteFrom").val();
+		var toDate = $("#txtdteTo").val();
+	    fDate=fromDate;
+		tDate=toDate;
+		funLoadReservations();
 		 
 	}
 	function funHelp(transactionName)
@@ -543,8 +517,9 @@ $(document).ready(function()
 				
 			},
 		url : gurl,
-		dataType : "json",
-		success : function(response) {
+		dataType : "text",
+		success : function(response) 
+		{
 			funLoadReservations();
 				
 		},

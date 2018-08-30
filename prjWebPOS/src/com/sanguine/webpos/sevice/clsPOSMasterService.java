@@ -35,6 +35,7 @@ import com.sanguine.webpos.model.clsShiftMasterModel;
 import com.sanguine.webpos.model.clsSubGroupMasterHdModel;
 import com.sanguine.webpos.model.clsSubMenuHeadMasterModel;
 import com.sanguine.webpos.model.clsTableMasterModel;
+import com.sanguine.webpos.model.clsTableReservationModel;
 import com.sanguine.webpos.model.clsTaxMasterModel;
 import com.sanguine.webpos.model.clsUserHdModel;
 import com.sanguine.webpos.model.clsWaiterMasterModel;
@@ -846,6 +847,8 @@ public class clsPOSMasterService {
 			list=obBaseService.funLoadAll(new clsMenuItemMasterModel(),strClientCode);
 			return list;
 		}
+	 
+	
 	 
 }
 

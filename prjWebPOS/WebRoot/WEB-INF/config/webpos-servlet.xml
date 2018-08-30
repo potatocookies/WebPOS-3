@@ -115,6 +115,8 @@
 	    			<value>com.sanguine.webpos.model.clsMenuItemPricingHdModel</value> 
 	    			<value>com.sanguine.webpos.model.clsPOSNonAvailableItemsModel</value> 
 	    			<value>com.sanguine.webpos.model.clsPOSCashManagmentTranscationModel</value> 
+	    			<value>com.sanguine.webpos.model.clsTableReservationModel</value> 
+	    			
 	    			
 	    			
 				</list>

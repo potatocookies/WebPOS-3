@@ -1468,7 +1468,7 @@ public class clsPOSTransactionService
 				  }
 				  else
 				  {
-				   	  strResCode= "RS" + String.format("%06d", 1);
+				   	  strResCode= "RS" + String.format("%07d", 1);
 				  }
 		        }
 	

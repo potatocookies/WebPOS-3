@@ -219,6 +219,7 @@ public class clsPOSCustomerAreaMasterController {
 			List<clsPOSCustomerAreaMasterAmountBean> list=new ArrayList<clsPOSCustomerAreaMasterAmountBean>();
 			
 			clsCustomerAreaMasterModel objCustomerAreaMasterModel = objMasterService.funSelectedCustomerAreaMasterData(CustomerAreaCode, clientCode);
+			objPOSCustomerAreaMaster.setStrCustomerAreaCode(objCustomerAreaMasterModel.getStrBuildingCode());
 			objPOSCustomerAreaMaster.setStrCustomerAreaName(objCustomerAreaMasterModel.getStrBuildingName());
 			objPOSCustomerAreaMaster.setStrAddress(objCustomerAreaMasterModel.getStrAddress());
 			objPOSCustomerAreaMaster.setStrHomeDeliveryCharges(objCustomerAreaMasterModel.getDblHomeDeliCharge());

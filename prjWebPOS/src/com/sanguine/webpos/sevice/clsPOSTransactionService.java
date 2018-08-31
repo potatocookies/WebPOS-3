@@ -8,9 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.webpos.bean.clsPOSBillDtl;
@@ -1466,7 +1468,7 @@ public class clsPOSTransactionService
 				  }
 				  else
 				  {
-				   	  strResCode = "T01";
+				   	  strResCode= "RS" + String.format("%06d", 1);
 				  }
 		        }
 	

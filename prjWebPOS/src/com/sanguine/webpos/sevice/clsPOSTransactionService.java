@@ -15,6 +15,7 @@ import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.webpos.bean.clsPOSBillDtl;
 import com.sanguine.webpos.bean.clsPOSTableMasterBean;
+import com.sanguine.webpos.model.clsTableReservationModel;
 
 
 
@@ -90,7 +91,7 @@ public class clsPOSTransactionService
 			StringBuilder sql = new StringBuilder(); 
 			sql.append("select strBillNo from tblbillhd"
 	                + " where strBillNo not in (select strBillNo from tblbillsettlementdtl) and strTableNo<>'' "
-	                + " and strOperationType='Dine In' and strPOSCode='" + posCode + "' ");
+	                + " and strOperationType='DineIn' and strPOSCode='" + posCode + "' ");
 		
 			List list = objBaseService.funGetList(sql, "sql");
 			
@@ -98,9 +99,9 @@ public class clsPOSTransactionService
 				{
 					for(int i=0; i<list.size(); i++)
 					{
-						Object[] obj=(Object[])list.get(i);
+						//Object[] obj=(Object[])list.get(i);
 						clsPOSBillDtl objBean = new clsPOSBillDtl();
-						objBean.setStrBillNo(obj[0].toString());
+						objBean.setStrBillNo((String) list.get(i));
 						listRet.add(objBean);
 					}
 					
@@ -1399,7 +1400,107 @@ public class clsPOSTransactionService
 	    
 	 
 	
+	   public void funSaveReservation(clsTableReservationModel objBaseModel)throws Exception
+		 {
+		     objBaseService.funSave(objBaseModel); 	
+			 StringBuilder sql=new StringBuilder();
+		  	 sql.append("update tbltablemaster set strStatus='Reserve' where strTableNo='" + objBaseModel.getStrTableNo() + "' ");
+		  	 objBaseService.funExecuteUpdate(sql.toString(),"sql");
+		 }
+	   
+	   
+	   public String funGenerateReservationCode()
+	   {
+	     String strResCode = "";
+	     StringBuilder sql=new StringBuilder();
+		 try
+		  {
+			   sql.append("select ifnull(max(strResCode),0) from tblreservation");
+		       List list = objBaseService.funGetList(sql, "sql");
+		       if(list.size()>0)
+		        {
+		        	if (!list.get(0).toString().equals("0"))
+				   	{
+				   		String strCode = "0";
+				   		String code = list.get(0).toString();
+				   		StringBuilder sb = new StringBuilder(code);
+				   		String ss = sb.delete(0, 2).toString();
+				   		for (int i = 0; i < ss.length(); i++)
+				   		{
+				   			if (ss.charAt(i) != '0')
+				   			{
+				   				strCode = ss.substring(i, ss.length());
+				   				break;
+				   			}
+				   		}
+				   		int intCode = Integer.parseInt(strCode);
+				   		intCode++;
+				   		if (intCode < 10)
+				   		{
+				   			strResCode = "RS000000" + intCode;
+				   		}
+				   		else if (intCode < 100)
+				   		{
+				   			strResCode = "RS00000" + intCode;
+				   		}
+				   		else if (intCode < 1000)
+				   		{
+				   			strResCode = "RS0000" + intCode;
+				   		}
+				   		else if (intCode < 10000)
+				   		{
+				   			strResCode = "RS000" + intCode;
+				   		}
+				   		else if (intCode < 100000)
+				   		{
+				   			strResCode = "RS00" + intCode;
+				   		}
+				   		else if (intCode < 1000000)
+				   		{
+				   			strResCode = "RS0" + intCode;
+				   		}
+				   		else if (intCode < 10000000)
+				   		{
+				   			strResCode = "RS" + intCode;
+				   		}
+				  }
+				  else
+				  {
+				   	  strResCode = "T01";
+				  }
+		        }
 	
-	
+		   }
+		   catch (Exception e)
+		   {
+		       e.printStackTrace();
+		   }
 
+	   return strResCode;
+	 }
+	   
+	   
+	 public String funCheckCustomerExist(String contactNo)
+	 {
+	   	String strCustomerCode="";
+	    StringBuilder sql=new StringBuilder();
+	   	try{
+	   	
+	   		sql.append("select strCustomerCode,strCustomerName,strBuldingCode,strBuildingName,strCity from tblcustomermaster  where longMobileNo='" + contactNo + "' ");     
+	   	    List list = objBaseService.funGetList(sql, "sql");
+	   		if (list.size()>0)
+   			{
+   			 Object[] obj=(Object[])list.get(0);
+   			 strCustomerCode=obj[0].toString();
+   			}
+	              
+	   		}catch(Exception ex)
+	   		{
+	   			ex.printStackTrace();
+	   		}
+	   		finally
+	   		{
+	   			return strCustomerCode;
+	   		}
+	 }   
 }

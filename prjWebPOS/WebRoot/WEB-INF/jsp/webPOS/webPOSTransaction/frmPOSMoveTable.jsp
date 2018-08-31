@@ -503,7 +503,7 @@ function funLoadData()
 	</div>
 	<br />
 	
-	  <s:form name="Move Table" method="POST" action="saveMoveTable.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+	  <s:form name="Move Table" method="POST" action="saveMoveTable.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 	     
 	     <div class="title">
 			<div style=" width: 50%; height: 600px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">

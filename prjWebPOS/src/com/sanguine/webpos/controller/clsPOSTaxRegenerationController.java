@@ -99,10 +99,10 @@ public class clsPOSTaxRegenerationController {
         if (poscode.equalsIgnoreCase("All"))
         {
         	List posList=objMasterService.funFillPOSCombo(clientCode);
-            for (int i = 1; i < posList.size(); i++)
+            for (int i = 0; i < posList.size(); i++)
             {
-            	Object[] obj=(Object[])posList.get(0);
-                funRegenerateTax(obj[i].toString(), fromDate, toDate,req);
+            	Object[] obj=(Object[])posList.get(i);
+                funRegenerateTax(obj[0].toString(), fromDate, toDate,req);
             }
         }
         else
@@ -128,7 +128,6 @@ public class clsPOSTaxRegenerationController {
 	    {
 	        try
 	        {
-	            String sql = "";
 	            String clientCode = request.getSession().getAttribute("gClientCode").toString();
 	            
 	            StringBuilder sqlBuilder=new StringBuilder(); 
@@ -256,36 +255,41 @@ public class clsPOSTaxRegenerationController {
 	                    sql_BillTaxDtl = sql_BillTaxDtl.substring(0, (sql_BillTaxDtl.length() - 1));
 	                    //System.out.println(sql_BillTaxDtl);
 
-	                    sql = "delete from tblqbilltaxdtl "
+	                    sqlBuilder.setLength(0);
+			    		sqlBuilder.append( "delete from tblqbilltaxdtl "
 	                            + "where strBillNo='" + billNo + "' "
-	                            + "and date(dteBillDate)='" + filterDate + "' ";
+	                            + "and date(dteBillDate)='" + filterDate + "' ");
 	                  
-	                    objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                    objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                    objBaseServiceImpl.funExecuteUpdate(sql_BillTaxDtl,"sql");
 
 	                    try
 	                    {
 	                        if (objBills[3].toString().equals("Complementary"))
 	                        {
-	                            String sqlUpdate = "update tblqbilltaxdtl set dblTaxableAmount=0.00,dblTaxAmount=0.00 "
+	                        	sqlBuilder.setLength(0);
+	         		    		sqlBuilder.append( "update tblqbilltaxdtl set dblTaxableAmount=0.00,dblTaxAmount=0.00 "
 	                                    + "where strBillNo='" + billNo + "' "
-	                                    + "and date(dteBillDate)='" + filterDate + "' ";
-	                            objBaseServiceImpl.funExecuteUpdate(sqlUpdate,"sql");
+	                                    + "and date(dteBillDate)='" + filterDate + "' ");
+	                            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                            sqlUpdate = "update tblqbillhd set dblTaxAmt=0.00,dblSubTotal=0.00"
+	                            sqlBuilder.setLength(0);
+	        		    		sqlBuilder.append( "update tblqbillhd set dblTaxAmt=0.00,dblSubTotal=0.00"
 	                                    + ",dblDiscountAmt=0.00,dblDiscountPer=0.00,dblGrandTotal=0.00 "
 	                                    + "where strBillNo='" + billNo + "' "
-	                                    + "and date(dteBillDate)='" + filterDate + "' ";
-	                            objBaseServiceImpl.funExecuteUpdate(sqlUpdate,"sql");
+	                                    + "and date(dteBillDate)='" + filterDate + "' ");
+	                            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                            sqlUpdate = "update tblqbilldtl set dblAmount=0.00,dblDiscountAmt=0.00,dblDiscountPer=0.00 "
+	                            sqlBuilder.setLength(0);
+	        		    		sqlBuilder.append( "update tblqbilldtl set dblAmount=0.00,dblDiscountAmt=0.00,dblDiscountPer=0.00 "
 	                                    + "where strBillNo='" + billNo + "' "
-	                                    + "and date(dteBillDate)='" + filterDate + "' ";
-	                            objBaseServiceImpl.funExecuteUpdate(sqlUpdate,"sql");
+	                                    + "and date(dteBillDate)='" + filterDate + "' ");
+	                            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                            sqlUpdate = "update tblqbillmodifierdtl set dblAmount=0.00 where strBillNo='" + billNo + "' "
-	                                    + "and date(dteBillDate)='" + filterDate + "' ";
-	                            objBaseServiceImpl.funExecuteUpdate(sqlUpdate,"sql");
+	                            sqlBuilder.setLength(0);
+	        		    		sqlBuilder.append( "update tblqbillmodifierdtl set dblAmount=0.00 where strBillNo='" + billNo + "' "
+	                                    + "and date(dteBillDate)='" + filterDate + "' ");
+	                            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                        }
 	                    }
 	                    catch (Exception e)
@@ -295,7 +299,8 @@ public class clsPOSTaxRegenerationController {
 
 	                    try
 	                    {
-	                        String sql_UpdateBillHdSubTotal = "update tblqbillhd "
+	                    	 sqlBuilder.setLength(0);
+	        		    	 sqlBuilder.append("update tblqbillhd "
 	                                + " set dblSubTotal="
 	                                + "(select sum(c.dblAmount) "
 	                                + "from  "
@@ -307,8 +312,8 @@ public class clsPOSTaxRegenerationController {
 	                                + "c  "
 	                                + " group by c.strBillNo) "
 	                                + " where strBillNo='" + billNo + "' "
-	                                + " and date(dteBillDate)='" + filterDate + "' ";
-	                        objBaseServiceImpl.funExecuteUpdate(sql_UpdateBillHdSubTotal,"sql");
+	                                + " and date(dteBillDate)='" + filterDate + "' ");
+	                        objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                    }
 	                    catch (Exception e)
 	                    {
@@ -317,11 +322,12 @@ public class clsPOSTaxRegenerationController {
 
 	                    try
 	                    {
-	                        String sql_UpdateBillHdTaxAmt = "update tblqbillhd "
+	                    	sqlBuilder.setLength(0);
+	        		    	sqlBuilder.append("update tblqbillhd "
 	                                + " set dblTaxAmt=(select ifnull(sum(a.dblTaxAmount),0) from tblqbilltaxdtl a where strBillNo='" + billNo + "'  and date(dteBillDate)='" + filterDate + "'  group by strBillNo) "
 	                                + " where strBillNo='" + billNo + "'"
-	                                + "  and date(dteBillDate)='" + filterDate + "'  ";
-	                        objBaseServiceImpl.funExecuteUpdate(sql_UpdateBillHdTaxAmt,"sql");
+	                                + "  and date(dteBillDate)='" + filterDate + "'  ");
+	                        objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                    }
 	                    catch (Exception e)
 	                    {
@@ -330,7 +336,8 @@ public class clsPOSTaxRegenerationController {
 
 	                    try
 	                    {
-	                        sql = "update tblqbillhd set dblDiscountAmt="
+	                    	sqlBuilder.setLength(0);
+	        		    	sqlBuilder.append("update tblqbillhd set dblDiscountAmt="
 	                                + "(select sum(c.dblDiscountAmt) "
 	                                + "from  "
 	                                + "(select a.strItemCode,a.strItemName,a.strBillNo,a.dblAmount,a.dblDiscountAmt,a.dblDiscountPer "
@@ -341,8 +348,8 @@ public class clsPOSTaxRegenerationController {
 	                                + "c  "
 	                                + " group by c.strBillNo) "
 	                                + " where strBillNo='" + billNo + "' "
-	                                + "  and date(dteBillDate)='" + filterDate + "'  ";
-	                        objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                                + "  and date(dteBillDate)='" + filterDate + "'  ");
+	                        objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                    }
 
 	                    catch (Exception e)
@@ -354,13 +361,14 @@ public class clsPOSTaxRegenerationController {
 	                    {
 	                        if (Double.parseDouble(objBills[4].toString()) > 0)
 	                        {
-	                            sql = "update tblqbillhd "
+	                        	sqlBuilder.setLength(0);
+		        		    	sqlBuilder.append("update tblqbillhd "
 	                                    + " set dblDiscountPer=(dblDiscountAmt/dblSubTotal)*100 "
 	                                    + " where date(dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
 	                                    + " and strPOSCode='" + posCode + "' "
 	                                    + " and strBillNo='" + billNo + "' "
-	                                    + " and date(dteBillDate)='" + filterDate + "'  ";
-	                            objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                                    + " and date(dteBillDate)='" + filterDate + "'  ");
+	                            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                        }
 	                    }
 	                    catch (Exception e)
@@ -368,10 +376,11 @@ public class clsPOSTaxRegenerationController {
 	                        e.printStackTrace();
 	                    }
 
-	                    String sql_UpdateBillHdGrandTotal = "update tblqbillhd set dblGrandTotal=round((dblSubTotal-dblDiscountAmt)+dblTaxAmt,0) "
+	                    sqlBuilder.setLength(0);
+        		    	sqlBuilder.append("update tblqbillhd set dblGrandTotal=round((dblSubTotal-dblDiscountAmt)+dblTaxAmt,0) "
 	                            + " where strBillNo='" + billNo + "' "
-	                            + "  and date(dteBillDate)='" + filterDate + "'  ";
-	                    objBaseServiceImpl.funExecuteUpdate(sql_UpdateBillHdGrandTotal,"sql");
+	                            + "  and date(dteBillDate)='" + filterDate + "'  ");
+	                    objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
 	                    /**
 	                     * delete double entries of same settlement with No
@@ -395,7 +404,8 @@ public class clsPOSTaxRegenerationController {
 	                    }
 	                    
 
-	                    String sql_BillSettlementAmt = "update tblqbillsettlementdtl c "
+		                sqlBuilder.setLength(0);
+			    		sqlBuilder.append( "update tblqbillsettlementdtl c "
 	                            + " join (select a.dblGrandTotal as GrandTotal,a.strBillNo as BillNo,a.dteBillDate "
 	                            + " from tblqbillhd a,tblqbillsettlementdtl b "
 	                            + " where a.strbillno=b.strbillNo  and date(a.dteBillDate)=date(b.dteBillDate) and a.strBillNo='" + billNo + "' and date(a.dteBillDate)='" + filterDate + "' "
@@ -404,13 +414,14 @@ public class clsPOSTaxRegenerationController {
 	                            + " on c.strbillno=d.BillNo and date(c.dteBillDate)=date(d.dteBillDate) "
 	                            + " set c.dblSettlementAmt = d.GrandTotal "
 	                            + "where c.strBillNo='" + billNo + "' "
-	                            + "and date(c.dteBillDate)='" + filterDate + "'";
-	                    objBaseServiceImpl.funExecuteUpdate(sql_BillSettlementAmt,"sql");
+	                            + "and date(c.dteBillDate)='" + filterDate + "'");
+	                    objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                    String sql_UpdateBillSettlement = "update tblqbillsettlementdtl set dblPaidAmt=round(dblPaidAmt,0),dblActualAmt=round(dblActualAmt,0) "
+	                    sqlBuilder.setLength(0);
+			    		sqlBuilder.append( "update tblqbillsettlementdtl set dblPaidAmt=round(dblPaidAmt,0),dblActualAmt=round(dblActualAmt,0) "
 	                            + " where strBillNo='" + billNo + "' "
-	                            + "  and date(dteBillDate)='" + filterDate + "'  ";
-	                    objBaseServiceImpl.funExecuteUpdate(sql_UpdateBillSettlement,"sql");
+	                            + "  and date(dteBillDate)='" + filterDate + "'  ");
+	                    objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
 	                    String settlementMode = objBills[6].toString();
 	                    double grandTotal =Double.parseDouble(objBills[7].toString());
@@ -442,12 +453,13 @@ public class clsPOSTaxRegenerationController {
 
 	                        if (billHDnBillSettleAmtDiff > 0)
 	                        {
-	                            sql = "update tblqbillsettlementdtl  "
+	                        	sqlBuilder.setLength(0);
+	    			    		sqlBuilder.append( "update tblqbillsettlementdtl  "
 	                                    + "SET dblSettlementAmt = dblSettlementAmt+" + billHDnBillSettleAmtDiff + " "
 	                                    + "where strBillNo='" + billNo + "'  "
 	                                    + "AND DATE(dteBillDate)='" + filterDate + "'  "
-	                                    + "and strSettlementCode='" + settlementCode + "' ";
-	                            objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                                    + "and strSettlementCode='" + settlementCode + "' ");
+	                            objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                        }
 	                    }
 
@@ -496,13 +508,14 @@ public class clsPOSTaxRegenerationController {
 	                                System.out.println(settleAmtForCash);
 	                                System.out.println(grandTotal);
 	                                System.out.println(settlementAmt);
-	                                sql = "update tblqbillsettlementdtl "
+	                                sqlBuilder.setLength(0);
+		      			    		sqlBuilder.append("update tblqbillsettlementdtl "
 	                                        + "set dblSettlementAmt=" + settleAmtForCash
 	                                        + " where strSettlementCode not in(" + settleCode + ") "
 	                                        + " and strBillNo='" + billNo + "' "
-	                                        + " and date(dteBillDate)='" + filterDate + "' ";
-	                                System.out.println(sql);
-	                                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                                        + " and date(dteBillDate)='" + filterDate + "' ");
+	                                System.out.println(sqlBuilder.toString());
+	                                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                            }
 
 	                        }
@@ -525,17 +538,19 @@ public class clsPOSTaxRegenerationController {
 	        	                	 for(int i=0;i<listSettle.size();i++)
 	        	                	 {
 	        	                	 Object[] objSettle = (Object[]) listSettle.get(i);
-	                                sql = "delete from tblqbillsettlementdtl "
+	        	                	 sqlBuilder.setLength(0);
+			      			    	 sqlBuilder.append("delete from tblqbillsettlementdtl "
 	                                        + "where strBillNo='" + billNo + "' "
 	                                        + "and strSettlementCode='" + objSettle[1].toString() + "' "
-	                                        + "and date(dteBillDate)='" + filterDate + "' ";
-	                                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                                        + "and date(dteBillDate)='" + filterDate + "' ");
+	                                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 	                                 }
 	        	                }
 	                        }
 	                    }
 
-	                    String sqlUpdateBillSeriesGT = "update tblbillseriesbilldtl a\n"
+	                    sqlBuilder.setLength(0);
+     			    	sqlBuilder.append("update tblbillseriesbilldtl a\n"
 	                            + "join tblqbillhd b\n"
 	                            + "on  a.strHdBillNo=b.strBillNo\n"
 	                            + "and date(a.dteBillDate)=date(b.dteBillDate)\n"
@@ -543,8 +558,8 @@ public class clsPOSTaxRegenerationController {
 	                            + "where a.strHdBillNo=b.strBillNo\n"
 	                            + "and date(a.dteBillDate)=date(b.dteBillDate)\n"
 	                            + "and a.strHdBillNo='" + billNo + "'\n"
-	                            + "and date(a.dteBillDate)='" + filterDate + "' ";
-	                    objBaseServiceImpl.funExecuteUpdate(sqlUpdateBillSeriesGT,"sql");
+	                            + "and date(a.dteBillDate)='" + filterDate + "' ");
+	                    objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
 	                    /*
 	                     * String multiSettleBill="update tblqbillhd a,
@@ -557,39 +572,48 @@ public class clsPOSTaxRegenerationController {
 	                     */
 	                }
 
-	                sql = "update tblqbillhd set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbillhd set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbilldtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbilldtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbillsettlementdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbillsettlementdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbillmodifierdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbillmodifierdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbilltaxdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbilltaxdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbillcomplementrydtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbillcomplementrydtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbilldiscdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbilldiscdtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
-	                sql = "update tblqbillpromotiondtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ";
-	                objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+	                sqlBuilder.setLength(0);
+ 			    	sqlBuilder.append("update tblqbillpromotiondtl set strDataPostFlag='N' where strBillNo='" + billNo + "' and date(dteBillDate)='" + filterDate + "' ");
+	                objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");
 
 	                objUtility.funUpdateBillDtlWithTaxValues(billNo, "QFile", filterDate);
 	            }
 	        }
-	            sql = "update tblqbillhd set dblsubtotal=0,dblTaxAmt=0,dblGrandTotal=0,strDataPostFlag='N' "
+	    		 sqlBuilder.setLength(0);
+			    	sqlBuilder.append("update tblqbillhd set dblsubtotal=0,dblTaxAmt=0,dblGrandTotal=0,strDataPostFlag='N' "
 	                    + " where date(dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
 	                    + " and strPOSCode='" + posCode + "' "
-	                    + " and strBillNo Not In (select strBillNo from tblqbilldtl) ";
-	            System.out.println(sql);
-	            System.out.println( objBaseServiceImpl.funExecuteUpdate(sql,"sql"));
+	                    + " and strBillNo Not In (select strBillNo from tblqbilldtl) ");
+	            System.out.println(sqlBuilder.toString());
+	            System.out.println( objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql"));
 
 	            /*
 	             * sql="update tblqbillhd " + " set
@@ -598,7 +622,8 @@ public class clsPOSTaxRegenerationController {
 	             * and strPOSCode='"+posCode+"' ";
 	             * System.out.println(clsGlobalVarClass.dbMysql.execute(sql));
 	             */
-	            sql = "update tblqbilldtl a join "
+	            sqlBuilder.setLength(0);
+			    sqlBuilder.append("update tblqbilldtl a join "
 	                    + " ( select b.dblDiscountAmt as DisAmt,b.dblDiscountPer as DiscPer,b.strBillNo as BillNo ,"
 	                    + " b.strPOSCode as POSCode, b.dteBillDate as BillDate from tblqbillhd b "
 	                    + " where date(b.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  "
@@ -606,7 +631,7 @@ public class clsPOSTaxRegenerationController {
 	                    + " on a.strbillno=c.BillNo  and date(a.dteBillDate)=date(c.dteBillDate) "
 	                    + " set a.dblDiscountAmt=(a.dblAmount*c.DiscPer)/100,strDataPostFlag='N' "
 	                    + " where date(c.BillDate) between '" + fromDate + "' and '" + toDate + "' "
-	                    + " and c.POSCode='" + posCode + "' ";
+	                    + " and c.POSCode='" + posCode + "' ");
 	            //System.out.println(sql);
 	            //System.out.println(clsGlobalVarClass.dbMysql.execute(sql));
 

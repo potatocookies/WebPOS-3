@@ -167,7 +167,7 @@
 						Login
 					</span>
 					
-					
+					<label>User ID : </label>
 					<div class="wrap-input100 validate-input" >
 						
 						<s:input cssClass="input100" name="usercode" placeholder="UserName"
@@ -179,7 +179,7 @@
 						<span class="label-input100"></span>
 					</div>
 					
-					
+					<label>Password : </label>
 					<div class="wrap-input100 validate-input" data-validate="Password is required">
 						<s:input type="password" required="true" cssClass="input100" name="pass" placeholder="Password"
 							path="strPassword" id="password" /> 

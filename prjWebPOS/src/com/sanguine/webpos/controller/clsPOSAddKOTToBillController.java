@@ -196,26 +196,30 @@ public class clsPOSAddKOTToBillController {
 	
 	 private clsPOSAddKOTToBillBean funGetTableList(String strClientCode,String posCode)throws Exception
 	 {
-		    clsPOSAddKOTToBillBean obj=new clsPOSAddKOTToBillBean();
-			JSONArray jArrTableList=null;
-			List<clsPOSTableMasterBean> listTableData=new ArrayList<clsPOSTableMasterBean>();
-			List list = objMasterService.funGetTableList(strClientCode);
-		        if(null!=list)
+		 clsPOSAddKOTToBillBean obj=new clsPOSAddKOTToBillBean();
+		 List<clsPOSTableMasterBean> listTableData=new ArrayList<clsPOSTableMasterBean>();
+		 StringBuilder sql = new StringBuilder();
+		 sql.append("select b.strTableName,b.strTableNo "
+		    + "from tblitemrtemp a,tbltablemaster b "
+		    + "where a.strTableNo=b.strTableNo "
+		    + "and (a.strPOSCode='" + posCode + "'  or a.strPOSCode='All') group by b.strTableName " );
+		 
+		 List list = objBaseService.funGetList(sql, "sql");
+		   if (list!=null)
+			{
+			  for(int i=0; i<list.size(); i++)
 				{
-					for(int cnt=0;cnt<list.size();cnt++)
-					{
-						clsTableMasterModel objModel = (clsTableMasterModel)list.get(cnt);
-						clsPOSTableMasterBean objTableDtl = new clsPOSTableMasterBean();
-						objTableDtl.setStrTableNo(objModel.getStrTableNo());
-						objTableDtl.setStrTableName(objModel.getStrTableName());	
-						
-						listTableData.add(objTableDtl);
-						listTable.add(objTableDtl);
-						
-					}
-					obj.setListTableDtl(listTableData);
+				    Object[] objList=(Object[])list.get(i);
+				    clsPOSTableMasterBean objTableDtl = new clsPOSTableMasterBean();
+					objTableDtl.setStrTableNo(objList[1].toString());
+					objTableDtl.setStrTableName(objList[0].toString());
+					listTableData.add(objTableDtl);
+					listTable.add(objTableDtl);
 				}
-				return obj;
+			  obj.setListTableDtl(listTableData);
+			}  
+		 
+	    return obj;
 	 }
 	 
 	 
@@ -254,9 +258,9 @@ public class clsPOSAddKOTToBillController {
 				{
 					for(int cnt=0;cnt<list.size();cnt++)
 					{
-						Object[] object = (Object[])list.get(cnt);
+						clsPOSBillDtl objBill = (clsPOSBillDtl)list.get(cnt);
 						clsPOSBillItemDtlBean objBillDtl = new clsPOSBillItemDtlBean();
-						objBillDtl.setStrBillNo(object[0].toString());	
+						objBillDtl.setStrBillNo(objBill.getStrBillNo());	
 						listBillData.add(objBillDtl);
 						
 					}

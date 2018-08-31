@@ -19,10 +19,16 @@ $(document).ready(function() {
 	  $("form").submit(function(event){
 		  if($("#txtOldPass").val().trim()=="")
 			{
-				alert("Please Enter Password");
+				alert("Invalid Old Password.");
+				return false;
+			}
+		  if($("#txtNewPass").val().trim()=="")
+			{
+				alert("Invalid New Password.");
 				return false;
 			}
  		flg = funChekPassword();
+ 		 return flg;
 		});
 	  
 	 
@@ -32,8 +38,7 @@ function funChekPassword()
 {
 	var flg=true;
 	
-//		if($('#txtCounterCode').val()=='')
-//		{
+
 		var userCode = $('#txtUserCode').val();
 		var oldPass = $('#txtOldPass').val();
 		var newPass = $('#txtNewPass').val();
@@ -49,21 +54,15 @@ function funChekPassword()
 		        dataType: "text",
 		        success: function(response)
 		        {
-// 		        	alert(response);
-// 		        	if(response=="PasswordNotMatch")
-// 		        	{
-// 		        	alert("Password Doesn't Match");	
-// 		        	}	
-		        	
-		        	if(response=="false")
+		        	if(response!="Success")
 	        		{
-	        			alert("Password Doesn't Match!");
+	        			alert(response);
 	        			$('#txtOldPass').focus();
 	        			flg= false;
 		    		}
 		    		else
 		    		{
-		    		document.frmChangePassword.action="savrOrUpdateUserPassword.html?userCode="+ userCode+"&oldPass="+oldPass+"&newPass="+newPass;
+		    		document.frmChangePassword.action="savrOrUpdateUserPassword.html";
 		    		document.frmChangePassword.submit();
 		    		alert("Password Saved Successfully");
 		    		}

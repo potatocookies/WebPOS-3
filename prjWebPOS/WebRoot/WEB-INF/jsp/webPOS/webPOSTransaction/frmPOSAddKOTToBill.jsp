@@ -53,50 +53,30 @@
 			dataType : "json",
 			success : function(response){ 
 				funRemoveHeaderTableRows("tblKOT");
+				var table=document.getElementById("tblKOT");
+				var rowCount = table.rows.length;
+				var row = table.insertRow(rowCount);
+				var row=table.insertRow();
 				var k=0,first="",second="",third="",fourth="";
-				var list=response.listKOTDtl,cnt=0;
+				var list=response.listKOTDtl,cnt=0,rowPosition=0;
 				$.each(response.listKOTDtl,function(i,item)
 				{
 					cnt++;
-				    if(k==0)
-					   {
-						  first=item.strKOTNo;
-						  k=k+1;
-						  if(cnt==list.length)
-						  {
-							  funFillHeaderRows(first,second,third,fourth,"tblKOT");
-						  }
-					   }
-					  else if(k==1)
-					   {
-						  second=item.strKOTNo;
-						  k=k+1;
-						  if(cnt==list.length)
-						  {
-							  funFillHeaderRows(first,second,third,fourth,"tblKOT");
-						  }
-					   }
-					  else if(k==2)
-					   {
-						  third=item.strKOTNo;
-						  k=k+1;
-						  if(cnt==list.length)
-						  {
-							  funFillHeaderRows(first,second,third,fourth,"tblKOT");
-						  }
-					   }
-					  else if(k==3)
-					   {
-						  fourth=item.strKOTNo;
-						  funFillHeaderRows(first,second,third,fourth,"tblKOT");
-						  k=0;
-					   }
-				   
-				 
-				 });
-				
-				
-							
+					if(cnt<=4)
+					  {
+						var x=row.insertCell(0);
+						x.innerHTML="<input type=\"button\"  class=\"transForm_button\"  value='"+item.strKOTNo+"' onclick=\"funGetSelectedRowIndex(this,"+"tblKOT"+")\" >";
+						
+					  }
+					else
+					 {
+						row=table.insertRow();
+						rowPosition++;
+						cnt=1;
+						var x=row.insertCell(0);
+						x.innerHTML="<input type=\"button\"  class=\"transForm_button\"  value='"+item.strKOTNo+"' onclick=\"funGetSelectedRowIndex(this,"+"tblKOT"+"')\" >";
+					 }
+				 });			
 				
 			},
 			error : function(e){
@@ -131,50 +111,28 @@
 			dataType : "json",
 			success : function(response){ 
 				funRemoveHeaderTableRows("tblBill");
-				var k=0,first="",second="",third="",fourth="";
+				var table=document.getElementById("tblBill");
+				var rowCount = table.rows.length;
+				var row = table.insertRow(rowCount);
+				var row=table.insertRow();
 				var list=response.listBillDtl,cnt=0;
 				$.each(response.listBillDtl,function(i,item)
 				{
 					cnt++;
-				    if(k==0)
-					   {
-						  first=item.strBillNo;
-						  k=k+1;
-						  if(cnt==list.length)
-						  {
-							  funFillHeaderRows(first,second,third,fourth,"tblBill");
-						  }
-					   }
-					  else if(k==1)
-					   {
-						  second=item.strBillNo;
-						  k=k+1;
-						  if(cnt==list.length)
-						  {
-							  funFillHeaderRows(first,second,third,fourth,"tblBill");
-						  }
-					   }
-					  else if(k==2)
-					   {
-						  third=item.strBillNo;
-						  k=k+1;
-						  if(cnt==list.length)
-						  {
-							  funFillHeaderRows(first,second,third,fourth,"tblBill");
-						  }
-					   }
-					  else if(k==3)
-					   {
-						  fourth=item.strBillNo;
-						  funFillHeaderRows(first,second,third,fourth,"tblBill");
-						  k=0;
-					   }
-				   
-				 
-				 });
-				
-				
-							
+					if(cnt<=4)
+					  {
+						var x=row.insertCell(0);
+						x.innerHTML="<input type=\"button\"  class=\"transForm_button\"  value='"+item.strBillNo+"' onclick=\"funGetSelectedRowIndex(this,"+"tblBill"+")\" >";
+					  }
+					else
+					 {
+						row=table.insertRow();
+						rowPosition++;
+						cnt=1;
+						var x=row.insertCell(0);
+						x.innerHTML="<input type=\"button\"  class=\"transForm_button\"  value='"+item.strBillNo+"' onclick=\"funGetSelectedRowIndex(this,"+"tblBill"+")\" >";
+					 }
+				 });			
 				
 			},
 			error : function(e){
@@ -198,49 +156,7 @@
 	}
 
 	
-	function funFillHeaderRows(obj,obj1,obj2,obj3,tableName)
-	{
-		var table=document.getElementById(tableName);
-		var rowCount = table.rows.length;
-		var row = table.insertRow(rowCount);
-		
-		//var rowCount=table.rows.length;
-		if(obj==(""))
-	    {
-	    	
-	    }
-	    else if(obj1==(""))
-	    {   var row=table.insertRow();
-	    	row.insertCell(0).innerHTML= "<input type=\"button\"  class=\"transForm_button\"  value='"+obj+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(1).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-	    	row.insertCell(2).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-	    }
-	    else if(obj2==(""))
-	    {   var row=table.insertRow();
-	    	row.insertCell(0).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(1).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj1+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(2).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-	    }
-	    else if(obj3==(""))
-	    {   var row=table.insertRow();
-	    	row.insertCell(0).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(1).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj1+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(2).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj2+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(3).innerHTML= "<input text=\"readonly\" class=\"Box \"   value='' >";
-	    }
-	    else 
-	    {
-	    	var row=table.insertRow();
-	    	row.insertCell(0).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj+"'  onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(1).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj1+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(2).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj2+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    	row.insertCell(3).innerHTML= "<input type=\"button\" class=\"transForm_button\"  value='"+obj3+"' onclick=\"funGetSelectedRowIndex(this,"+tableName+")\" >";
-	    }
-		//selectedTableName=tableName;
-        
-	}
+
 	
 	
 	function funGetSelectedRowIndex(obj,tableName)

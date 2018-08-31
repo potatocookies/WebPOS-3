@@ -54,7 +54,7 @@ import com.sanguine.webpos.util.clsPOSUtilityController;
 
 
 @Controller
-public class clsPOSBillSettlement
+public class clsPOSBillSettlementControllerForDirectBiller
 {
 
 	private List listItemCode;

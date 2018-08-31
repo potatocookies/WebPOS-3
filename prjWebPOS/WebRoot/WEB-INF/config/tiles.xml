@@ -954,7 +954,7 @@
 	</definition>
 	
 	<definition name="frmPOSChangeCustomerOnBill" extends="base.definition6">
-		<put-attribute name="title" value="Discount Master" />
+		<put-attribute name="title" value="Change Customer On Bill" />
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSChangeCustomerOnBill.jsp" />
 	</definition>
 	

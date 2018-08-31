@@ -27,7 +27,7 @@
 }
 </style>
 <script type="text/javascript">
-
+var g=0;
 	$(document).ready(function() {
 
 		funFillItemTable();
@@ -159,24 +159,24 @@
 
 	}
 	
-	var i = 0;
+	
 	function funFillNonAvailableItems(strItemName) {
 		var table = document.getElementById("tblNonAvailableItems");
 		var cntIndex = 0;
 
-		if (i == 0) {
+		if (g == 0) {
 			rowCount = table.rows.length;
 			row = table.insertRow(rowCount);
 		}
 
 		
-			row.insertCell(i).innerHTML = "<input type=\"text\"  id='"+ strItemName + "' name='" + strItemName + "' class=\"transForm_button \" value='" + strItemName + "' onclick=\"funDeleteSelectedItem(this,'tblNonAvailableItems')\"/>";
+			row.insertCell(g).innerHTML = "<input type=\"text\"  id='"+ strItemName + "' name='" + strItemName + "' class=\"transForm_button \" value='" + strItemName + "' onclick=\"funDeleteSelectedItem(this,'tblNonAvailableItems')\"/>";
 		
-			i++;
+			g++;
 		
 		cntIndex++;
-		if (i == 4) {
-			i = 0;
+		if (g == 4) {
+			g = 0;
 		}
 	}
 	
@@ -195,7 +195,7 @@
 					+ strItemName
 					+ "' name='"
 					+ strItemName
-					+ "' style=\"width: 490px;\" class=\"transForm_button \" value='"
+					+ "' style=\"width: 490px;height: 30px;\" class=\"transForm_button \" value='"
 					+ strItemName + "' onclick=\"funGetSelectedRowIndex(this,'tblItems')\"/>";
 					
 // 					
@@ -207,7 +207,7 @@
 		}
 	}
 	var selectedItemName="";
-	var g=0;
+	
 	function funGetSelectedRowIndex(obj, tableId) {
 		var tableName = document.getElementById(tableId);
 		var index = obj.parentNode.parentNode.rowIndex;
@@ -263,7 +263,7 @@
 				
 			},
 			url : searchurl,
-			dataType : "json",
+			dataType : "text",
 			async : false,
 			success : function(response) {
 			
@@ -327,7 +327,7 @@
 				
 			},
 			url : searchurl,
-			dataType : "json",
+			dataType : "text",
 			async : false,
 			success : function(response) {
 			
@@ -388,7 +388,7 @@
 		<br/>
 		<br>
 		<p align="center">
-			<input type="button" value="Close" tabindex="3" class="form_button" />
+			<input type="button" value="Close" tabindex="3" class="form_button" onclick="funPOSHome()"/>
 			
 		</p>
 	</s:form>

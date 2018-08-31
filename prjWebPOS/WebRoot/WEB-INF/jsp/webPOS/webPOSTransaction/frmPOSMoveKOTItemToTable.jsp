@@ -45,7 +45,10 @@ $(document).ready(function() {
 	    $("#cmbBusyTbl").change(function() {
 	    	funFetchKOTData();
 	        	});
-	  
+	    
+	    $("#cmbTable").change(function() {
+	    	funFetchKOTData();
+	        	});
 	   
 
         $("form").submit(function(event){
@@ -101,17 +104,7 @@ function funGetSelectedRowIndex(obj,tableId)
 }
 function funValidate()
 {
-	/* if(KOTNo.trim()=="")
-		{
-		alert("Select table from Open Tables" );
-		return false;
-		}
-	else if(selectedtblName.trim()=="")
-	{
-		alert("Select table from All Tables" );
-		return false;
-	}
-	else */
+	
 		{
 		funGetKOTItemMap();
 		  var content=JSON.stringify(arrKOT);
@@ -464,10 +457,10 @@ function btnAdd_onclick()
 		{var table = document.getElementById("tblMoveItem");
 		var rowCount = table.rows.length;
 		var row = table.insertRow(rowCount);
-		  row.insertCell(0).innerHTML= "<input type=\"hidden\" name=\"itemDtlList["+(rowCount)+"].strItemCode\" readonly=\"readonly\" class=\"Box \" size=\"1%\" value='"+strItemCode+"'>";
-	      row.insertCell(1).innerHTML= "<input name=\"itemDtlList["+(rowCount)+"].strItemName\" readonly=\"readonly\" class=\"Box \" size=\"35%\" value='"+strItemName+"'>";
-		  row.insertCell(2).innerHTML= "<input name=\"itemDtlList["+(rowCount)+"].dblItemQuantity\" readonly=\"readonly\" class=\"Box \" size=\"35%\" value='"+dblItemQuantity+"'>";
-		  row.insertCell(3).innerHTML= "<input name=\"itemDtlList["+(rowCount)+"].dblAmount\" readonly=\"readonly\" class=\"Box \" size=\"29%\" value='"+dblAmount+"'>";
+		  row.insertCell(0).innerHTML= "<input type=\"hidden\" name=\"itemDtlList["+(rowCount)+"].strItemCode\" readonly=\"readonly\" class=\"Box \" size=\"0%\" value='"+strItemCode+"'>";
+	      row.insertCell(1).innerHTML= "<input name=\"itemDtlList["+(rowCount)+"].strItemName\" readonly=\"readonly\" class=\"Box \" size=\"50%\" value='"+strItemName+"'>";
+		  row.insertCell(2).innerHTML= "<input name=\"itemDtlList["+(rowCount)+"].dblItemQuantity\" readonly=\"readonly\" class=\"Box \" size=\"30%\" value='"+dblItemQuantity+"'>";
+		  row.insertCell(3).innerHTML= "<input name=\"itemDtlList["+(rowCount)+"].dblAmount\" readonly=\"readonly\" class=\"Box \" size=\"20%\" value='"+dblAmount+"'>";
 		 
 
 		   
@@ -480,9 +473,9 @@ function btnAdd_onclick()
 
 <body>
 	<div id="formHeading">
-		<label>Area Master</label>
+		<label>Move KOT Items To Table</label>
 	</div>
-	<s:form name="frmMoveKOTItems" method="POST" action="" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+	<s:form name="frmMoveKOTItems" method="POST" action="" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 
 
 		
@@ -536,13 +529,13 @@ function btnAdd_onclick()
 			
 			<div style=" width: 50%; height: 400px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: scroll;">
 			
-					<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 0px;">
+					<div class="row" style="background-color: #fff;margin-bottom: 10px;display: block;margin-left: 0px;">
 							<table border="1" class="myTable" style="width:100%;margin: auto;"  >
 								 <thead>		
 										<tr>
-											<td style="width:36.5% border: #c0c0c0 1px solid; background: #78BEF9;">Description</td>
-											<td style="width:36.5% border: #c0c0c0 1px solid; background: #78BEF9;">Quantity</td>
-											<td style="width:28% border: #c0c0c0 1px solid; background: #78BEF9;">Amount</td>
+											<td style="width:50% border: #c0c0c0 1px solid; background: #78BEF9;">Description</td>
+											<td style="width:30% border: #c0c0c0 1px solid; background: #78BEF9;">Quantity</td>
+											<td style="width:20% border: #c0c0c0 1px solid; background: #78BEF9;">Amount</td>
 										</tr>
 								</thead>		
 							</table>
@@ -565,85 +558,7 @@ function btnAdd_onclick()
 			</div>
 			
 		</div>
-		
-<!-- 		<table class="masterTable" style="margin-left: auto;  width: 74.5%;"> -->
 
-<!-- 			 <tr> -->
-<%-- 			  <td><s:select id="cmbBusyTbl" name="cmbBusyTbl" path="strBusyTbl" items="${busyTblList}" cssClass="BoxW124px" /> --%>
-<!-- 				</td><td><label>Open KOTs</label></td> -->
-<%-- 			<td><s:select id="cmbTable" name="cmbTable" path="strTableNo" items="${tableList}" cssClass="BoxW124px" /> --%>
-<!-- 				</td><td><label>All Tables</label></td> -->
-			
-<!-- 						</tr> -->
-<!-- 			 </table> -->
-<!-- 		<div style="margin-left:160px;"> -->
-		
-<!-- 		<div style="width: 40%; float:left; margin-left:auto;"> -->
-<!-- 		<div style=" width: 100%;  background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 250px; -->
-<!-- 				    			overflow-x: hidden; overflow-y: scroll; "> -->
-<!-- 		<table id="tblKOT" class="transFormTable" style="width:100%"> -->
-<!-- 		</table>	 -->
-<!-- 		</div> -->
-<!-- 		<table border="1" class="myTable" style="width:100%;margin: auto;"  > -->
-										
-<!-- 										<tr> -->
-<!-- 										<td style="width:25% border: #c0c0c0 1px solid; background: #78BEF9;">Description</td> -->
-<!-- 										<td style="width:25% border: #c0c0c0 1px solid; background: #78BEF9;">Quantity</td> -->
-<!-- 										<td style="width:25% border: #c0c0c0 1px solid; background: #78BEF9;">Amount</td> -->
-<!-- 										<td style="width:25% border: #c0c0c0 1px solid; background: #78BEF9;">Select</td> -->
-<!-- 										</tr> -->
-<!-- 					</table> -->
-<!-- 		<div style=" width: 100%;  background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 250px; -->
-<!-- 				    				overflow-x: hidden; overflow-y: scroll; "> -->
-			
-<!-- 		<table id="tblItem" class="transTablex col5-center" style="width: 100%;"> -->
-<!-- 									<tbody>     -->
-<%-- 									<col style="width:1%"><!--  COl1   --> --%>
-<%-- 											<col style="width:25%"><!--  COl1   --> --%>
-<%-- 											<col style="width:25%"><!--  COl2   --> --%>
-<%-- 											<col style="width:25%"><!--  COl3   -->	 --%>
-<%-- 											<col style="width:24%"><!--  COl3   -->								 --%>
-<!-- 									</tbody>							 -->
-<!-- 									</table> -->
-<!-- 		</div>		 -->
-<!-- 		</div> -->
-<!-- 		<div style=" width: 45%; float:left;"> -->
-<!-- 		<table border="1" class="myTable" style="width:100%;margin: auto;"  > -->
-										
-<!-- 										<tr> -->
-<!-- 										<td style="width:36.5% border: #c0c0c0 1px solid; background: #78BEF9;">Description</td> -->
-<!-- 										<td style="width:36.5% border: #c0c0c0 1px solid; background: #78BEF9;">Quantity</td> -->
-<!-- 										<td style="width:28% border: #c0c0c0 1px solid; background: #78BEF9;">Amount</td> -->
-<!-- 										</tr> -->
-<!-- 					</table> -->
-<!-- 		<div style=" background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 450px; -->
-<!-- 				    			overflow-x: hidden; overflow-y: scroll; "> -->
-<!-- 		<table id="tblMoveItem" class="transTablex col5-center" style="width:100%"> -->
-<!-- 		<tbody>     -->
-<%-- 									<col style="width:1%"><!--  COl1   --> --%>
-<%-- 											<col style="width:35%"><!--  COl1   --> --%>
-<%-- 											<col style="width:35%"><!--  COl2   --> --%>
-<%-- 											<col style="width:29%"><!--  COl3   -->	 --%>
-																		
-<!-- 									</tbody> -->
-<!-- 		</table> -->
-<!-- 		</div> -->
-<!-- <!-- 		<div> --> 
-<!-- 		<br> -->
-		
-<!-- 		<p align="center"> -->
-		
-<!-- 			<input id="btnAdd" type="button" class="form_button" value="OK" onclick="return btnAdd_onclick();"></input> -->
-<!-- 				<input type="submit" value="Save" tabindex="3" class="form_button"/>  -->
-<%-- 				<s:input type="hidden" id="txtTableNo" path="jObjKOTItemList" /> --%>
-<!-- 		</p> -->
-<!-- 		</div> -->
-<!-- 	</div> -->
-	
-<!-- 		</div> -->
-			
-		
-		
 	</s:form>
 
 </body>

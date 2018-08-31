@@ -51,7 +51,26 @@ $(document).ready(function()
 		});
 
 
-function funSetDate()
+
+
+$(function() 
+{		
+
+	  /*  var POSDate="${gPOSDate}"
+		var startDate="${gPOSDate}";
+	  	var Date = startDate.split(" ");
+		var arr = Date[0].split("-");
+		Dat=arr[2]+"-"+arr[1]+"-"+arr[0];
+	
+		$("#txtTransDate").datepicker({ dateFormat: 'dd-mm-yy' });
+		$("#txtTransDate" ).datepicker('setDate', Dat);
+		*/
+}); 
+
+
+
+
+/*function funSetDate()
 {
 	
 	var searchurl=getContextPath()+"/getPOSDate.html";
@@ -61,11 +80,6 @@ function funSetDate()
 		        dataType: "json",
 		        success: function(response)
 		        {
-		        	/* var dateTime=response.POSDate;
-		        	var date=dateTime.split(" ");
-		        	$("#txtFromDate").val(date[0]);
-		        	$("#txtToDate").val(date[0]); */
-		        	
 		        var date = new Date(response.POSDate);
 		        var	dateTime=date.getDate()  + '-' + (date.getMonth() + 1)+ '-' +  date.getFullYear();
 		        var posDate=dateTime.split(" ");
@@ -93,11 +107,12 @@ function funSetDate()
 		        }
 	 });
 }
+*/
 
 </script>
 
 </head>
-<body onload="funSetDate()">
+<body >
 
 	<div id="formHeading">
 	<label>Cash Management Transaction</label>
@@ -117,12 +132,8 @@ function funSetDate()
 					<div class="element-input col-lg-6" style="width: 25%;"> 
 	    				<s:input type="text"  id="txtTransID" path="strTransID" readonly="true" />
 	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;margin-left: -17px;"> 
-	    				<label class="title" >Date</label>
-	    			</div>
-					<div class="element-input col-lg-6" style="width: 25%;"> 
-	    				<s:input type="text" readonly="true" id="txtTransDate" path="dteTransDate" required="true"/>
-	    			</div>
+	    			
+					
 				</div>
 				
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 30px;">
@@ -170,8 +181,8 @@ function funSetDate()
 					<div class="element-input col-lg-6" style="width: 17%;"> 
 	    				<label class="title" >Remarks</label>
 	    			</div>
-					<div class="element-input col-lg-6" style="width: 30%;"> 
-	    				<s:input  type="text" id="txtRemarks" path="strRemarks" />
+					<div class="element-input col-lg-6" style="width: 61%;"> 
+	    				<s:input class="large" colspan="3" type="text" id="txtRemarks" path="strRemarks" style="width: 100%" />
 	    			</div>
 				</div>
 				

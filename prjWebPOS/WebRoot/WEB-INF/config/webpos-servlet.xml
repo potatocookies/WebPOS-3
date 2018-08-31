@@ -113,6 +113,11 @@
 	    			<value>com.sanguine.webpos.model.clsPOSConfigSettingHdModel</value>
 	    			<value>com.sanguine.webpos.model.clsModifierGroupMasterHdModel</value>
 	    			<value>com.sanguine.webpos.model.clsMenuItemPricingHdModel</value> 
+	    			<value>com.sanguine.webpos.model.clsPOSNonAvailableItemsModel</value> 
+	    			<value>com.sanguine.webpos.model.clsPOSCashManagmentTranscationModel</value> 
+	    			<value>com.sanguine.webpos.model.clsTableReservationModel</value> 
+	    			
+	    			
 	    			
 				</list>
 			</property>

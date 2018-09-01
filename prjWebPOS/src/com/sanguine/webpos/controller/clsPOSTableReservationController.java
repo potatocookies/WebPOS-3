@@ -185,7 +185,8 @@ public class clsPOSTableReservationController {
 			objPOSReservationBean.setStrCity((String) listResDtl.get(5));
 			objPOSReservationBean.setStrContactNo((String) listResDtl.get(6));
 			objPOSReservationBean.setStrTableNo((String) listResDtl.get(7));
-			objPOSReservationBean.setDteDate((String) listResDtl.get(8));
+			//objPOSReservationBean.setDteDate(listResDtl.get(8).toString());
+			objPOSReservationBean.setDteDate(objGlobal.funGetDate("dd-MM-yyyy",listResDtl.get(8).toString()));
 			
 			String resTime=(String) listResDtl.get(9);
 			String[] time=resTime.split(":");
@@ -566,6 +567,9 @@ public class clsPOSTableReservationController {
 	  if(isExistCust)
 	  {
 		    objCustModel = (clsCustomerMasterModel) objMasterService.funSelectedCustomerMasterData(custCode, clientCode);
+		    objCustModel.setStrBuldingCode(customerAreaCode);
+		    objCustModel.setStrBuildingName(bldgName);
+		    objCustModel.setStrCustomerName(custName);
 	  }
 	  else
 	  {
@@ -603,6 +607,10 @@ public class clsPOSTableReservationController {
 		    objCustModel.setStrCRMId("N");
 		    objCustModel.setStrCustAddress("N");
 		    objCustModel.setStrDataPostFlag("N");
+		    objCustModel.setStrGSTNo("");
+		    objCustModel.setStrTempAddress("");
+		    objCustModel.setStrTempLandmark("");
+		    objCustModel.setStrTempStreet("");
 	  }
 	  objBaseService.funSave(objCustModel);
 	   

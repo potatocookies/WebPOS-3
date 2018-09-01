@@ -10,9 +10,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,12 +26,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.ibm.icu.math.BigDecimal;
+import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.model.clsCurrencyMasterModel;
 import com.sanguine.webpos.bean.clsPOSSalesFlashReportsBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.bean.clsPOSShiftMasterBean;
 import com.sanguine.webpos.model.clsAreaMasterModel;
 import com.sanguine.webpos.model.clsSettlementMasterModel;
+import com.sanguine.webpos.model.clsShiftMasterModel;
 import com.sanguine.webpos.model.clsUserHdModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
@@ -57,7 +64,11 @@ public class clsPOSSalesReportController {
 	@Autowired
 	private clsPOSReportService objReportService;
 	
-	private clsGlobalFunctions objGlobal=null;
+	@Autowired
+	private clsGlobalFunctions objGlobal;
+	
+	@Autowired
+	private clsSetupService objSetupService;
 	
 	 Map<String,String> hmPOSData;
 	 Map<String,String> hmPayMode;
@@ -74,6 +85,7 @@ public class clsPOSSalesReportController {
 		 
 		 	decimalFormat = new DecimalFormat("#.##");
 			String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+			String POSCode=request.getSession().getAttribute("loginPOS").toString();	
 			String urlHits="1";
 			try{
 				urlHits=request.getParameter("saddr").toString();
@@ -156,6 +168,22 @@ public class clsPOSSalesReportController {
 				}
 			}
 			model.put("areaList",arealist);
+			
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+			model.put("gEnableShiftYN",objSetupParameter.get("gEnableShiftYN").toString());
+			
+			List shiftList = new ArrayList();
+			shiftList.add("All");
+			List listShiftData = funGetPOSWiseShiftList(POSCode,request);
+			if(listShiftData!=null)
+			{
+				for(int cnt=0;cnt<listShiftData.size();cnt++)
+				{
+					clsShiftMasterModel objShiftModel= (clsShiftMasterModel) listShiftData.get(cnt);
+					arealist.add(objShiftModel.getIntShiftCode());
+				}
+			}
+			model.put("shiftList",shiftList);
 		    
 			 
            //for pos date
@@ -181,20 +209,12 @@ public class clsPOSSalesReportController {
 			    String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		     	String userCode=req.getSession().getAttribute("gUserCode").toString();
 	 			String companyName=req.getSession().getAttribute("gCompanyName").toString();
-	 			String LoginPOSCode=req.getSession().getAttribute("loginPOS").toString();
-	 			
-	 			String FromDate="",FromTime="",ToDate="",ToTime="";
-	 			
+	 			String LoginPOSCode=req.getSession().getAttribute("loginPOS").toString(); 			
+	 			String FromDate="",FromTime="",ToDate="",ToTime="";	
 	 			String FromDateTime=objBean.getFromDate()+":"+objBean.getStrHHFrom()+"/"+objBean.getStrMMFrom()+"/"+objBean.getStrAMPMFrom();
 	 			String ToDateTime=objBean.getToDate()+":"+objBean.getStrHHTo()+"/"+objBean.getStrMMTo()+"/"+objBean.getStrAMPMTo();
-	 			
-			    /*String FromDateTime=objBean.getFromDate();
-			 
-				String ToDateTime=objBean.getToDate();
-			*/
 				String operationType=objBean.getStrOperationType();
-				String strPOSName=objBean.getStrPOSName();
-				
+				String strPOSName=objBean.getStrPOSName();	
 				String strOperator=objBean.getStrOperator();
 				String strPayMode=objBean.getStrPayMode();
 				String strFromBill=objBean.getStrFromBillNo();
@@ -204,7 +224,7 @@ public class clsPOSSalesReportController {
 				String Customer=objBean.getStrCustomer();
 				String ConsolidatePOS=objBean.getStrConsolidatePOS();
 				String ReportName=objBean.getStrReportName();
-				
+				String shiftNo="1";
 				FromDate=FromDateTime.split(":")[0];
 	 			FromTime=FromDateTime.split(":")[1];
 	 			ToDate=ToDateTime.split(":")[0];
@@ -213,10 +233,15 @@ public class clsPOSSalesReportController {
 	 			String strFromdate=FromDate.split("-")[2]+"-"+FromDate.split("-")[1]+"-"+FromDate.split("-")[0];
 	 			String strToDate=ToDate.split("-")[2]+"-"+ToDate.split("-")[1]+"-"+ToDate.split("-")[0]; 
 	 			
-				
+	 			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, LoginPOSCode, "gEnableShiftYN");
+				if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+				{
+					shiftNo=objBean.getStrShiftCode();
+				}
+	 			
 			    Map resMap = new LinkedHashMap();
 				resMap=FunGetData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,objSetupParameter.get("gEnableShiftYN").toString(),shiftNo);
 			
 				List ExportList=new ArrayList();	
 			
@@ -404,9 +429,10 @@ public class clsPOSSalesReportController {
 		
 	 	 private LinkedHashMap FunGetData(String strPOSName,String FromDateTime,String ToDateTime, String strOperator,
 					String strPayMode,String strFromBill,String strToBill,String reportType,
-					String Type,String Customer,String ConsolidatePOS,String ReportName,String userCode,String LoginPOSCode)
+					String Type,String Customer,String ConsolidatePOS,String ReportName,String userCode,String LoginPOSCode,String enableShiftYN,String shiftCode)
 				{
-			  
+	 		 
+	 		 	
 				  LinkedHashMap resMap = new LinkedHashMap();
 			     
 			        List colHeader = new ArrayList();
@@ -466,8 +492,7 @@ public class clsPOSSalesReportController {
 			
 	 				
 					Map mapData=new HashMap();
-								
-					mapData=objReportService.funSalesReport(dateFrom, dateTo, posCode, LoginPOSCode,"1",userCode,field,PayMode,strOperator,strFromBill,strToBill,reportType,Type,Customer,ConsolidatePOS,ReportName.substring(3));
+					mapData=objReportService.funSalesReport(dateFrom, dateTo, posCode,shiftCode,userCode,field,PayMode,strOperator,strFromBill,strToBill,reportType,Type,Customer,ConsolidatePOS,ReportName.substring(3),LoginPOSCode,enableShiftYN);
 					 
 					 
 					List listColHeader = (ArrayList)mapData.get("ColHeader");
@@ -702,7 +727,8 @@ public class clsPOSSalesReportController {
 	 	@RequestMapping(value = "/loadSettlementWiseSalesReport", method = RequestMethod.POST)
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadSettlementWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
-				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName,@RequestParam("areaCode") String areaCode,
+				@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -725,7 +751,7 @@ public class clsPOSSalesReportController {
 	 			{	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 	 				clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				
 	 				double totalSale=Double.parseDouble(mapData.get("TotalSale").toString());
@@ -769,7 +795,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funGetSalesDetails(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName,
-				@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -781,7 +807,7 @@ public class clsPOSSalesReportController {
 	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 	 				clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				double totalDiscAmt=0,totalSubTotal=0,totalTaxAmt=0,totalSettleAmt=0,totalTipAmt=0;
@@ -823,7 +849,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadItemWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -833,7 +859,7 @@ public class clsPOSSalesReportController {
 	 			String LoginPOSCode=req.getSession().getAttribute("loginPOS").toString();
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 			try {
 		 				
@@ -888,7 +914,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadMenuHeadWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -898,7 +924,7 @@ public class clsPOSSalesReportController {
 	 			String LoginPOSCode=req.getSession().getAttribute("loginPOS").toString();
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 			try {
 		 				
@@ -952,7 +978,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadGroupWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -962,7 +988,7 @@ public class clsPOSSalesReportController {
 	 			String LoginPOSCode=req.getSession().getAttribute("loginPOS").toString();
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType); 			
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode); 			
 	 			try 
 	 			{
 		 			clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();		
@@ -1014,7 +1040,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> loadSubGroupWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1025,7 +1051,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 			try {
 		 				
@@ -1082,7 +1108,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadCustWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1093,7 +1119,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 			try {
 		 				
@@ -1138,7 +1164,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadWaiterWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1160,7 +1186,7 @@ public class clsPOSSalesReportController {
 	 			{	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 	 				clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				
@@ -1199,7 +1225,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadDeliveryBoyWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1221,7 +1247,7 @@ public class clsPOSSalesReportController {
 	 			{	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 	 			    clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				
@@ -1261,7 +1287,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadCostCenterWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1283,7 +1309,7 @@ public class clsPOSSalesReportController {
 	 			{	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 	
 	 				clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				double totalQty1=0,totalAmount=0, subTotal=0, discountTotal=0;
@@ -1335,7 +1361,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadHomeDeliveryWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			 {
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1357,7 +1383,7 @@ public class clsPOSSalesReportController {
 	 			{	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 	 				clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				double SalesAmount=0, Tax=0, discountTotal=0;
@@ -1408,7 +1434,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadTableWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1430,7 +1456,7 @@ public class clsPOSSalesReportController {
 	 			{	 				
 	 				Map mapData = new HashMap();
 		 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+		 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 	 				clsPOSSalesFlashReportsBean objBean= new clsPOSSalesFlashReportsBean();
 	 				double SalesAmount=0;
@@ -1469,7 +1495,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadHourlyWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1480,7 +1506,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 			try 
 		 			{
@@ -1525,7 +1551,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadAreaWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1536,7 +1562,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		 {
@@ -1576,7 +1602,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadDayWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1587,7 +1613,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try {
 			 				
@@ -1642,7 +1668,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadTaxWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1653,7 +1679,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{				
@@ -1700,7 +1726,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadTipSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1711,7 +1737,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{
@@ -1768,7 +1794,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadItemModifierWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1779,7 +1805,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{
@@ -1824,7 +1850,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadMenuHeadWiseWithModifierSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1835,7 +1861,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{
@@ -1880,7 +1906,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadItemHourlyWiseSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1891,7 +1917,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{
@@ -1936,7 +1962,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadOperatorSalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -1947,7 +1973,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{
@@ -1991,7 +2017,7 @@ public class clsPOSSalesReportController {
 	 	public @ResponseBody List<clsPOSSalesFlashReportsBean> funLoadMonthlySalesReport(@RequestParam("POSName") String strPOSName,@RequestParam("FromDate") String FromDateTime,@RequestParam("ToDate") String ToDateTime,@RequestParam("Operator") String strOperator,
 				@RequestParam("PayMode") String strPayMode,@RequestParam("txtFromBillNo") String strFromBill,@RequestParam("txtToBillNo") String strToBill,@RequestParam("txtReportType") String reportType,
 				@RequestParam("txtType") String Type,@RequestParam("txtCustomer") String Customer,@RequestParam("chkConsolidatePOS") String ConsolidatePOS,@RequestParam("hidReportName") String ReportName
-				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,
+				,@RequestParam("areaCode") String areaCode,@RequestParam("operationType") String operationType,@RequestParam("gEnableShiftYN") String gEnableShiftYN,@RequestParam("shiftCode") String shiftCode,
 				HttpServletResponse resp,HttpServletRequest req)
 			{
 				listSalesReport=new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -2002,7 +2028,7 @@ public class clsPOSSalesReportController {
 	 			
 	 			Map mapData = new HashMap();
 	 			mapData=funGetReportData(strPOSName,FromDateTime,ToDateTime,strOperator,strPayMode,strFromBill,strToBill,reportType,
-	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType);
+	 					Type,Customer,ConsolidatePOS,ReportName,userCode,LoginPOSCode,areaCode,operationType,gEnableShiftYN,shiftCode);
 
 		 		try 
 		 		{
@@ -2039,7 +2065,7 @@ public class clsPOSSalesReportController {
 /*return json data used to send webservice */
 	public Map funGetReportData(String strPOSName,String FromDateTime,String ToDateTime, String strOperator,
 				String strPayMode,String strFromBill,String strToBill,String reportType,
-				String Type,String Customer,String ConsolidatePOS,String ReportName,String userCode,String LoginPOSCode,String areaCode,String operationTye)
+				String Type,String Customer,String ConsolidatePOS,String ReportName,String userCode,String LoginPOSCode,String areaCode,String operationTye,String gEnableShiftYN,String shiftCode)
 		{
 			Map mapDataReportData = new HashMap();
 			try{
@@ -2094,8 +2120,8 @@ public class clsPOSSalesReportController {
 	 					PayMode= hmPayMode.get(strPayMode);
 	 				}
 			
-	 				mapDataReportData=obBaseService.funSalesReport(dateFrom,dateTo, posCode,"1", userCode,field,PayMode,strOperator,
-	 				strFromBill,strToBill,reportType,Type,Customer,ConsolidatePOS,ReportName.substring(3),LoginPOSCode,areaCode,operationTye);
+	 				mapDataReportData=objReportService.funSalesReport(dateFrom,dateTo, posCode,shiftCode, userCode,field,PayMode,strOperator,
+	 				strFromBill,strToBill,reportType,Type,Customer,ConsolidatePOS,ReportName.substring(3),LoginPOSCode,gEnableShiftYN);
 			}
 			catch(Exception e)
 			{
@@ -2139,5 +2165,40 @@ public class clsPOSSalesReportController {
 		    }
 		
 	
+		
+		
+		
+		
+		@RequestMapping(value = "/loadPOSWiseShiftData", method = RequestMethod.GET)
+		public @ResponseBody List<clsShiftMasterModel> funGetPOSWiseShiftList(@RequestParam("POSCode") String posCode,HttpServletRequest req)throws Exception
+		{
+			String clientCode=req.getSession().getAttribute("gClientCode").toString();
+			List<clsShiftMasterModel> listShiftModel =new ArrayList();
+			String posName = null;
+			
+			StringBuilder sqlShift = new StringBuilder();
+			if (posCode.equalsIgnoreCase("All"))
+			{
+			    sqlShift.append("select max(a.intShiftCode) from tblshiftmaster a group by a.intShiftCode ");
+			}
+			else
+			{
+			    sqlShift.append("select a.intShiftCode from tblshiftmaster a where a.strPOSCode='" + posCode + "' ");
+			}
+
+			List listSql = obBaseService.funGetList(sqlShift, "sql");
+			if(listSql.size()>0)
+			{
+				for(int i=0 ;i<listSql.size();i++ )
+			      {
+					   Object[] obj= (Object[]) listSql.get(i);
+					   clsShiftMasterModel objModel=new clsShiftMasterModel();
+					   objModel.setIntShiftCode(obj[0].toString());
+					   listShiftModel.add(objModel);
+			      } 	
+			}
+			return listShiftModel;
+		}
+		
 		 
 	}

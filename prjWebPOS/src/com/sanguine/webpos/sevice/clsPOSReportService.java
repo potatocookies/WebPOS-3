@@ -121,6 +121,7 @@ public class clsPOSReportService {
 		StringBuilder sqlLiveModifierBuilder = new StringBuilder();
 		StringBuilder sqlQModifierBuilder = new StringBuilder();
 		try {
+			String enableShiftYN="N";
 			sbSqlLive.setLength(0);
 			sbSqlQBill.setLength(0);
 			sqlLiveModifierBuilder.setLength(0);
@@ -200,8 +201,16 @@ public class clsPOSReportService {
 				sqlLiveModifierBuilder.append(" and a.strReasonCode='" + strReasonCode + "' ");
 				sqlQModifierBuilder.append(" and a.strReasonCode='" + strReasonCode + "' ");
 			}
-			sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sqlLiveModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
 			sqlQModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
 
@@ -326,6 +335,7 @@ public class clsPOSReportService {
 		StringBuilder sqlLiveModifierBuilder = new StringBuilder();
 		StringBuilder sqlQModifierBuilder = new StringBuilder();
 		try {
+			String enableShiftYN="N";
 			sbSqlLive.setLength(0);
 			sbSqlQBill.setLength(0);
 			sqlLiveModifierBuilder.setLength(0);
@@ -393,10 +403,25 @@ public class clsPOSReportService {
 				sqlLiveModifierBuilder.append(" and a.strReasonCode='" + strReasonCode + "' ");
 				sqlQModifierBuilder.append(" and a.strReasonCode='" + strReasonCode + "' ");
 			}
-			sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sqlLiveModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sqlQModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlLiveModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlQModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			
+			
 
 			sbSqlLive.append("  " + " group by a.strPOSCode,a.strBillNo " + " order by a.strPOSCode,a.strBillNo ");
 			sbSqlQBill.append("  " + " group by a.strPOSCode,a.strBillNo " + " order by a.strPOSCode,a.strBillNo ");
@@ -478,7 +503,7 @@ public class clsPOSReportService {
 		StringBuilder sbSqlQBill = new StringBuilder();
 		StringBuilder sqlLiveModifierBuilder = new StringBuilder();
 		StringBuilder sqlQModifierBuilder = new StringBuilder();
-
+		String enableShiftYN="N";
 		sbSqlLive.setLength(0);
 		sbSqlQBill.setLength(0);
 		sqlLiveModifierBuilder.setLength(0);
@@ -534,10 +559,22 @@ public class clsPOSReportService {
 				sqlLiveModifierBuilder.append(" and a.strReasonCode='" + strReasonCode + "' ");
 				sqlQModifierBuilder.append(" and a.strReasonCode='" + strReasonCode + "' ");
 			}
-			sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sqlLiveModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-			sqlQModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlLiveModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlQModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 
 			sbSqlLive.append(" and date(a.dteBillDate) Between '" + dteFromDate + "' and '" + dteToDate + "' "
 					+ " group by h.strGroupCode,b.strItemCode" + " order by h.strGroupCode,b.strItemCode;");
@@ -629,8 +666,8 @@ public class clsPOSReportService {
 		Map<String, clsPOSItemWiseConsumption> hmItemWiseConsumption = new HashMap<String, clsPOSItemWiseConsumption>();
 		String costCenterCd = "", costCenterNm = "";
 		int sqlNo = 0;
+		String enableShiftYN="N";
 		List<clsPOSItemWiseConsumption> list = new ArrayList<clsPOSItemWiseConsumption>();
-
 		try {
 			// Code for Sales Qty for bill detail and bill modifier live & q data
 			// for Sales Qty for bill detail live data
@@ -658,7 +695,11 @@ public class clsPOSReportService {
 			if (!costCenterCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
 			}
-			sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 
 			sbSql.append(" group by b.strItemCode,a.strBillNo  order by j.strCostCenterCode,b.strItemName");
 			List listSqlLive = objBaseService.funGetList(sbSql, "sql");
@@ -826,7 +867,11 @@ public class clsPOSReportService {
 			if (!costCenterCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
 			}
-			sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sbSql.append(" group by b.strItemCode,a.strBillNo order by j.strCostCenterCode,b.strItemName");
 
 			List listSqlQBill = objBaseService.funGetList(sbSql, "sql");
@@ -997,7 +1042,11 @@ public class clsPOSReportService {
 			if (!costCenterCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
 			}
-			sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sbSql.append(" group by b.strItemCode order by j.strCostCenterCode,b.strItemName");
 			// System.out.println(sbSql);
 
@@ -1160,7 +1209,11 @@ public class clsPOSReportService {
 			if (!costCenterCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
 			}
-			sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sbSql.append(" group by b.strItemCode order by j.strCostCenterCode,b.strItemName");
 			// System.out.println(sbSql);
 
@@ -1385,7 +1438,11 @@ public class clsPOSReportService {
 			if (!costCenterCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
 			}
-			sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sbSql.append(" group by b.strItemCode,a.strBillNo  order by j.strCostCenterCode,c.strItemName");
 			// System.out.println(sbSql);
 
@@ -1463,7 +1520,11 @@ public class clsPOSReportService {
 			if (!costCenterCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
 			}
-			sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sbSql.append(" group by b.strItemCode order by j.strCostCenterCode,c.strItemName");
 			// System.out.println(sbSql);
 
@@ -1670,7 +1731,7 @@ public class clsPOSReportService {
 		StringBuilder sbSqlFilters = new StringBuilder();
 		StringBuilder sqlModLive = new StringBuilder();
 		StringBuilder sqlModQFile = new StringBuilder();
-
+		String enableShiftYN="N";
 		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
 		sbSqlLive.setLength(0);
 		sbSqlQFile.setLength(0);
@@ -1717,7 +1778,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 			}
-			sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
 			sbSqlFilters.append(" group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode");
 
 			sbSqlLive.append(sbSqlFilters);
@@ -1812,6 +1876,7 @@ public class clsPOSReportService {
 			String strShiftNo) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		StringBuilder sqlQBuilder = new StringBuilder();
+		String enableShiftYN="N";
 		List<clsPOSTaxCalculationDtls> listOfTaxData = new ArrayList<clsPOSTaxCalculationDtls>();
 		try {
 			// live
@@ -1826,7 +1891,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			}
 
 			List lisSqlLive = objBaseService.funGetList(sqlBuilder, "sql");
 
@@ -1859,7 +1928,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlQBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlQBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlQBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			}
 
 			List listQBillData = objBaseService.funGetList(sqlQBuilder, "sql");
 			if (listQBillData.size() > 0) {
@@ -1889,6 +1961,7 @@ public class clsPOSReportService {
 			String strShiftNo, String reasonCode) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
+		String enableShiftYN="N";
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
@@ -1906,7 +1979,10 @@ public class clsPOSReportService {
 			if (!reasonCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strReasonCode='" + reasonCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");	
+			}
 			sqlBuilder.append(" group by a.strBillNo ");
 
 			List listLiveVoidBillData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -1955,7 +2031,11 @@ public class clsPOSReportService {
 			if (!reasonCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strReasonCode='" + reasonCode + "' ");
 			}
-			sqlBuilder.append(" and a.intShiftCode='" + strShiftNo + "'  ");
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append(" and a.intShiftCode='" + strShiftNo + "'  ");
+			}
 			sqlBuilder.append(" group by a.strBillNo  ");
 
 			List listQBillVoidData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -2024,6 +2104,7 @@ public class clsPOSReportService {
 			String strShiftNo, String reasonCode) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
+		String enableShiftYN="N";
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
@@ -2042,7 +2123,11 @@ public class clsPOSReportService {
 			if (!reasonCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strReasonCode='" + reasonCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+				
+			}
 			sqlBuilder.append("group by a.strBillNo,b.strItemCode ");
 
 			List listLiveBillVoidData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -2087,7 +2172,10 @@ public class clsPOSReportService {
 			if (!reasonCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strReasonCode='" + reasonCode + "' ");
 			}
-			sqlBuilder.append(" and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append(" and a.intShiftCode='" + strShiftNo + "'  ");	
+			}
 			sqlBuilder.append(" group by a.strBillNo,b.strModifierCode  ");
 
 			List listQBillVoidData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -2151,7 +2239,7 @@ public class clsPOSReportService {
 		StringBuilder sqlQBuilder = new StringBuilder();
 		sqlBuilder.setLength(0);
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-
+		String enableShiftYN="N";
 		try {
 			// Q Data
 			sqlQBuilder.setLength(0);
@@ -2166,7 +2254,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlQBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlQBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlQBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			}
 			sqlQBuilder.append("group by e.strWaiterNo " + "order by e.strWFullName ");
 
 			List listSqlLiveWaiterWiseItemSales = objBaseService.funGetList(sqlQBuilder, "sql");
@@ -2200,7 +2291,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			}
 
 			sqlBuilder.append("group by e.strWaiterNo " + "order by e.strWFullName ");
 
@@ -2243,7 +2338,7 @@ public class clsPOSReportService {
 		StringBuilder sqlQBuilder = new StringBuilder();
 		sqlBuilder.setLength(0);
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-
+		String enableShiftYN="N";
 		try {
 			// Q Data
 			sqlQBuilder.setLength(0);
@@ -2259,7 +2354,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlQBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlQBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlQBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");		
+			}
 
 			sqlQBuilder.append("group by e.strWaiterNo,a.strBillNo " + "order by e.strWFullName,a.strBillNo ");
 
@@ -2298,7 +2396,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			}
 
 			sqlBuilder.append("group by e.strWaiterNo,a.strBillNo " + "order by e.strWFullName,a.strBillNo ");
 
@@ -2360,7 +2462,8 @@ public class clsPOSReportService {
 			String strShiftNo, String waiterCode) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-
+		String enableShiftYN="N";
+		
 		try {
 			// Q Data
 			sqlBuilder.setLength(0);
@@ -2373,7 +2476,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			}
 			if (!waiterCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and c.strWaiterNo='" + waiterCode + "' ");
 			}
@@ -2407,7 +2514,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+            }
 			if (!waiterCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and c.strWaiterNo='" + waiterCode + "' ");
 			}
@@ -3267,6 +3377,7 @@ public class clsPOSReportService {
 	public List funProcessDailyCollection(String posCode, String fromDate, String toDate, String strShiftNo) {
 		List<clsPOSBillItemDtlBean> listOfBillData = new ArrayList<clsPOSBillItemDtlBean>();
 		Map mapMultiSettleBills = new HashMap();
+		String enableShiftYN="N";
 
 		try {
 			StringBuilder sqlBuilder = new StringBuilder();
@@ -3288,7 +3399,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+				
+            }
 			sqlBuilder.append("GROUP BY a.strClientCode, DATE(a.dteBillDate),a.strBillNo,d.strSettelmentCode "
 					+ "ORDER BY d.strSettelmentCode ");
 
@@ -3355,7 +3470,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+		     }
 			sqlBuilder.append("GROUP BY a.strClientCode, DATE(a.dteBillDate),a.strBillNo,d.strSettelmentCode "
 					+ "ORDER BY d.strSettelmentCode ");
 
@@ -3442,6 +3560,7 @@ public class clsPOSReportService {
 			String strShiftNo) {
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
 		StringBuilder sqlBuilder = new StringBuilder();
+		String enableShiftYN="N";
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
@@ -3456,7 +3575,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("and a.strPosCode='" + posCode + "' ");
 			}
-			sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "'  ");
+				
+		    }
 			sqlBuilder.append(" group by a.dteBillDate,a.strBillNo ");
 
 			List listVoidData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -3490,7 +3613,7 @@ public class clsPOSReportService {
 		List<clsPOSBillItemDtlBean> listOfDailySaleData = new ArrayList<clsPOSBillItemDtlBean>();
 		StringBuilder sbSqlBillWise = new StringBuilder();
 		StringBuilder sbSqlBillWiseQFile = new StringBuilder();
-
+		String enableShiftYN="N";
 		try {
 			sbSqlBillWise.setLength(0);
 			sbSqlBillWise
@@ -3511,7 +3634,10 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSqlBillWise.append(" and a.strPOSCode='" + posCode + "' ");
 			}
-			sbSqlBillWise.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlBillWise.append(" AND a.intShiftCode = '" + strShiftNo + "' ");		
+		    }
 			sbSqlBillWise.append(" order by a.strBillNo desc");
 			// System.out.println("Bill Wise Report Live Query="+sbSqlBillWise);
 
@@ -3534,7 +3660,11 @@ public class clsPOSReportService {
 			if (!posCode.equals("All")) {
 				sbSqlBillWiseQFile.append(" and a.strPOSCode='" + posCode + "' ");
 			}
-			sbSqlBillWiseQFile.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbSqlBillWiseQFile.append(" AND a.intShiftCode = '" + strShiftNo + "' ");		
+		    }
 			sbSqlBillWiseQFile.append(" order by a.strBillNo desc");
 
 			List listLiveData = objBaseService.funGetList(sbSqlBillWise, "sql");
@@ -10808,7 +10938,8 @@ public class clsPOSReportService {
 	public Map funSalesReport(String fromDate, String toDate, String strPOSCode, String strShiftNo, String strUserCode,
 			String field, String strPayMode, String strOperator, String strFromBill, String strToBill,
 			String reportType, String Type, String Customer, String ConsolidatePOS, String ReportName,
-			String LoginPOSCode) {
+			String LoginPOSCode,String enableShiftYN) 
+	{
 
 		DecimalFormat decimalFormat;
 		decimalFormat = new DecimalFormat("#.##");
@@ -10856,6 +10987,12 @@ public class clsPOSReportService {
 				sqlModLive.setLength(0);
 				sqlModQFile.setLength(0);
 				sbFilters.setLength(0);
+				
+				if (field.equals("dteBillDate")) {
+					field = "c.dteBillDate";
+				} else {
+					field = "date(c.dteBillDate)";
+				}
 
 				sbSqlLiveBill.append(
 						"SELECT d.strPOSCode,b.strSettelmentCode, IFNULL(d.strPOSName,'') AS strPOSName, IFNULL(b.strSettelmentDesc,'') AS strSettelmentDesc "
@@ -10883,8 +11020,11 @@ public class clsPOSReportService {
 				} else if (strPOSCode.equals("All") && !strOperator.equals("All")) {
 					sbFilters.append("  and c.strUserCreated='" + strOperator + "'");
 				}
-
-				sbFilters.append(" AND c.intShiftCode = '" + strShiftNo + "' ");
+				if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+				{
+					sbFilters.append(" AND c.intShiftCode = '" + strShiftNo + "' ");
+				}
+				
 
 				if (strFromBill.length() == 0 && strToBill.length() == 0) {
 				} else {
@@ -10989,6 +11129,12 @@ public class clsPOSReportService {
 				listColHeader.add("Disc Remark");
 				listColHeader.add("Reason");
 				colCount = 17;
+				
+				if (field.equals("dteBillDate")) {
+					field = "a.dteBillDate";
+				} else {
+					field = "date(a.dteBillDate)";
+				}
 
 				sbSqlLiveBill.setLength(0);
 				sbSqlLiveBill.append(
@@ -11012,7 +11158,10 @@ public class clsPOSReportService {
 					sbSqlLiveBill.append(" and a.strPOSCode='" + strPOSCode + "' ");
 				}
 
-				sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+				if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+				{
+					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+				}
 
 				if (!strOperator.equals("All")) {
 					sbSqlLiveBill.append(" and  a.strUserCreated='" + strOperator + "' ");
@@ -11047,7 +11196,10 @@ public class clsPOSReportService {
 					sbSqlQFileBill.append(" and a.strPOSCode='" + strPOSCode + "' ");
 				}
 
-				sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+				if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+				{
+					sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+				}
 
 				if (!strOperator.equals("All")) {
 					sbSqlQFileBill.append(" and  a.strUserCreated='" + strOperator + "' ");
@@ -11307,7 +11459,11 @@ public class clsPOSReportService {
 				} else if (strPOSCode.equals("All") && !strOperator.equals("All")) {
 					sbFilters.append(" AND b.strUserCreated='" + strOperator + "' ");
 				}
-				sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+				
+				if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+				{
+					sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+				}
 
 				if (strFromBill.length() == 0 && strToBill.length() == 0) {
 				} else {
@@ -11526,7 +11682,10 @@ public class clsPOSReportService {
 						sbFilters.append(" and b.strBillNo between '" + strFromBill + "' and '" + strToBill + "' ");
 					}
 
-					sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					sbFilters.append(" Group by b.strPoscode, d.strMenuCode,e.strMenuName");
 					sbFilters.append(" order by b.strPoscode, d.strMenuCode,e.strMenuName");
@@ -11692,7 +11851,10 @@ public class clsPOSReportService {
 						sbFilters.append(" AND a.strPOSCode = '" + strPOSCode + "'");
 					}
 
-					sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					if (ConsolidatePOS.equals("Y")) {
 						if (strFromBill.length() == 0 && strToBill.trim().length() == 0) {
@@ -11903,7 +12065,10 @@ public class clsPOSReportService {
 						sbFilters.append(" and a.strUserCreated='" + strOperator + "'");
 					}
 
-					sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					if (ConsolidatePOS.equals("Y")) {
 						if (strFromBill.length() == 0 && strToBill.trim().length() == 0) {
@@ -12084,7 +12249,10 @@ public class clsPOSReportService {
 							sbFilters.append(" and a.strBillNo between '" + strFromBill + "' and '" + strToBill + "'");
 						}
 
-						sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+						{
+							sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						}
 
 						sbFilters.append(" group by a.strBillNo");
 
@@ -12201,8 +12369,11 @@ public class clsPOSReportService {
 						} else {
 							sbFilters.append(" and a.strBillNo between '" + strFromBill + "' and '" + strToBill + "'");
 						}
-
-						sbFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						
+						if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+						{
+							sbFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						}
 
 						sbFilters.append(" GROUP BY b.strCustomerCode ");
 
@@ -12286,7 +12457,10 @@ public class clsPOSReportService {
 							sbFilters.append(" and a.strBillNo between '" + strFromBill + "' and '" + strToBill + "'");
 						}
 
-						sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+						{
+							sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						}
 
 						sbFilters.append(" GROUP BY b.strCustomerCode");
 						double grandTotal = 0;
@@ -12405,8 +12579,16 @@ public class clsPOSReportService {
 
 						sbSqlQFileBill.append(" and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
-					sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
+					
 
 					sbSqlLiveBill.append(" group by a.strWaiterNo,a.strPOSCode");
 					sbSqlQFileBill.append(" group by a.strWaiterNo,a.strPOSCode");
@@ -12498,8 +12680,14 @@ public class clsPOSReportService {
 						sbSqlQFileBill.append(" AND a.strPOSCode = '" + strPOSCode + "' ");
 					}
 
-					sbSqlLiveBill.append(" AND c.intShiftCode = '" + strShiftNo + "' ");
-					sbSqlQFileBill.append(" AND c.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND c.intShiftCode = '" + strShiftNo + "' ");
+					}
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlQFileBill.append(" AND c.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					sbSqlLiveBill.append(" and date(a.dteDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'"
 							+ " GROUP BY a.strDPCode");
@@ -12665,7 +12853,10 @@ public class clsPOSReportService {
 						sbFilters.append(" and d.strUserCreated='" + strOperator + "'");
 					}
 
-					sbFilters.append(" AND d.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND d.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					if (strFromBill.length() == 0 && strToBill.length() == 0) {
 						sbFilters.append(" GROUP BY b.strCostCenterCode,a.strCostCenterName, e.strPOSName,c.dblRate");
@@ -12799,7 +12990,10 @@ public class clsPOSReportService {
 						sbSqlLiveBill.append(" AND b.strPOSCode = '" + strPOSCode + "'");
 					}
 
-					sbSqlLiveBill.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					sbSqlQFileBill.append(
 							"SELECT ifnull(a.strBillNo,''),ifnull(f.strPosName,''),ifnull(DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),''),ifnull(b.strSettelmentMode,'') "
@@ -12966,9 +13160,18 @@ public class clsPOSReportService {
 						sbSqlLiveBill.append(" AND a.strPOSCode = '" + strPOSCode + "'");
 					}
 
-					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' group by a.strTableNo");
-					sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' group by a.strTableNo");
-
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "'");
+					}
+					
+					sbSqlLiveBill.append(" group by a.strTableNo ");
+					sbSqlQFileBill.append(" group by a.strTableNo ");
 					mapPOSTableWiseSales = new LinkedHashMap<String, Map<String, clsPOSCommonBeanDtl>>();
 
 					arrListSalesReport = new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -13188,8 +13391,15 @@ public class clsPOSReportService {
 						sbSqlLiveBill.append(" and  a.strPOSCode = '" + strPOSCode + "' ");
 					}
 
-					sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
-					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
 					sbSqlQFileBill.append(" group by a.strAreaCode ");
 					sbSqlLiveBill.append(" group by a.strAreaCode ");
 
@@ -13274,7 +13484,11 @@ public class clsPOSReportService {
 						sbSqlLiveBill.append(" and a.strPOSCode='" + strPOSCode + "'");
 					}
 
-					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
 					sbSqlLiveBill.append(" group by date(a.dteBillDate)");
 
 					arrListSalesReport = new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -13292,7 +13506,11 @@ public class clsPOSReportService {
 								sbSqlForDiscount.append(" and a.strPOSCode='" + strPOSCode + "'");
 							}
 
-							sbSqlForDiscount.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+							
+							if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+							{
+								sbSqlForDiscount.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+							}
 							sbSqlForDiscount.append(" group by date(a.dteBillDate)");
 
 							List listDayWiseSt = objBaseService.funGetList(sbSqlForDiscount, "sql");
@@ -13340,7 +13558,11 @@ public class clsPOSReportService {
 					if (!strPOSCode.equals("All")) {
 						sbSqlLiveBill.append(" and a.strPOSCode='" + strPOSCode + "'");
 					}
-					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
 					sbSqlLiveBill.append(" group by date(a.dteBillDate)");
 
 					listDayWise = objBaseService.funGetList(sbSqlLiveBill, "sql");
@@ -13356,7 +13578,10 @@ public class clsPOSReportService {
 							if (!strPOSCode.equals("All")) {
 								sbSqlForDiscount.append(" and a.strPOSCode='" + strPOSCode + "'");
 							}
-							sbSqlForDiscount.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+							if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+							{
+								sbSqlForDiscount.append(" AND a.intShiftCode = '" + strShiftNo + "' ");	
+							}
 
 							sbSqlForDiscount.append(" group by date(a.dteBillDate)");
 
@@ -13441,27 +13666,43 @@ public class clsPOSReportService {
 
 					sbSqlLiveBill.setLength(0);
 					sbSqlQFileBill.setLength(0);
-
+					
+					
 					sbSqlLiveBill.append("select a.strBillNo,date(a.dteBillDate),c.strTaxCode"
-							+ " ,c.strTaxDesc,b.dblTaxableAmount,b.dblTaxAmount,c.dblPercent" + " ,'" + strUserCode
-							+ "' " + " from tblbillhd a,tblbilltaxdtl b,tbltaxhd c "
-							+ " where a.strBillNo=b.strBillNo  and b.strTaxCode=c.strTaxCode "
-							+ " and a.strClientCode=b.strClientCode and b.strClientCode=c.strClientCode "
+							+ " ,c.strTaxDesc,b.dblTaxableAmount,b.dblTaxAmount,c.dblPercent"
+							+ " ,'" + strUserCode + "' "
+							+ " from tblbillhd a,tblbilltaxdtl b,tbltaxhd c "
+							+ " where a.strBillNo=b.strBillNo  "
+							+ " and date(a.dteBillDate)=date(b.dteBillDate) "
+							+ " and b.strTaxCode=c.strTaxCode "
+							+ " and a.strClientCode=b.strClientCode "
+							+ " and b.strClientCode=c.strClientCode "
 							+ " and date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
 
 					sbSqlQFileBill.append("select a.strBillNo,date(a.dteBillDate),c.strTaxCode"
-							+ " ,c.strTaxDesc,b.dblTaxableAmount,b.dblTaxAmount,c.dblPercent " + " ,'" + strUserCode
-							+ "' " + " from tblqbillhd a,tblqbilltaxdtl b,tbltaxhd c "
-							+ " where a.strBillNo=b.strBillNo  and b.strTaxCode=c.strTaxCode "
-							+ " and a.strClientCode=b.strClientCode and b.strClientCode=c.strClientCode "
+							+ " ,c.strTaxDesc,b.dblTaxableAmount,b.dblTaxAmount,c.dblPercent "
+							+ " ,'" + strUserCode + "' "
+							+ " from tblqbillhd a,tblqbilltaxdtl b,tbltaxhd c "
+							+ " where a.strBillNo=b.strBillNo  "
+							+ " and date(a.dteBillDate)=date(b.dteBillDate) "
+							+ " and b.strTaxCode=c.strTaxCode "
+							+ " and a.strClientCode=b.strClientCode "
+							+ " and b.strClientCode=c.strClientCode "
 							+ " and date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
 
 					if (!strPOSCode.equals("All")) {
 						sbSqlLiveBill.append(" and a.strPOSCode='" + strPOSCode + "' ");
 						sbSqlQFileBill.append(" and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
-					sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+											
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");	
+					}
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlQFileBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");	
+					}
 
 					sbSqlLiveBill.append(" order by a.strBillNo desc");
 					sbSqlQFileBill.append(" order by a.strBillNo desc");
@@ -13483,7 +13724,7 @@ public class clsPOSReportService {
 							objsales.setStrField7(obj[5].toString());
 							totalTax = totalTax + Double.parseDouble(obj[5].toString());
 							if (!prevBillNo.equals(obj[0].toString())) {
-								totalTaxableAmt = totalTaxableAmt + Double.parseDouble(obj[5].toString());
+								totalTaxableAmt = totalTaxableAmt + Double.parseDouble(obj[4].toString());
 							}
 							prevBillNo = obj[0].toString();
 							arrListSalesReport.add(objsales);
@@ -13519,7 +13760,7 @@ public class clsPOSReportService {
 							objsales.setStrField7(obj[5].toString());
 							totalTax = totalTax + Double.parseDouble(obj[5].toString());
 							if (!prevBillNo.equals(obj[0].toString())) {
-								totalTaxableAmt = totalTaxableAmt + Double.parseDouble(obj[5].toString());
+								totalTaxableAmt = totalTaxableAmt + Double.parseDouble(obj[4].toString());
 							}
 							prevBillNo = obj[0].toString();
 							arrListSalesReport.add(objsales);
@@ -13606,7 +13847,11 @@ public class clsPOSReportService {
 								+ "'  and dblTipAmount>0");
 					}
 
-					sbSqlLiveBill.append(" AND intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND intShiftCode = '" + strShiftNo + "' ");
+					}
 					if (strFromBill.length() == 0 && strToBill.trim().length() == 0) {
 						sbSqlLiveBill.append(" order by strBillNo desc");
 					} else {
@@ -13727,7 +13972,11 @@ public class clsPOSReportService {
 						sbFilters.append(" AND a.strUserCreated='" + strOperator + "' ");
 					}
 
-					sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					if (strFromBill.length() == 0 && strToBill.trim().length() == 0) {
 					} else {
@@ -13819,7 +14068,11 @@ public class clsPOSReportService {
 					sbSqlLiveBill.append("select count(*) from vqbillhd where date(dteBillDate) between '" + fromDate
 							+ "' and '" + toDate + "'   ");
 
-					sbSqlLiveBill.append(" AND intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND intShiftCode = '" + strShiftNo + "' ");
+					}
 
 					List listMenuHeadModWiseSales = objBaseService.funGetList(sbSqlLiveBill, "sql");
 					int cnt = 0;
@@ -13848,7 +14101,11 @@ public class clsPOSReportService {
 							sbSqlLiveBill.append(" and a.strUserCreated='" + strOperator + "'");
 						}
 
-						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						
+						if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+						{
+							sbSqlLiveBill.append(" AND intShiftCode = '" + strShiftNo + "' ");
+						}
 
 						if (strFromBill.length() == 0 && strToBill.trim().length() == 0) {
 							sbSqlLiveBill.append(" and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate
@@ -13875,7 +14132,11 @@ public class clsPOSReportService {
 										+ " and b.dblAmount>0 and c.strMenuCode='" + obj[5].toString() + "' "
 										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' and '" + toDate + "' ");
 
-								sqlModLive.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+								
+								if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+								{
+									sqlModLive.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+								}
 
 								List listModifier = objBaseService.funGetList(sqlModLive, "sql");
 
@@ -13933,7 +14194,11 @@ public class clsPOSReportService {
 							sbSqlLiveBill.append(" and a.strUserCreated='" + strOperator + "'");
 						}
 
-						sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						
+						if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+						{
+							sbSqlLiveBill.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+						}
 
 						if (strFromBill.length() == 0 && strToBill.trim().length() == 0) {
 
@@ -13963,7 +14228,11 @@ public class clsPOSReportService {
 										+ " and b.dblAmount>0 and c.strMenuCode='" + obj[5].toString() + "' "
 										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' and '" + toDate + "' ");
 
-								sqlModLive.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+								
+								if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+								{
+									sqlModLive.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+								}
 
 								List listModifier = objBaseService.funGetList(sqlModLive, "sql");
 
@@ -14062,7 +14331,11 @@ public class clsPOSReportService {
 						sbSqlLiveBill.append(" and strPOSCode='" + strPOSCode + "' ");
 					}
 
-					sbSqlLiveBill.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlLiveBill.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					}
 					sbSqlLiveBill.append(" group by a.strItemName");
 
 					sbSqlQFileBill.append("select left(right(b.dteDateCreated,8),2)"
@@ -14076,7 +14349,10 @@ public class clsPOSReportService {
 						sbSqlQFileBill.append(" and strPOSCode='" + strPOSCode + "' ");
 					}
 
-					sbSqlQFileBill.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlQFileBill.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					}
 					sbSqlQFileBill.append(" group by a.strItemName");
 
 					sqlModLive.append("select left(right(b.dteDateCreated,8),2)"
@@ -14089,7 +14365,11 @@ public class clsPOSReportService {
 						sqlModLive.append(" and strPOSCode='" + strPOSCode + "' ");
 					}
 
-					sqlModLive.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sqlModLive.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+						
+					}
 					sqlModLive.append(" group by a.strModifierName");
 
 					sqlModQFile.append("select left(right(b.dteDateCreated,8),2)"
@@ -14102,7 +14382,10 @@ public class clsPOSReportService {
 						sqlModQFile.append(" and strPOSCode='" + strPOSCode + "' ");
 					}
 
-					sqlModQFile.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sqlModQFile.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					}
 					sqlModQFile.append(" group by a.strModifierName");
 
 					arrListSalesReport = new ArrayList<clsPOSSalesFlashReportsBean>();
@@ -14286,7 +14569,11 @@ public class clsPOSReportService {
 						sbFilters.append("  and b.strUserCreated='" + strOperator + "'");
 					}
 
-					sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+						
+					}
 					sbFilters.append(" GROUP BY a.strUserCode, b.strPosCode, d.strSettlementCode");
 
 					sbSqlLiveBill.append(sbFilters);
@@ -14398,7 +14685,11 @@ public class clsPOSReportService {
 						sbSqlDisFilters.append("  and b.strUserCreated='" + strOperator.toString() + "'");
 					}
 
-					sbSqlDisFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbSqlDisFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+						
+					}
 					sbSqlDisFilters.append(" GROUP BY a.strUserCode, b.strPosCode");
 
 					sbSqlDisLive.append(sbSqlDisFilters);
@@ -14530,7 +14821,7 @@ public class clsPOSReportService {
 									+ " FROM tblbillhd a,tblsettelmenthd b,tblposmaster c,tblbillsettlementdtl d "
 									+ " WHERE d.strSettlementCode=b.strSettelmentCode AND a.strBillNo = d.strBillNo "
 									+ " AND a.strPOSCode=c.strPOSCode and a.strClientCode=d.strClientCode "
-									+ " AND MONTH(DATE(dteBillDate)) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
+									+ " AND MONTH(DATE(a.dteBillDate)) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 
 					sbSqlQFileBill
 							.append("SELECT c.strPOSName, MONTHNAME(DATE(a.dteBillDate)), YEAR(DATE(a.dteBillDate))"
@@ -14539,7 +14830,7 @@ public class clsPOSReportService {
 									+ " FROM tblqbillhd a,tblsettelmenthd b,tblposmaster c,tblqbillsettlementdtl d\n"
 									+ " WHERE d.strSettlementCode=b.strSettelmentCode AND a.strBillNo = d.strBillNo "
 									+ " AND a.strPOSCode=c.strPOSCode and a.strClientCode=d.strClientCode "
-									+ " AND MONTH(DATE(dteBillDate)) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
+									+ " AND MONTH(DATE(a.dteBillDate)) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 
 					if (!strPOSCode.equals("All") && !strOperator.equals("All")) {
 						sbFilters.append(
@@ -14555,8 +14846,11 @@ public class clsPOSReportService {
 						sbFilters.append(" and a.strBillNo between '" + strFromBill + "' and '" + strToBill + "'");
 					}
 
-					sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
-					sbFilters.append(" GROUP BY a.strPOSCode, MONTHNAME(DATE(dteBillDate)) ");
+					if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					{
+						sbFilters.append(" AND a.intShiftCode = '" + strShiftNo + "' ");
+					}
+					sbFilters.append(" GROUP BY a.strPOSCode, MONTHNAME(DATE(a.dteBillDate)) ");
 
 					sbSqlLiveBill.append(" ").append(sbFilters);
 					sbSqlQFileBill.append(" ").append(sbFilters);
@@ -14758,6 +15052,7 @@ public class clsPOSReportService {
 			String strFromBill, String strToBill, String reportType, String Type, String Customer,
 			String ConsolidatePOS, String ReportName) {
 		try {
+			String enableShiftYN="N";
 			StringBuilder sqlModLive = new StringBuilder();
 			StringBuilder sqlModQFile = new StringBuilder();
 			StringBuilder sbFilters = new StringBuilder();
@@ -14784,7 +15079,11 @@ public class clsPOSReportService {
 				sbFilters.append(" and a.strbillno between '" + strFromBill + "' " + " and '" + strToBill + "'");
 			}
 
-			sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+			
+			if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sbFilters.append(" AND b.intShiftCode = '" + strShiftNo + "' ");
+			}
 
 			sbFilters.append(" group by a.strItemCode,a.strModifierName,c.strPOSName  " + " order by b.dteBillDate ");
 

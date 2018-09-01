@@ -848,6 +848,14 @@ public class clsPOSMasterService {
 			return list;
 		}
 	 
+	 
+	 public List<clsShiftMasterModel> funGetAllShiftForMaster(String clientCode)throws Exception
+		{
+			List<clsShiftMasterModel> list = null;
+			list = obBaseService.funLoadAll(new clsShiftMasterModel(), clientCode);	
+			return list;
+		}
+	 
 	
 	 
 }

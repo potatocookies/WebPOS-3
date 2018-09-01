@@ -25,6 +25,7 @@
 }
 </style>
 <script type="text/javascript">
+var gEnableShiftYN="${gEnableShiftYN}";
 	$(document).ready(function() {
 		document.all["divBillWise"].style.display = 'block';
 		$(".tab_content").hide();
@@ -37,28 +38,19 @@
 			var activeTab = $(this).attr("data-state");
 			$("#" + activeTab).fadeIn();
 		});
-		/* 		
-			$(document).ajaxComplete(function(){
-			   	$("#wait").css("display","none");
-			});
+		
+		
+		if(gEnableShiftYN=='Y')
+		{
+			document.getElementById("lblShift").style.visibility = "visible"; 
+			document.getElementById("txtShiftCode").style.visibility = "visible"; 
+		}
+		else
+		{
+			document.getElementById("lblShift").style.visibility = "hidden";
+			document.getElementById("txtShiftCode").style.visibility = "hidden"; 
 			
-			 $(document).ajaxStart(function(){
-			    $("#wait").css("display","block");
-			});  
-		 */
-
-		/* 	$("#btnExport").click(function(event) {
-			
-				var report=	document.getElementById("hidReportName").value;
-				var searchurl=getContextPath()+"/ExportSalesReport.html?ReportName="+report;
-		 		$.ajax({
-			       		 type: "POST",
-		    	    	url: searchurl,
-		        		dataType: "json",
-		        
-				
-			});
-			}); */
+		}
 
 	});
 
@@ -80,25 +72,13 @@
 		});
 		$("#txtToDate").datepicker('setDate', Dat);
 		funSelectedReport('divBillWise');
-		/* 
-		$("#btnExport").click(function (e)
-				{
-					 var fromDate=$("#txtFromDate").val();
-					var toDate=$("#txtToDate").val();
-					var locCode=$("#txtLocCode").val();
-					var param1=locCode+","+fromDate+","+toDate; 
-					var report="BillWise"
-					report=	document.getElementById("hidReportName").value;
-					window.location.href=getContextPath()+"/ExportExcelReport.html?reportName="+report;
-				}); 
-		 */
+		
 	});
 
 	/**
 	 * Open Help
 	 **/
 	function funHelp(transactionName) {
-		// window.showModalDialog("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
 		window.open("searchform.html?formname=" + transactionName
 				+ "&searchText=", "",
 				"dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
@@ -129,173 +109,159 @@
 		var chkConsolidatePOS = document.getElementById("chkConsolidatePOS").checked;
 		var txtOperationType = document.getElementById("txtOperationType").value;
 		var txtAreaCode = document.getElementById("txtAreaCode").value;
-		/* if($("#chkConsolidatePOS").attr('checked')==true)
-		{
-			  chkConsolidatePOS="y";	
-		}
-		else
-			{
-			  chkConsolidatePOS="n";
-			} */
-		//var ReportName=divID.substring(3); 
-		//$("#hidReportName").val(ReportName);
-		//document.getElementById("hidReportName").value;
 		var hidReportName = divID;
-		if (FromDate > ToDate) {
-			alert("Enter Valid Dates");
-		} else {
+		
+		
+		$("#hidReportName").val(divID);
+		funShowDiv(divID);
 
-			$("#hidReportName").val(divID);
-			funShowDiv(divID);
+		switch (divID) {
+		case 'divSettlementWise':
+			funLoadSettlementWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divBillWise':
+			funLoadBillWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divItemWise':
+			funLoadItemWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			switch (divID) {
-			case 'divSettlementWise':
-				funLoadSettlementWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divBillWise':
-				funLoadBillWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divItemWise':
-				funLoadItemWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divMenuHeadWise':
+			funLoadMenuHeadWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		//working	
+		case 'divGroupWise':
+			funLoadGroupWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divMenuHeadWise':
-				funLoadMenuHeadWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			//working	
-			case 'divGroupWise':
-				funLoadGroupWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divSubGroupWise':
+			funLoadSubGroupWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divCustWise':
+			funLoadCustWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divWaiterWise':
+			funLoadWaiterWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divSubGroupWise':
-				funLoadSubGroupWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divCustWise':
-				funLoadCustWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divWaiterWise':
-				funLoadWaiterWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divDeliveryBoyWise':
+			funLoadDeliveryBoyWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divDeliveryBoyWise':
-				funLoadDeliveryBoyWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divCostCenterWise':
+			funLoadCostCenterWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divCostCenterWise':
-				funLoadCostCenterWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divHomeDeliveryWise':
+			funLoadHomeDeliveryWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divTableWise':
+			funLoadTableWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divHourlyWise':
+			funLoadHourlyWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divHomeDeliveryWise':
-				funLoadHomeDeliveryWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divTableWise':
-				funLoadTableWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divHourlyWise':
-				funLoadHourlyWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divAreaWise':
+			funLoadAreaWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divAreaWise':
-				funLoadAreaWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divDayWiseSales':
+			funLoadDayWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divDayWiseSales':
-				funLoadDayWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divTaxWiseSales':
+			funLoadTaxWiseSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divTaxWiseSales':
-				funLoadTaxWiseSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divTipReport':
+			funLoadTipSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divItemModifierWise':
+			funLoadItemModifierWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divTipReport':
-				funLoadTipSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divItemModifierWise':
-				funLoadItemModifierWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divMenuHeadWiseWithModifier':
+			funLoadMenuHeadWiseWithModifierSalesReport(divID, POSName,
+					FromDate, ToDate, Operator, PayMode, txtFromBillNo,
+					txtToBillNo, txtReportType, txtType, txtCustomer,
+					chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divMenuHeadWiseWithModifier':
-				funLoadMenuHeadWiseWithModifierSalesReport(divID, POSName,
-						FromDate, ToDate, Operator, PayMode, txtFromBillNo,
-						txtToBillNo, txtReportType, txtType, txtCustomer,
-						chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divItemHourlyWise':
+			funLoadItemHourlyWiseSalesReport(divID, POSName, FromDate,
+					ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divItemHourlyWise':
-				funLoadItemHourlyWiseSalesReport(divID, POSName, FromDate,
-						ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
+		case 'divOperatorWise':
+			funLoadOperatorSalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
+		case 'divMonthlySalesFlash':
+			funLoadMonthlySalesReport(divID, POSName, FromDate, ToDate,
+					Operator, PayMode, txtFromBillNo, txtToBillNo,
+					txtReportType, txtType, txtCustomer, chkConsolidatePOS,
+					hidReportName,txtAreaCode,txtOperationType);
+			break;
 
-			case 'divOperatorWise':
-				funLoadOperatorSalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-			case 'divMonthlySalesFlash':
-				funLoadMonthlySalesReport(divID, POSName, FromDate, ToDate,
-						Operator, PayMode, txtFromBillNo, txtToBillNo,
-						txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-						hidReportName,txtAreaCode,txtOperationType);
-				break;
-
-			}
 		}
 	}
 
@@ -337,6 +303,11 @@
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
 		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadSettlementWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -345,7 +316,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+"&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -430,7 +401,11 @@
 	function funLoadBillWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadBillWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -439,7 +414,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+"&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;;
 		$
 				.ajax({
 					type : "POST",
@@ -609,7 +584,11 @@
 	function funLoadItemWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadItemWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -618,7 +597,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+"&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;;
 		$
 				.ajax({
 					type : "POST",
@@ -727,7 +706,11 @@
 	function funLoadMenuHeadWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadMenuHeadWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -736,7 +719,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName +"&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -849,7 +832,11 @@
 	function funLoadGroupWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadGroupWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -858,7 +845,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -971,7 +958,11 @@
 	function funLoadSubGroupWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadSubGroupWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -980,7 +971,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1093,7 +1084,11 @@
 	function funLoadCustWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadCustWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1102,7 +1097,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1189,7 +1184,11 @@
 	function funLoadWaiterWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadWaiterWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1198,7 +1197,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1284,7 +1283,11 @@
 			ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
 			txtReportType, txtType, txtCustomer, chkConsolidatePOS,
 			hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadDeliveryBoyWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1293,7 +1296,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1378,7 +1381,11 @@
 	function funLoadCostCenterWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadCostCenterWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1387,7 +1394,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1500,8 +1507,13 @@
 	function funLoadHomeDeliveryWiseSalesReport(divID, POSName, FromDate,
 			ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
 			txtReportType, txtType, txtCustomer, chkConsolidatePOS,
-			hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+			hidReportName,txtAreaCode,txtOperationType) 
+	{
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadHomeDelWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1510,7 +1522,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1639,7 +1651,11 @@
 	function funLoadTableWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadTableWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1648,7 +1664,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1727,7 +1743,11 @@
 	function funLoadHourlyWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadHourlyWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1736,7 +1756,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1820,7 +1840,11 @@
 	function funLoadAreaWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadAreaWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1829,7 +1853,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -1908,7 +1932,11 @@
 	function funLoadDayWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadDayWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -1917,7 +1945,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2031,7 +2059,11 @@
 	function funLoadTaxWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadTaxWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2040,7 +2072,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2143,7 +2175,11 @@
 	function funLoadTipSalesReport(divID, POSName, FromDate, ToDate, Operator,
 			PayMode, txtFromBillNo, txtToBillNo, txtReportType, txtType,
 			txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadTipWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2152,7 +2188,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2292,7 +2328,11 @@
 			ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
 			txtReportType, txtType, txtCustomer, chkConsolidatePOS,
 			hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadItemModifierWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2301,7 +2341,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2392,7 +2432,11 @@
 			FromDate, ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
 			txtReportType, txtType, txtCustomer, chkConsolidatePOS,
 			hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadMenuHeadWiseWithModSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2401,7 +2445,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2490,7 +2534,11 @@
 	function funLoadItemHourlyWiseSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadItemHourlyWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2499,7 +2547,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2593,7 +2641,11 @@
 	function funLoadOperatorSalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadOperstorWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2602,7 +2654,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName+ "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2701,7 +2753,11 @@
 	function funLoadMonthlySalesReport(divID, POSName, FromDate, ToDate,
 			Operator, PayMode, txtFromBillNo, txtToBillNo, txtReportType,
 			txtType, txtCustomer, chkConsolidatePOS, hidReportName,txtAreaCode,txtOperationType) {
-		//	document.forms["POSSalesReportForm"].submit();
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
 		var searchurl = getContextPath()
 				+ "/loadMonthlyWiseSalesReport.html?POSName=" + POSName
 				+ "&FromDate=" + FromDate + "&ToDate=" + ToDate + "&Operator="
@@ -2710,7 +2766,7 @@
 				+ "&txtReportType=" + txtReportType + "&txtType=" + txtType
 				+ "&txtCustomer=" + txtCustomer + "&chkConsolidatePOS="
 				+ chkConsolidatePOS + "&hidReportName=" + hidReportName + "&areaCode="
-				+ txtAreaCode + "&operationType=" + txtOperationType;
+				+ txtAreaCode + "&operationType=" + txtOperationType+ "&gEnableShiftYN=" + gEnableShiftYN+ "&shiftCode=" + shiftCode;
 		$
 				.ajax({
 					type : "POST",
@@ -2785,20 +2841,7 @@
 					}
 				});
 	}
-	/*  	
-	 function funExportReport()
-	 {
-	 var report=	document.getElementById("hidReportName").value;
-	 var searchurl=getContextPath()+"/ExportSalesReport.html?ReportName="+report;
-	 $.ajax({
-	 type: "POST",
-	 url: searchurl,
-	 dataType: "json",
 	
-	
-	 });
-	 }
-	 */
 
 	function funRemoveProductRows(tableName) {
 		var table = document.getElementById(tableName);
@@ -2808,6 +2851,39 @@
 			rowCount--;
 		}
 	}
+	
+	
+	/*function funExportReport()
+ 	{
+		
+		var POSName = document.getElementById("cmbPOSName").value;
+		var FromDate = document.getElementById("txtFromDate").value + ":"
+				+ document.getElementById("txtHHFrom").value + "/"
+				+ document.getElementById("txtMMFrom").value + "/"
+				+ document.getElementById("txtAMPMFrom").value;
+		var ToDate = document.getElementById("txtToDate").value + ":"
+				+ document.getElementById("txtHHTo").value + "/"
+				+ document.getElementById("txtMMTo").value + "/"
+				+ document.getElementById("txtAMPMTo").value;
+		var Operator = document.getElementById("txtOperator").value;
+		var PayMode = document.getElementById("txtPayMode").value;
+
+		var txtFromBillNo = document.getElementById("txtFromBillNo").value;
+		var txtToBillNo = document.getElementById("txtToBillNo").value;
+		var txtReportType = document.getElementById("txtReportType").value;
+		var txtType = document.getElementById("txtType").value;
+		var txtCustomer = document.getElementById("txtCustomer").value;
+		var chkConsolidatePOS = document.getElementById("chkConsolidatePOS").checked;
+		var txtOperationType = document.getElementById("txtOperationType").value;
+		var txtAreaCode = document.getElementById("txtAreaCode").value;
+		
+		var shiftCode='1';
+		if(gEnableShiftYN=='Y')
+		{
+			shiftCode=document.getElementById("txtAreaCode").value;
+		}
+ 	}
+	*/
 </script>
 
 
@@ -4227,6 +4303,12 @@
 						<td><label style="display: inline-block; width: 100px">Area 
 						</label> <s:select colspan="3" type="text" items="${areaList}"
 								id="txtAreaCode" path="strAreaCode" cssClass="BoxW124px" /></td>
+						<td><label id="lblShift" style="display: inline-block; width: 100px">Shift 
+						</label> <s:select colspan="3" type="text" items="${shiftList}"
+								id="txtShiftCode" path="strShiftCode" cssClass="BoxW124px" /></td>
+					</tr>
+					
+					<tr>
 						<td><label style="display: inline-block; width: 100px">Operation Type</label>
 							<s:select id="txtOperationType" path="strOperationType" cssClass="BoxW124px">
 								<option selected="selected" value="All">All</option>
@@ -4235,6 +4317,7 @@
 								<option value="HomeDelivery">HomeDelivery</option>
 								<option value="TakeAway">TakeAway</option>
 							</s:select></td>
+						<td></td>	
 					</tr>
 
 				</table>

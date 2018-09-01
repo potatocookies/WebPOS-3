@@ -159,7 +159,19 @@ public class clsPOSReportBean {
     
     private String strAreaCode;
     
-    public String getStrAreaCode() {
+    private String strShiftCode;
+    
+    public String getStrShiftCode()
+	{
+		return strShiftCode;
+	}
+
+	public void setStrShiftCode(String strShiftCode)
+	{
+		this.strShiftCode = strShiftCode;
+	}
+
+	public String getStrAreaCode() {
 		return strAreaCode;
 	}
 

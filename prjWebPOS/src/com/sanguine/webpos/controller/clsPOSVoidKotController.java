@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -212,10 +213,12 @@ public class clsPOSVoidKotController {
 	    			double totalAmount = Double.parseDouble(jObj.get("totalAmount").toString());
 	    			double  tax=Double.parseDouble(jObj.get("taxAmt").toString());
 	    			double subTotalAmt=Double.parseDouble(jObj.get("subTotalAmt").toString());
+	    			String userCreated=jObj.get("userCreated").toString();
 	    			mapFilltable.put("listFillItemGrid", listFillItemGrid);
 	    			mapFilltable.put("totalAmount", totalAmount);
 	    			mapFilltable.put("taxAmt", tax);
 	    			mapFilltable.put("KotNo", KotNo);
+	    			mapFilltable.put("userCreated", userCreated);
 	    			mapFilltable.put("subTotalAmt", subTotalAmt);
 	    			
 	        }
@@ -228,82 +231,56 @@ public class clsPOSVoidKotController {
 		
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@RequestMapping(value = "/doneButtonClick", method = RequestMethod.GET)
-	@ResponseBody
-	
-	public String funDoneButtonClick1(HttpServletRequest req){
+	@RequestMapping(value = "/doneButtonClick", method = RequestMethod.POST)
+	public  @ResponseBody String funDoneButtonClick1(HttpServletRequest req){
 
 		 String result="";
 	try {
-//		 Map jobj=objPOSGlobalFunctionsController.funGetPOSDate(req);
-		 Map jservice=new HashMap();
+
 		 String voidedDate=req.getSession().getAttribute("gPOSDate").toString();
 		 String strPosCode=req.getSession().getAttribute("loginPOS").toString();
-		 List jarr1 =new ArrayList(); 
-		String []arrDelQty = null;
-		String[] arreDelAmount = null;
-		String [] arrDelItemName = null;
-		String delItemcode=req.getParameter("delItemcode").toString();
+		String[] arrVoidedItemList = req.getParameterValues("voidedItemList");
+
 		String delKotNo=req.getParameter("delKotNo").toString();
 		String tableNo=req.getParameter("delTableNo").toString();
 		String reasonCode=req.getParameter("reasonCode").toString();
 		String remarks=req.getParameter("remarks").toString();
-		String delItemName=req.getParameter("delItemName").toString();		
-		String delQuatity=req.getParameter("delQuatity").toString();
-		String delAmount=req.getParameter("delAmount").toString();
+
 		double taxAmt=Double.parseDouble(req.getParameter("taxAmt").toString());
-		String []itemCode=delItemcode.split("aa");
-		String []qty=delQuatity.split("aa");
-		
-		String []amount=delAmount.split("aa");
-		String []itemName=delItemName.split("//aa");
-		//		arrDelItemCode=new String[itemCode.length-1];
-		
-		
-		
+	
 			Map<String,String> mapTableData= funLoadTableData(strPosCode);
 			String delTableNo=mapTableData.get(tableNo);	
-		
-		for(int i=1;i<itemCode.length;i++){
-			Map jObj1=new HashMap();
-			jObj1.put("itemCode",itemCode[i]);
-			jObj1.put("qty",qty[i]);
-			jObj1.put("amount",amount[i]);
-			jObj1.put("itemName",itemName[i]);
-			jarr1.add(jObj1);
-			
-		}
-		jservice.put("jarr1",jarr1);
-		
-		
-		arrDelQty=new String[qty.length-1];
-		Map obj=new HashMap();
-		for(int i=1;i<qty.length;i++){
-//			arrDelQty[i-1]=qty[i];
-			//jArrDelItemCode.add(qty[i]);
-			
-			obj.put("Qty", qty);
-		}
-		
-		
-		arreDelAmount=new String[amount.length-1];
-		for(int i=1;i<amount.length;i++){
-			arreDelAmount[i-1]=amount[i];
-		}
-		
-		
-		arrDelItemName=new String[itemName.length-1];
-		for(int i=1;i<itemName.length;i++){
-			arrDelItemName[i-1]=itemName[i];
-		}
-	
+
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		String userCode=req.getSession().getAttribute("gUserCode").toString();
-        Map jObj = funDoneButtonClick( jservice, reasonCode, delTableNo, delKotNo, remarks,
-					 userCode, clientCode, voidedDate, taxAmt);
-			 result=jObj.get("true").toString();
-			
+       
+			 String delItemCode="",delItemName="";		
+				double delItemQuantity=0,amount=0,remainingAmount=0,remainingItemQuantity=0;
+				if (arrVoidedItemList.length > 0)
+		        {
+		            for (int cnt = 0; cnt < arrVoidedItemList.length; cnt++)
+		            {
+		                String []item= arrVoidedItemList[cnt].split(",");
+		                for(String itemData:item)
+		                {
+		                	delItemCode=itemData.split("#")[0];
+		                	delItemName=itemData.split("#")[1];
+		                    remainingItemQuantity=Double.parseDouble(itemData.split("#")[3]);
+		                    remainingAmount=Double.parseDouble(itemData.split("#")[4]);
+		                    delItemQuantity=Double.parseDouble(itemData.split("#")[5]);
+		                    amount=Double.parseDouble(itemData.split("#")[6]);
+	                      	Map jObj = funDoneButtonClick( reasonCode, delTableNo, delKotNo, remarks,
+	         					 userCode, clientCode, voidedDate, taxAmt,delItemCode,delItemName,delItemQuantity,amount);
+	         			 	result=jObj.get("true").toString();
+		         		
+		                   
+		                }
+		                	
+		            }
+
+		        }	 
+			 
+			 
 		}  catch (Exception e)
         {
 	          
@@ -548,7 +525,7 @@ public class clsPOSVoidKotController {
                 + " from tblitemrtemp "
                 + " where strKOTNo='" + KotNo + "' and strPOSCode='" + strPosCode + "' and strNCKotYN='N' ");
         double subTotalAmt = 0.00;
-        
+        String userCreated="";
         
 
         List<clsPOSItemDetailFrTaxBean> arrListItemDtl = new ArrayList<clsPOSItemDetailFrTaxBean>();
@@ -574,9 +551,9 @@ public class clsPOSVoidKotController {
             String itemName = obj[0].toString();
             double dblQuantity = Double.parseDouble( obj[1].toString());
             double dblAmount = Double.parseDouble(obj[2].toString());
-            String itemCode = obj[3].toString();
+            String itemCode = obj[5].toString();
             subTotalAmt = subTotalAmt + dblAmount;
-//            
+            userCreated = obj[3].toString(); 
             POSDate = obj[4].toString();
             POSCode = obj[6].toString();
             tableNo =obj[7].toString();
@@ -610,10 +587,10 @@ public class clsPOSVoidKotController {
         for (int i=0;i<arrListTaxDtl.size();i++)
         {
         	clsPOSTaxCalculationBean objBean = arrListTaxDtl.get(i);
-        	if(i!=(arrListTaxDtl.size() - 1))
-            {
+        	if(i==arrListTaxDtl.size()-1)
+        	{	
         	taxAmt += objBean.getTaxAmount();
-            }
+        	}
         }
         }
         arrListTaxDtl = null;
@@ -622,23 +599,10 @@ public class clsPOSVoidKotController {
         jObjReturn.put("totalAmount", totalAmount);        
         jObjReturn.put("taxAmt", taxAmt);        
         jObjReturn.put("subTotalAmt", subTotalAmt);
-        
-        
+        jObjReturn.put("subTotalAmt", subTotalAmt);
+        jObjReturn.put("userCreated", userCreated);
         jObjReturn.put("jArr", jArr);
-//        lblTaxValue.setText(String.valueOf(Math.rint(taxAmt)));
-//        lblSubTotalValue.setText(Double.toString(subTotalAmt));
-//        lblTotalAmt.setText(String.valueOf(Math.rint(subTotalAmt + taxAmt)));
-//        tblItemTable.setModel(dm);
- 
-//        tblItemTable.setShowHorizontalLines(true);
-//        tblItemTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-//        tblItemTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
-//        tblItemTable.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
-//        tblItemTable.getColumnModel().getColumn(0).setPreferredWidth(230);
-//        tblItemTable.getColumnModel().getColumn(1).setPreferredWidth(40);
-//        tblItemTable.getColumnModel().getColumn(2).setPreferredWidth(83);
-//        delItemName.removeAllElements();
-//        delItemCode.removeAllElements();
+
     }
         }
 		catch(Exception e)
@@ -652,65 +616,49 @@ public class clsPOSVoidKotController {
 	
 	
 
-	public Map funDoneButtonClick(Map jservice,String resonCode,String selectedTableNo,String lblKOTNo,String remarks,
-			String userCode,String clientCode,String voidedDate,double dblTax) {
+	public Map funDoneButtonClick(String resonCode,String selectedTableNo,String lblKOTNo,String remarks,
+			String userCode,String clientCode,String voidedDate,double dblTax,String delItemCode,String delItemName,double delItemQuantity,double amount) {
 
 		Map jObjReturn =new HashMap();
 		
 		
 		
 		try{
-			List jArr=(List)jservice.get("jarr1");
+		
 		String sql="";
 		double singleItemAmount,voidedAmount;
 		double voidedQty = 0;
 		
-		String [] delItemCode = new String[jArr.size()];
-		String [] delItemQuantity= new String[jArr.size()];
-		String [] amount= new String[jArr.size()];
-		String [] delItemName= new String[jArr.size()];
-		
-		for(int i=0;i<jArr.size();i++){
-		Map jsondata=(Map)jArr.get(i);
-		
-			
-		delItemCode[i]=jsondata.get("itemCode").toString();
-		delItemQuantity[i]=jsondata.get("qty").toString();
-		amount[i]=jsondata.get("amount").toString();
-		delItemName[i]=jsondata.get("itemName").toString();
-		}
 	
 		
 		  StringBuilder 	sqlQuery=new StringBuilder();
 		  sqlQuery.setLength(0);
           sqlQuery.append( "select strAuditing from tbluserdtl where strUserCode='" + userCode + "' and strFormName='VoidKot'");
-		 for (int cnt = 0; cnt < delItemCode.length; cnt++)
-         {
-             double qtyAfterDelete = 0;
+		   double qtyAfterDelete = 0;
              String strType = "DVKot";
              StringBuilder 	sqlBuilder=new StringBuilder();
              sqlBuilder.setLength(0);
     	 	 sqlBuilder.append(  "select strTableNo,strPOSCode,strItemCode,strItemName,dblItemQuantity,"
                      + "dblAmount,strWaiterNo,strKOTNo,intPaxNo,strUserCreated,dteDateCreated "
-                     + "from tblitemrtemp where strItemCode='" + delItemCode[cnt] + "' "
+                     + "from tblitemrtemp where strItemCode='" + delItemCode + "' "
                      + "and strKOTNo='" + lblKOTNo + "' and strTableNo='" + selectedTableNo + "' and strNCKotYN='N' ");
 
        	    List listSql=objBaseServiceImpl.funGetList(sqlBuilder, "sql");
        	    if(listSql.size()>0)
        	    {
         	 Object[] obj = (Object []) listSql.get(0);
-             qtyAfterDelete = Double.parseDouble(obj[4].toString()) - Double.parseDouble(delItemQuantity[cnt].toString());
+             qtyAfterDelete = Double.parseDouble(obj[4].toString()) - delItemQuantity;
              singleItemAmount = Double.parseDouble(obj[5].toString())
                      / Double.parseDouble(obj[4].toString());
              if (qtyAfterDelete > 0)
              {
-                 voidedQty = Double.parseDouble(delItemQuantity[cnt].toString());
-                 voidedAmount = Double.parseDouble(amount[cnt].toString());
+                 voidedQty = delItemQuantity;
+                 voidedAmount = amount;
              }
              else
              {
-                 voidedQty = Double.parseDouble(delItemQuantity[cnt].toString());
-                 voidedAmount = voidedAmount = Double.parseDouble(amount[cnt].toString());
+                 voidedQty = delItemQuantity;
+                 voidedAmount = amount;
              }
 
              sql = "insert into tblvoidkot(strTableNo,strPOSCode,strItemCode,strItemName,dblItemQuantity,"
@@ -759,12 +707,12 @@ public class clsPOSVoidKotController {
                  {
                      sql = "insert into tbltempvoidkot(strItemName,strItemCode,dblItemQuantity,strTableNo,strWaiterNo,strKOTNo) "
                              + "values('" + obj[3].toString() + "','"
-                             + delItemCode[cnt].toString() + "','" + delItemQuantity[cnt].toString() + "','" + obj[0].toString() + "','" + obj[6].toString() + "','" + obj[7].toString() + "')";
+                             + delItemCode + "','" + delItemQuantity + "','" + obj[0].toString() + "','" + obj[6].toString() + "','" + obj[7].toString() + "')";
 
                      objBaseServiceImpl.funExecuteUpdate(sql, "sql");
                      sql = "update tblitemrtemp set dblItemQuantity=" + qtyAfterDelete + ", "
                              + " dblAmount=" + (singleItemAmount * qtyAfterDelete) + ", dblTaxAmt='" + dblTax + "' "
-                             + " where strItemCode='" +  delItemCode[cnt].toString()  + "'"
+                             + " where strItemCode='" +  delItemCode  + "'"
                              + " and strKOTNo='" + lblKOTNo+ "'  and strNCKotYN='N' ";
 
                      objBaseServiceImpl.funExecuteUpdate(sql, "sql");
@@ -776,7 +724,7 @@ public class clsPOSVoidKotController {
                              + Double.parseDouble(obj[4].toString()) + "','" + obj[0].toString()  + "','" + obj[6].toString()  + "','" +obj[7].toString()  + "')";
                      objBaseServiceImpl.funExecuteUpdate(sql, "sql");
 
-                     sql = "delete from tblitemrtemp where left(strItemCode,7)='" +delItemCode[cnt]+ "' "
+                     sql = "delete from tblitemrtemp where left(strItemCode,7)='" +delItemCode+ "' "
                              + " and strKOTNo='" + lblKOTNo + "' and strTableNo='" + selectedTableNo + "' and strNCKotYN='N' ";
                     objBaseServiceImpl.funExecuteUpdate(sql, "sql");
                     sqlBuilder.setLength(0);
@@ -797,7 +745,7 @@ public class clsPOSVoidKotController {
        	   }
        	 jObjReturn.put("true", "true");
        	   
-         }
+      
 		}
 		catch(Exception e)
 		{

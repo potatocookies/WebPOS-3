@@ -28,6 +28,7 @@
 </style>
 <script type="text/javascript">
 var g=0;
+var arrNonAvailableItems = new Array();
 	$(document).ready(function() {
 
 		funFillItemTable();
@@ -132,7 +133,7 @@ var g=0;
 				$.each(response.NonAvailableItemList, function(j, item) {
 
 					funFillNonAvailableItems(item.strItemName);
-							
+					arrNonAvailableItems.push(item.strItemName);		
 
 				});
 				
@@ -223,6 +224,11 @@ var g=0;
 		
 		
 		var table = document.getElementById("tblNonAvailableItems");
+		if(arrNonAvailableItems.includes(code))
+		{
+			alert("Item Already Not Available");
+			return;
+		}	
 		var cntIndex = 0;
 
 			if (g == 0) {
@@ -244,6 +250,7 @@ var g=0;
 				g++;
 			
 			cntIndex++;
+			arrNonAvailableItems.push(code);
 			}
 			else
 			{

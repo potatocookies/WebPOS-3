@@ -414,5 +414,91 @@ private String funGenerateKOTNo()
     return kotNo;
  }
 
+@RequestMapping(value = "/funFillExistingKOTDetails", method = RequestMethod.GET)
+public @ResponseBody Map funFillExistingKOTDetails(HttpServletRequest req)
+{
+	Map<String, Map<String, List<String>>> hmExistingKOTItemList = new HashMap<String, Map<String, List<String>>>();
+	String loginPosCode=req.getSession().getAttribute("loginPOS").toString();
+	String tableNo=req.getParameter("tableNo");
+	List listOfItem=new ArrayList();
+	List list =null;
+	Map mapObjKotData=new HashMap();
+	try{
+	
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("select strItemName,dblItemQuantity,dblAmount,strUserCreated,dteDateCreated, "
+                + " strItemCode ,strPOSCode,strTableNo,strWaiterNo ,strKOTNo  "
+                + " from tblitemrtemp  ");
+        if(!tableNo.equals("All"))
+        {
+        	sqlBuilder.append(" where strTableNo='"+tableNo+"' and strPOSCode='"+loginPosCode+"'");
+        }
+        else
+        {  
+        	sqlBuilder.append(" where strPOSCode='"+loginPosCode+"'");
+        }
+       
+		list = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
+		
+		Map<String, List<String>> mapSelectedItemList=new HashMap();
+		if (list!=null)
+		{
+			for(int i=0; i<list.size(); i++)
+			{
+				Object[] obj=(Object[])list.get(i);
+				String itemCode = "", itemName = "", itemQty = "", itemAmt = "", waiterNo = "", kotNo = "", createdDate = "";
+	            itemName = obj[0].toString();
+	            itemQty = obj[1].toString();
+	            itemAmt = obj[2].toString();
+	            itemCode = obj[5].toString();
+	            waiterNo = obj[8].toString();
+	            kotNo = obj[9].toString();
+	            createdDate = obj[4].toString();
+	            if (hmExistingKOTItemList.containsKey(kotNo))
+	            {
+	            	mapSelectedItemList =  hmExistingKOTItemList.get(kotNo);
+	                if (mapSelectedItemList.containsKey(itemCode))
+	                {
+	                	listOfItem = (List) mapSelectedItemList.get(itemCode);
+	                }
+	                else
+	                {
+	                	Map mapObjSettle=new HashMap();
+						mapObjSettle.put("strItemName",obj[0]);
+						mapObjSettle.put("dblItemQuantity",obj[1]);
+						mapObjSettle.put("dblAmount",obj[2]);
+						mapObjSettle.put("strItemCode",obj[5]);
+						mapObjSettle.put("strWaiterNo",obj[8]);
+						mapObjSettle.put("dteDateCreated",obj[4]);
+						listOfItem.add(mapObjSettle);	
+	                }
+	            }
+	            else
+	            {
+	                mapSelectedItemList = new HashMap<String, List<String>>();
+	                Map mapObjSettle=new HashMap();
+					mapObjSettle.put("strItemName",obj[0]);
+					mapObjSettle.put("dblItemQuantity",obj[1]);
+					mapObjSettle.put("dblAmount",obj[2]);
+					mapObjSettle.put("strItemCode",obj[5]);
+					mapObjSettle.put("strWaiterNo",obj[8]);
+					mapObjSettle.put("dteDateCreated",obj[4]);
+					listOfItem.add(mapObjSettle);	
+	            }
+	            mapSelectedItemList.put(itemCode, listOfItem);
+	            hmExistingKOTItemList.put(kotNo, mapSelectedItemList);
+	            
+	      }
+		}
+		mapObjKotData.put("KOTList", mapSelectedItemList);
+		
+	  }catch(Exception ex)
+	  {
+			ex.printStackTrace();
+	  }
+		return mapObjKotData;
+
+}
+
 
 }

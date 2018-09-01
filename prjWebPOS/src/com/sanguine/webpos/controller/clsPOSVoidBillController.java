@@ -234,7 +234,7 @@ public class clsPOSVoidBillController {
 			
 			
 			String itemCode="",itemName="",modItemCode="";		
-			double quantity=0,amount=0;
+			double delItemQuantity=0,amount=0,remainingItemQuantity=0,remainingAmount=0;
 			
 			if (arrVoidedItemList.length > 0)
             {
@@ -246,11 +246,12 @@ public class clsPOSVoidBillController {
                     	  itemCode=itemData.split("#")[0];
                           itemName=itemData.split("#")[1];
                           modItemCode=itemData.split("#")[2];
-                          quantity=Double.parseDouble(itemData.split("#")[3]);
-                          amount=Double.parseDouble(itemData.split("#")[4]);
-                          
+                          remainingItemQuantity=Double.parseDouble(itemData.split("#")[3]);
+                          remainingAmount=Double.parseDouble(itemData.split("#")[4]);
+                          delItemQuantity=Double.parseDouble(itemData.split("#")[5]);
+		                  amount=Double.parseDouble(itemData.split("#")[6]);
                           Map mapObj = funVoidItem( reasonCode, tableNo, billNo, remarks, userCode,clientCode,  posDate,  taxAmt,
-            						 itemCode, quantity,amount,itemName, modItemCode, strPosCode) ;
+            						 itemCode, delItemQuantity,amount,itemName, modItemCode, strPosCode) ;
             				
             			  result=mapObj.get("true").toString();
                     }

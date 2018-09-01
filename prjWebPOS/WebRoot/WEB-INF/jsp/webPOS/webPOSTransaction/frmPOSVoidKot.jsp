@@ -9,8 +9,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 <script type="text/javascript">
- 	var fieldName,textValue2="",selectedRowIndex=0,delTableNo="",delKotNo="",delItemcode="", delAmount="",delQuatity="";
- 
+ 	var fieldName,textValue2="",selectedRowIndex=0,delTableNo="",delKotNo="",delItemcode="", delAmount="",delQuatity="",count=0;
+ 	var arrVoidedItemDtlList=new Array();
  	
  	$(function() 
  	{
@@ -352,6 +352,7 @@
 		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"15%\" id=\"Take Away\" value=Take Away >";
 		row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"15%\" id=\"User Created\" value=User Created >";
 		row.insertCell(5).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"15%\" id=\"Amount\" value=Amount >";
+		
 		rowCount++;
 	    for(var i=0;i<data.length;i++){
 	    	row = table.insertRow(rowCount);
@@ -370,9 +371,10 @@
 		
 	}
 	
+	var deletedIndex;
      function funGetSelectedRowData(obj)
      {
-    	
+    	 deletedIndex="";
     	var index = obj.parentNode.parentNode.rowIndex;
     	var tableName = document.getElementById("tblDataFillGrid");
        	var dataKotNo= tableName.rows[index].cells[0].innerHTML; 
@@ -406,7 +408,7 @@
 			    {
 					
 			    
-			    		funAddItemTableData(response.listFillItemGrid,response.totalAmount,response.taxAmt,response.KotNo,response.subTotalAmt);
+			    		funAddItemTableData(response.listFillItemGrid,response.totalAmount,response.taxAmt,response.KotNo,response.subTotalAmt,response.userCreated);
 					
 			    },
 			    error: function(jqXHR, exception) {
@@ -431,119 +433,55 @@
 	    
 	 }
      
-     function funAddItemTableData(itemDataList,totalAmount,taxAmt,KotNo,subTotalAmt){
+     function funAddItemTableData(itemDataList,totalAmount,taxAmt,KotNo,subTotalAmt,userCreated){
     		$('#tblData tbody').empty()
 
     		var table = document.getElementById("tblData");
     		var rowCount = table.rows.length;
 
     		var row = table.insertRow(rowCount);
-    		row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"50%\" id=\"Description\" value=Description >";
-    		row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"15%\" id=\"Quantity\" value=Qty >";
-    		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"15%\" id=\"Amount\" value= Amount>";
-    		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"background-color: #85cdffe6; height: 21px;\" size=\"15%\" id=\"Item Code\" value=Item Code >";
-//     		row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"\" value=Select >";
-    		
-    		rowCount++;
-    	  
-    	    	
-    	    	for(var j=0;j<itemDataList.length;j++){
-    	    	  row = table.insertRow(rowCount);
-    	    	  var rowItemData=itemDataList[j];
-    	    	 
-    	    		row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"50%\" id=\""+rowItemData[0]+"\" value='"+rowItemData[0]+"' onclick=\"funGetSelectedRowIndex(this)\"/ >";
-    	    		row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowItemData[1]+"\" value='"+rowItemData[1]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-    	    		row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowItemData[2]+"\" value='"+rowItemData[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-    	    		row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowItemData[3]+"\" value='"+rowItemData[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-    	    		rowCount++;
-    	    		
-    	    		$("#lblUserCreated").text(rowItemData[4]);
-    	    		$("#lblDateTime").text(rowItemData[5]);
+    		for(var i=0;i<itemDataList.length;i++)
+     		{
+     	    	row = table.insertRow(rowCount);
+     	    	var rowData=itemDataList[i];
+     	    	row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"35%\" id=\"txtItemName."+ (rowCount) +"\" style=\"text-align: left\" value='"+rowData[0]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+     	    	row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"5%\" id=\"txtQty."+ (rowCount) +"\" style=\"text-align: right\" value='"+rowData[1]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+     	    	row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtAmount."+ (rowCount) +"\" style=\"text-align: right\" value='"+rowData[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+     	    	row.insertCell(3).innerHTML= "<input type=\"hidden\" class=\"Box \" size=\"0%\" id=\"txtItemCode."+ (rowCount) +"\" value='"+rowData[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+     	    	row.insertCell(4).innerHTML= "<input type=\"button\" class=\"deletebutton\" size=\"5%\" style=\"text-align: center;width:100%;font-size: 8px\" value = \"Del\" onClick=\"Javacsript:funDeleteRow(this)\"/>";
+                rowCount++;
+     	    }
 
-    	    	}
-    	    	if(rowCount<=2)
-    	    	{
-
-    	    		 document.getElementById("btnUp").style.display='none';
-    	    		 document.getElementById("btnDown").style.display='none';
-    	    		 document.getElementById("btnDelete").style.display='none';
-    	    		
-    	    	}
-    	    	else
-    	    	{
-    	    		document.getElementById("btnUp").style.display='block';
-   	    			 document.getElementById("btnDown").style.display='block';
-   	    		 	document.getElementById("btnDelete").style.display='block';
-    	   		}
     	    	$("#lblKotNo").text(KotNo);
-    	    	
+    	    	$("#lblUserCreated").text(userCreated);
     	    	$("#lblTax").text(taxAmt.toFixed(2));
-    	    	$("#lblSubTotlal").text(subTotalAmt.toFixed(2));
+    	    	$("#lblSubTotal").text(subTotalAmt.toFixed(2));
     	    	$("#lblTotal").text(totalAmount.toFixed(2));
     	 
      }
 
- 	function funDeleteRow()
+ 	function funVoidItem()
 	{
 	    var taxAmt=$("#lblTax").text();
-	
-	    var table = document.getElementById("tblData");
-	    var delItemName="";
-	    var count=$('#tblData tr').length-1;
-	    var delRowNo="";
-	    var i=selectedRowIndex;
-         var a="";
-			delRowNo=delRowNo+"del"+i;
-
-        	var tableName = document.getElementById("tblData");
-	       	var itemcode= tableName.rows[i].cells[3].innerHTML; 
-	       	
-	        var btnBackground=itemcode.split('value=');
-	        var iCode=btnBackground[1].split("onclick");
-	        delItemcode=delItemcode+"aa"+iCode[0].substring(1, (iCode[0].length-2));
-	        
-  	var itemName= tableName.rows[i].cells[0].innerHTML; 
-	       	
-	        var btnBackgrounditemName=itemName.split('value=');
-	        var iName=btnBackgrounditemName[1].split("onclick");
-	        delItemName=delItemName+"//aa"+iName[0].substring(1, (iName[0].length-2));
-	        
-	        
-   	var amount= tableName.rows[i].cells[2].innerHTML; 
-	       	
-	        var btnBackgroundamount=amount.split('value=');
-	        var amountnext=btnBackgroundamount[1].split("onclick");
-	        delAmount=delAmount+"aa"+amountnext[0].substring(1, (amountnext[0].length-2));
-	        
-   	var qty= tableName.rows[i].cells[1].innerHTML; 
-	       	
-	        var btnBackgroundqty=qty.split('value=');
-	        var quantity=btnBackgroundqty[1].split("onclick");
-	        delQuatity=delQuatity+"aa"+quantity[0].substring(1, (quantity[0].length-2));
-
-	   var delreow= delRowNo.split("del");
-	  
-	   for(var i=1;i<delreow.length;i++) {
-		   
-		   
-		   table.deleteRow(delreow[i]);
-	   }
 	   var remarks = prompt("Enter Remarks", "");
     	var reasonCode=$("#cmbDocType").val();
-      
+      alert(arrVoidedItemDtlList);
     	searchUrl=getContextPath()+"/doneButtonClick.html?";
 		$.ajax({
-		        type: "GET",
+		        type: "POST",
 		        url: searchUrl,
-		        async:false,
-		        data:"delItemcode="+delItemcode+"&delKotNo="+delKotNo+"&delTableNo="+delTableNo+"&remarks="+remarks+
-		        "&reasonCode="+reasonCode+"&delQuatity="+delQuatity+"&delAmount="+delAmount+"&delItemName="+delItemName+"&taxAmt="+taxAmt,
+		        dataType: "text",
+		        async:true,
+		        data:"delKotNo="+delKotNo+"&delTableNo="+delTableNo+"&remarks="+remarks+
+		        "&reasonCode="+reasonCode+"&taxAmt="+taxAmt+"&voidedItemList="+arrVoidedItemDtlList,
 		        
 			    success: function(response)
 			    {
 					if(response)
 						{
-					alert("Void Kot SucessFully");
+							alert("Void Kot SucessFully");
+					 		arrVoidedItemDtlList=new Array();
+				       		location.reload(true);
 						}},
 			    error: function(jqXHR, exception) {
 		            if (jqXHR.status === 0) {
@@ -628,6 +566,54 @@
  	    
  		funFillGrid();
  	}
+ 	
+ 	function funDeleteRow(obj)
+	{
+ 		if(deletedIndex=="")
+ 		{	
+ 			deletedIndex = obj.parentNode.parentNode.rowIndex;
+ 		}
+ 		var table = document.getElementById("tblData");
+ 		var originalQty=((document.getElementById("txtQty."+deletedIndex)||{}).value)||"";
+		 var amount = ((document.getElementById("txtAmount."+deletedIndex)||{}).value)||"";
+		 var rate = amount/originalQty;
+		 var qty="",newamount="",person="";
+		    if(originalQty>1)
+		    {
+		    person = prompt("Please enter quantity to void:", "");
+		    }
+		    else
+		    {
+	    	person = 1;
+		    }	
+		    if (person != null || person != "") 
+		    {
+		    	qty = originalQty - person ;
+		    }
+		    else
+		    {
+		    	qty = originalQty - document.getElementById("txtQty."+deletedIndex).value;
+		    }
+		    var amt = qty * rate;
+		    newamount = rate * person;
+		    if(qty!="" || qty > 0)
+		    {
+		    	document.getElementById("txtQty."+deletedIndex).value=(parseFloat(qty));
+		    	document.getElementById("txtAmount."+deletedIndex).value=(parseFloat(amt));
+		    	var voidedItemDtl=document.getElementById("txtItemCode."+deletedIndex).value+"#"+document.getElementById("txtItemName."+deletedIndex).value+"#"+document.getElementById("txtItemCode."+deletedIndex).value+"#"+qty+"#"+amt+"#"+person+"#"+newamount;
+			    arrVoidedItemDtlList[count]=voidedItemDtl;
+			    count++;	
+		    }
+		    else
+		    {
+		    	 table.deleteRow(deletedIndex);
+		    }	
+		  	if(person!=null)
+		 	{
+		  		deletedIndex++;
+		 	}
+	}
+ 	
    
 </script>
 
@@ -649,13 +635,13 @@
 		    					<label class="title">KOT No.</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="width: 20%;"> 
-								 <label id="lblKotNo" />
+								 <label id="lblKotNo"></label>
 							</div>
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 		    					<label class="title">User Created</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="width: 20%;"> 
-								<label id="lblUserCreated" />
+								<label id="lblUserCreated"></label>
 							</div>
 					 </div>
 					 
@@ -666,7 +652,7 @@
 			    					<label class="title">Date & Time</label>
 			    				</div>
 			    				<div class="element-input col-lg-6" style="width: 75%;"> 
-									 <label id="lblDateTime"  />
+									 <label id="lblDateTime"></label>
 									 <s:input type="hidden" id="textTableNo" name="textTableNo" value="textTableNo"  path="strTables"/>
 								</div>
 						</div>	
@@ -684,10 +670,21 @@
 		 
 					 		<div style="border: 1px solid #ccc; display: block; height: 200px; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 		
-									<table id="tblData" style="width: 100%;" >
-											<tbody style="border-top:none;">
-					    					</tbody>
-								    </table>
+									<table style="width: 100%;overflow: scroll;background: #2FABE9;color: white;">
+						<thead>
+						  	<tr >
+								<td style="border-right: 1px solid black;width:50%">Description</td>
+								<td style="border-right: 1px solid black;width:12%">Qty</td>
+								<td style="border-right: 1px solid black;width:10%">Amount</td>
+								<td style="width:3%">Del</td>
+						   </tr>
+						</thead>
+					</table>
+					
+					<table id="tblData"	style="width: 100%">
+							<tbody></tbody>
+							
+					  </table>
 						
 						     </div>
 							
@@ -698,7 +695,7 @@
 		    						<label class="title">Sub Total</label>
 			    				</div>
 			    				<div class="element-input col-lg-6" style="width: 30%;text-align: right;"> 
-									 <label id="lblSubTotlal"/>
+									<label id="lblSubTotal"></label>
 								</div>
 						 </div>
 					    
@@ -707,7 +704,7 @@
 		    						<label class="title">Tax</label>
 			    				</div>
 			    				<div class="element-input col-lg-6" style="width: 30%;text-align: right;"> 
-									 <label id="lblTax" />
+									 <label id="lblTax"></label>
 								</div>
 						 </div>
 					    
@@ -716,7 +713,7 @@
 		    						<label class="title">Total</label>
 			    				</div>
 			    				<div class="element-input col-lg-6" style="width: 30%;text-align: right;"> 
-									 <label id="lblTotal" />
+									 <label id="lblTotal"></label>
 								</div>
 					    </div>
 					    
@@ -728,7 +725,7 @@
 						 </div>	
 						 <div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%;">
 								<p align="center">
-										<div class="submit col-lg-4 col-sm-4 col-xs-4"><input id="btnDelete" type="button" value="DELETE" onclick="funDeleteRow();"></input></div>
+										<div class="submit col-lg-4 col-sm-4 col-xs-4"><input id="btnDelete" type="button" value="DONE" onclick="funVoidItem();"></input></div>
 										<div class="submit col-lg-4 col-sm-4 col-xs-4"><input id="btnDone" type="button" value="FULLVOIDKOT" onclick="funFullVoidKot();"></input></div>
 								</p>
 						</div>

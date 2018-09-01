@@ -278,7 +278,6 @@
 		var quantity=Qty[0].substring(1, (Qty[0].length-2));
 		var amtArr = amt.split('value=');
 		var amtStock=amtArr[1].split('onclick=');
-		var Amount=amtStock[0].substring(1, (amtStock[0].length-2));
 		var itemCodeArr = itemCode.split('value=');
 		var code=itemCodeArr[1].split('onclick=');
 		var ItemCode=code[0].substring(1, (code[0].length-2));
@@ -498,6 +497,8 @@
 					if(response)
 					{
 				       alert("Void Bill SucessFully");
+				       arrVoidedItemDtlList=new Array();
+				       location.reload(true);
 					}
 				},
 			    error: function(jqXHR, exception) {
@@ -551,12 +552,12 @@
 		    	qty = originalQty - document.getElementById("txtQty."+deletedIndex).value;
 		    }
 		    var amt = qty * rate;
-		    newamount = amount-amt;
+		    newamount = rate*person;
 		    if(qty!="" || qty > 0)
 		    {
 		    	document.getElementById("txtQty."+deletedIndex).value=(parseFloat(qty));
 		    	document.getElementById("txtAmount."+deletedIndex).value=(parseFloat(amt));
-		    	var voidedItemDtl=document.getElementById("txtItemCode."+deletedIndex).value+"#"+document.getElementById("txtItemName."+deletedIndex).value+"#"+document.getElementById("txtItemCode."+deletedIndex).value+"#"+qty+"#"+amt;
+		    	var voidedItemDtl=document.getElementById("txtItemCode."+deletedIndex).value+"#"+document.getElementById("txtItemName."+deletedIndex).value+"#"+document.getElementById("txtItemCode."+deletedIndex).value+"#"+qty+"#"+amt+"#"+person+"#"+newamount;
 			    arrVoidedItemDtlList[count]=voidedItemDtl;
 			    count++;	
 		    }

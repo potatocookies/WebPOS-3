@@ -1,8 +1,11 @@
+
+
 package com.sanguine.bean;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class clsClientBean {
+public class clsClientBean 
+{
 	@NotEmpty
 	private String strClientCode;
 	@NotEmpty

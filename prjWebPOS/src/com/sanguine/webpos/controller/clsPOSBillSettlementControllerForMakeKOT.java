@@ -1414,7 +1414,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 				int cnt = ((BigInteger) list.get(0)).intValue();
 				if (cnt > 0)
 				{
-					sql = "select strCustomerCode,strCustomerName,strBuldingCode " + "from tblcustomermaster where longMobileNo like '%" + strMobNo + "%'";
+					sql = "select strCustomerCode,strCustomerName,strBuldingCode,longMobileNo " + "from tblcustomermaster where longMobileNo like '%" + strMobNo + "%'";
 
 					list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 					if (list != null)
@@ -1423,6 +1423,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 						objSettle.put("strCustomerCode", obj[0].toString());
 						objSettle.put("strCustomerName", obj[1].toString());
 						objSettle.put("strBuldingCode", obj[2].toString());
+						objSettle.put("longMobileNo", obj[3].toString());
 						objSettle.put("flag", true);
 					}
 				}
@@ -2344,17 +2345,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 					objBillingAPI.funSaveBill(isBillSeries, key, listBillSeriesBillDtl, billSeriesBillNo, listOfItemsBillSeriesWise, objBean, request,hmPromoItem);
 
 					billCount++;
-				}
-				boolean flagBillForItems = false;
-				// clear temp kot table
-				if (flagBillForItems)
-				{
-					// objBillingAPI.funUpdateKOTTempTable();
-				}
-				else
-				{
-					objBillingAPI.funClearRTempTable(tableNo, POSCode);
-				}
+				}				
 
 				// save bill series bill detail
 				for (int i = 0; i < listBillSeriesBillDtl.size(); i++)
@@ -2376,6 +2367,17 @@ public class clsPOSBillSettlementControllerForMakeKOT
 					}
 
 				}
+				
+				boolean flagBillForItems = false;
+				// clear temp kot table
+				if (flagBillForItems)
+				{
+					// objBillingAPI.funUpdateKOTTempTable();
+				}
+				else
+				{
+					objBillingAPI.funClearRTempTable(tableNo, POSCode);
+				}
 
 				for (int i = 0; i < listBillSeriesBillDtl.size(); i++)
 				{
@@ -2395,10 +2397,23 @@ public class clsPOSBillSettlementControllerForMakeKOT
 
 			/* To save normal bill */
 			objBillingAPI.funSaveBill(isBillSeries, "", listBillSeriesBillDtl, voucherNo, listOfWholeKOTItemDtl, objBean, request,hmPromoItem);
+			
+			boolean flagBillForItems = false;
+			// clear temp kot table
+			if (flagBillForItems)
+			{
+				// objBillingAPI.funUpdateKOTTempTable();
+			}
+			else
+			{
+				objBillingAPI.funClearRTempTable(tableNo, POSCode);
+			}
 
 			/* printing bill............... */
 			objTextFileGeneration.funGenerateAndPrintBill(voucherNo, POSCode, clientCode);
 		}
+		
+		
 
 		// return funOpenForm(model, request);
 

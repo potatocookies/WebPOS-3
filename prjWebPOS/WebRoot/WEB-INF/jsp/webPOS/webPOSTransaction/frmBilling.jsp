@@ -142,6 +142,21 @@
 	//start PLU Search funactionality
 	$(document).ready(function()
 	{
+		
+		 // Get the input field
+		var input = document.getElementById("Customer");
+
+		// Execute a function when the user releases a key on the keyboard
+		input.addEventListener("keyup", function(event)
+		{
+		  // Cancel the default action, if needed
+		  event.preventDefault();
+		  // Number 13 is the "Enter" key on the keyboard
+		  if (event.keyCode === 13) 
+		  {
+			  funCustomerBtnClicked();
+		  }
+		}); 
 	
 		/* var styles = document.styleSheets;
 		var href = "";
@@ -1789,6 +1804,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        				if(response.waiterNo=="all")
 				        			{
 			        					funAddWaiterDtl();
+			        					funDisplayPLUButton(true);
 				        			}
 			        				else
 			        				{
@@ -1846,6 +1862,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        	{
 			        		/* document.all[ 'tblPaxNo' ].style.display = 'block'; */
 			        		funAddWaiterDtl();
+			        		funDisplayPLUButton(true);
 			        	}
 			        	
 			        	gAreaCode=response.AreaCode;
@@ -2017,7 +2034,11 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		 $("#hidBillTransType").val(operationType);
 		 gTakeAway="Yes";
 		 
-		 
+		 funDisplayPLUButton(false);
+		 funDisplayDoneButton(false);
+		 funDisplayMakeBillButton(false);
+		 funDisplayPLUButton(false);
+			
 		//load menuheads
 		var $rows = $('#tblMenuItemDtl').empty();
 		funShowMenuHead();	
@@ -2107,7 +2128,10 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	{
 		funResetDineInFields();
 		
-		$('#tblBillItemDtl').empty();
+		
+		/* $('#tblBillItemDtl').empty(); */
+		funRemoveTableRows("tblBillItemDtl");
+		
 		$('#tblOldKOTItemDtl').empty();
 	}
 	
@@ -2141,17 +2165,22 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		
 		var isActive=$(objHomeDeliveryButton).hasClass("active");
 		
-		$(objHomeDeliveryButton).addClass("active");		
+		$(objHomeDeliveryButton).addClass("active");
+		
 		$(objDnieInButton).removeClass("active");
 		$(objTakeAwayButton).removeClass("active");
 		
 		operationName="Home Delivery";
 		
-		
+		funDisplayPLUButton(false);
+		funDisplayDoneButton(false);
+		funDisplayMakeBillButton(false);
+		funDisplayPLUButton(false);
 		
 		
 		//load menuheads
 		var $rows = $('#tblMenuItemDtl').empty();
+		
 		funShowMenuHead();
 	}
 	function funCheckHomeDelStatus()
@@ -2193,6 +2222,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		} 
 	}
 	
+
+	
 	function funCustomerBtnClicked()
 	{
 	
@@ -2207,37 +2238,43 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
         }
 	}
 	
+	
 	function funNewCustomerButtonPressed()
 	{
-		if (gCRMInterface=="SQY")
-        {
-			 var strMobNo = prompt("Enter Mobile number", "");
-			 if(strMobNo.trim().length>0)
-				 funCallWebService(strMobNo);
-        }
-		else if (gCRMInterface=="PMAM")
-        {
-			 var strMobNo = prompt("Enter Mobile number", "");
-			 if(strMobNo.trim().length>0)
-				 funSetCustMobileNo(strMobNo);
-			 $("#hidCustMobileNo").val(strMobNo);
-			
-       	}
-		else
-        {
-			 var strMobNo = prompt("Enter Mobile number", "");
-			 if(strMobNo.trim().length>0)
-			 {
-				 funSetCustMobileNo(strMobNo);
-			 }
-       	}
+		var strMobNo = $("#Customer").val();
+		 if(strMobNo.length >0 )
+		 {
+			 if (gCRMInterface=="SQY")
+		        {
+					funCallWebService(strMobNo);
+		        }
+				else if (gCRMInterface=="PMAM")
+		        {
+					 if(strMobNo.length>0)
+						 funSetCustMobileNo(strMobNo);
+					 $("#hidCustMobileNo").val(strMobNo);
+					
+		       	}
+				else
+		        {			
+					 if(strMobNo.length>0)
+					 {
+						 funSetCustMobileNo(strMobNo);
+					 }
+		       	} 
+		 }
+		 else
+		 {
+			 $("#Customer").val("");
+			 $("#cstomerName").text("");
+		 }		 			
 	}
 
 	function  funSetCustMobileNo(strMobNo)
 	{
 		gMobileNo=strMobNo;
 	
-		 if (strMobNo.trim().length == 0)
+		 if (strMobNo.length == 0)
          {
 			 funHelp1('POSCustomerMaster');
          }
@@ -2258,6 +2295,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        dataType: "json",
 			        success: function(response)
 			        {
+			        	$("#customerName").text("");
+			        	$("#Customer").val("");
+			        	
 			        	 if (response.flag)
 			             {
 			        		 gCustomerCode=response.strCustomerCode;
@@ -2265,17 +2305,18 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        		 gBuildingCodeForHD= response.strBuldingCode;
 			        		 
 			        		 $("#customerName").text(gCustomerName);
-			        		 
+			        		 $("#Customer").val(response.longMobileNo);
 			        		  
 			        		 
 			             }	
 			        	 else
-			        		 {
+			        	 {
 			        		 gNewCustomerForHomeDel = true;
 		                     gTotalBillAmount = totalBillAmount;
 		                     gNewCustomerMobileNo =gMobileNo;
-			        		 funCustomerMaster(strMobNo);
-			        		 }
+			        	
+		                     funCustomerMaster(strMobNo);
+			        	 }
 					},
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {
@@ -2903,17 +2944,18 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		
 		var isOrdered=funIsAlreadyOrderedItem(objMenuItemPricingDtl);
 		var qty=prompt("Enter Quantity", 1);
-		 if(price==0.00)
-			{
+		
+		if(price==0.00)
+		{
 			 price = funGetFinalPrice(objMenuItemPricingDtl);
 			
 			 price = prompt("Enter Price", 0);
-			} 
+		} 
 		 
-		 if(qty==null || price==null)
-			 {
+		if(qty==null || price==null)
+		{
 			 	return false;
-			 }
+		}
 		if(isOrdered)
 		{
 			funUpdateTableBillItemDtlFor(objMenuItemPricingDtl,price,qty);	
@@ -3929,14 +3971,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 							<input type="button"  id="Take Away" value="Take Away"    style="width: 100px;height: 50px; white-space: normal;background-color: lightblue;"   onclick="funFooterButtonClicked(this)" class="btn btn-success"/>
 						</span> 
 					</td>																							
-						<td> 
+						<td > 
 							<!-- <input type="button"  id="Customer" value="Customer"    style="width: 150px;height: 30px; white-space: normal;"   onclick="funFooterButtonClicked(this)" class="btn btn-default btn-link"/> -->														
-							<a href="#" onclick="funFooterButtonClicked(this)" id="Customer" ><img src="../${pageContext.request.contextPath}/resources/images/Location-Master.png" width="45px" height="50px" id="Customer"></a>
-							<label id="customerName" ></label> 																											
+							 <%-- <a href="#" onclick="funFooterButtonClicked(this)" id="Customer" ><img src="../${pageContext.request.contextPath}/resources/images/Location-Master.png" width="45px" height="50px" id="Customer"></a>  --%>							
+							
+							<input  type="text"   style="width: 200px;" id="Customer"  class="jQKeyboard form-control" placeholder="Select customer..."   />							 					 																									
 						 </td>
-						 <td>
-						 	<!-- <input  disabled id="txtSearch"  value="" class="searchTextBoxW120px jQKeyboard form-control"  style="/* padding-left:  0px; */width: 150%;margin-left: -150%;"/> -->						 	
-						</td>						
+						 <td><label id="customerName" style="margin-left: -442px; "></label>	</td>						  							 	 											 
 					</tr>					
 					<tr>
 						<td>

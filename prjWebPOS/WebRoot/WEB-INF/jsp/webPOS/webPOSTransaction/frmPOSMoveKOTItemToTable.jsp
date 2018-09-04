@@ -45,8 +45,9 @@ $(document).ready(function() {
 	    $("#cmbBusyTbl").change(function() {
 	    	funFetchKOTData();
 	        	});
-	  
-	   
+	    $("#cmbTable").change(function() {
+	   		 funFetchData();
+	    });
 
         $("form").submit(function(event){
 			   funValidate(); 
@@ -278,9 +279,30 @@ function funAddTableData(strItemCode,strItemName,dblItemQuantity,dblAmount)
       row.insertCell(1).innerHTML= "<input name=\"strItemName\" readonly=\"readonly\" class=\"Box \" size=\"35%\" value='"+strItemName+"'>";
 	  row.insertCell(2).innerHTML= "<input name=\"dblItemQuantity\" readonly=\"readonly\" class=\"Box \" size=\"10%\" value='"+dblItemQuantity+"'>";
 	  row.insertCell(3).innerHTML= "<input name=\"dblAmount\" readonly=\"readonly\" class=\"Box \" size=\"12%\" value='"+dblAmount+"'>";
-	  row.insertCell(4).innerHTML= "<input type=\"checkbox\" name=\"listSettlementDtl["+(rowCount)+"].strApplicableYN\" size=\"20%\" value='"+true+"'>";
+	  
+	  row.insertCell(4).innerHTML= "<input type=\"checkbox\" name=\"listSettlementDtl["+(rowCount)+"].strApplicableYN\" onclick=\"funCheck((this,'tblItem'));\" size=\"20%\" value='"+true+"' >";
 
 }
+function funCheck(obj,tableId)
+{
+
+	 var tableName = document.getElementById(tableId);
+	var index = obj.parentNode.parentNode.rowIndex;
+	 var cellIndex=obj.parentNode.cellIndex;
+	var tblname=tableName.rows[index].cells[cellIndex].innerHTML;
+	var btnClassName=tblname.split('class="');
+	var btnBackground=btnClassName[1].split('value=');
+	var btnType=btnBackground[0].substring(0, (btnBackground[0].length-2));
+   var data=btnBackground[1].split('onclick=');
+	 var code=data[0].substring(1, (data[0].length-2));
+	var selectedTableName=data[1].split('this,');
+	if(obj.includes("M"))
+	{
+		alert("M");	
+	}
+	
+}
+
 function funAddTableData2(strItemCode,strItemName,dblItemQuantity,dblAmount,list)
 {
 	var flag=false;
@@ -291,7 +313,7 @@ function funAddTableData2(strItemCode,strItemName,dblItemQuantity,dblAmount,list
       row.insertCell(1).innerHTML= "<input name=\"strItemName\" readonly=\"readonly\" class=\"Box \" size=\"26%\" value='"+strItemName+"'>";
 	  row.insertCell(2).innerHTML= "<input name=\"dblItemQuantity\" readonly=\"readonly\" class=\"Box \" size=\"19%\" value='"+dblItemQuantity+"'>";
 	  row.insertCell(3).innerHTML= "<input name=\"dblAmount\" readonly=\"readonly\" class=\"Box \" size=\"19%\" value='"+dblAmount+"'>";
-	  
+	 
 	   $.each(list,function(i,item){
 		   var itemCode=item.split("#");
      		if(itemCode[0]==strItemCode)
@@ -447,6 +469,7 @@ function btnAdd_onclick()
 					var itmDtl=arr1[j].split("#");
 					funAddRow(itmDtl[0],itmDtl[1],itmDtl[2],itmDtl[3]);
 					
+					
 					var jObj={
 							strItemCode:itmDtl[0],
 							strItemName:itmDtl[1],
@@ -459,7 +482,7 @@ function btnAdd_onclick()
 						}
 				flaag=true;
 		}
-	
+}
 		function funAddRow(strItemCode,strItemName,dblItemQuantity,dblAmount) 
 		{var table = document.getElementById("tblMoveItem");
 		var rowCount = table.rows.length;
@@ -472,7 +495,57 @@ function btnAdd_onclick()
 
 		   
 		}
+		
+		
+
+
+function funFetchData()
+{
+	funRemoveTableRows("tblMoveItem");
+	var tableNo=$("#cmbTable").val();
+	
+	var searchurl=getContextPath()+"/funFillExistingKOTDetails.html";		
+	 $.ajax({
+	        type: "GET",
+	        data:{ tableNo:tableNo,
+	        	
+			},
+	        url: searchurl,
+	        dataType: "json",
+	        async: false,
+	        success: function(response)
+	        {
+	        	
+	        	$.each(response.KOTList, function(i,item)
+	    				{			
+	        		$.each(item, function(j,item1)
+		    				{			
+	        		funAddRow(item1.strItemCode,item1.strItemName,item1.dblItemQuantity,item1.dblAmount);
+		    				});	
+	    			  	});
+	        	
+			},
+			error: function(jqXHR, exception) {
+	            if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }		            
+	        }
+     });
+
 }
+
 </script>
 
 

@@ -41,6 +41,7 @@ public class clsPOSMoveKOTItemToTableController {
 	private clsPOSUtilityController objUtilityController;
 
 	Map map=new HashMap();
+	Map<String, Map<String, List<String>>> hmSelectedItemList= new HashMap<String, Map<String, List<String>>>();
 	List openKOTList=new ArrayList();
 	List openTableList=new ArrayList();
 	@RequestMapping(value = "/frmPOSMoveKOTItemToTable", method = RequestMethod.GET)
@@ -110,12 +111,23 @@ public class clsPOSMoveKOTItemToTableController {
 			    	obj=(clsPOSKOTItemdtlBean)list.get(i);
 			    	
 			    		Map mapObjData = new HashMap();
+			    		if(map.containsKey(obj.getStrItemCode()))
+			    		{	
 			    		mapObjData=(Map) map.get(obj.getStrItemCode());
 			    		mapObjData.remove("dblItemQuantity");
 			    		mapObjData.put("dblItemQuantity",obj.getDblItemQuantity());
 			    		mapObjData.remove("dblAmount");
 			    		mapObjData.put("dblAmount",obj.getDblAmount());
+			    		
 			    		listData.add(mapObjData);
+			    		}
+			    		else
+			    		{
+			    			mapObjData.put("strItemCode",obj.getStrItemCode());
+			    			mapObjData.put("strItemName",obj.getStrItemName());
+			    			mapObjData.put("dblItemQuantity",obj.getDblItemQuantity());
+			    			mapObjData.put("dblAmount",obj.getDblAmount());
+			    		}
 			    }
 		    }
 			    
@@ -463,6 +475,7 @@ public @ResponseBody Map funFillExistingKOTDetails(HttpServletRequest req)
 	                }
 	                else
 	                {
+	                	 listOfItem=new ArrayList();
 	                	Map mapObjSettle=new HashMap();
 						mapObjSettle.put("strItemName",obj[0]);
 						mapObjSettle.put("dblItemQuantity",obj[1]);
@@ -475,6 +488,7 @@ public @ResponseBody Map funFillExistingKOTDetails(HttpServletRequest req)
 	            }
 	            else
 	            {
+	            	 listOfItem=new ArrayList();
 	                mapSelectedItemList = new HashMap<String, List<String>>();
 	                Map mapObjSettle=new HashMap();
 					mapObjSettle.put("strItemName",obj[0]);

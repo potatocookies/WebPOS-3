@@ -1008,6 +1008,10 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSShortcutKeySetup.jsp" />
 	</definition>
 	
+	<definition name="frmPOSImportExcelFile" extends="base.definition6">
+		<put-attribute name="title" value="Import Export Master" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSImportExcelFile.jsp" />
+	</definition>
 	
 	
 	

@@ -18,7 +18,7 @@
     <param-value>/WEB-INF/classes/resources/log4j-myapp.properties</param-value>
   </context-param>
   <context-param>
-    <param-name>webAppRootKey1</param-name>
+    <param-name>webWebPOSRootKey1</param-name>
     <param-value>myWebapp-instance-root</param-value>
   </context-param>
   <listener>

@@ -4491,9 +4491,9 @@ public class clsPOSReportService {
 								StringBuilder sql = new StringBuilder();
 								sql.append("Select count(*) from tblvoidmodifierdtl where strBillNo='" + billNo + "' ");
 								List list2 = objBaseService.funGetList(sql, "sql");
-								BigInteger count = 0;
+								int count = 0;
 								if (list2.size() > 0) {
-									count = (BigInteger) list2.get(0);
+									count =(new BigInteger(list2.get(0).toString())).intValue();
 								}
 								if (count > 0) {
 									sql.setLength(0);
@@ -4502,7 +4502,7 @@ public class clsPOSReportService {
 									list2 = objBaseService.funGetList(sql, "sql");
 									Double temp = 0.0;
 									if (list2.size() > 0) {
-										temp = (Double) list2.get(0);
+										temp = (new BigDecimal(list2.get(0).toString())).doubleValue();
 									}
 									amountTemp = amountTemp + temp;
 								}
@@ -4519,7 +4519,7 @@ public class clsPOSReportService {
 								objBillItemDtlBean.setStrUserEdited(obj[6].toString());
 								objBillItemDtlBean.setStrReasonName(obj[7].toString());
 								objBillItemDtlBean.setStrRemark(obj[8].toString());
-
+								arrListVoidBillWise.add(objBillItemDtlBean);
 								sumTotalAmt = sumTotalAmt + amountTemp;
 							}
 

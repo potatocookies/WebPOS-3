@@ -170,30 +170,157 @@ var selectedRowIndex="";
 			 row.style.backgroundColor='#ffd966';
 			 row.hilite = true;
 		 }
-		 
-		 
 		 funOpenBillSettlement()
 		
 	}
 	 function funOpenBillSettlement()
 	 {
 		 
-			var searchUrl="";
+		 var searchUrl="";
 			
-	    	var tableName = document.getElementById("tblData");
-	       	var dataBilNo= tableName.rows[selectedRowIndex].cells[0].innerHTML; 
-	        var btnBackground=dataBilNo.split('value=');
-	        var billData=btnBackground[1].split("onclick");
-	        var billNo=billData[0].substring(1, (billData[0].length-2));
-	        
-	     	var dataTableNo= tableName.rows[selectedRowIndex].cells[1].innerHTML; 
-	        var btnBackgroundTableNo=dataTableNo.split('value=');
-	        var tableData=btnBackgroundTableNo[1].split("onclick");
-	        var selectedTableName=tableData[0].substring(1, (tableData[0].length-2));
+		 var tableName = document.getElementById("tblData");
+	     var dataBilNo= tableName.rows[selectedRowIndex].cells[0].innerHTML; 
+	     var btnBackground=dataBilNo.split('value=');
+	     var billData=btnBackground[1].split("onclick");
+	     var billNo=billData[0].substring(1, (billData[0].length-2));
 	      
-	        
-
+	     var dataTableNo= tableName.rows[selectedRowIndex].cells[1].innerHTML; 
+	     var btnBackgroundTableNo=dataTableNo.split('value=');
+	     var tableData=btnBackgroundTableNo[1].split("onclick");
+	     var selectedTableName=tableData[0].substring(1, (tableData[0].length-2));
+	     
+	    
 		 
+	 	 funSetDataToSettlementWindowTab(billNo,selectedTableName);
+	 	 
+	 }
+	 
+	 
+	 function funSetDataToSettlementWindowTab(billNo,selectedTableName)
+	 {
+		
+
+			 /* Disable tab1 and display tab2 */
+		     document.getElementById("tab1").style.display='none';
+		 	 document.getElementById("tab2").style.display='block';
+		 	 /* Disable tab1 and display tab2 */
+			 	
+		 	 
+		 	 var $rows = $('#tblSettleItemTable').empty();
+		 	 
+		 	$("#billNoForDisplay").text("Bill No: "+billNo);
+		 	
+		 	$("#hidBillNo").val(billNo);
+		 	
+		 	$("#tableNameForDisplay").text("Table No: "+selectedTableName);
+		 	$("#billDateForDisplay").text("Date: "+gBillDate);
+		 	
+		 	
+		 	
+		 	operationType="DineIn";
+		 	transactionType="Modify Bill";
+		 	 
+		 	
+		 	
+		 	finalSubTotal=0.00;
+		 	finalDiscountAmt=0.00;
+		 	finalNetTotal=0.00;
+		 	taxTotal=0.00;
+		 	taxAmt=0.00;
+		 	finalGrandTotal=0.00;
+		 	
+		 	 $("#txtDeliveryCharge").val(finalDelCharges);
+		 	 
+		 	 var listItmeDtl=[];	   
+		 	 var hmItempMap=new Map();
+		 	 
+		 	 
+		 	/*Loading bill items  */
+		 	var searchurl=getContextPath()+"/funGetItemsFromBill.html?billNo="+billNo;
+			$.ajax({
+				type: "GET",
+			     url: searchurl,				     
+			     contentType: 'application/json',
+			     async: false,		       
+			     success: function (response)
+			     {
+			    	 operationType=response.operationType;
+			    	 
+			    	$.each(response.listOfBillItemDetails,function(i,item)
+			    	{
+        	    		var itemDiscAmt=0;
+			 			var isModifier=false;
+			 			
+			 			var itemName=item.strItemName;
+			 			if(itemName.startsWith("-->"))
+			 			{
+			 	    		isModifier=true;
+			 			}
+			 			
+			 			
+			 			var itemQty=item.dblQuantity;
+			 			var itemAmt=item.dblAmount;
+			 			var itemCode=item.strItemCode;
+			 			var itemDiscAmt=item.dblDiscountAmt;
+			 	 		var groupcode=item.strGroupCode;
+			 	 		var subgroupcode=item.strSubGroupCode;
+			 	 		var subgroupName=item.strSubGroupName;
+			 	 		var groupName=item.strGroupName;
+			 			
+			 	 		
+			 			hmGroupMap.set(groupcode, groupName); 
+			 			hmSubGroupMap.set(subgroupcode, subgroupName);
+			 			
+			 			
+			 			hmItempMap.set(itemCode,itemName);
+			 			
+			 			
+			 			var singleObj = {}
+			 		    singleObj['itemName'] =itemName;
+			 		    singleObj['quantity'] =itemQty;
+			 		    singleObj['amount'] = itemAmt;
+			 		    singleObj['discountPer'] = 0.0;
+			 		    singleObj['discountAmt'] =0.0;
+			 		    singleObj['strSubGroupCode'] =subgroupcode;
+			 		    singleObj['strGroupcode'] =groupcode;
+			 		    singleObj['itemCode'] =itemCode;
+			 		    singleObj['rate'] =itemAmt/itemQty;
+			 		    singleObj['isModifier'] =isModifier;
+			 		    
+			 		    listItmeDtl.push(singleObj); 
+		        	});
+		         },
+		        error: function(jqXHR, exception)
+		        {
+		            if (jqXHR.status === 0) {
+		                alert('Not connect.n Verify Network.');
+		            } else if (jqXHR.status == 404) {
+		                alert('Requested page not found. [404]');
+		            } else if (jqXHR.status == 500) {
+		                alert('Internal Server Error [500].');
+		            } else if (exception === 'parsererror') {
+		                alert('Requested JSON parse failed.');
+		            } else if (exception === 'timeout') {
+		                alert('Time out error.');
+		            } else if (exception === 'abort') {
+		                alert('Ajax request aborted.');
+		            } else {
+		                alert('Uncaught Error.n' + jqXHR.responseText);
+		            }		            
+		        }
+			});
+				
+			
+		 	
+		 	/**
+		 	* filling data to grid without calculating promotions and for bill print	
+		 	*/
+		 	 funNoPromtionCalculation(listItmeDtl)
+
+		 	    
+		 	funRefreshSettlementItemGrid();
+		 	
+		
 	 }
 	 
 	
@@ -204,11 +331,11 @@ var selectedRowIndex="";
 	</head>
 	<body>
 
-	<s:form name=" BillSettlement" method="GET" action="fillBillSettlementData.html?saddr=${urlHits}"  target="_blank">
+	<s:form name="ModifyBill" method="GET" action=""  target="_blank">
 	
     
     <div id="formHeading">
-		<label>Bill Settlement</label>
+		<label>Modify Bill</label>
 			</div>
 <br/>
 <br/>
@@ -225,7 +352,9 @@ var selectedRowIndex="";
 	<p align="center">
 	
 </div>
-
+	<s:input type="hidden" path="strBillNo" id="hiddBillNo" />
+<s:input type="hidden" path="strTableNo" id="hiddTableNO" />
+<s:input type="hidden" path="selectedRow" id="hiddSelectedRow" />
 	</s:form>
 
 

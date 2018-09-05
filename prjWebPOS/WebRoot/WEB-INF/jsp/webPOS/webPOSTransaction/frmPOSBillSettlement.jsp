@@ -17,6 +17,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
 <title>BILL SETTLEMENT</title>
 <script type="text/javascript">
+
+
 		var operationFrom="${operationFrom}";
 		var balanceAmount=0,paidAmount=0,refundAmount=0,loyalityPoints=0;
 		var settleType = "",debitCardNo = "";
@@ -833,7 +835,7 @@
 	        {
 	            paidAmount =$("#txtPaidAmount").val();
 	        }
-	        if (paidAmount == 0.00 && grandTotal != 0.00)
+	        if (paidAmount == 0.00 && finalGrandTotal != 0.00)
 	        {
 	        	alert("Please Enter Amount");
 	        	
@@ -851,7 +853,7 @@
 	        
 	        if (settleType=="Debit Card")
 	        {
-//	            if (!lblCardBalance.getText().isEmpty()){
+
 	                var cardBal =$("#lblCardBalance").val();
 	                if (cardBal < paidAmount)
 	                {
@@ -859,7 +861,7 @@
 	                	
 	                	return;
 	                }
-	           // }
+
 	        }
 	        
 	        
@@ -869,14 +871,7 @@
 	        	return;
 	        }
 	      
-		 
-// 	        if (settleMode == true && (balanceAmount != 0.00 ) || hmSettlemetnOptions.length==0) //|| hmSettlemetnOptions.isEmpty()
-// 	        {
-// 	        	if(multSettle.length>0){
-// 	        		multSettle=multSettle+"#"+settleName;
-// 	        	}else{
-// 	        		multSettle=settleName;
-// 	        	}
+
 	        	if(settleType!="")
 	        	{
 	            switch (settleType)
@@ -900,7 +895,7 @@
 	                    	 arrSettleOptions.push(settlementCode);
 	                    	 arrSettleOptions.push(dblSettlementAmount);
 	                    	 arrSettleOptions.push(paidAmount);
-	                    	 arrSettleOptions.push(grandTotal);
+	                    	 arrSettleOptions.push(finalGrandTotal);
 	                    	 arrSettleOptions.push(refundAmount);
 	                    	 arrSettleOptions.push(settelmentDesc);
 	                    	 arrSettleOptions.push(settleType);
@@ -910,7 +905,7 @@
 	                    	 arrSettleOptions.push("");
 	                		
 	                		 
-	                        hmSettlemetnOptions.set(settleName,arrSettleOptions);   // settlementCode, dblSettlementAmount, paidAmount, "", settleName, "", "", grandTotal, refundAmount, "", getStrSettelmentDesc(), getStrSettelmentType()));
+	                        hmSettlemetnOptions.set(settleName,arrSettleOptions);   // settlementCode, dblSettlementAmount, paidAmount, "", settleName, "", "", finalGrandTotal, refundAmount, "", getStrSettelmentDesc(), getStrSettelmentType()));
 	                      
 	                    }
 	                	break; 
@@ -968,7 +963,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1021,7 +1016,7 @@
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
 		                		 arrSettleOptions[3]=paidAmount;
-		                		 arrSettleOptions[4]=grandTotal;
+		                		 arrSettleOptions[4]=finalGrandTotal;
 		                		 arrSettleOptions[5]=refundAmount;
 		                		 arrSettleOptions[6]=settelmentDesc;
 		                		 arrSettleOptions[7]=settleType;
@@ -1063,7 +1058,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1119,7 +1114,7 @@
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
 		                		 arrSettleOptions[3]=paidAmount;
-		                		 arrSettleOptions[4]=grandTotal;
+		                		 arrSettleOptions[4]=finalGrandTotal;
 		                		 arrSettleOptions[5]=refundAmount;
 		                		 arrSettleOptions[6]=settelmentDesc;
 		                		 arrSettleOptions[7]=settleType;
@@ -1159,7 +1154,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1191,7 +1186,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1225,7 +1220,7 @@
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
 		                		 arrSettleOptions[3]=paidAmount;
-		                		 arrSettleOptions[4]=grandTotal;
+		                		 arrSettleOptions[4]=finalGrandTotal;
 		                		 arrSettleOptions[5]=refundAmount;
 		                		 arrSettleOptions[6]=settelmentDesc;
 		                		 arrSettleOptions[7]=settleType;
@@ -1275,7 +1270,7 @@
 			                		 arrSettleOptions[1]=settlementCode;
 			                		 arrSettleOptions[2]=dblSettlementAmount;
 			                		 arrSettleOptions[3]=paidAmount;
-			                		 arrSettleOptions[4]=grandTotal;
+			                		 arrSettleOptions[4]=finalGrandTotal;
 			                		 arrSettleOptions[5]=refundAmount;
 			                		 arrSettleOptions[6]=settelmentDesc;
 			                		 arrSettleOptions[7]=settleType;
@@ -1308,7 +1303,7 @@
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
 		                		 arrSettleOptions[3]=paidAmount;
-		                		 arrSettleOptions[4]=grandTotal;
+		                		 arrSettleOptions[4]=finalGrandTotal;
 		                		 arrSettleOptions[5]=refundAmount;
 		                		 arrSettleOptions[6]=settelmentDesc;
 		                		 arrSettleOptions[7]=settleType;
@@ -1340,7 +1335,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1373,7 +1368,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1403,7 +1398,7 @@
 	                		 arrSettleOptions[1]=settlementCode;
 	                		 arrSettleOptions[2]=dblSettlementAmount;
 	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=grandTotal;
+	                		 arrSettleOptions[4]=finalGrandTotal;
 	                		 arrSettleOptions[5]=refundAmount;
 	                		 arrSettleOptions[6]=settelmentDesc;
 	                		 arrSettleOptions[7]=settleType;
@@ -1418,61 +1413,7 @@
 	            
 	            balanceAmount=$('#txtAmount').val()-$('#txtPaidAmount').val();
 	         
-// 	        }
-// 			var name;
-// 	        var splitSettle=multSettle.split("#");
-// 	        for(i in splitSettle)
-// 	        {
-// 	        		var arrSettleOptions=new Array();
-// 		        	name=splitSettle[i];
-// 		        	arrSettleOptions=hmSettlemetnOptions.get(name);
-		        	
-// 	        	 var searchurl=getContextPath()+"/funMapOfSettlement.html";
-// 				 $.ajax({
-// 					        type: "POST",
-// 					        url: searchurl,
-// 					        dataType: "text",
-// 					        async: false,
-// 					        data : {
-// 					        	"settleName":arrSettleOptions[0],
-// 					        	"settlementCode":arrSettleOptions[1],
-// 					        	"dblSettlementAmount":arrSettleOptions[2],
-// 					        	"paidAmount":arrSettleOptions[3],
-// 					        	"grandTotal":arrSettleOptions[4],
-// 					        	"refundAmount":arrSettleOptions[5],
-// 					        	"settelmentDesc": arrSettleOptions[6],
-// 					        	"settleType":arrSettleOptions[7],
-// 					        	"expiryDate":arrSettleOptions[8],
-// 					        	"cardName":arrSettleOptions[9],
-// 					        	"remark" :arrSettleOptions[10],
-// 					        	"giftVoch" :arrSettleOptions[11],
-// 					        },
-// 					        success: function (response) 
-// 					        {
-					        	
-// 					        },
-// 				 			error: function(jqXHR, exception)
-// 					        {
-// 					            if (jqXHR.status === 0) {
-// 					                alert('Not connect.n Verify Network.');
-// 					            } else if (jqXHR.status == 404) {
-// 					                alert('Requested page not found. [404]');
-// 					            } else if (jqXHR.status == 500) {
-// 					                alert('Internal Server Error [500].');
-// 					            } else if (exception === 'parsererror') {
-// 					                alert('Requested JSON parse failed.');
-// 					            } else if (exception === 'timeout') {
-// 					                alert('Time out error.');
-// 					            } else if (exception === 'abort') {
-// 					                alert('Ajax request aborted.');
-// 					            } else {
-// 					                alert('Uncaught Error.n' + jqXHR.responseText);
-// 					            }		            
-// 					        }
-			 
-// 			 });
-			 
-// 	      }
+
 	        
 	        flgEnterBtnPressed=true;
 	        funSettlementDtlFill(); //for refresh item table
@@ -1483,8 +1424,7 @@
 	function funSettlementDtlFill()
 	 {
   
-// 		   hmSettlemetnOptions.forEach(function(value, key) {
-// 		   alert(key + " : " + value[0]);
+
 		    var tblSettleItemDtl=document.getElementById('tblSettleItemTable');
 			var rowCount = tblSettleItemDtl.rows.length;
 		   if(checkSetteType=="Balance")
@@ -1552,228 +1492,7 @@
 			    checkSetteType="Balance";
 			}
 
- // 		});
-		    
-// 		    col7.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"strRemark\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCount)+"].strRemark\" id=\"strRemark."+(rowCount)+"\" value="" />";
-// 		    col8.innerHTML = "<input type=\"hidden\" size=\"4px\"   class=\"dblActualAmt\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCount)+"].dblActualAmt\" id=\"dblActualAmt."+(rowCount)+"\" value=0.0 />";
-		   
-		
-// 	 }
 
-//    function funLoadSettleItemDetailData()
-// 	{
-// 		var applyPromotion=false;
-// 			if(popUpOnPromoBill=="Y")
-// 			{
-// 				//var applyPromotion=confirm("Do want to Calculate Promotions for this Bill?");
-// 				if(applyPromotion==true)
-// 				{
-// 					 flgApplyPromoOnBill = true;
-// 				}
-// 			}
-// 		var searchurl=getContextPath()+"/funTableLoadPunchedItemDetailData.html?applyPromotion="+applyPromotion;
-// 		 $.ajax({
-// 			        type: "GET",
-// 			        url: searchurl,
-// 			        dataType: "json",
-// 			        async: false,
-// 			        success: function (response) {
-			        
-// 			        	funRemoveProductRows();
-// 			            	$.each(response,function(i,item){
-// 			            		 if(response[i].listModifierDtl.length>0) // for get modifier data from modifier list
-// 			            		{ 
-// 			            			var j=response[i].listModifierDtl.length-1;
-// 			            			var modname=response[i].listModifierDtl[j].modifierDescription;
-// 			            			funFillSettleTable(response[i].listModifierDtl[j].modifierDescription,response[i].listModifierDtl[j].quantity,response[i].listModifierDtl[j].amount,response[i].discountPer,response[i].discountAmt,response[i].strGroupcode,response[i].strSubGroupCode,response[i].itemCode);
-// 			            			subTotalonAmt=subTotalonAmt+response[i].listModifierDtl[j].amount;
-// 			            			discountonAmt=discountonAmt+response[i].discountAmt;
-// 			            		}
-// 			            		else{ //get
-// 				            		funFillSettleTable(response[i].itemName,response[i].quantity,response[i].amount,response[i].discountPer,response[i].discountAmt,response[i].strGroupcode,response[i].strSubGroupCode,response[i].itemCode);
-// 				            		subTotalonAmt=subTotalonAmt+response[i].amount;
-// 				            		discountonAmt=discountonAmt+response[i].discountAmt;
-// 			            		}
-			            		
-// 			            	});
-// 			            	netTotal=subTotalonAmt-discountonAmt;
-// 			            	grandTotal=netTotal;
-// 			            	 if (settleType=="Complementary")
-// 			                 {
-// 			            		 subTotal = 0.00;
-// 			            		 netTotal = 0.00;
-// 			            		 grandTotal = 0.00;
-// 			                 }
-// 			            	funFillSettleTable("","","",parseFloat(""),parseFloat(""),"","","");
-// 			            	funFillSettleTable("SubTotal","",subTotalonAmt,parseFloat(""),parseFloat(""),"","","");
-// 			            	funFillSettleTable("Discount","",discountonAmt,parseFloat(""),parseFloat(""),"","","");
-// 			            	funFillSettleTable("NetTotal","",netTotal,parseFloat(""),parseFloat(""),"","","");
-
-// // 			            	 funFillSettleTable("","","","","","","","");
-// // 				            	funFillSettleTable("SubTotal","",subTotalonAmt,"","","","","");
-// // 				            	funFillSettleTable("Discount","",discountonAmt,"","","","","");
-// // 				            	funFillSettleTable("NetTotal","",netTotal,"","","","","");
-			            	   
-			            
-// 			            },
-// 			            error: function(jqXHR, exception)
-// 				        {
-// 				            if (jqXHR.status === 0) {
-// 				                alert('Not connect.n Verify Network.');
-// 				            } else if (jqXHR.status == 404) {
-// 				                alert('Requested page not found. [404]');
-// 				            } else if (jqXHR.status == 500) {
-// 				                alert('Internal Server Error [500].');
-// 				            } else if (exception === 'parsererror') {
-// 				                alert('Requested JSON parse failed.');
-// 				            } else if (exception === 'timeout') {
-// 				                alert('Time out error.');
-// 				            } else if (exception === 'abort') {
-// 				                alert('Ajax request aborted.');
-// 				            } else {
-// 				                alert('Uncaught Error.n' + jqXHR.responseText);
-// 				            }		            
-// 				        }
-// 		 });
-		 
-// 			 if (settleType!="Complementary")
-// 	         {
-// 				 funCalculateTax();	 
-				
-// 	         }
-// 			 var delCharge=$('#txtDeliveryCharge').val();
-// 			 if (delCharge.length > 0)
-// 	            {
-// 	                if (delCharge > 0)
-// 	                {
-// 	                	funFillSettleTable("Del Charges","",delCharge,parseFloat(""),parseFloat(""),"","","");
-// 	                }
-// 	                grandTotal=grandTotal+Math.round(delCharge);
-// 	            }
-			 
-// 			 	$('#txtAmount').val(grandTotal);
-// 			 	$('#txtPaidAmount').val(grandTotal);
-// 				$('#hidSubTotal').val(subTotalonAmt);
-//            	    $('#hidDiscountTotal').val(discountonAmt);
-//            	    $('#hidNetTotal').val(netTotal);
-//            	    $('#hidGrandTotal').val(grandTotal);
-           	
-// 	            balanceAmount=grandTotal;
-// 				funFillSettleTable("Grand Total ","",Math.round(grandTotal),parseFloat(""),parseFloat(""),"","","");
-// 	        	funFillSettleTable(" ","","",parseFloat(""),parseFloat(""),"","","");
-// 	        	funFillSettleTable("Payment Modes","","",parseFloat(""),parseFloat(""),"","","");
-// 	        	var arr=new Array();
-// 	        	if(hmSettlemetnOptions.size>0)
-// 	        	{
-// 	        		hmSettlemetnOptions.forEach(function (item, key, mapObj) 
-// 	        		{
-// 	        			 arr=item;
-// 	        		    //document.write(item.toString() + "<br />");  
-// 	        		     var settlementDesc = arr[6];
-// 		                 var settlementAmt = 0;
-// 		                 if (arr[3] > arr[2]) // paidAmt > Settlement Amt
-// 		                 {
-// 		                     settlementAmt = arr[2];
-// 		                 }
-// 		                 else
-// 		                 {
-// 		                     settlementAmt = arr[3];
-// 		                 }
-
-// 		                 funFillSettleTable(settlementDesc,"",Math.round(settlementAmt),parseFloat(""),parseFloat(""),"","","");
-// 	        		});
-// 	        	}
-	        		  
-// /* 
-// 	        	for (var o=0; o<hmSettlemetnOptions.size;o++)
-// 	             {
-	        		 
-// 	        		 arr=hmSettlemetnOptions.values().next();
-// 	        		 arr=arr.value;
-	               
-// 	             } */
-// 		      	 var tempBalance = 0;
-					
-// 		      	  if (paidAmount > grandTotal)
-// 		            {
-// 		                var tempRefundAmt = funGetTotalPaidAmount() - grandTotal;
-// 		                if (settleType=="Complementary")
-// 		                {
-// 		                    tempRefundAmt = 0;
-// 		                }
-// 		                funFillSettleTable("Refund","",Math.round(tempRefundAmt),parseFloat(""),parseFloat(""),"","","");
-// 		            }
-// 		            else
-// 		            {
-// 		                tempBalance = grandTotal - funGetTotalPaidAmount();
-// 		                if (tempBalance <= 0)
-// 		                {
-// 		                    tempBalance = 0.00;
-// 		                }
-// 		                funFillSettleTable("Balance","",Math.round(tempBalance),parseFloat(""),parseFloat(""),"","","");
-// 		            }
-		      	  
-// 		      	   flgComplimentaryBill = false;
-// 		            if (hmSettlemetnOptions.length == 1)
-// 		            {
-// 		                for ( ob in hmSettlemetnOptions.values())
-// 		                {
-// 		                    if (ob[7]=="Complementary")
-// 		                    {
-// 		                        flgComplimentaryBill = true;
-// 		                        break;
-// 		                    }
-// 		                }
-// 		            }
-// 		            if (!flgComplimentaryBill)
-// 		            {
-// 		                balanceAmount = tempBalance;
-// 		                $("#txtPaidAmount").val(balanceAmount);
-// 		                //txtPaidAmt.setText(String.valueOf(_balanceAmount));///////////////////////
-// 		            } 
-		 
-// 	}
-// 	function funCalculateTax()
-// 	{
-// 		var taxTotal=0;
-// 		var searchurl=getContextPath()+"/funCalculateTaxInSettlement.html?";
-// 		$.ajax({
-// 			type:"POST",
-// 		 	url: searchurl,
-// 	        dataType: "json",
-// 	        async : false,
-// 	        success: function (response){
-// 	        	    	$.each(response,function(i,item){
-// 			        		taxTotal=taxTotal+response[i].taxAmount;
-// 			        		funFillSettleTable(response[i].taxName,"",Math.round(response[i].taxAmount),parseFloat(""),parseFloat(""),"","","");
-			        		
-// 			        	});
-	             
-// 	        	    	grandTotal=grandTotal+taxTotal;
-// 	        	    	 $('#hidTaxTotal').val(taxTotal);
-// 	        },
-// 	        error: function(jqXHR, exception)
-// 	        {
-// 	            if (jqXHR.status === 0) {
-// 	                alert('Not connect.n Verify Network.');
-// 	            } else if (jqXHR.status == 404) {
-// 	                alert('Requested page not found. [404]');
-// 	            } else if (jqXHR.status == 500) {
-// 	                alert('Internal Server Error [500].');
-// 	            } else if (exception === 'parsererror') {
-// 	                alert('Requested JSON parse failed.');
-// 	            } else if (exception === 'timeout') {
-// 	                alert('Time out error.');
-// 	            } else if (exception === 'abort') {
-// 	                alert('Ajax request aborted.');
-// 	            } else {
-// 	                alert('Uncaught Error.n' + jqXHR.responseText);
-// 	            }		            
-// 	        }
-			
-// 		});
-// 	}
-	
 
 	function funRemoveProductRows()
 	{
@@ -1974,7 +1693,7 @@
 //         			arr=item;
 //     	       		if ("Complementary"==(arr[6]))
 //     	            {
-//     	                totalPaidAmt = grandTotal;
+//     	                totalPaidAmt = finalGrandTotal;
 //     	                break;
 //     	            }
 //     	            totalPaidAmt =totalPaidAmt + arr[3];
@@ -1993,54 +1712,65 @@
 	  
 	  
 	  function funGetPrintData()
-	    {
-// 		  document.forms["frmBillSettlement"].submit();
-		 if(operationName=="Dine In")
-		 {
-			/*  $("#hidTableNo").val(gTableNo);
-			 $("#hidWaiterNo").val(gWaiterNo);
+	  {
+
+			 if(operationType=="DineIn" && transactionType!="Modify Bill")
+			 {
 			 
-			 $("#hidCustomerCode").val(gCustomerCode);			 
-			 $("#hidBillTransType").val("Dine In");
-			 $("#hidAreaCode").val(gAreaCode); */
+				    var tableName=gTableName;
+					var yes=confirm("Do you want to generate bill for table : "+tableName);
+					if(yes)
+					{
+						$("#hidTransactionType").val("Make KOT");
+						 
+						 
+						document.frmBillSettlement.action = "actionBillSettlementKOT.html";
+					    document.frmBillSettlement.submit();
+					}
+					else
+					{
+						
+					}		 		   
+			 }
+			 else  if(operationType=="HomeDelivery" && transactionType!="Modify Bill")
+			 {
+				 $("#hidTransactionType").val("Direct Biller");
+				 
+		    	 document.frmBillSettlement.action = "actionBillSettlement.html";
+		    	 document.frmBillSettlement.method = "POST";
+				 document.frmBillSettlement.submit();
+		     }
+			 else  if(operationType=="TakeAway" && transactionType!="Modify Bill")
+			 {
+				 $("#hidTransactionType").val("Direct Biller");
+				 
+		    	 document.frmBillSettlement.action = "actionBillSettlement.html";
+		    	 document.frmBillSettlement.method = "POST";
+				 document.frmBillSettlement.submit();
+		     }
+			 else  if(transactionType=="Modify Bill")
+			 {
+				 $("#hidTransactionType").val("Modify Bill");
+				 
+		    	 document.frmBillSettlement.action = "actionModifyBill.html";
+		    	 document.frmBillSettlement.method = "POST";
+				 document.frmBillSettlement.submit();
+		     }
 			 
-			 var tableName=gTableName;
-			 
-			
-			 
-			var yes=confirm("Do you want to generate bill for table : "+tableName);
-			if(yes)
-			{
-				document.frmBillSettlement.action = "actionBillSettlementKOT.html";
-			    document.frmBillSettlement.submit();
-			}
-			else
-			{
-				
-			}		 		   
-	      }
-		 else  if(operationName=="Home Delivery")
-		 {
-			 $("#hidBillTransType").val("Home Delivery");
-			 
-	    	 document.frmBillSettlement.action = "actionBillSettlement.html";
-	    	 document.frmBillSettlement.method = "POST";
-			 document.frmBillSettlement.submit();
-	      }
-		 else  if(operationName=="Take Away")
-		 {
-			 $("#hidBillTransType").val("Take Away");
-			 
-	    	 document.frmBillSettlement.action = "actionBillSettlement.html";
-	    	 document.frmBillSettlement.method = "POST";
-			 document.frmBillSettlement.submit();
-	      }
 	    }
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
 // 	///Click on OK Button of Discount
- 	  function funDiscOkClicked()
- 	  { 
+function funDiscOkClicked()
+{ 
  		
-// // 		var discGroup =$('input[name=rdbDiscgroup]:checked').val();
+
   		
 	      var discGroup=disountType;
 		  var totamt = 0.00;
@@ -2054,28 +1784,36 @@
 			  { 
 				
 	        	    var singleObj = {}
+	        	    
+	        	    singleObj['itemCode'] = obj.itemCode;
 	        	    singleObj['itemName'] = obj.itemName;
 	        	    singleObj['quantity'] = obj.quantity;
 	        	    singleObj['amount'] = obj.amount;
 	        	    singleObj['discountPer'] = obj.discountPer;
 	        	    singleObj['discountAmt'] = obj.discountAmt;
+	        	    
+	        	    
 	        	    listOfDiscApplicableItems.push(singleObj);
 				        	
-			       })
+			   })
 	      }
 		//Item  is Selected
-		  if(discGroup=='item'){
+		  if(discGroup=='item')
+		  {
  			   $.each(listBillItem,function(i,obj)
 		        { 
 			
-			    if($('#cmbItemCategary').val()==obj.itemCode)
+			      if($('#cmbItemCategary').val()==obj.itemCode)
 			      {
 	        	    var singleObj = {}
+	        	    
+	        	    singleObj['itemCode'] = obj.itemCode;
 	        	    singleObj['itemName'] = obj.itemName;
 	        	    singleObj['quantity'] = obj.quantity;
 	        	    singleObj['amount'] = obj.amount;
 	        	    singleObj['discountPer'] = obj.discountPer;
 	        	    singleObj['discountAmt'] = obj.discountAmt;
+	        	    
 	        	    listOfDiscApplicableItems.push(singleObj);
 			      }
 		       })
@@ -2083,38 +1821,47 @@
 		
 		//Group is Selected
 		
-		  if(discGroup=='group'){  
+		  if(discGroup=='group')
+		  {  
 			  var groupcode=$('#cmbItemCategary').val();
-				$.each(listBillItem, function(i, obj) 
-				{
-				if(groupcode==obj.strGroupcode)
-			     {
-		       	    var singleObj = {}
-		       	    singleObj['itemName'] = obj.itemName;
-		       	    singleObj['quantity'] = obj.quantity;
-		       	    singleObj['amount'] = obj.amount;
-		       	    singleObj['discountPer'] = obj.discountPer;
-		       	    singleObj['discountAmt'] = obj.discountAmt;
-		       	    listOfDiscApplicableItems.push(singleObj);
-			     }
-		       })
+			  $.each(listBillItem, function(i, obj) 
+			  {
+				  if(groupcode==obj.strGroupcode)
+				  {
+			       	    var singleObj = {}
+			       	    
+			       	 singleObj['itemCode'] = obj.itemCode;
+			       	    singleObj['itemName'] = obj.itemName;
+			       	    singleObj['quantity'] = obj.quantity;
+			       	    singleObj['amount'] = obj.amount;
+			       	    singleObj['discountPer'] = obj.discountPer;
+			       	    singleObj['discountAmt'] = obj.discountAmt;
+			       	    
+			       	    listOfDiscApplicableItems.push(singleObj);
+				  } 
+		      })
 		  }
 		
 // 		//SubGroup is Selected
 			
-		  if(discGroup=='subGroup'){
+		  if(discGroup=='subGroup')
+		  {
 			  var subgroupcode=$('#cmbItemCategary').val();
-				$.each(listBillItem, function(i, obj) 
-				{
-			     if(subgroupcode==obj.strSubGroupCode)
+			  $.each(listBillItem, function(i, obj) 
+			  {
+			      if(subgroupcode==obj.strSubGroupCode)
 			      {
 	        	    var singleObj = {}
+	        	    
+	        	    singleObj['itemCode'] = obj.itemCode;
 	        	    singleObj['itemName'] = obj.itemName;
 	        	    singleObj['quantity'] = obj.quantity;
 	        	    singleObj['amount'] = obj.amount;
 	        	    singleObj['discountPer'] = obj.discountPer;
 	        	    singleObj['discountAmt'] = obj.discountAmt;
+	        	    
 	        	    listOfDiscApplicableItems.push(singleObj);
+	        	    
 			      }
 		       })
 		  }
@@ -2126,104 +1873,109 @@
 		  var listOfDicountItem=[];
 		  var checkTaxTotal=0;
 		  var dblTaxTotal=0;
+		  totalDiscAmt=0;
+		  
 		  var dblDiscountOnAmt= getTotalAmt(listOfDiscApplicableItems) ;
+		  
+		  if(amtDisc>0)
+		  {
+			  perDisc=(amtDisc/dblDiscountOnAmt)*100;
+			  
+			  $('#txtDiscountPer').val(perDisc);
+		  }
+		  
+		  
+		  
+		  
 		  $.each(listOfDiscApplicableItems, function(i, obj) 
 		  {
-		  if(perDisc>0)
-		   {
-			 var discPer =perDisc;
-		     dblDiscountPer = discPer;
-             var discAmt = obj.amount * (discPer / 100);
-             discAmt = discAmt / obj.quantity;
-             $("#txtDiscountAmt").val(discAmt);
-		     var singleObj = {}
-	   	     singleObj['itemName'] = obj.itemName;
-	   	     singleObj['quantity'] = obj.quantity;
-	   	     singleObj['amount'] = obj.amount;
-	   	     singleObj['discountPer'] = discPer;
-	   	     singleObj['discountAmt'] = discAmt;
-	   	  listOfDicountItem.push(singleObj);
-		   }
-		  else{
-			  
-			     var discAmt =amtDisc;
-			    
-			     var discPer = (discAmt / dblDiscountOnAmt) * 100;
-                 var discAmtForItem =obj.amount * (discPer / 100);
-                 $("#txtDiscountPer").val(discPer);
-                 discAmtForItem = discAmtForItem / obj.quantity;
-             
+			 
+				 var discPer=perDisc;
+				 var discAmt = obj.amount * (perDisc / 100);
+				 
+				 totalDiscAmt=totalDiscAmt+discAmt;
+				 
+				 	             
 			     var singleObj = {}
+			     
+			     singleObj['itemCode'] = obj.itemCode;
 		   	     singleObj['itemName'] = obj.itemName;
 		   	     singleObj['quantity'] = obj.quantity;
 		   	     singleObj['amount'] = obj.amount;
 		   	     singleObj['discountPer'] = discPer;
-		   	     singleObj['discountAmt'] = discAmtForItem;
-		   	  listOfDicountItem.push(singleObj);
-		  }
+		   	     singleObj['discountAmt'] = discAmt;
+		   	 	
+		   	     listOfDicountItem.push(singleObj);
+			 
+ 		  });
 		  
+		  $("#txtDiscountAmt").val(totalDiscAmt);
+		 	 var listItmeDtl=[];	   
+			 var hmItempMap=new Map();	
+			 
+			 $.each(listBillItem,function(i,obj)
+			 { 
 
- 		 });
-		   
-		
-		    var totalamount=getTotalAmt(listBillItem) ;
+	        	    hmItempMap.set(obj.itemCode,obj.itemName);
+	        	    
+	        	    var discAmt=0,discPer=0;
+	        	    
+	        	    $.each(listOfDicountItem,function(i,objDiscItem)
+	        		{
+	        	    	if(obj.itemCode==objDiscItem.itemCode)
+	        	    	{
+	        	    		discAmt=objDiscItem.discountAmt;
+	        	    		discPer=objDiscItem.discountPer;
+	        	    	}
+	        		})
+					
+	        	    var singleObj = {}
+	        	    
+				    singleObj['itemName'] =obj.itemName;
+				    singleObj['quantity'] =obj.quantity; 
+				    singleObj['amount'] = obj.amount;
+				    singleObj['discountPer'] = discPer;
+	        	    singleObj['discountAmt'] = discAmt;				    
+				    singleObj['itemCode'] = obj.itemCode;
+				    singleObj['rate'] =obj.amount/obj.quantity;
+				    
+				    
+				    listItmeDtl.push(singleObj);
+				        	
+			 })		  
+			 
+		 var totalamount=getTotalAmt(listBillItem) ;
 			var oTable = document.getElementById('tblSettleItemTable');
 			var rowLength = oTable.rows.length;
 			
-			for (var i = 0; i < rowLength; i++)
-			{
-				
-				//fill ItemList with discount detial
-				
-				
-				
-
-			    
-			   //gets cells of current row
-			   var oCells = oTable.rows.item(i).cells[0].innerHTML;	
-			   var btnBackground=oCells.split('value=');
-		    
-		       var itemName=btnBackground[1].substring(1, (btnBackground[1].length-2));
-			  
-			   $.each(listOfDicountItem, function(j, objDiscItem) 
-	 			{
- 			   if(objDiscItem.itemName==itemName)
-		        {
- 				document.getElementById("tblDiscountPer."+i).value=objDiscItem.discountPer;
- 				document.getElementById("tblDiscountAmt."+(i-1)).value=objDiscItem.discountAmt;
- 				
- 				totalDiscAmt=totalDiscAmt+objDiscItem.discountAmt;
-		        }
+			var $rows = $('#tblSettleItemTable').empty();
+			listBillItem=[];
 			
-			});  
-			   if(itemName=='Discount')
-				{
-				   totalDiscAmt=totalDiscAmt+discountonAmt;
-				   netTotal=subTotalonAmt-totalDiscAmt;
-				   document.getElementById("column2."+i).value=totalDiscAmt;
-				}
-			  
-			   if(checkTaxTotal==1)
-				 {
-				   if(itemName=='GrandTotal')
-					  {
-					     grandTotal=dblTaxTotal+netTotal;
-					    document.getElementById("column2."+i).value=grandTotal;
-					  }else{
-						   var oCells = oTable.rows.item(i).cells[2].innerHTML;	
-						   var btnBackground=oCells.split('value=');
-					       var tax=btnBackground[1].substring(1, (btnBackground[1].length-2));
-						   dblTaxTotal=dblTaxTotal+parseFloat(tax);
-						  }
-				}
-			   if(itemName=='NetTotal')
-				 {
-				   checkTaxTotal=1;
-				   document.getElementById("column2."+i).value=netTotal;
-				 }
+
+			
+			finalSubTotal=0.00;
+			finalDiscountAmt=0.00;
+			finalNetTotal=0.00;
+			taxTotal=0.00;
+			taxAmt=0.00;
+			finalGrandTotal=0.00;	
+	
 			 
-			   
-			}
+		
+			 
+		/**
+		*calculating promotions and filling data to grid for bill print	
+		*/
+		funNoPromtionCalculation(listItmeDtl);
+	
+		    
+		funRefreshSettlementItemGrid();	
+			
+			
+			
+			
+			
+			
 			
 
 
@@ -2238,9 +1990,11 @@
 	    var col5=insertRow.insertCell(4);
 	    var col6=insertRow.insertCell(5);
 	    var col7=insertRow.insertCell(6);
-	  var per= $("#txtDiscountPer").val();
-	  var amt=$("#txtDiscountAmt").val();
-	  var cat= $('#cmbItemCategary').val();
+	    
+		  var per= $("#txtDiscountPer").val();
+		  var amt=$("#txtDiscountAmt").val();
+		  var cat= $('#cmbItemCategary').val();
+	  
 	    col1.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountPer\" id=\"discountPer."+(disCount)+"\" value='"+per+"' />" ;;
  	    col2.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountAmt\" id=\"discountAmt."+(disCount)+"\" value='"+amt+"' />";
  	    col3.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnAmt\" id=\"discountOnAmt."+(disCount)+"\" value='"+totalDiscAmt+"' />";
@@ -2248,16 +2002,10 @@
 	    col5.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnValue\" id=\"discountOnValue."+(disCount)+"\" value='"+cat+"' />";
  	    col6.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountReasonCode\" id=\"discountReasonCode."+(disCount)+"\" value='' />";	    
  	    col7.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountRemarks\" id=\"discountRemarks."+(disCount)+"\" value='' />";
+ 	    
      		disCount++;
-		 	$('#txtAmount').val(grandTotal);
-		 	$('#txtPaidAmount').val(grandTotal);
-			$('#hidSubTotal').val(subTotalonAmt);
-       	    $('#hidDiscountTotal').val(discountonAmt);
-       	    $('#hidNetTotal').val(netTotal);
-       	    $('#hidGrandTotal').val(grandTotal);
-// //        	   $('#hidTaxTotal').val(grandTotal);
-       	 
-       	 funTaxOnDisc();	
+     		
+	
 			
  	  }
 	  
@@ -2269,7 +2017,26 @@
 	            totalDiscOnAmt += parseFloat(obj.amount);
 	        });
 	        return totalDiscOnAmt;
-	    }
+	 }
+	 
+	 
+	 function funDiscPerFocusOut(objThis)
+	 {
+		if(objThis.value<=0)
+		{
+			objThis.value="0.00"; 
+		}
+		
+	 }
+	 
+	 function funDiscAmtFocusOut(objThis)
+	 {
+		if(objThis.value<=0)
+		{
+			objThis.value="0.00"; 
+		}
+		
+	 }
 
 	 
 	 function funTaxOnDisc()
@@ -2314,7 +2081,7 @@
 				        		rowCountTax++;
 				        	});
 	             
-		        	    	grandTotal=grandTotal+taxTotal;
+		        	    	finalGrandTotal=finalGrandTotal+taxTotal;
 		        	    	 $('#hidTaxTotal').val(taxTotal);
 		        },
 		        error: function(jqXHR, exception)
@@ -2367,10 +2134,10 @@
 	<tr>
 		<td>
 			<div id="divOrder" style=" border: 0px solid #ccc; height: 560px;  overflow-x: auto; width: 350px;">
-				<label style=" display: inline-block;width: 175px;text-align: left;">Bill No: ${billNo}</label>
+				<label id="billNoForDisplay" style=" display: inline-block;width: 175px;text-align: left;" >Bill No: ${billNo}</label>
 				<label id="tableNameForDisplay" style=" display: inline-block;width: 175px;text-align: left;">Table No: ${gTableName}</label>
 				<br>
-				<label style=" display: inline-block;width: 130px;text-align: left;">Date: ${billDate}</label>
+				<label id="billDateForDisplay" style=" display: inline-block;width: 130px;text-align: left;">Date: ${billDate}</label>
 				
 				<!--  here the div of Item table-->
 				<!-- <div id="divItemTable" style=" border: 1px solid #ccc; height: 460px; width: 400px;"> -->
@@ -2445,7 +2212,7 @@
 				 		<tr>
 					 		<td><label id="lblExpiryDate" style=" display: inline-block;width: 70px;text-align: left;">Expiry Date</label></td>
 					 		
-					 		<td><s:input id="dteExpiry" required="required" path="dteExpiryDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox hasDatepicker"/> </td>
+					 		<td><s:input id="dteExpiry"  path="dteExpiryDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox hasDatepicker"/> </td>
 				 		</tr>
 			 		</table>
 			 	</div>
@@ -2475,7 +2242,7 @@
 				 		</tr>
 				 		<tr>
 					 		<td><label id="lblChqDate" style=" display: inline-block;width: 70px;text-align: left;">Date</label></td>
-					 		<td><s:input id="dteCheque" required="required" path="" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox hasDatepicker"/> </td>
+					 		<td><s:input id="dteCheque" path="" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox hasDatepicker"/> </td>
 				 		</tr>
 			 		</table>
 				</div>
@@ -2530,11 +2297,11 @@
 			 		<table style="width:98%;height:98px;font-size:11px; font-weight: bold;">
 					 		<tr>
 					 			<td style="padding-bottom: 2px;"><label id="lblDisc" style=" display: inline-block;width: 100%;text-align: left;">Discount %</label></td>
-						 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountPer" value="0.00" path="dblDiscountPer"  cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  onfocus="this.value=''" onfocusout="this.value='0.00'"  /> </td>						 		
+						 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountPer" value="0.00" path="dblDiscountPer"  cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  onfocus="this.value=''" onfocusout="funDiscPerFocusOut(this)"  /> </td>						 		
 					 		</tr>
 					 		<tr>
 					 			<td style="padding-bottom: 2px;" ><label id="lblDiscAmt" style=" display: inline-block;width: 100%;text-align: left;">Discount Amount</label></td>
-			        	 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountAmt" value="0.00" path="dblDiscountAmt" cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"   onfocus="this.value=''" onfocusout="this.value='0.00'" /> </td>			        	 		
+			        	 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountAmt" value="0.00" path="dblDiscountAmt" cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"   onfocus="this.value=''" onfocusout="funDiscAmtFocusOut(this)" /> </td>			        	 		
 				 			</tr>
 				 			<tr>
 					 			<td colspan="2" style="padding-bottom: 2px;">
@@ -2733,7 +2500,7 @@
 						 <tr>
 						 	<td style="padding-right: 5px;" ><input type="button" id="btnBack" value="BACK" style="width: 60px; height:40px;"  onclick="funBackButtonClicked(this)" class="btn btn-outline-success" ></input></td>
 						 	<td style="padding-right: 5px;"><input type="submit" id="btnPrint"  value="SAVE" style="width: 60px; height:40px;" onclick="return funGetPrintData()" class="btn btn-outline-success"></input></td>
-						 	<td style="padding-right: 5px;"><input type="button" id="btnSettle" name = "settleBill" value="Need To Remove" style="width: 130px; height:40px;" class="btn btn-outline-success"></input></td>
+						 	<td style="padding-right: 5px;"><input type="button" id="btnSettle" name = "settleBill" value="Need To Remove" style="width: 130px; height:40px; display:none" class="btn btn-outline-success"></input></td>
 						 	<td style="padding-right: 5px;"><input type="button" id="btnGetOffer" value="CHECK OFFER" style="width: 80px; height:40px;display:block"  onclick="funGetOfferButtonClicked(this)" class="btn btn-outline-success"></input></td>			 	
 						 </tr> 
 						 
@@ -2765,13 +2532,15 @@
  		 		<s:hidden id="hidCustMobileNo" path="custMobileNo"/>
 		 		<s:hidden id="hidCustomerCode" path="strCustomerCode"/>
 		 		<s:hidden id="hidCustomerName" path="customerName"/>
-		 		<s:hidden id="hidBillTransType" path="billTransType"/>
+		 		<s:hidden id="hidOperationType" path="operationType"/>
+		 		<s:hidden id="hidTransactionType" path="transactionType"/>
 		 		<s:hidden id="hidTakeAway" path="takeAway"/>
 		 		<s:hidden id="hidDeliveryBoyCode" path="strDeliveryBoyCode"/>
 		 		<s:hidden id="hidDeliveryBoyName" path="strDeliveryBoyName"/>
 		 		<s:hidden id="hidTableNo" path="strTableNo"/>
 				<s:hidden id="hidWaiterNo" path="strWaiter"/>
 				<s:hidden id="hidAreaCode" path="strAreaCode"   />
+				<s:hidden id="hidBillNo" path="strBillNo"   />
 				
 				
 				

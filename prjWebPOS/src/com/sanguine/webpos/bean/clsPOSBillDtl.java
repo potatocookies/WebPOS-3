@@ -2,9 +2,14 @@ package com.sanguine.webpos.bean;
 
 import java.io.Serializable;
 
-public class clsPOSBillDtl implements  Serializable{
+public class clsPOSBillDtl implements  Serializable
+{
 	private static final long serialVersionUID = 1L;
-	public clsPOSBillDtl(){}
+	
+	public clsPOSBillDtl()
+	{
+		
+	}
 
 	String strItemCode;
     String strItemName;
@@ -98,6 +103,7 @@ public class clsPOSBillDtl implements  Serializable{
     int intPAXBillSeriesNo;
 
     
+    private boolean isModifier;
 
     public String getStrGroupCode() {
         return strGroupCode;
@@ -828,6 +834,21 @@ public class clsPOSBillDtl implements  Serializable{
 
 	public void setIntPAXBillSeriesNo(int intPAXBillSeriesNo) {
 		this.intPAXBillSeriesNo = intPAXBillSeriesNo;
+	}
+
+	public boolean isModifier()
+	{
+		return isModifier;
+	}
+
+	public void setModifier(boolean isModifier)
+	{
+		this.isModifier = isModifier;
+	}
+
+	public static long getSerialversionuid()
+	{
+		return serialVersionUID;
 	}
     
    

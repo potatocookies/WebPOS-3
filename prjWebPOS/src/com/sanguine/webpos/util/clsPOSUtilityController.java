@@ -3383,7 +3383,7 @@ public class clsPOSUtilityController
 			break;
 
 		case "POSCustomerMaster":
-			sql = "select max(right(strCustomerCode,8)) from tblcustomermaster";
+			sql = "select ifnull(max(right(strCustomerCode,8)),0) from tblcustomermaster";
 			break;
 
 		case "POSCustomerTypeMaster":
@@ -3391,7 +3391,7 @@ public class clsPOSUtilityController
 			break;
 
 		case "POSReasoneMaster":
-			sql = "select max(strReasonCode) from tblreasonmaster";
+			sql = "select ifnull(max(strReasonCode),0) from tblreasonmaster";
 			break;
 
 		case "POSCounterMaster":

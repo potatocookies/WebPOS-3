@@ -215,6 +215,11 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		}
 		String operationFrom = "directBiller";
 		model.put("operationFrom", operationFrom);
+		
+		String formToBeOpen="Billing";
+		model.put("formToBeOpen", formToBeOpen);
+		
+		
 		model.put("billDate", posDate);
 		model.put("gCMSIntegrationYN", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN"));
 		model.put("gCRMInterface", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface"));

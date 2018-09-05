@@ -928,7 +928,7 @@ public class clsPOSBillingAPIController
 			String custCode = "";
 
 			String areaCodeForTransaction = rootBeanObjectForReference.getStrAreaCode();
-			String operationTypeForBilling = rootBeanObjectForReference.getBillTransType();
+			String operationTypeForBilling = rootBeanObjectForReference.getOperationType();
 
 			Date dt = new Date();
 			String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dt);
@@ -957,6 +957,7 @@ public class clsPOSBillingAPIController
 					String iName = objKOTItem.getStrItemName();
 					double iQty = objKOTItem.getDblItemQuantity();
 					String iAmt = String.valueOf(objKOTItem.getDblAmount());
+					double iTaxAmt = objKOTItem.getDblTaxAmount();
 
 					double rate = objKOTItem.getDblRate();
 					kotNo = objKOTItem.getStrKOTNo();
@@ -1060,8 +1061,11 @@ public class clsPOSBillingAPIController
 							{
 								if (iCode.equalsIgnoreCase(obj.getItemCode()))
 								{
-									discAmt = obj.getDiscountAmt();
+									
 									discPer = obj.getDiscountPer();
+									discAmt=(discPer/100)*Double.parseDouble(amt);
+									/*discAmt = obj.getDiscountAmt();*/
+									
 									break;
 								}
 							}
@@ -1083,7 +1087,7 @@ public class clsPOSBillingAPIController
 								objBillDtl.setDblRate(rate);
 								objBillDtl.setDblQuantity(iQty);
 								objBillDtl.setDblAmount(Double.parseDouble(amt));
-								objBillDtl.setDblTaxAmount(0.00);
+								objBillDtl.setDblTaxAmount(iTaxAmt);
 								objBillDtl.setDteBillDate(billDateTime);
 								objBillDtl.setStrKOTNo(kotNo);
 								objBillDtl.setStrCounterCode(objKOTItem.getStrCounterCode());
@@ -1110,7 +1114,7 @@ public class clsPOSBillingAPIController
 								objBillDtl.setDblRate(rate);
 								objBillDtl.setDblQuantity(iQty);
 								objBillDtl.setDblAmount(Double.parseDouble(amt));
-								objBillDtl.setDblTaxAmount(0.00);
+								objBillDtl.setDblTaxAmount(iTaxAmt);
 								objBillDtl.setDteBillDate(billDateTime);
 								objBillDtl.setStrKOTNo(kotNo);
 								objBillDtl.setStrCounterCode(objKOTItem.getStrCounterCode());
@@ -1276,7 +1280,7 @@ public class clsPOSBillingAPIController
 			objBillHd.setDblSubTotal(subTotalForTax);
 			objBillHd.setDblGrandTotal(grandTotal);
 			objBillHd.setStrTakeAway(rootBeanObjectForReference.getTakeAway());
-			objBillHd.setStrOperationType(rootBeanObjectForReference.getBillTransType());
+			objBillHd.setStrOperationType(rootBeanObjectForReference.getOperationType());//DineIn,HomeDelivery/TakeAway
 			objBillHd.setStrUserCreated(userCode);
 			objBillHd.setStrUserEdited(userCode);
 			objBillHd.setDteDateCreated(dateTime);
@@ -1298,7 +1302,7 @@ public class clsPOSBillingAPIController
 			objBillHd.setStrAreaCode(rootBeanObjectForReference.getStrAreaCode());
 			objBillHd.setStrDiscountRemark("");
 			objBillHd.setStrTakeAwayRemarks("");
-			objBillHd.setStrTransactionType(rootBeanObjectForReference.getBillTransType());
+			objBillHd.setStrTransactionType(rootBeanObjectForReference.getTransactionType());//Make KOT,Direct Biller,Modify Bill
 			objBillHd.setIntOrderNo(0);
 			objBillHd.setStrCouponCode("");
 			objBillHd.setStrJioMoneyRRefNo("");

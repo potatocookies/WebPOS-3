@@ -83,59 +83,14 @@
 
 
 
-	 var gTableNo="";
-	 var gTableNo="";
-	 var gTableName="";
-	 var gWaiterName="";
-	 var gWaiterNo="";
-	 var gPAX=0;
-	 var gLastKOTNo="";
-	 var gAreaCode="";
-
-	var gMobileNo="";
-	var fieldName;
-	var selectedRowIndex=0;
-	var gDebitCardPayment="";
-	var tblMenuItemDtl_MAX_ROW_SIZE=100;
-	var tblMenuItemDtl_MAX_COL_SIZE=5;
-	var itemPriceDtlList=new Array();	
-	var hmHappyHourItems = new Map();
-	var gCustomerCode="",gCustomerName="";
-	var currentDate="";
-	var currentTime="";
-	var dayForPricing="",flagPopular="",menucode="",homeDeliveryForTax="N",gTakeAway="No",cmsMemCode="",cmsMemName="";
-	var arrListHomeDelDetails= new Array();
-	var arrKOTItemDtlList=new Array();
-	var arrDirectBilleritems=new Array();
-	var gCustAddressSelectionForBill="${gCustAddressSelectionForBill}";
-	var gCMSIntegrationYN="${gCMSIntegrationYN}";
-	var gCRMInterface="${gCRMInterface}";
-	var gDelBoyCompulsoryOnDirectBiller="${gDelBoyCompulsoryOnDirectBiller}";
-	var gRemarksOnTakeAway="${gRemarksOnTakeAway}";
-	var gNewCustomerForHomeDel=false;
-	var gTotalBillAmount,gNewCustomerMobileNo;
-	var gBuildingCodeForHD="",gDeliveryBoyCode="";
-	var isNCKOT=false;
-	var ncKot="N",reasonCode="",cmsMemCode="",cmsMemName="",globalTableNo="",globalDebitCardNo="",taxAmt=0,homeDeliveryForTax="N",gTakeAway="No";
+	 
 	
-	var operationType="Dine In",operationName="Dine In";
-	var delCharges=0.0;
-	
-	var gMenuItemSortingOn="${gMenuItemSortingOn}";
-	var gSkipPax="${gSkipPax}";
-	var gSkipWaiter="${gSkipWaiter}";
-	var gPrintType="${gPrintType}";
-	var gMultiWaiterSelOnMakeKOT="${gMultiWaiterSelOnMakeKOT}";
-	
-	var gSelectWaiterFromCardSwipe="${gSelectWaiterFromCardSwipe}";
-	
-	var gPOSCode="${gPOSCode}";
-	var gClientCode="${gClientCode}";
-	
-	
+	/* virtual keyboard opening code for text feilds only */
 	$(document).ready(function () 
 	{
 		  $('input#txtItemSearch').mlKeyboard({layout: 'en_US'});
+		  
+		  $('input#Customer').mlKeyboard({layout: 'en_US'});
 	});
 	
 	
@@ -203,7 +158,7 @@
 		 document.getElementById("divTopButtonDtl").style.display='block';
 		 document.getElementById("divMenuHeadDtl").style.display='block';
 	
-		if(operationName=="Dine In")
+		if(operationType=="DineIn")
 		{
 			funDineInButtonClicked();
 		}
@@ -327,11 +282,14 @@
         	{
 //             	if (gEnableBillSeries=="Y")
 //             	{
-              //  clsTextFileGeneratorForPrinting ob = new clsTextFileGeneratorForPrinting();
-               // ob.fun_CkeckKot_TextFile(globalTableNo, txtWaiterNo.getText().trim());
+		              //  clsTextFileGeneratorForPrinting ob = new clsTextFileGeneratorForPrinting();
+		              // ob.fun_CkeckKot_TextFile(globalTableNo, txtWaiterNo.getText().trim());
+		               
+		              $("#hidTakeAway").val(gTakeAway);
+		              
+		               funMakeBillBtnKOT(ncKot,gTakeAway,globalDebitCardNo,cmsMemCode,cmsMemName,reasonCode,homeDeliveryForTax,arrListHomeDelDetails);
                
-              $("#hidTakeAway").val(gTakeAway);
-               funMakeBillBtnKOT(ncKot,gTakeAway,globalDebitCardNo,cmsMemCode,cmsMemName,reasonCode,homeDeliveryForTax,arrListHomeDelDetails);
+               
 //             	}
         	}
         	else
@@ -348,12 +306,12 @@
 		document.getElementById("tab2").style.display='block';		
 	    document.getElementById("tab1").style.display='none';	
 	    
-	    subTotalonAmt=0.00;
-		discountonAmt=0.00;
-		netTotal=0.00;
+	    finalSubTotal=0.00;
+		finalDiscountAmt=0.00;
+		finalNetTotal=0.00;
 		taxTotal=0.00;
 		taxAmt=0.00;
-		grandTotal=0.00;
+		finalGrandTotal=0.00;
 		
 		$("#tableNameForDisplay").text("Table No : "+gTableName);
 	    
@@ -447,8 +405,7 @@
 						hmSubGroupMap.set(strSubGroupCode, strSGName);
 						
 						
-			
-				// 		funFillSettleTable(itemName,itemQty,itemAmt,0.0,itemDiscAmt,strGroupCode,strSubGroupCode,itemCode);
+							
 							
 						var singleObj = {}
 						
@@ -478,48 +435,17 @@
 			}	
 		}
 		
-	/**
-	*calculating promotions and filling data to grid for bill print	
-	*/
+		/**
+		*calculating promotions and filling data to grid for bill print	
+		*/
 		funCalculatePromotion(listItmeDtl);
-
 		
-		
-		    netTotal=subTotalonAmt+discountonAmt;
-		    grandTotal=netTotal;
-		    funFillTableFooterDtl("","");
-	 	   
-	 	   
-	 	    funFillTableFooterDtl("SubTotal",subTotalonAmt);
-	 	    funFillTableFooterDtl("Discount",discountonAmt);
-	 	    funFillTableFooterDtl("NetTotal",netTotal);
-	    	var taxTotal= funCalculateTaxForItemTbl();
-	 	    grandTotal=taxTotal+netTotal;
-	 	    funFillTableFooterDtl("GrandTotal",grandTotal);
-	 	    funFillTableFooterDtl("PaymentMode","");
-	 	    
-	 	    
-	 	    /* Setting for only Make KOT Global variables */
-	 	    /* For direct biller use frmPOSBillingContainer form to set global variables */
-	 	    
-		    $('#txtAmount').val(grandTotal);
-		 	$('#txtPaidAmount').val(grandTotal);
-		 	$('#hidSubTotal').val(subTotalonAmt);
-		 	$('#hidDiscountTotal').val(discountonAmt);
-		 	$('#hidNetTotal').val(netTotal);
-		 	$('#hidGrandTotal').val(grandTotal);
-		 	
-		 	$("#hidTakeAway").val(gTakeAway);
-			$("#hidCustomerCode").val(gCustomerCode);
-	    	$("#hidCustomerName").val(gCustomerName);
-	    	$("#hidBillTransType").val(operationName);
-	    	$("#hidAreaCode").val(gAreaCode);
-	    	
-	    	$("#hidTableNo").val(gTableNo);
-	    	$("#hidWaiterNo").val(gWaiterNo);
-		
+		funRefreshSettlementItemGrid();
 		
 	}
+	
+	
+	
 	
 	
 	function funCheckKOTSave()
@@ -1010,7 +936,7 @@
 	        }
 		 else if (!((gCustomerCode.trim().length==0) && homeDeliveryForTax=="Y"))
          {
-            // hidBillTransType = "Home Delivery";
+            // hidTransactionType = "Home Delivery";
             var totalBillAmount = 0.00;
 		 	 if ($("#txtTotal").val().trim().length > 0)
        		 {
@@ -1048,7 +974,7 @@
         	
 			 
 			 
-			if(operationName=="Dine In")
+			if(operationType=="DineIn")
 			{
 				if(rowCount <= 2)
 				{
@@ -1067,7 +993,7 @@
 					  
 	        	funDoneBtnKOT(ncKot,gTakeAway,globalDebitCardNo,cmsMemCode,cmsMemName,reasonCode,homeDeliveryForTax,arrListHomeDelDetails,total);
 			}
-			else if(operationName=="Home Delivery")
+			else if(operationType=="HomeDelivery")
 			{
 				if(rowCount <= 1)
 				{
@@ -1099,7 +1025,7 @@
 	                 return;
 				}
 			}
-			else if(operationName=="Take Away")
+			else if(operationType=="TakeAway")
 			{
 				
 				if(rowCount <= 1)
@@ -1286,8 +1212,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				    listItmeDtl.push(singleObj);
 					
 					
-					subTotalonAmt=subTotalonAmt+parseFloat(itemAmt);
-					discountonAmt=discountonAmt+parseFloat(0);//(itemDiscAmt);				
+					finalSubTotal=finalSubTotal+parseFloat(itemAmt);
+					finalDiscountAmt=finalDiscountAmt+parseFloat(0);//(itemDiscAmt);				
 				}				
 			}
 		 
@@ -1343,7 +1269,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		    		 
 					 $('#tblOldKOTItemDtl').empty();
 					 
-			    	 if(operationName=="Dine In")
+			    	 if(operationType=="DineIn")
 			    	  {
 			    			funDineInButtonClicked();
 			    	  }
@@ -2026,12 +1952,10 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		$(objDnieInButton).removeClass("active");
 		$(objHomeDeliveryButton).removeClass("active");
 		
-		operationName="Take Away";
+		operationType="TakeAway";
 		
 		
-		 homeDeliveryForTax = "N";
-		 operationType="Take Away";
-		 $("#hidBillTransType").val(operationType);
+		 homeDeliveryForTax = "N";		 		
 		 gTakeAway="Yes";
 		 
 		 funDisplayPLUButton(false);
@@ -2087,7 +2011,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		$(objHomeDeliveryButton).removeClass("active");
 		$(objTakeAwayButton).removeClass("active");
 		
-		operationName="Dine In";
+		operationType="DineIn";
 		
 		funResetDineInFields();
 		funShowTables();
@@ -2170,7 +2094,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		$(objDnieInButton).removeClass("active");
 		$(objTakeAwayButton).removeClass("active");
 		
-		operationName="Home Delivery";
+		operationType="HomeDelivery";
 		
 		funDisplayPLUButton(false);
 		funDisplayDoneButton(false);
@@ -2189,8 +2113,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 
 		if (arrListHomeDelDetails.length == 0)
         {
-			operationType="Home Delivery";
-			$("#hidBillTransType").val(operationType);
+			operationType="HomeDelivery";
+			
         
             arrListHomeDelDetails[0]=gCustomerCode;
             arrListHomeDelDetails[1]=gCustomerName;
@@ -2204,8 +2128,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		else
 		{
         	
-        	operationType="Dine In";
-			$("#hidBillTransType").val(operationType);
+        	operationType="DineIn";
+        	
+			
         	homeDeliveryForTax = "N";
         	arrListHomeDelDetails= new Array();	
         	document.getElementById("Home Delivery").style.backgroundColor = "";
@@ -2787,7 +2712,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		
 		var rowCount = tblBillItemDtl.rows.length;
 		
-		if(operationName=="Dine In")
+		if(operationType=="DineIn")
 		{
 			var kotNo= $('#txtKOTNo').text();
 		    var PaxNo= $('#txtPaxNo').text();
@@ -2960,12 +2885,12 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		{
 			funUpdateTableBillItemDtlFor(objMenuItemPricingDtl,price,qty);	
 		}
-		else
+		else			
 		{
 			var tblBillItemDtl=document.getElementById('tblBillItemDtl');
 			var rowCount = tblBillItemDtl.rows.length;
 			
-			if(operationName=="Dine In")
+			if(operationType=="DineIn")
 			{
 				if(rowCount==1)
 				{
@@ -2984,7 +2909,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				
 				funFillTableBillItemDtl(objMenuItemPricingDtl,price,qty);	
 			}
-			else if(operationName=="Home Delivery")
+			else if(operationType=="HomeDelivery")
 			{
 				if(rowCount==1)
 				{
@@ -2992,7 +2917,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				}
 				funFillTableBillItemDtl(objMenuItemPricingDtl,price,qty);
 			}
-			else if(operationName=="Take Away")
+			else if(operationType=="TakeAway")
 			{
 				if(rowCount==1)
 				{
@@ -3899,7 +3824,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			v.style.border="";
 		}
 		
-		if(operationType=="Dine In")
+		if(operationType=="DineIn")
 		{
 			
 			if(value=="Up")
@@ -3975,7 +3900,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 							<!-- <input type="button"  id="Customer" value="Customer"    style="width: 150px;height: 30px; white-space: normal;"   onclick="funFooterButtonClicked(this)" class="btn btn-default btn-link"/> -->														
 							 <%-- <a href="#" onclick="funFooterButtonClicked(this)" id="Customer" ><img src="../${pageContext.request.contextPath}/resources/images/Location-Master.png" width="45px" height="50px" id="Customer"></a>  --%>							
 							
-							<input  type="text"   style="width: 200px;" id="Customer"  class="jQKeyboard form-control" placeholder="Select customer..."   />							 					 																									
+							<input  type="text"   style="width: 200px;" id="Customer"  class="searchTextBox jQKeyboard form-control" placeholder="Select customer..."   />							 					 																									
 						 </td>
 						 <td><label id="customerName" style="margin-left: -442px; "></label>	</td>						  							 	 											 
 					</tr>					

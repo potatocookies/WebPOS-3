@@ -20,6 +20,8 @@ import com.sanguine.webpos.util.clsPOSSendMail;
 
 
 
+
+
 @Repository("clsPOSToolsDao")
 @Transactional(value = "webPOSTransactionManager")
 public class clsPOSToolsDao{

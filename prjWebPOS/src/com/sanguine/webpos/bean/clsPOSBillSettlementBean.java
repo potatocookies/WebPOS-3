@@ -14,6 +14,8 @@ public class clsPOSBillSettlementBean
     private String strPosName;
 
     private String strItemCode;
+    private String selectedRow;
+    
     private String strItemName;
     private double dblQuantity;
     private double dblAmount;
@@ -25,7 +27,10 @@ public class clsPOSBillSettlementBean
     private double dblSettlementAmt;
     private String strDiscValue;
     private String strDiscType;
-    private String billTransType; 
+    
+    private String operationType;
+    private String transactionType;
+    
     private String strCustomerCode;
     private String customerName;
     private String strCustomerType;
@@ -360,12 +365,7 @@ public class clsPOSBillSettlementBean
 	public void setTakeAway(String takeAway) {
 		this.takeAway = takeAway;
 	}
-	public String getBillTransType() {
-		return billTransType;
-	}
-	public void setBillTransType(String billTransType) {
-		this.billTransType = billTransType;
-	}
+	
 	public List<clsPOSItemsDtlsInBill> getListItemsDtlInBill() {
 		return listItemsDtlInBill;
 	}
@@ -398,7 +398,17 @@ public class clsPOSBillSettlementBean
 	}
 	
 	
-    public String getDteExpiryDate() {
+	
+	
+    public String getTransactionType()
+	{
+		return transactionType;
+	}
+	public void setTransactionType(String transactionType)
+	{
+		this.transactionType = transactionType;
+	}
+	public String getDteExpiryDate() {
 		return dteExpiryDate;
 	}
 	public void setDteExpiryDate(String dteExpiryDate) {
@@ -608,6 +618,22 @@ public class clsPOSBillSettlementBean
 	public void setStrAreaCode(String strAreaCode)
 	{
 		this.strAreaCode = strAreaCode;
+	}
+	public String getSelectedRow()
+	{
+		return selectedRow;
+	}
+	public void setSelectedRow(String selectedRow)
+	{
+		this.selectedRow = selectedRow;
+	}
+	public String getOperationType()
+	{
+		return operationType;
+	}
+	public void setOperationType(String operationType)
+	{
+		this.operationType = operationType;
 	}
 	
 	

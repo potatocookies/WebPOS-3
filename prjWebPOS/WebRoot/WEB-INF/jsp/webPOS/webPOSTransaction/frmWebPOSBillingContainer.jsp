@@ -24,11 +24,90 @@ var hmGroupMap=new Map();
 var hmSubGroupMap=new Map();
 var hmItempMap=new Map();
 var listBillItem=[];
-var netTotal=0.0;
-var grandTotal=0.0;
-var subTotalonAmt=0,discountonAmt=0;
+var finalNetTotal=0.0;
+var finalGrandTotal=0.0;
+var finalSubTotal=0,finalDiscountAmt=0;
+var finalDelCharges=0.0;
 
 var gPopUpToApplyPromotionsOnBill="${gPopUpToApplyPromotionsOnBill}";
+
+
+
+
+/* This space is use to define only global variables 
+ * coz form frmWebPOSBillingContainer is use in all billing related forms 
+ */
+
+ var gTableNo="";
+ var gTableNo="";
+ var gTableName="";
+ var gWaiterName="";
+ var gWaiterNo="";
+ var gPAX=0;
+ var gLastKOTNo="";
+ var gAreaCode="";
+
+var gMobileNo="";
+var fieldName;
+var selectedRowIndex=0;
+var gDebitCardPayment="";
+var tblMenuItemDtl_MAX_ROW_SIZE=100;
+var tblMenuItemDtl_MAX_COL_SIZE=5;
+var itemPriceDtlList=new Array();	
+var hmHappyHourItems = new Map();
+var gCustomerCode="",gCustomerName="";
+var currentDate="";
+var currentTime="";
+var dayForPricing="",flagPopular="",menucode="",homeDeliveryForTax="N",gTakeAway="No",cmsMemCode="",cmsMemName="";
+var arrListHomeDelDetails= new Array();
+var arrKOTItemDtlList=new Array();
+var arrDirectBilleritems=new Array();
+var gCustAddressSelectionForBill="${gCustAddressSelectionForBill}";
+var gCMSIntegrationYN="${gCMSIntegrationYN}";
+var gCRMInterface="${gCRMInterface}";
+var gDelBoyCompulsoryOnDirectBiller="${gDelBoyCompulsoryOnDirectBiller}";
+var gRemarksOnTakeAway="${gRemarksOnTakeAway}";
+var gNewCustomerForHomeDel=false;
+var gTotalBillAmount,gNewCustomerMobileNo;
+var gBuildingCodeForHD="",gDeliveryBoyCode="";
+var isNCKOT=false;
+var ncKot="N",reasonCode="",cmsMemCode="",cmsMemName="",globalTableNo="",globalDebitCardNo="",taxAmt=0,homeDeliveryForTax="N";
+
+var operationType="DineIn",transactionType="Make KOT";
+
+/* operationType must be DineIn,HomeDelivery and TakeAway */
+/* transactionType would be Make KOT,Direct Biller,Modify Bill,Make Bill,UnSettle Bill,etc */
+
+
+var gMenuItemSortingOn="${gMenuItemSortingOn}";
+var gSkipPax="${gSkipPax}";
+var gSkipWaiter="${gSkipWaiter}";
+var gPrintType="${gPrintType}";
+var gMultiWaiterSelOnMakeKOT="${gMultiWaiterSelOnMakeKOT}";
+
+var gSelectWaiterFromCardSwipe="${gSelectWaiterFromCardSwipe}";
+
+var gPOSCode="${gPOSCode}";
+var gClientCode="${gClientCode}";
+var gBillDate="${billDate}";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 $(document).ready(function() 
 {
@@ -85,14 +164,16 @@ function funDoneBtnDirectBiller()
     document.getElementById("tab1").style.display='none';
 	document.getElementById("tab2").style.display='block';
 	
-	subTotalonAmt=0.00;
-	discountonAmt=0.00;
-	netTotal=0.00;
+	$("#txtDeliveryCharge").val(finalDelCharges);
+	
+	finalSubTotal=0.00;
+	finalDiscountAmt=0.00;
+	finalNetTotal=0.00;
 	taxTotal=0.00;
 	taxAmt=0.00;
-	grandTotal=0.00;
+	finalGrandTotal=0.00;
 	
-	 $("#txtDeliveryCharge").val(delCharges);
+	 
 	 
 	 var listItmeDtl=[];	   
 	 var hmItempMap=new Map();
@@ -167,51 +248,63 @@ function funDoneBtnDirectBiller()
 	funCalculatePromotion(listItmeDtl);
 
 	    
-	netTotal=subTotalonAmt-discountonAmt;
-    grandTotal=netTotal;
+	funRefreshSettlementItemGrid();
+	
+}
+
+function funRefreshSettlementItemGrid()
+{
+	
+
+
+
+    finalNetTotal=finalSubTotal-finalDiscountAmt;
+    finalGrandTotal=finalNetTotal;
     funFillTableFooterDtl("","");
 	   
-	   
-    funFillTableFooterDtl("SubTotal",subTotalonAmt);
-    funFillTableFooterDtl("Discount",discountonAmt);
-    funFillTableFooterDtl("NetTotal",netTotal);   
-	var taxTotal= funCalculateTaxForItemTbl();	
-	grandTotal=taxTotal+netTotal;
-	funFillTableFooterDtl("GrandTotal",grandTotal);
-	funFillTableFooterDtl("PaymentMode","");   
-   
-	
-	
-	
-	/* Setting for only Direct Biller Global variables */
-	/* For Make KOT use frmBilling form to set global variables */
+    funFillTableFooterDtl("SubTotal",finalSubTotal);
+    funFillTableFooterDtl("Discount",finalDiscountAmt);
+    funFillTableFooterDtl("NetTotal",finalNetTotal);
+    
+	var taxTotal= funCalculateTaxForItemTbl();
+
+    finalGrandTotal=taxTotal+finalNetTotal;
+    
+    funFillTableFooterDtl("GrandTotal",finalGrandTotal);
+    funFillTableFooterDtl("PaymentMode","");
+    
+    
+      
+	    
+    $('#txtAmount').val(finalGrandTotal);
+ 	$('#txtPaidAmount').val(finalGrandTotal);
+ 	$('#hidSubTotal').val(finalSubTotal);
+ 	$('#hidDiscountTotal').val(finalDiscountAmt);
+ 	$('#hidNetTotal').val(finalNetTotal);
+ 	$('#hidGrandTotal').val(finalGrandTotal);
  	
- 	$('#txtAmount').val(grandTotal);
-	$('#txtPaidAmount').val(grandTotal);
-	$('#hidSubTotal').val(subTotalonAmt);
-	$('#hidDiscountTotal').val(discountonAmt);
-	$('#hidNetTotal').val(netTotal);
-	$('#hidGrandTotal').val(grandTotal);
-	 	
-	$("#hidTakeAway").val(gTakeAway);
+ 	$("#hidTakeAway").val(gTakeAway);
 	$("#hidCustomerCode").val(gCustomerCode);
- 	$("#hidCustomerName").val(gCustomerName);
- 	$("#hidBillTransType").val(operationName);
- 	$("#hidAreaCode").val(gAreaCode);
- 	
- 	$("#hidTableNo").val(gTableNo);
-	$("#hidWaiterNo").val(gWaiterNo);
+	$("#hidCustomerName").val(gCustomerName);
 	
+	$("#hidOperationType").val(operationType);
+	$("#hidTransactionType").val(transactionType);
+	
+	$("#hidAreaCode").val(gAreaCode);
+	
+	$("#hidTableNo").val(gTableNo);
+	$("#hidWaiterNo").val(gWaiterNo);
 }
 
 
 function funNoPromtionCalculation(listItmeDtl)
 {
-	$.each(listItmeDtl,function(i,item){
+	$.each(listItmeDtl,function(i,item)
+	{
 		funFillSettleTable(item.itemName,item.quantity,item.amount,item.discountPer,item.discountAmt,item.strGroupcode,item.strSubGroupCode,item.itemCode,item.rate);
 	});
 
-	}
+}
 
 function funFillSettleTable(strItemName,dblQuantity,dblAmount,dblDiscountPer1,dblDiscountAmt1,strGroupCode,strSubGroupCode,strItemCode,dblRate)
 {
@@ -254,8 +347,8 @@ function funFillSettleTable(strItemName,dblQuantity,dblAmount,dblDiscountPer1,db
     
     listBillItem.push(singleObj);
     
-    subTotalonAmt=subTotalonAmt+parseFloat(dblAmount);
-	discountonAmt=discountonAmt+parseFloat(dblDiscountAmt1);//(itemDiscAmt);
+    finalSubTotal=finalSubTotal+parseFloat(dblAmount);
+	finalDiscountAmt=finalDiscountAmt+parseFloat(dblDiscountAmt1);//(itemDiscAmt);
 // 			  })	
 }
 
@@ -278,23 +371,24 @@ function funCalculatePromotion(listItmeDtl)
                 			
                 			if(isOk)
                 			{
-                				$.each(response.listOfPromotionItem,function(i,item){
+                				$.each(response.listOfPromotionItem,function(i,item)
+                				{
                     	    		funFillSettleTable(item.strItemName,item.dblQuantity,item.dblAmount,item.dblDiscountPer,item.dblDiscountAmt,item.strGroupCode,item.strSubGroupCode,item.strItemCode,item.dblRate);
             		        	});
                 			}
                 			else
                 			{
-                				funNoPromtionCalculation(listItmeDtl)
-                				 	
+                				funNoPromtionCalculation(listItmeDtl)                				 	
                 			}
                 		}
                 	   else
                 	   {
                 			
-                			$.each(response.listOfPromotionItem,function(i,item){
+                			$.each(response.listOfPromotionItem,function(i,item)
+                			{
                 	    		funFillSettleTable(item.strItemName,item.dblQuantity,item.dblAmount,item.dblDiscountPer,item.dblDiscountAmt,item.strGroupCode,item.strSubGroupCode,item.strItemCode,item.dblRate);
         		        	});
-//                 			(listItmeDtl)
+                			
                 		}
         	    	
                 	 }
@@ -345,7 +439,7 @@ function funCalculatePromotion(listItmeDtl)
 			        		rowCountTax++;
 			        	});
              
-	        	    	grandTotal=grandTotal+taxTotal;
+	        	    	finalGrandTotal=finalGrandTotal+taxTotal;
 	        	    	 $('#hidTaxTotal').val(taxTotal);
 	        },
 	        error: function(jqXHR, exception)
@@ -436,14 +530,13 @@ function funCalculatePromotion(listItmeDtl)
 
 
 
-$(document).ready(function(){
+$(document).ready(function()
+{
 	
 	var operationFrom="${operationFrom}";
 	
-	   document.getElementById("tab2").style.display='none';	
-	   document.getElementById("Bill").style.display='none';	
-	 
-	   
+    document.getElementById("tab2").style.display='none';	
+    document.getElementById("Bill").style.display='none';	
 
 });
 
@@ -472,13 +565,38 @@ $(document).ready(function(){
 							
 						
 						</ul>
-						<!--General Tab  Start-->
+						
+						<!--This is tab1 which is use to show the main form which we want to show -->
+						<!--This depends on the form name which is passed from controller  -->
 						<div id="tab1" class="tab_content" style="width: 100%;height: 700px;">
-							<jsp:include page="frmBilling.jsp" />
-			   	 </div>
+							
+							<!-- Include the jsp form in first tab based on the form name which is passed from contoller -->	
+													
+							<c:choose>
+							
+						      <c:when test="${formToBeOpen == 'Billing'}">
+						     	<jsp:include page="frmBilling.jsp" />
+						      </c:when>
+						      
+						      <c:when test="${formToBeOpen == 'Settle Bill'}">
+						     	<jsp:include page="frmSettleBillFrontPage.jsp" />
+						      </c:when>
+						
+						  	  <c:when test="${formToBeOpen == 'Modify Bill'}">
+						     	<jsp:include page="frmPOSModifyBill.jsp" />
+						      </c:when>
+						
+						      <c:otherwise>
+						      	<jsp:include page="frmBilling.jsp" />
+						      </c:otherwise>
+						      
+						    </c:choose>
+																			
+			   	 		</div>
 			   	 
 			   	 
-			    
+			    <!-- This is a tab2  -->
+			    <!-- This tab is use to show only bill settlement window on second tab which is invisible by default -->
 			    <div id="tab2" class="tab_content" style="height: 700px">
 
 			   			<jsp:include page="frmPOSBillSettlement.jsp" />

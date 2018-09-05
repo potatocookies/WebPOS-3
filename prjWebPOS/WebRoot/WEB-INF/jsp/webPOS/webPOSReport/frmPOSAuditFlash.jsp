@@ -828,10 +828,10 @@
 		    			
 		    				<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%;">
 					  		
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="MODIFIED BILL" id="btnSubmit1" /> </div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="VOIDED BILL" id="btnSubmit2" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="VOIDED ADVANCE ORDER" id="btnSubmit3" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="LINE VOID" id="btnSubmit4" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Modified Bill" id="btnSubmit1" /> </div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Voided Bill" id="btnSubmit2" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Voided Advanced Order" id="btnSubmit3" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Line Void" id="btnSubmit4" /></div>
 								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Voided KOT" id="btnSubmit5" /></div>
 								
 			  		  		</div>

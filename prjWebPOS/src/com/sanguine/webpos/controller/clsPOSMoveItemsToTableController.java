@@ -37,7 +37,7 @@ public class clsPOSMoveItemsToTableController {
 	@Autowired 
 	private clsPOSUtilityController objPOSUtilityController;
 
-	@RequestMapping(value = "/frmNonSellingItems", method = RequestMethod.GET)
+	@RequestMapping(value = "/frmMoveItemsToTable", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSBillItemDtlBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request){
 
 		String strPosCode=request.getSession().getAttribute("loginPOS").toString();
@@ -84,7 +84,7 @@ public class clsPOSMoveItemsToTableController {
 			e.printStackTrace();
 		}
 
-		return new ModelAndView("frmNonSellingItems");
+		return new ModelAndView("frmMoveItemsToTable");
 
 	}
 	
@@ -385,7 +385,7 @@ public class clsPOSMoveItemsToTableController {
 			req.getSession().setAttribute("successMessage", "Item Shifted to " + toTableNo);
 
 
-			return new ModelAndView("redirect:/frmNonSellingItems.html");
+			return new ModelAndView("redirect:/frmMoveItemsToTable.html");
 		}
 		catch(Exception ex)
 		{

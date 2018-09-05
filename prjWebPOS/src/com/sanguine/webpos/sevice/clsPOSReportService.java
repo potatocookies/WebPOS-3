@@ -2,6 +2,7 @@ package com.sanguine.webpos.sevice;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -4310,11 +4311,11 @@ public class clsPOSReportService {
 							clsPOSBillItemDtlBean objBillItemDtlBean = new clsPOSBillItemDtlBean();
 							objBillItemDtlBean.setStrBillNo(obj[0].toString());
 							objBillItemDtlBean.setDteBillDate(obj[1].toString());
-							objBillItemDtlBean.setStrEntryTime(obj[2].toString());
-							objBillItemDtlBean.setStrModifiyTime(obj[3].toString());
-							objBillItemDtlBean.setDblAmount(Double.parseDouble(obj[4].toString()));
-							objBillItemDtlBean.setDblAmountTemp(Double.parseDouble(obj[5].toString()));
-							objBillItemDtlBean.setDblDiscountAmt(Double.parseDouble(obj[6].toString()));
+							objBillItemDtlBean.setStrEntryTime(obj[3].toString());
+							objBillItemDtlBean.setStrModifiyTime(obj[4].toString());
+							objBillItemDtlBean.setDblAmount(Double.parseDouble(obj[5].toString()));
+							objBillItemDtlBean.setDblAmountTemp(Double.parseDouble(obj[6].toString()));
+							objBillItemDtlBean.setDblDiscountAmt(Double.parseDouble(obj[11].toString()));
 							objBillItemDtlBean.setStrUserCreated(obj[7].toString());
 							objBillItemDtlBean.setStrUserEdited(obj[8].toString());
 							objBillItemDtlBean.setStrReasonName(obj[9].toString());
@@ -4490,9 +4491,9 @@ public class clsPOSReportService {
 								StringBuilder sql = new StringBuilder();
 								sql.append("Select count(*) from tblvoidmodifierdtl where strBillNo='" + billNo + "' ");
 								List list2 = objBaseService.funGetList(sql, "sql");
-								int count = 0;
+								BigInteger count = 0;
 								if (list2.size() > 0) {
-									count = (int) list2.get(0);
+									count = (BigInteger) list2.get(0);
 								}
 								if (count > 0) {
 									sql.setLength(0);

@@ -700,6 +700,13 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmSettleBillFrontPage.jsp"></put-attribute>
 	</definition>
 	
+	
+	<definition name="frmPOSModifyBill" extends="base.definition6">
+		<put-attribute name="title" value="Modify Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSModifyBill.jsp"></put-attribute>
+	</definition>
+	
+	
 	<definition name="frmBillSettlement" extends="base.definition6">
 		<put-attribute name="title" value="POS Bill Settlement "></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmBillSettlement.jsp"></put-attribute>

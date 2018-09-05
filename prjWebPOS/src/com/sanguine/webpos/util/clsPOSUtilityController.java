@@ -7721,5 +7721,31 @@ public class clsPOSUtilityController
 		return 1;
 
 	}
+	
+	public void funInsertIntoTblItemRTempBck(String tableNo)
+    {
+	try
+	{
+
+	    StringBuilder sqlBuilder = new StringBuilder();
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("select strSerialNo from tblitemrtemp ");
+	    List listIsExistsTable = objBaseService.funGetList(sqlBuilder, "sql");
+
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("delete from tblitemrtemp_bck where strTableNo='" + tableNo + "'  ");
+	    objBaseService.funExecuteUpdate(sqlBuilder.toString(), "sql");
+
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("insert into tblitemrtemp_bck (select * from tblitemrtemp where strTableNo='" + tableNo + "'  )");
+	    objBaseService.funExecuteUpdate(sqlBuilder.toString(), "sql");
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+    }
+	
+	
 
 }

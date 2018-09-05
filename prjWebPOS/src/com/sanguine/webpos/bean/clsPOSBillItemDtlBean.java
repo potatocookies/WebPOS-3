@@ -75,19 +75,21 @@ public class clsPOSBillItemDtlBean
     String strSubGroupName;
     String strGroupName;
     
-   private String strKOTNo;
+    private String strKOTNo;
    
-   private String strTableName;
+    private String strTableName;
    
-   private String strWaiterName;
+    private String strWaiterName;
    
-   private int intPaxNo;
+    private int intPaxNo;
    
     private int noOfBills;
     
     private int intBillSeriesPaxNo;
     
+    private Boolean strApplicableYN;
     
+    private List<clsPOSBillItemDtlBean> listBusyTableDtl=new ArrayList<clsPOSBillItemDtlBean>();	 
     
     private List<clsPOSModifiersOnItem> listModifierDtl=new ArrayList<clsPOSModifiersOnItem>();	
     
@@ -797,6 +799,34 @@ public class clsPOSBillItemDtlBean
 
 	public void setStrDifference(String strDifference) {
 		this.strDifference = strDifference;
+	}
+
+
+
+	public Boolean getStrApplicableYN()
+	{
+		return strApplicableYN;
+	}
+
+
+
+	public void setStrApplicableYN(Boolean strApplicableYN)
+	{
+		this.strApplicableYN = strApplicableYN;
+	}
+
+
+
+	public List<clsPOSBillItemDtlBean> getListBusyTableDtl()
+	{
+		return listBusyTableDtl;
+	}
+
+
+
+	public void setListBusyTableDtl(List<clsPOSBillItemDtlBean> listBusyTableDtl)
+	{
+		this.listBusyTableDtl = listBusyTableDtl;
 	}
 
 

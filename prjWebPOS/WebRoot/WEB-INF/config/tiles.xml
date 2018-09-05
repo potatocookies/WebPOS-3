@@ -1014,6 +1014,10 @@
 	</definition>
 	
 	
+	<definition name="frmNonSellingItems" extends="base.definition6">
+		<put-attribute name="title" value="Non Selling Items" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmNonSellingItems.jsp" />
+	</definition>
 	
 <!-- 	End Of WebPOS Tiles Entry -->
 

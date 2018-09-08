@@ -165,6 +165,7 @@ function funRemoveTableRows(tblId)
 function funFetchBusyTableData()
 {
 	var code = $("#cmbTable").val();
+	funRemoveTableRows("tblBussyTableItems");
 	var searchurl=getContextPath()+"/fillItemForSelectedTable.html?bussyTableNo="+code;
 	 $.ajax({
 		        type: "GET",

@@ -10489,7 +10489,7 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
@@ -10544,13 +10544,13 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
 										} else {
 											Double value = Double.parseDouble(obj[2].toString())
-													+ (double) jRowArr.get(tblCol);
+													+ Double.valueOf(jRowArr.get(tblCol).toString());
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, value);
 											map.put(tblRow, jRowArr);
@@ -10596,7 +10596,7 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
@@ -10647,7 +10647,7 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf( jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
@@ -10701,7 +10701,7 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
@@ -10772,7 +10772,7 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf( jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
@@ -10825,7 +10825,7 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
@@ -10894,7 +10894,7 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);

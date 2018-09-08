@@ -21,8 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
 import com.sanguine.webpos.bean.clsPOSKOTAnalysisBean;
-import com.sanguine.webpos.bean.clsPOSWaiterAnalysisBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.bean.clsPOSWaiterAnalysisBean;
 import com.sanguine.webpos.model.clsReasonMasterModel;
 import com.sanguine.webpos.model.clsUserHdModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
@@ -33,15 +33,6 @@ import com.sanguine.webpos.sevice.clsPOSReportService;
 @Controller
 public class clsPOSAuditFlashController {
 	
-	
-	@Autowired
-	private clsGlobalFunctions objGlobalFunctions;
-	
-	@Autowired
-	private clsPOSGlobalFunctionsController objPOSGlobalFunctionsController; 
-
-	 @Autowired
-	 private ServletContext servletContext;
 	 
 	 @Autowired
 	 private clsPOSReportService objReportService;
@@ -67,21 +58,21 @@ public class clsPOSAuditFlashController {
 		
 		 
 		posMap.put("All", "All");
-		 List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
-			if(listOfPos!=null)
+		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		if(listOfPos!=null)
+		{
+			for(int i =0 ;i<listOfPos.size();i++)
 			{
-				for(int i =0 ;i<listOfPos.size();i++)
-				{
-					Object[] obj = (Object[]) listOfPos.get(i);
-					posMap.put( obj[1].toString(), obj[0].toString());
-				}
+				Object[] obj = (Object[]) listOfPos.get(i);
+				posMap.put( obj[1].toString(), obj[0].toString());
 			}
+		}
 		model.put("posList",posMap);
 		
 		userMap.put("All", "All");
-		 List listOfUser = objMasterService.funFillUserCombo(strClientCode);
-		 if(listOfUser!=null)
-		 {
+		List listOfUser = objMasterService.funFillUserCombo(strClientCode);
+		if(listOfUser!=null)
+		{
 			for(int i =0 ;i<listOfUser.size();i++)
 			{
 				clsUserHdModel objModel= (clsUserHdModel) listOfUser.get(i);
@@ -90,10 +81,10 @@ public class clsPOSAuditFlashController {
 		}
 		model.put("userList",userMap);
 		
-		 List listOfReasons = objMasterService.funGetAllReasonMaster(strClientCode);
-		 reasonMap.put("All", "All");
-		 if(listOfReasons!=null)
-		 {
+		List listOfReasons = objMasterService.funGetAllReasonMaster(strClientCode);
+		reasonMap.put("All", "All");
+		if(listOfReasons!=null)
+		{
 			for(int i =0 ;i<listOfReasons.size();i++)
 			{
 				clsReasonMasterModel objModel = (clsReasonMasterModel) listOfReasons.get(i);
@@ -127,46 +118,46 @@ public class clsPOSAuditFlashController {
 	@RequestMapping(value = "/processAuditFlash", method = RequestMethod.POST)	
 	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
 	{
-		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
-	       
-		    String fromDate=objBean.getFromDate();
-		 
-			String toDate=objBean.getToDate();
+	    String clientCode=req.getSession().getAttribute("gClientCode").toString();
+       
+	    String fromDate=objBean.getFromDate();
+	 
+		String toDate=objBean.getToDate();
+	
+		String strReportType=objBean.getStrReportType();
+		String strUserName=objBean.getStrSGName();
+		String userCode= "ALL";
+		if (!strUserName.equalsIgnoreCase("ALL"))
+		{
+			userCode = (String) userMap.get(strUserName);
+		}
+		String posName=objBean.getStrPOSName();
+		String posCode= "ALL";
+		if (!posName.equalsIgnoreCase("ALL"))
+		{
+			posCode = (String) posMap.get(posName);
+		}
+		String strReasonName=objBean.getStrReasonMaster();
+		String reasonCode= "ALL";
+		if (!strReasonName.equalsIgnoreCase("ALL"))
+		{
+			reasonCode = (String) reasonMap.get(strReasonName);
+		}
+		String auditType=objBean.getStrPSPCode();
+		String strSorting = objBean.getStrSort();
+		String strType = objBean.getStrType();
 		
-			String strReportType=objBean.getStrReportType();
-			String strUserName=objBean.getStrSGName();
-			String userCode= "ALL";
-			if (!strUserName.equalsIgnoreCase("ALL"))
-			{
-				userCode = (String) userMap.get(strUserName);
-			}
-			String posName=objBean.getStrPOSName();
-			String posCode= "ALL";
-			if (!posName.equalsIgnoreCase("ALL"))
-			{
-				posCode = (String) posMap.get(posName);
-			}
-			String strReasonName=objBean.getStrReasonMaster();
-			String reasonCode= "ALL";
-			if (!strReasonName.equalsIgnoreCase("ALL"))
-			{
-				reasonCode = (String) reasonMap.get(strReasonName);
-			}
-			String auditType=objBean.getStrPSPCode();
-			String strSorting = objBean.getStrSort();
-			String strType = objBean.getStrType();
-			
-			Map resMap = new LinkedHashMap();
-			
-			resMap=funGetData(clientCode,strUserName,fromDate,toDate,strReportType,strReasonName,posName,auditType, strSorting, strType,posCode,reasonCode,userCode);
+		Map resMap = new LinkedHashMap();
 		
-			List exportList=new ArrayList();	
-		
-			String dteFromDate=objBean.getFromDate();
-			String dteToDate=objBean.getToDate();
-			String FileName="AuditFlash_"+dteFromDate+"_To_"+dteToDate;
-		
-			exportList.add(FileName);
+		resMap=funGetData(clientCode,strUserName,fromDate,toDate,strReportType,strReasonName,posName,auditType, strSorting, strType,posCode,reasonCode,userCode);
+	
+		List exportList=new ArrayList();	
+	
+		String dteFromDate=objBean.getFromDate();
+		String dteToDate=objBean.getToDate();
+		String FileName="AuditFlash_"+dteFromDate+"_To_"+dteToDate;
+	
+		exportList.add(FileName);
 						
 		List List=(List)resMap.get("ColHeader");
 		
@@ -311,10 +302,16 @@ public class clsPOSAuditFlashController {
                     
 				}
 				totalList.add("Total");
+				totalList.add("");
+				totalList.add("");
+				totalList.add("");
 				totalList.add(sumBillAmt);
 				totalList.add(sumNewAmt);
 				totalList.add(discAmt);
 				totalList.add(" ");
+				totalList.add("");
+				totalList.add("");
+				totalList.add("");
 				resMap.put("ColHeader", listArrColHeader);
 				resMap.put("listArr", listArr);
 				resMap.put("totalList", totalList);
@@ -354,6 +351,10 @@ public class clsPOSAuditFlashController {
 		                    
 						}
 						totalList.add("Total");
+						totalList.add("");
+						totalList.add("");
+						totalList.add("");
+						totalList.add("");
 						totalList.add(sumQty); 
 						totalList.add(sumBillAmt);
 						totalList.add("");
@@ -369,8 +370,7 @@ public class clsPOSAuditFlashController {
 			   {
 				   if(strReportType.equals("Summary"))
 					{   
-				for(int i=0;i<list.size();i++)
-				{
+				
 					listArrColHeader.add("POS");
 	                listArrColHeader.add("POS Name");
 	                listArrColHeader.add("Bill No");
@@ -383,8 +383,10 @@ public class clsPOSAuditFlashController {
 	                listArrColHeader.add("Reason");
 	                listArrColHeader.add("Remarks");
 					
-					clsPOSBillItemDtlBean objBean = (clsPOSBillItemDtlBean) list.get(i);
-				
+					
+	                for(int i=0;i<list.size();i++)
+					{
+	                clsPOSBillItemDtlBean objBean = (clsPOSBillItemDtlBean) list.get(i);
 					List arrList=new ArrayList();
 					
 					arrList.add(objBean.getStrPosCode());
@@ -401,10 +403,18 @@ public class clsPOSAuditFlashController {
 					
 					listArr.add(arrList);
 					sumTotalAmt = sumTotalAmt + objBean.getDblAmountTemp();
-				}
+					}
 				totalList.add("Total");
                 totalList.add("");
+                totalList.add("");
+                totalList.add("");
+                totalList.add("");
+                totalList.add("");
+                totalList.add("");
                 totalList.add(sumTotalAmt);
+                totalList.add("");
+                totalList.add("");
+                totalList.add("");
 				resMap.put("listArr", listArr);
 				resMap.put("ColHeader", listArrColHeader);
 				resMap.put("totalList", totalList);
@@ -452,10 +462,18 @@ public class clsPOSAuditFlashController {
 	                        sumTotalAmt = sumTotalAmt + objBean.getDblAmount();
 	                       
 						}
-					   	totalList.add("Total");
+					   
+	                    totalList.add("Total");
+	                    totalList.add("");
+	                    totalList.add("");
+	                    totalList.add("");
+	                    totalList.add("");
+	                    totalList.add("");
 	                    totalList.add(sumQty);
 	                    totalList.add(sumTotalAmt);
-						
+	                    totalList.add("");
+	                    totalList.add("");
+	                    totalList.add("");
 						resMap.put("totalList", totalList);
 						resMap.put("ColHeader", listArrColHeader);
 						resMap.put("listArr", listArr);
@@ -635,51 +653,60 @@ public class clsPOSAuditFlashController {
 						resMap.put("ColHeader", listArrColHeader);
 					   }
 						   
-						   else
-						   {
-							   	listArrColHeader.add("POS");
-					            listArrColHeader.add("Table");
-					            listArrColHeader.add("Waiter");
-					            listArrColHeader.add("KOT No");
-					            listArrColHeader.add("Item Name");
-					            listArrColHeader.add("Pax");
-					            listArrColHeader.add("Qty");
-					            listArrColHeader.add("Amount");
-					            listArrColHeader.add("Reason");
-					            listArrColHeader.add("User Created");
-					            listArrColHeader.add("Date Created");
-					            listArrColHeader.add("Remarks");
-							   for(int i=0;i<list.size();i++)
-								{
-									clsPOSBillItemDtlBean objBean =  (clsPOSBillItemDtlBean) list.get(i);
-								
-									List arrList=new ArrayList();
-									arrList.add(objBean.getStrPosName());
-					                arrList.add(objBean.getStrTableName());
-					                arrList.add(objBean.getStrWaiterName());
-					                arrList.add(objBean.getStrKOTNo());
-					                arrList.add(objBean.getStrItemName());
-					                arrList.add(objBean.getIntPaxNo());
-					                arrList.add(objBean.getDblQuantity());
-					                arrList.add(objBean.getDblAmount());
-					                arrList.add(objBean.getStrReasonName());
-					                arrList.add(objBean.getStrUserCreated());
-					                arrList.add(objBean.getDteDateCreated());
-					                arrList.add(objBean.getStrRemark());
-					                listArr.add(arrList);
-									pax = pax + objBean.getIntPaxNo();
-				                    sumQty = sumQty + objBean.getDblQuantity();
-				                    sumTotalAmt = sumTotalAmt + objBean.getDblAmount();
-				                    
-								}
-							   totalList.add("Total");
-				                totalList.add(pax);
-				                totalList.add(sumQty);
-				                totalList.add(sumTotalAmt);
-								resMap.put("listArr", listArr);
-								resMap.put("totalList", totalList);
-								resMap.put("ColHeader", listArrColHeader);
-							   }   
+					   else
+					   {
+						   	listArrColHeader.add("POS");
+				            listArrColHeader.add("Table");
+				            listArrColHeader.add("Waiter");
+				            listArrColHeader.add("KOT No");
+				            listArrColHeader.add("Item Name");
+				            listArrColHeader.add("Pax");
+				            listArrColHeader.add("Qty");
+				            listArrColHeader.add("Amount");
+				            listArrColHeader.add("Reason");
+				            listArrColHeader.add("User Created");
+				            listArrColHeader.add("Date Created");
+				            listArrColHeader.add("Remarks");
+						   for(int i=0;i<list.size();i++)
+							{
+								clsPOSBillItemDtlBean objBean =  (clsPOSBillItemDtlBean) list.get(i);
+							
+								List arrList=new ArrayList();
+								arrList.add(objBean.getStrPosName());
+				                arrList.add(objBean.getStrTableName());
+				                arrList.add(objBean.getStrWaiterName());
+				                arrList.add(objBean.getStrKOTNo());
+				                arrList.add(objBean.getStrItemName());
+				                arrList.add(objBean.getIntPaxNo());
+				                arrList.add(objBean.getDblQuantity());
+				                arrList.add(objBean.getDblAmount());
+				                arrList.add(objBean.getStrReasonName());
+				                arrList.add(objBean.getStrUserCreated());
+				                arrList.add(objBean.getDteDateCreated());
+				                arrList.add(objBean.getStrRemark());
+				                listArr.add(arrList);
+								pax = pax + objBean.getIntPaxNo();
+			                    sumQty = sumQty + objBean.getDblQuantity();
+			                    sumTotalAmt = sumTotalAmt + objBean.getDblAmount();
+			                    
+							}
+						   totalList.add("Total");
+						   totalList.add("");
+						   totalList.add("");
+						   totalList.add("");
+						   totalList.add("");
+						   totalList.add(pax);
+			               totalList.add(sumQty);
+			               totalList.add(sumTotalAmt);
+			               totalList.add("");
+			               totalList.add("");
+			               totalList.add("");
+			               totalList.add("");
+			               
+			               resMap.put("listArr", listArr);
+			               resMap.put("totalList", totalList);
+			               resMap.put("ColHeader", listArrColHeader);
+						   }   
 						   
 						}
 					break;
@@ -759,10 +786,10 @@ public class clsPOSAuditFlashController {
 			            totalList.add("");
 			            totalList.add("");
 			            totalList.add("");
-			            totalList.add("");
-			            totalList.add("");
-			            totalList.add("");
 			            totalList.add(noOfKOTs);
+			            totalList.add("");
+			            totalList.add("");
+			            totalList.add("");
 			            resMap.put("totalList",totalList);
 						resMap.put("listArr", listArr);
 						resMap.put("ColHeader", listArrColHeader);
@@ -809,11 +836,11 @@ public class clsPOSAuditFlashController {
 				            totalList.add("");
 				            totalList.add("");
 				            totalList.add("");
-				            totalList.add("");
-				            totalList.add("");
-				            totalList.add("");
-				            totalList.add("");
 				            totalList.add(totalQuantity);
+				            totalList.add("");
+				            totalList.add("");
+				            totalList.add("");
+				            totalList.add("");
 				            resMap.put("totalList",totalList);
 				            resMap.put("listArr", listArr);
 							resMap.put("ColHeader", listArrColHeader);
@@ -856,9 +883,14 @@ public class clsPOSAuditFlashController {
 	                		
 						}
 						totalList.add("Total");
+						totalList.add("");
+						totalList.add("");
+						totalList.add("");
 			            totalList.add(pax);
-			            totalList.add("");
 			            totalList.add(sumTotalAmt);
+			            totalList.add("");
+			            totalList.add("");
+			            totalList.add("");
 			            resMap.put("totalList",totalList);
 						resMap.put("listArr", listArr);
 						resMap.put("ColHeader", listArrColHeader);
@@ -902,15 +934,24 @@ public class clsPOSAuditFlashController {
 				                   
 								}
 							   totalList.add("Total");
+							   totalList.add("");
+							   totalList.add("");
+							   totalList.add("");
+							   totalList.add("");
 				               totalList.add(pax);
 				               totalList.add(sumQty);
 				               totalList.add(sumTotalAmt);
+				               totalList.add("");
+				               totalList.add("");
+				               totalList.add("");
+				               totalList.add("");
 				               resMap.put("totalList",totalList);
 				               resMap.put("listArr", listArr);
 				               resMap.put("ColHeader", listArrColHeader);
 							   }   
 						   
 						}
+					break;
 					case "Waiter Audit":
 					{
 						listArrColHeader.add("Waiter Name");

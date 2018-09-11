@@ -56,7 +56,7 @@
 		        success: function(response) 
 		        {
 		        	
-		        	alert('${loginPOS}');
+		        	//alert('${loginPOS}');
 		       		funRemoveProductRows("tblDayEndEmailRpt");
 		           	$.each(response,function(i,item)
 		           	{
@@ -144,7 +144,11 @@
 		//alert("close");
 		//window.close();
 	}
-	 
+	 //Get Project Path
+	function getContextPath() 
+	{
+		return window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+	}
 </script>
 <body onload="funLoadAllReports()">
 <br>

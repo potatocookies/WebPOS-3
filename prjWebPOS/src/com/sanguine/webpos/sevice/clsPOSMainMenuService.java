@@ -226,93 +226,96 @@ public class clsPOSMainMenuService {
 					 	 							                    
 				            	}
 			                }
-			                else
-			                {			                	
-			                	int h, m, sec, d, min, y, lblCount, cntNavigate;
-			                    String dteCreated, time, date;
-			                	Date endDt = new Date();
-			                    String todayDate = (endDt.getYear() + 1900) + "-" + (endDt.getMonth() + 1) + "-" + endDt.getDate();
-			                    java.util.Date curDt = new java.util.Date();
-			                    d = curDt.getDate();
-			                    m = curDt.getMonth() + 1;
-			                    y = curDt.getYear() + 1900;
-			                    h = curDt.getHours();
-			                    min = curDt.getMinutes();
-			                    sec = curDt.getSeconds();
-			                    time = h + ":" + min + ":" + sec;
-			                    date = y + "-" + m + "-" + d;
-			                    dteCreated = date + " " + time;
-			                      
-			                    hmDayEndDetails.put("startDate", todayDate);
-			                    
-			                    SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
-			                    Date bDate = dFormat.parse(todayDate);
-			                    long posTime = bDate.getTime();
-			                    Date currDate = new Date();
-			                    long currTime = currDate.getTime();
-			                    long diffTime = currTime - posTime;
-			                    long diffDays = diffTime / (24 * 60 * 60 * 1000);
-			                    
-			                    clsDayEndProcessHdModel objDayEndProcessHdModel = new clsDayEndProcessHdModel();
-			                    objDayEndProcessHdModel.setStrPOSCode(POSCode);
-			                    objDayEndProcessHdModel.setDtePOSDate(todayDate);
-			                    objDayEndProcessHdModel.setStrDayEnd("N");
-			                    objDayEndProcessHdModel.setDblTotalSale(0.00);
-			                    objDayEndProcessHdModel.setDblNoOfBill(0);
-			                    objDayEndProcessHdModel.setDblNoOfVoidedBill(0);
-			                    objDayEndProcessHdModel.setDblNoOfModifyBill(0);
-			                    objDayEndProcessHdModel.setDblHDAmt(0);
-			                    objDayEndProcessHdModel.setDblDiningAmt(0);
-			                    objDayEndProcessHdModel.setDblTakeAway(0);
-			                    objDayEndProcessHdModel.setDblFloat(0);
-			                    objDayEndProcessHdModel.setDblCash(0);
-			                    objDayEndProcessHdModel.setDblAdvance(0);
-			                    objDayEndProcessHdModel.setDblTransferIn(0);
-			                    objDayEndProcessHdModel.setDblTransferOut(0);
-			                    objDayEndProcessHdModel.setDblPayments(0);
-			                    objDayEndProcessHdModel.setDblWithdrawal(0);
-			                    objDayEndProcessHdModel.setDblTransferOut(0);
-			                    objDayEndProcessHdModel.setDblTotalPay(0);
-			                    objDayEndProcessHdModel.setDblCashInHand(0);
-			                    objDayEndProcessHdModel.setDblRefund(0);
-			                    objDayEndProcessHdModel.setDblTotalDiscount(0);
-			                    objDayEndProcessHdModel.setDblNoOfDiscountedBill(0);
-			                    objDayEndProcessHdModel.setIntShiftCode(0);
-			                    objDayEndProcessHdModel.setStrShiftEnd("");
-			                    objDayEndProcessHdModel.setIntTotalPax(0);
-			                    objDayEndProcessHdModel.setIntNoOfTakeAway(0);
-			                    objDayEndProcessHdModel.setIntNoOfHomeDelivery(0);
-			                    objDayEndProcessHdModel.setStrUserCreated(userCode);
-			                    objDayEndProcessHdModel.setStrUserEdited(userCode);
-			                    objDayEndProcessHdModel.setDteDateCreated(dteCreated);
-			                    objDayEndProcessHdModel.setDteDayEndDateTime(dteCreated);
-			                    objDayEndProcessHdModel.setStrClientCode(clientCode);
-			                    objDayEndProcessHdModel.setStrDataPostFlag("N");
-			                    objDayEndProcessHdModel.setIntNoOfNCKOT(0);
-			                    objDayEndProcessHdModel.setIntNoOfComplimentaryKOT(0);
-			                    objDayEndProcessHdModel.setIntNoOfVoidKOT(0);
-			                    objDayEndProcessHdModel.setDblUsedDebitCardBalance(0.00);
-			                    objDayEndProcessHdModel.setDblUnusedDebitCardBalance(0.00);
-			                    objDayEndProcessHdModel.setStrWSStockAdjustmentNo("");
-			                    objDayEndProcessHdModel.setDblTipAmt(0.00);
-			                    objDayEndProcessHdModel.setStrExciseBillGeneration("");
-			                    objDayEndProcessHdModel.setDblNetSale(0.00);
-			                    objDayEndProcessHdModel.setDblGrossSale(0.00);
-			                    objDayEndProcessHdModel.setDblAPC(0.00);
-			                    
-			                    objBaseService.funSave(objDayEndProcessHdModel);
-			                   
-			 					hmDayEndDetails.put("ShiftEnd", "");
-			 					hmDayEndDetails.put("DayEnd", "N");
-			 					hmDayEndDetails.put("ShiftNo","0");
-			                }
+			                
 			            }
+			 			
 					}
 					else
-					{
-						 //new frmOkPopUp(null, "Settlement Type is not Present", "Warning", 1).setVisible(true);
-					}
+	                {			                	
+	                	int h, m, sec, d, min, y, lblCount, cntNavigate;
+	                    String dteCreated, time, date;
+	                	Date endDt = new Date();
+	                    String todayDate = (endDt.getYear() + 1900) + "-" + (endDt.getMonth() + 1) + "-" + endDt.getDate();
+	                    java.util.Date curDt = new java.util.Date();
+	                    d = curDt.getDate();
+	                    m = curDt.getMonth() + 1;
+	                    y = curDt.getYear() + 1900;
+	                    h = curDt.getHours();
+	                    min = curDt.getMinutes();
+	                    sec = curDt.getSeconds();
+	                    time = h + ":" + min + ":" + sec;
+	                    date = y + "-" + m + "-" + d;
+	                    dteCreated = date + " " + time;
+	                      
+	                    hmDayEndDetails.put("startDate", todayDate);
+	                    
+	                    SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
+	                    Date bDate = dFormat.parse(todayDate);
+	                    long posTime = bDate.getTime();
+	                    Date currDate = new Date();
+	                    long currTime = currDate.getTime();
+	                    long diffTime = currTime - posTime;
+	                    long diffDays = diffTime / (24 * 60 * 60 * 1000);
+	                    
+	                    clsDayEndProcessHdModel objDayEndProcessHdModel = new clsDayEndProcessHdModel();
+	                    objDayEndProcessHdModel.setStrPOSCode(POSCode);
+	                    objDayEndProcessHdModel.setDtePOSDate(todayDate);
+	                    objDayEndProcessHdModel.setStrDayEnd("N");
+	                    objDayEndProcessHdModel.setDblTotalSale(0.00);
+	                    objDayEndProcessHdModel.setDblNoOfBill(0);
+	                    objDayEndProcessHdModel.setDblNoOfVoidedBill(0);
+	                    objDayEndProcessHdModel.setDblNoOfModifyBill(0);
+	                    objDayEndProcessHdModel.setDblHDAmt(0);
+	                    objDayEndProcessHdModel.setDblDiningAmt(0);
+	                    objDayEndProcessHdModel.setDblTakeAway(0);
+	                    objDayEndProcessHdModel.setDblFloat(0);
+	                    objDayEndProcessHdModel.setDblCash(0);
+	                    objDayEndProcessHdModel.setDblAdvance(0);
+	                    objDayEndProcessHdModel.setDblTransferIn(0);
+	                    objDayEndProcessHdModel.setDblTransferOut(0);
+	                    objDayEndProcessHdModel.setDblPayments(0);
+	                    objDayEndProcessHdModel.setDblWithdrawal(0);
+	                    objDayEndProcessHdModel.setDblTransferOut(0);
+	                    objDayEndProcessHdModel.setDblTotalPay(0);
+	                    objDayEndProcessHdModel.setDblCashInHand(0);
+	                    objDayEndProcessHdModel.setDblRefund(0);
+	                    objDayEndProcessHdModel.setDblTotalDiscount(0);
+	                    objDayEndProcessHdModel.setDblNoOfDiscountedBill(0);
+	                    objDayEndProcessHdModel.setIntShiftCode(0);
+	                    objDayEndProcessHdModel.setStrShiftEnd("");
+	                    objDayEndProcessHdModel.setIntTotalPax(0);
+	                    objDayEndProcessHdModel.setIntNoOfTakeAway(0);
+	                    objDayEndProcessHdModel.setIntNoOfHomeDelivery(0);
+	                    objDayEndProcessHdModel.setStrUserCreated(userCode);
+	                    objDayEndProcessHdModel.setStrUserEdited(userCode);
+	                    objDayEndProcessHdModel.setDteDateCreated(dteCreated);
+	                    objDayEndProcessHdModel.setDteDayEndDateTime(dteCreated);
+	                    objDayEndProcessHdModel.setStrClientCode(clientCode);
+	                    objDayEndProcessHdModel.setStrDataPostFlag("N");
+	                    objDayEndProcessHdModel.setIntNoOfNCKOT(0);
+	                    objDayEndProcessHdModel.setIntNoOfComplimentaryKOT(0);
+	                    objDayEndProcessHdModel.setIntNoOfVoidKOT(0);
+	                    objDayEndProcessHdModel.setDblUsedDebitCardBalance(0.00);
+	                    objDayEndProcessHdModel.setDblUnusedDebitCardBalance(0.00);
+	                    objDayEndProcessHdModel.setStrWSStockAdjustmentNo("");
+	                    objDayEndProcessHdModel.setDblTipAmt(0.00);
+	                    objDayEndProcessHdModel.setStrExciseBillGeneration("");
+	                    objDayEndProcessHdModel.setDblNetSale(0.00);
+	                    objDayEndProcessHdModel.setDblGrossSale(0.00);
+	                    objDayEndProcessHdModel.setDblAPC(0.00);
+	                    
+	                    objBaseService.funSave(objDayEndProcessHdModel);
+	                   
+	 					hmDayEndDetails.put("ShiftEnd", "");
+	 					hmDayEndDetails.put("DayEnd", "N");
+	 					hmDayEndDetails.put("ShiftNo","0");
+	                }
+					
 				}
+			}
+			else
+			{
+				 //new frmOkPopUp(null, "Settlement Type is not Present", "Warning", 1).setVisible(true);
 			}
 		}
 		catch(Exception e)

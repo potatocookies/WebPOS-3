@@ -13,29 +13,31 @@
 <title>Day End Process</title>
 </head>
 <script type="text/javascript">
-		$(documnent).ready(function()
-		 {
-			 	var gDayEnd='${DayEnd}'; /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
-				var gShiftEnd='${ShiftEnd}';
+
+$(document).ready(function()
+{
+		var gDayEnd='${gDayEnd}'; /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
+		var gShiftEnd='${gShiftEnd}';
+	
+		if (gShiftEnd==("") && gDayEnd==("N"))
+	    {
+			document.getElementById("btnEndDay").style.color = "black"; 
+			document.getElementById("btnEndDay").disabled=true;
 			
-				if (gDayEnd==("") && gDayEnd==("N"))
-		        {
-					 ('#btnEnd').disabled=disabled;  
-					document.getElementById("btnEnd").disabled=true;
-					
-				}
-		        else if (gDayEnd==("N") && gShiftEnd==("N"))
-		        {
-		        	 ('#btnStart').disabled=disabled; 
-		        	document.getElementById("btnStart").disabled=true;
-		        }
-			 });
+		}
+	    else if (gDayEnd==("N") && gShiftEnd==("N"))
+	    {
+	    	document.getElementById("btnStart").style.color = "black"; 
+	    	document.getElementById("btnStart").disabled=true;
+	    }
+});
+		
 	
-	
+		
 		function funStart()
 		{
-			var DayEnd='${DayEnd}'  /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
-			var ShiftEnd='${ShiftEnd}';
+			var DayEnd='${gDayEnd}'  /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
+			var ShiftEnd='${gShiftEnd}';
 			
 			 if (DayEnd=="N" && ShiftEnd==("N"))
 				 {  
@@ -49,8 +51,8 @@
 			        	dataType: "json",
 			        
 			        	success: function (response) {
-			        			//var startday=response.get("DayStart");
-			        			//alert(startday);
+			        		var startday=response.DayStart;
+		        			alert(startday);
 			        			location.reload();
 			        			document.getElementById("btnStart").disabled=true;
 			        	 },
@@ -78,10 +80,10 @@
 		
 	function funEndDay()
 	{
-		var strPOSCode='${loginPOS}';
+		var strPOSCode='${gPOSCode}';
 		var ShiftNo="1";
-		var POSDate="${POSDate}"
-		var strURL=getContextPath()+"/CheckBillSettleBusyTableWithoutDtl.html?";
+		var POSDate="${gPOSDate}"
+		var strURL=getContextPath()+"/CheckBillSettleBusyTable.html?";
 		$.ajax({
 			type: "GET",
     	    url: strURL,
@@ -136,7 +138,7 @@
 	
 	function funEndDayProcess()
 	{
-		var ShiftEnd='${ShiftEnd}';
+		var ShiftEnd='${gShiftEnd}';
 		var searchurl=getContextPath()+"/blankDayEndDayProcess.html?";
 		$.ajax({
 		        type: "GET",
@@ -144,7 +146,12 @@
 	        	dataType: "json",
 	        
 	        	success: function (response) {
-				
+	        		if("${gDayEnd}"=="Y")
+	        		{
+	        			
+	        			window.location ="logout.html";
+	        		}
+	        		
 	        	 },
 		            error: function(jqXHR, exception)
 		       		 {

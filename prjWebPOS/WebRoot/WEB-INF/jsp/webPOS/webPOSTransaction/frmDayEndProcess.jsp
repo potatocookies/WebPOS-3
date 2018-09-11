@@ -34,24 +34,22 @@ var emailReport,ReportWindow;
 			
 			var POSName="${gPOSName}"
 			$('#lblPOSName').html(POSName);
-		}
-	);
+		});
 	
 	$(document).ready(function()
 			{
 		
-			var gDayEnd='${DayEnd}'; /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
-			var gShiftEnd='${ShiftEnd}';
+			var gDayEnd='${gDayEnd}'; /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
+			var gShiftEnd='${gShiftEnd}';
 			
-				if (gDayEnd==("") && gDayEnd==("N"))
+				if (gShiftEnd==("") && gDayEnd==("N"))
 		        {
-					 ('#btnEnd').disabled=disabled;  
-					document.getElementById("btnEnd").disabled=true;
-					
+					document.getElementById("btnEndDay").style.color = "black"; 
+					document.getElementById("btnEndDay").disabled=true; 
 				}
 		        else if (gDayEnd==("N") && gShiftEnd==("N"))
 		        {
-		        	 ('#btnStart').disabled=disabled; 
+		        	document.getElementById("btnStart").style.color = "black"; 
 		        	document.getElementById("btnStart").disabled=true;
 		        }
 			});
@@ -60,8 +58,8 @@ var emailReport,ReportWindow;
 	function funStart()
 	{
 		
-		var DayEnd='${DayEnd}'  /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
-		var ShiftEnd='${ShiftEnd}';
+		var DayEnd='${gDayEnd}'  /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
+		var ShiftEnd='${gShiftEnd}';
 		//alert('DayEndShiftEnd');
 		
 		 if (DayEnd=="N" && ShiftEnd==("N"))
@@ -76,8 +74,8 @@ var emailReport,ReportWindow;
 		        	dataType: "json",
 		        
 		        	success: function (response) {
-		        			//var startday=response.get("DayStart");
-		        			//alert(startday);
+		        		var startday=response.DayStart;
+		        			alert(startday);
 		        			document.getElementById("btnStart").disabled=true;
 		        			location.reload();
 		        	 },
@@ -106,9 +104,9 @@ var emailReport,ReportWindow;
 	}
 	function funEndDay()
 	{
-		var strPOSCode='${loginPOS}';
+		var strPOSCode='${gPOSCode}';
 		var ShiftNo="1";
-		var POSDate="${POSDate}"
+		var POSDate="${gPOSDate}"
 		var strURL=getContextPath()+"/CheckBillSettleBusyTable.html?";
 
 		$.ajax({
@@ -187,7 +185,6 @@ var emailReport,ReportWindow;
 	}
 	function funEndDayProcess(emailReport)
 	{
-		var ShiftEnd='${ShiftEnd}';
 		var searchurl=getContextPath()+"/EndDayProcess.html?emailReport="+emailReport;
 		$.ajax({
 		        type: "GET",
@@ -195,7 +192,12 @@ var emailReport,ReportWindow;
 	        	dataType: "json",
 	        
 	        	success: function (response) {
-				
+	        		alert(response.get("msg"));
+	        		if("${gDayEnd}"=="Y")
+	        		{
+	        			window.location ="logout.html";
+	        		}
+	        		
 	        	 },
 		            error: function(jqXHR, exception)
 		       		 {
@@ -221,21 +223,7 @@ var emailReport,ReportWindow;
 	function funSetData()
 	{
 		ReportWindow.close();
-		funEndDayProcess(emailReport);	
-		
-		/* var rowCount = table.rows.length;
-		alert(rowCount)
-	//	var row=table.rows[0].cell.item(0).innerHTML;
-		 for(i=0; i<rowCount; i++)
-		{
-		
-			var row=table.rows[i].cells[1].lastElementChild.defaultValue;
-			//alert(row)			 
-		}
-			 //	 $("table tr:eq(0) td:eq(0) input:text").val();
-			 //alert(table); 
-		 */
-		
+		funEndDayProcess(emailReport);			
 	}
 	</script>
 	
@@ -336,7 +324,7 @@ var emailReport,ReportWindow;
 								<tr>
 									<td width="9%" style="border: 1px solid black;">Settlement Mode</td>					
 									<td align ="right" width="9%" style="border: 1px solid black;">Amount</td>	
-									<td align ="right" width="9%" style="border: 1px solid black;">No Of Bills</td>
+									<td align ="right" width="9%" style="border: 1px solid black;">Discount</td>
 								</tr>
 							</thead>
 						 </table>
@@ -357,9 +345,17 @@ var emailReport,ReportWindow;
 					 </div>
 					 
 					 <div id="divSettlementTot" style="width: 50%; height: 120px;margin-left: 5px;">
-					 
+					 	<table style="height: 20px; width: 100%;font-size:11px;font-weight: bold; table-layout: fixed; overflow: scroll">
+							<thead style="background-color: #85cdffe6;">
+								<tr>
+									<td width="9%" style="border: 1px solid black;">Description</td>					
+									<td align ="right" width="9%" style="border: 1px solid black;">Amount</td>	
+									<td align ="right" width="9%" style="border: 1px solid black;">Bill  &nbsp &nbsp</td>
+								</tr>
+							</thead>
+						 </table>
 					 	<div id="divSettlementTotal" style="width: 100%; height: 97px;border: 1px solid #ccc;">
-							<table id="tblSettlementTotal" style="width: 100%; table-layout: fixed; overflow: scroll">
+							<table id="tblSettlementTotal" style="width: 97%; table-layout: fixed; overflow: scroll">
 								<tbody style="border-top: none;">
 										<c:forEach var="obj3"  items="${command.jArrSettlementTotal}" varStatus="">
 											<tr>

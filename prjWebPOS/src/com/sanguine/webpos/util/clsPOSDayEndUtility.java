@@ -6,11 +6,15 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Query;
 import org.json.simple.JSONArray;
@@ -22,6 +26,7 @@ import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.webpos.bean.clsPOSCashManagementDtlBean;
 import com.sanguine.webpos.controller.clsPOSDayEndProcess;
+import com.sanguine.webpos.model.clsDayEndProcessHdModel;
 
 @Controller
 public class clsPOSDayEndUtility {
@@ -123,7 +128,34 @@ public class clsPOSDayEndUtility {
         return flgCheckTable;
     }
 	
-	public int funGetNextShiftNoForShiftEnd(String posCode, int shiftNo,String strClientCode,String strUserCode)
+	@SuppressWarnings("finally")
+	public boolean isCheckedInMembers(String posCode)
+    {
+	boolean isCheckedInMembers = false;
+	try
+	{
+	    StringBuilder sql =new StringBuilder( "select a.strRegisterCode,a.strPOSCode,a.strIn,a.strOut "
+		    + "from tblregisterinoutplayzone a "
+		    + "where a.strOut='N' "
+		    + "and a.strPOSCode='" + posCode + "' ");
+	    List list=objBaseServiceImpl.funGetList(sql, "sql");
+	    if(list!=null && list.size()>0){
+	    	isCheckedInMembers = true;
+		    	
+	    }
+	    
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+	finally
+	{
+	    return isCheckedInMembers;
+	}
+    }
+
+	public int funGetNextShiftNoForShiftEnd(String posCode, int shiftNo,String strClientCode,String strUserCode,HttpServletRequest req)
     {
 
         int retvalue = 0;
@@ -149,11 +181,11 @@ public class clsPOSDayEndUtility {
                 if (shiftNo == shiftCount)
                 {
                 	gShiftNo=1;  //clsGlobalVarClass.gShiftNo=1;
-                    retvalue = funShiftEndProcess("DayEnd", posCode, shiftNo, billDate,strClientCode,strUserCode);
+                    retvalue = funShiftEndProcess("DayEnd", posCode, shiftNo, billDate,strClientCode,strUserCode,req);
                 }
                 else
                 {
-                    retvalue = funShiftEndProcess("ShiftEnd", posCode, shiftNo, billDate,strClientCode,strUserCode);
+                    retvalue = funShiftEndProcess("ShiftEnd", posCode, shiftNo, billDate,strClientCode,strUserCode,req);
                 }
             }
         }
@@ -168,7 +200,7 @@ public class clsPOSDayEndUtility {
     
     }
 
-	public int funGetNextShiftNo(String posCode, int shiftNo,String strClientCode,String strUserCode)
+	public int funGetNextShiftNo(String posCode, int shiftNo,String strClientCode,String strUserCode,HttpServletRequest req)
     {
         int retvalue = 0;
         try
@@ -182,7 +214,7 @@ public class clsPOSDayEndUtility {
  
             }
 
-            retvalue = funShiftEndProcess("DayEnd", posCode, shiftNo, billDate,strClientCode,strUserCode);
+            retvalue = funShiftEndProcess("DayEnd", posCode, shiftNo, billDate,strClientCode,strUserCode,req);
         }
         catch (Exception e)
         {
@@ -195,7 +227,7 @@ public class clsPOSDayEndUtility {
     }
 
 	
-	  public int funShiftEndProcess(String status, String posCode, int shiftNo, String billDate,String strClientCode,String strUserCode)
+	  public int funShiftEndProcess(String status, String posCode, int shiftNo, String billDate,String strClientCode,String strUserCode,HttpServletRequest req)
 	    {
 	        String newStartDate = "";
 	        int shiftEnd = 0;
@@ -344,13 +376,64 @@ public class clsPOSDayEndUtility {
 			                        }
 			                    }
 			
-			                    sql = "insert into tbldayendprocess(strPOSCode,dtePOSDate,strDayEnd,intShiftCode,strShiftEnd"
+			                   /* sql = "insert into tbldayendprocess(strPOSCode,dtePOSDate,strDayEnd,intShiftCode,strShiftEnd"
 			                            + ",strUserCreated,dteDateCreated) "
 			                            + "values('" + posCode + "','" + newStartDate + "','N'," + shift + ",''"
 			                            + ",'" + strUserCode + "','" + getCurrentDateTime() + "')";
-			                    objBaseServiceImpl.funExecuteUpdate(sql, "sql");
+			                    objBaseServiceImpl.funExecuteUpdate(sql, "sql");*/
+			                    
+			                    clsDayEndProcessHdModel objDayEndProcessHdModel = new clsDayEndProcessHdModel();
+			                    objDayEndProcessHdModel.setStrPOSCode(posCode);
+			                    objDayEndProcessHdModel.setDtePOSDate(newStartDate);
+			                    objDayEndProcessHdModel.setStrDayEnd("N");
+			                    objDayEndProcessHdModel.setDblTotalSale(0.00);
+			                    objDayEndProcessHdModel.setDblNoOfBill(0);
+			                    objDayEndProcessHdModel.setDblNoOfVoidedBill(0);
+			                    objDayEndProcessHdModel.setDblNoOfModifyBill(0);
+			                    objDayEndProcessHdModel.setDblHDAmt(0);
+			                    objDayEndProcessHdModel.setDblDiningAmt(0);
+			                    objDayEndProcessHdModel.setDblTakeAway(0);
+			                    objDayEndProcessHdModel.setDblFloat(0);
+			                    objDayEndProcessHdModel.setDblCash(0);
+			                    objDayEndProcessHdModel.setDblAdvance(0);
+			                    objDayEndProcessHdModel.setDblTransferIn(0);
+			                    objDayEndProcessHdModel.setDblTransferOut(0);
+			                    objDayEndProcessHdModel.setDblPayments(0);
+			                    objDayEndProcessHdModel.setDblWithdrawal(0);
+			                    objDayEndProcessHdModel.setDblTransferOut(0);
+			                    objDayEndProcessHdModel.setDblTotalPay(0);
+			                    objDayEndProcessHdModel.setDblCashInHand(0);
+			                    objDayEndProcessHdModel.setDblRefund(0);
+			                    objDayEndProcessHdModel.setDblTotalDiscount(0);
+			                    objDayEndProcessHdModel.setDblNoOfDiscountedBill(0);
+			                    objDayEndProcessHdModel.setIntShiftCode(shift);
+			                    objDayEndProcessHdModel.setStrShiftEnd("");
+			                    objDayEndProcessHdModel.setIntTotalPax(0);
+			                    objDayEndProcessHdModel.setIntNoOfTakeAway(0);
+			                    objDayEndProcessHdModel.setIntNoOfHomeDelivery(0);
+			                    objDayEndProcessHdModel.setStrUserCreated(strUserCode);
+			                    objDayEndProcessHdModel.setStrUserEdited(strUserCode);
+			                    objDayEndProcessHdModel.setDteDateCreated(getCurrentDateTime() );
+			                    objDayEndProcessHdModel.setDteDayEndDateTime(getCurrentDateTime() );
+			                    objDayEndProcessHdModel.setStrClientCode(strClientCode);
+			                    objDayEndProcessHdModel.setStrDataPostFlag("N");
+			                    objDayEndProcessHdModel.setIntNoOfNCKOT(0);
+			                    objDayEndProcessHdModel.setIntNoOfComplimentaryKOT(0);
+			                    objDayEndProcessHdModel.setIntNoOfVoidKOT(0);
+			                    objDayEndProcessHdModel.setDblUsedDebitCardBalance(0.00);
+			                    objDayEndProcessHdModel.setDblUnusedDebitCardBalance(0.00);
+			                    objDayEndProcessHdModel.setStrWSStockAdjustmentNo("");
+			                    objDayEndProcessHdModel.setDblTipAmt(0.00);
+			                    objDayEndProcessHdModel.setStrExciseBillGeneration("");
+			                    objDayEndProcessHdModel.setDblNetSale(0.00);
+			                    objDayEndProcessHdModel.setDblGrossSale(0.00);
+			                    objDayEndProcessHdModel.setDblAPC(0.00);
+			                    
+			                    objBaseServiceImpl.funSave(objDayEndProcessHdModel);
 	//*********************	                 
-	                            gShiftEnd="";
+			                    req.getSession().setAttribute("gShiftEnd", "");
+			        			req.getSession().setAttribute("gDayEnd", "N");
+			                    gShiftEnd="";
 	                            			   // clsGlobalVarClass.gShiftEnd = "";
 			                    gDayEnd="N";	//  clsGlobalVarClass.gDayEnd = "N";
 			                  				//  clsGlobalVarClass.setStartDate(newStartDate);
@@ -393,10 +476,19 @@ public class clsPOSDayEndUtility {
 			                    // Transfer Billing Data from Live Tables To QFile Tables.
 			                    funInsertQBillData(posCode,strClientCode);
 			
+			                  //clear non avail items for today
+			        		    String deleteNONAvailItemsDataSql = "delete from tblnonavailableitems where strPOSCode='" + posCode + "';";
+			        		    objBaseServiceImpl.funExecuteUpdate(deleteNONAvailItemsDataSql, "sql");
+			        		    
+			        		    //reset last order no
+			        		    objBaseServiceImpl.funExecuteUpdate("update tblinternal set dblLastNo=0 where strTransactionType='OrderNo' ", "sql");
+
 			                    // Post Sales Transaction Data, Inventory Transaction Data, Audit Transaction Data, Customer Masterok
 			                    // and Customer Area Master to HO.
+			        		    
 			                    String gConnectionActive="Y";// direct initialized in global 
-			                    if (gConnectionActive.equals("Y"))
+			                    String gDataSendFrequency=objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,posCode, "gDataSendFrequency");
+			                    if (gConnectionActive.equals("Y") && gDataSendFrequency.equalsIgnoreCase("After Day End"))
 			                    {
 			                        funInvokeHOWebserviceForTrans("All", "Day End",strClientCode,posCode);
 			                       funPostCustomerDataToHOPOS(strClientCode,posCode);
@@ -410,6 +502,45 @@ public class clsPOSDayEndUtility {
 			                    {
 			                        retvalue = funDayEndflash(strClientCode, posCode, billDate, shiftNo,strUserCode);
 			                    }
+			                   String gEnableBillSeries=objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,posCode, "gEnableBillSeries");
+			                   String gNewBillSeriesForNewDay=objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,posCode, "gNewBillSeriesForNewDay");
+			                if (gEnableBillSeries.equalsIgnoreCase("Y"))
+			       		    {
+				       			if (gNewBillSeriesForNewDay.equalsIgnoreCase("Y"))
+				       			{
+				       				objBaseServiceImpl.funExecuteUpdate("update tblbillseries "
+				       				    + "set intLastNo=0 "
+				       				    + "where (strPOSCode='" + posCode + "' or strPOSCode='All' ) "
+				       				    + "and strClientCode='" + strClientCode + "' ","sql");
+				       			}
+			       		    }
+			       		    else
+			       		    {
+				       			if (gNewBillSeriesForNewDay.equalsIgnoreCase("Y"))
+				       			{
+				       				objBaseServiceImpl.funExecuteUpdate("update tbllaststoreadvbookingbill set strAdvBookingNo=0  "
+				       				    + "where strPOSCode='" + posCode + "' ;","sql");
+	
+				       				objBaseServiceImpl.funExecuteUpdate("update tblstorelastbill set strBillNo=0  "
+				       				    + "where strPOSCode='" + posCode + "' ;","sql");
+				       			}
+			       		    }
+
+			       		    //send dayend sms                    
+			       		    StringBuilder sbsql =new StringBuilder( "select a.strSendSMSYN,a.longMobileNo "
+			       			    + "from tblsmssetup a "
+			       			    + "where (a.strPOSCode='" + posCode + "' or a.strPOSCode='All') "
+			       			    + "and a.strClientCode='" +strClientCode + "' "
+			       			    + "and a.strTransactionName='DayEnd' "
+			       			    + "and a.strSendSMSYN='Y'; ");
+			       		    List listSendsms=objBaseServiceImpl.funGetList(sbsql, "sql");
+				       		    if(listSendsms.size()>0){
+				       		    	Object[] ob=(Object[])listSendsms.get(0); 
+				       		    	String mobileNo = ob[1].toString();//mobileNo
+				       		 	
+					       			funSendDayEndSMS(mobileNo, posCode, billDate, shiftNo,req);
+		
+				       		    }
 			                }
 	                	}
 	                }
@@ -507,6 +638,9 @@ public class clsPOSDayEndUtility {
 		                    gShiftEnd = "";
 		                    gDayEnd = "N";
 		                    gShiftNo = (shift + 1);
+		                    req.getSession().setAttribute("gShiftEnd", "");
+		        			req.getSession().setAttribute("gDayEnd", "N");
+		        			
 		               //     clsGlobalVarClass.setStartDate(newStartDate);
 		                 //   clsGlobalVarClass.funSetPOSDate();
 		                 //   System.out.println("Shift = " + gShifts);
@@ -541,9 +675,9 @@ public class clsPOSDayEndUtility {
 		                  		 String exbillGenCode =objSynchronizePOSDataToHO.funPostPOSSalesDataToExciseAuto(gItemType,posCode,posDate,posDate,strClientCode);
 		                  		
 		                    }
-		                    String gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strUserCode,posCode, "gEnableShiftYN");
+		                    String gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,posCode, "gEnableShiftYN");
 		        			
-		        			String gLockDataOnShiftYN = objPOSSetupUtility.funGetParameterValuePOSWise(strUserCode,posCode, "gLockDataOnShiftYN");
+		        			String gLockDataOnShiftYN = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,posCode, "gLockDataOnShiftYN");
 		        			// Transfer Billing Data from Live Tables To QFile Tables.
 		                    if (gEnableShiftYN.equals("Y") && gLockDataOnShiftYN.equals("Y"))
 		                    {
@@ -1748,6 +1882,29 @@ public class clsPOSDayEndUtility {
           //System.out.println("intNoOfNCKOT:==" + sql);
        	objBaseServiceImpl.funExecuteUpdate(sql,"sql");
    
+       	sql = "UPDATE tbldayendprocess SET dblNetSale = IFNULL((SELECT SUM(a.dblSubTotal)-SUM(a.dblDiscountAmt) as NetTotal "
+    		    + " FROM tblbillhd a "
+    		    + " WHERE DATE(a.dteBillDate) = '" + posDate + "' "
+    		    + " AND  a.strPOSCode = '" + posCode + "' AND a.intShiftCode='" + shiftNo + "'),0) "
+    		    + " WHERE DATE(dtePOSDate)='" + posDate + "' AND strPOSCode = '" + posCode + "' AND intShiftCode=" + shiftNo;
+    	objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+
+    	    sql = "update tbldayendprocess set dblGrossSale = IFNULL((select sum(b.dblSettlementAmt) "
+    		    + "TotalSale from tblbillhd a,tblbillsettlementdtl b "
+    		    + "where a.strBillNo=b.strBillNo and date(a.dteBillDate) = '" + posDate + "' and "
+    		    + "a.strPOSCode = '" + posCode + "' and a.intShiftCode=" + shiftNo + "),0)"
+    		    + " where date(dtePOSDate)='" + posDate + "' and strPOSCode = '" + posCode + "'"
+    		    + " and intShiftCode=" + shiftNo;
+    	    //System.out.println("UpdateDayEndQuery_1=="+sql);
+    		objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+
+    	    sql = "UPDATE tbldayendprocess SET dblAPC = IFNULL(( "
+    		    + " SELECT SUM(a.dblGrandTotal)/SUM(a.intPaxNo) as APC"
+    		    + " FROM tblbillhd a "
+    		    + " WHERE  DATE(a.dteBillDate) = '" + posDate + "' "
+    		    + " AND  a.strPOSCode = '" + posCode + "' AND a.intShiftCode='" + shiftNo + "'),0) "
+    		    + " WHERE DATE(dtePOSDate)='" + posDate + "' AND strPOSCode = '" + posCode + "' AND intShiftCode=" + shiftNo;
+    		objBaseServiceImpl.funExecuteUpdate(sql,"sql");
       }
       catch (Exception e)
       {
@@ -2197,6 +2354,257 @@ public class clsPOSDayEndUtility {
 	        }
 	    }
 	
+
+    private void funSendDayEndSMS(String mobileNo, String posCode, String posDate, int shiftNo,HttpServletRequest req)
+    {
+	try
+	{
+	    //clsUtility2 objUtility2 = new clsUtility2();
+	    StringBuilder mainSMSBuilder = new StringBuilder();
+	    //DecimalFormat decimalFormat = new DecimalFormat("0.##");
+	    long netTotal = 0, grossTotal = 0, totalDisc = 0, totalAPC = 0;
+	    int totalPax = 0;
+
+	    StringBuilder sqlSettelementBrkUP =new StringBuilder("select SUM(a.dblSubTotal)-sum(a.dblDiscountAmt) as NetTotal,SUM(a.dblGrandTotal) as GrossSales "
+		    + ",SUM(a.intBillSeriesPaxNo) as TotalPax,SUM(a.dblSubTotal)/SUM(a.intBillSeriesPaxNo) as APC  "
+		    + "from  tblqbillhd a  "
+		    + "where a.strPOSCode='"+posCode+"'  "
+		    + "and date(a.dteBillDate)='"+posDate+"'  "
+		    + "and a.intShiftCode='"+shiftNo+"' ");
+	    
+	    List listSettelementBrkUP = objBaseServiceImpl.funGetList(sqlSettelementBrkUP, "sql");
+	    if (listSettelementBrkUP.size()>0)
+	    {
+	    	Object[] obj=(Object[])listSettelementBrkUP.get(0);
+				netTotal = Long.parseLong(obj[0].toString());//netTotal
+				grossTotal = Long.parseLong(obj[1].toString());//grossTotal
+				totalPax =  Integer.parseInt(obj[2].toString());//totalPax
+				totalAPC =  Long.parseLong(obj[3].toString());//totalAPC
+	    }
+	    
+	    mainSMSBuilder.append("Day_End");
+	    mainSMSBuilder.append(" ,Date:" + posDate);
+	    mainSMSBuilder.append(" ,POS:" + req.getSession().getAttribute("gPOSName"));
+	    mainSMSBuilder.append(" ,Shift:" + shiftNo);
+	    mainSMSBuilder.append(" ,User:" + req.getSession().getAttribute("gUserCode"));
+	    if (totalPax > 0)
+	    {
+		totalAPC = netTotal / totalPax;
+	    }
+
+	    mainSMSBuilder.append("     ");
+	    mainSMSBuilder.append(" ,NET SALE:" + String.valueOf(Math.rint(netTotal)));
+	    mainSMSBuilder.append(" ,GROSS SALE:" + String.valueOf(Math.rint(grossTotal)));
+	    mainSMSBuilder.append(" ,PAX:" + String.valueOf(Math.rint(totalPax)));
+	    mainSMSBuilder.append(" ,APC:" + String.valueOf(Math.rint(totalAPC)));
+
+	    /**
+	     * MTD sales
+	     */
+	    String[] arrDay = posDate.split("-");
+	    String fromDate = "";
+	    if (Integer.valueOf(arrDay[2]) > 1)
+	    {
+		fromDate = arrDay[0] + "-" + arrDay[1] + "-" + "01";
+	    }
+	    double monthTotalSales = 0.00, monthNetTotal = 0.00, monthGrossTotal = 0.00, monthTotalPax = 0, monthTotalAPC = 0;
+	    StringBuilder sqlUpToDateForCurrentMonthBrkUP =new StringBuilder("select SUM(a.dblSubTotal) as NetTotal,SUM(a.dblGrandTotal) as GrossSales "
+		    + ",SUM(a.intBillSeriesPaxNo) as TotalPax,SUM(a.dblSubTotal)/SUM(a.intBillSeriesPaxNo) as APC  "
+		    + "from  tblqbillhd a  "
+		    + "where a.strPOSCode='" + posCode + "'  "
+		    + "and date(a.dteBillDate) between '" + fromDate + "' and '" + posDate + "'  "
+		    + "and a.intShiftCode='" + shiftNo + "' ");
+	    List listMonthBkp = objBaseServiceImpl.funGetList(sqlUpToDateForCurrentMonthBrkUP, "sql");
+	    if (listMonthBkp.size()>0)
+	    {
+	    	for(int i=0;i<listMonthBkp.size();i++){
+	    		Object[] obj=(Object[])listMonthBkp.get(i);
+
+	    		monthNetTotal =Double.parseDouble(obj[0].toString()); //monthNetTotal
+	    		monthGrossTotal =Double.parseDouble(obj[1].toString());//monthGrossTotal
+	    		monthTotalPax = Double.parseDouble(obj[2].toString()); //monthTotalPax
+	    		monthTotalAPC =Double.parseDouble(obj[3].toString());  //monthTotalAPC
+	    		
+//              /**
+//              * (x to y APC)/y days
+//              */
+//             monthTotalAPC = monthTotalAPC / Integer.parseInt(arrDay[2]);
+
+	    	}
+	    	
+	    }
+
+
+	    mainSMSBuilder.append("     ");
+	    mainSMSBuilder.append(" ,MTD NET SALE:" + String.valueOf(Math.rint(monthNetTotal)));
+	    mainSMSBuilder.append(" ,MTD GROSS SALE:" + String.valueOf(Math.rint(monthGrossTotal)));
+	    mainSMSBuilder.append(" ,MTD PAX:" + String.valueOf(Math.rint(monthTotalPax)));
+	    mainSMSBuilder.append(" ,MTD APC:" + String.valueOf(Math.rint(monthTotalAPC)));
+
+	    /**
+	     * group wise sales
+	     */
+	    StringBuilder sqlBuilder = new StringBuilder();
+	    Map<String, Double> mapGroupSales = new HashMap<>();
+
+	    //live
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("SELECT c.strGroupCode,c.strGroupName, SUM(b.dblQuantity), SUM(b.dblAmount)- SUM(b.dblDiscountAmt) NetTotal "
+		    + "FROM tblbillhd a,tblbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
+		    + "WHERE a.strBillNo=b.strBillNo  "
+		    + "AND a.strPOSCode=f.strPOSCode  "
+		    + "AND a.strClientCode=b.strClientCode  "
+		    + "AND b.strItemCode=e.strItemCode  "
+		    + "AND c.strGroupCode=d.strGroupCode  "
+		    + "AND d.strSubGroupCode=e.strSubGroupCode  "
+		    + "AND DATE(a.dteBillDate) BETWEEN '" + posDate + "' AND '" + posDate + "' "
+		    + "AND a.strPOSCode='" + posCode + "' "
+		    + "GROUP BY c.strGroupCode, c.strGroupName ");
+	    
+	    List listGroupSales = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
+	    if (listGroupSales.size()>0)
+	    {
+	    	for(int i=0;i<listGroupSales.size();i++){
+	    		Object[] obj=(Object[])listGroupSales.get(i);
+	    		
+	    		String groupName = obj[1].toString();//groupName
+	    		double groupNetTotal =Double.parseDouble(obj[3].toString()); //netTotal
+	    		if (mapGroupSales.containsKey(groupName))
+	    		{
+	    		    mapGroupSales.put(groupName, mapGroupSales.get(groupName) + groupNetTotal);
+	    		}
+	    		else
+	    		{
+	    		    mapGroupSales.put(groupName, groupNetTotal);
+	    		}
+	    	    
+	    	}
+	    }
+	    
+	    //modifiers
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("SELECT c.strGroupCode,c.strGroupName, SUM(b.dblQuantity), SUM(b.dblAmount)- SUM(b.dblDiscAmt) NetTotal "
+		    + "FROM tblbillhd a,tblbillmodifierdtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
+		    + "WHERE a.strBillNo=b.strBillNo  "
+		    + "AND a.strPOSCode=f.strPOSCode  "
+		    + "AND a.strClientCode=b.strClientCode  "
+		    + "AND left(b.strItemCode,7)=e.strItemCode  "
+		    + "AND c.strGroupCode=d.strGroupCode  "
+		    + "AND d.strSubGroupCode=e.strSubGroupCode  "
+		    + "AND DATE(a.dteBillDate) BETWEEN '" + posDate + "' AND '" + posDate + "' "
+		    + "AND a.strPOSCode='" + posCode + "' "
+		    + "GROUP BY c.strGroupCode, c.strGroupName ");
+	    
+	    listGroupSales = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
+	    if (listGroupSales.size()>0)
+	    {
+	    	for(int i=0;i<listGroupSales.size();i++){
+	    		Object[] obj=(Object[])listGroupSales.get(i);
+	    		
+	    		String groupName = obj[1].toString();//groupName
+	    		double groupNetTotal =Double.parseDouble(obj[3].toString());//netTotal
+	    		if (mapGroupSales.containsKey(groupName))
+	    		{
+	    		    mapGroupSales.put(groupName, mapGroupSales.get(groupName) + groupNetTotal);
+	    		}
+	    		else
+	    		{
+	    		    mapGroupSales.put(groupName, groupNetTotal);
+	    		}
+	    	}
+	    }
+	  	    //Q
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("SELECT c.strGroupCode,c.strGroupName, SUM(b.dblQuantity), SUM(b.dblAmount)- SUM(b.dblDiscountAmt) NetTotal "
+		    + "FROM tblqbillhd a,tblqbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
+		    + "WHERE a.strBillNo=b.strBillNo  "
+		    + "AND a.strPOSCode=f.strPOSCode  "
+		    + "AND a.strClientCode=b.strClientCode  "
+		    + "AND b.strItemCode=e.strItemCode  "
+		    + "AND c.strGroupCode=d.strGroupCode  "
+		    + "AND d.strSubGroupCode=e.strSubGroupCode  "
+		    + "AND DATE(a.dteBillDate) BETWEEN '" + posDate + "' AND '" + posDate + "' "
+		    + "AND a.strPOSCode='" + posCode + "' "
+		    + "GROUP BY c.strGroupCode, c.strGroupName ");
+	    listGroupSales = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
+	    if (listGroupSales.size()>0)
+	    {
+	    	for(int i=0;i<listGroupSales.size();i++){
+	    		Object[] obj=(Object[])listGroupSales.get(i);
+	    		String groupName = obj[1].toString();//groupName
+	    		double groupNetTotal =Double.parseDouble(obj[3].toString());//netTotal
+	    		if (mapGroupSales.containsKey(groupName))
+	    		{
+	    		    mapGroupSales.put(groupName, mapGroupSales.get(groupName) + groupNetTotal);
+	    		}
+	    		else
+	    		{
+	    		    mapGroupSales.put(groupName, groupNetTotal);
+	    		}
+	    	    
+	    	}
+	    }
+	   
+	    //modifiers
+	    sqlBuilder.setLength(0);
+	    sqlBuilder.append("SELECT c.strGroupCode,c.strGroupName, SUM(b.dblQuantity), SUM(b.dblAmount)- SUM(b.dblDiscAmt) NetTotal "
+		    + "FROM tblqbillhd a,tblqbillmodifierdtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
+		    + "WHERE a.strBillNo=b.strBillNo  "
+		    + "AND a.strPOSCode=f.strPOSCode  "
+		    + "AND a.strClientCode=b.strClientCode  "
+		    + "AND left(b.strItemCode,7)=e.strItemCode  "
+		    + "AND c.strGroupCode=d.strGroupCode  "
+		    + "AND d.strSubGroupCode=e.strSubGroupCode  "
+		    + "AND DATE(a.dteBillDate) BETWEEN '" + posDate + "' AND '" + posDate + "' "
+		    + "AND a.strPOSCode='" + posCode + "' "
+		    + "GROUP BY c.strGroupCode, c.strGroupName ");
+	    listGroupSales = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
+	    if (listGroupSales.size()>0)
+	    {
+	    	for(int i=0;i<listGroupSales.size();i++){
+	    		Object[] obj=(Object[])listGroupSales.get(i);
+
+	    		String groupName = obj[1].toString();//groupName
+	    		double groupNetTotal =Double.parseDouble(obj[3].toString());//netTotal
+	    		if (mapGroupSales.containsKey(groupName))
+	    		{
+	    		    mapGroupSales.put(groupName, mapGroupSales.get(groupName) + groupNetTotal);
+	    		}
+	    		else
+	    		{
+	    		    mapGroupSales.put(groupName, groupNetTotal);
+	    		}
+	    	    
+	    	}
+	    }
+
+	    mainSMSBuilder.append("     ");
+	    mainSMSBuilder.append("Group Wise Net Sales:");
+	    mainSMSBuilder.append("     ");
+	    for (Map.Entry<String, Double> entry : mapGroupSales.entrySet())
+	    {
+		String groupName = entry.getKey();
+		double groupNetTotal = entry.getValue();
+
+		mainSMSBuilder.append(" ," + groupName + ":" + String.valueOf(Math.rint(groupNetTotal)));
+	    }
+
+	    System.out.println("Day end SMS-->\n" + mainSMSBuilder);
+
+	    ArrayList<String> mobileNumberList = new ArrayList<String>();
+	    String mobNos[] = mobileNo.split(",");
+	    for (String mn : mobNos)
+	    {
+		mobileNumberList.add(mn);
+	    }
+////	    ///boolean isSend = funSendBulkSMS(mobileNumberList, mainSMSBuilder.toString());
+//	    System.out.println("day end msg sent->" + isSend);
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+    }
 
     
 	    

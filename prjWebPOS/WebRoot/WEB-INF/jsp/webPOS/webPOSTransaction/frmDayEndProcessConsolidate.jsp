@@ -26,29 +26,28 @@
 		});
 	
 	
-	$(documnent).ready(function()
+	$(document).ready(function()
 	 {
-		 	var gDayEnd='${DayEnd}'; /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
-			var gShiftEnd='${ShiftEnd}';
-		
-			if (gDayEnd==("") && gDayEnd==("N"))
-	        {
-				 ('#btnEnd').disabled=disabled;  
-				document.getElementById("btnEnd").disabled=true;
-				
-			}
-	        else if (gDayEnd==("N") && gShiftEnd==("N"))
-	        {
-	        	 ('#btnStart').disabled=disabled; 
-	        	document.getElementById("btnStart").disabled=true;
-	        }
+		 	var gDayEnd='${gDayEnd}'; /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
+			var gShiftEnd='${gShiftEnd}';
+			
+				if (gShiftEnd==("") && gDayEnd==("N"))
+		        {
+					document.getElementById("btnEndDay").style.color = "black"; 
+					document.getElementById("btnEndDay").disabled=true; 
+				}
+		        else if (gDayEnd==("N") && gShiftEnd==("N"))
+		        {
+		        	document.getElementById("btnStart").style.color = "black"; 
+		        	document.getElementById("btnStart").disabled=true;
+		        }
 		 });
 	
 	function funStart()
 	{
 		
-		var DayEnd='${DayEnd}'  /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
-		var ShiftEnd='${ShiftEnd}';
+		var DayEnd='${gDayEnd}'  /*BCOZ in pos global veriale DayEnd initilize as N '${gDayEnd}'; */
+		var ShiftEnd='${gShiftEnd}';
 		//alert('DayEndShiftEnd');
 		
 		 if (DayEnd=="N" && ShiftEnd==("N"))
@@ -63,10 +62,10 @@
 		        	dataType: "json",
 		        
 		        	success: function (response) {
-		        			//var startday=response.get("DayStart");
-		        			//alert(startday);
-		        			location.reload();
-		        			document.getElementById("btnStart").disabled=true;
+		        		var startday=response.DayStart;
+	        			alert(startday);
+	        			document.getElementById("btnStart").disabled=true;
+	        			location.reload();
 		        	 },
 			            error: function(jqXHR, exception)
 			       		 {
@@ -92,9 +91,9 @@
 	}
 	function funEndDay()
 	{
-		var strPOSCode='${loginPOS}';
+		var strPOSCode='${gPOSCode}';
 		var ShiftNo="1";
-		var POSDate="${POSDate}"
+		var POSDate="${gPOSDate}"
 		var strURL=getContextPath()+"/ConsolidateCheckBillSettleBusyTable.html?";
 
 		$.ajax({
@@ -173,15 +172,18 @@
 	}
 	function funEndDayProcess(emailReport)
 	{
-		var ShiftEnd='${ShiftEnd}';
 		var searchurl=getContextPath()+"/ConsolidateEndDayProcess.html?emailReport="+emailReport;
 		$.ajax({
 		        type: "GET",
 	    	    url: searchurl,
 	        	dataType: "json",
-	        
 	        	success: function (response) {
-				
+	        		alert(response.get("msg"));
+	        		if("${gDayEnd}"=="Y")
+	        		{
+	        			window.location ="logout.html";
+	        		}
+	        		
 	        	 },
 		            error: function(jqXHR, exception)
 		       		 {
@@ -291,7 +293,7 @@
 							<tbody style="border-top: none;">
 								<c:forEach var="objCon1"  items="${command.jArrDayEndTotal}" varStatus="">
 									<tr>
-										<c:forEach var="obCon"  items="${objCon1}" varStatus="">
+										<c:forEach var="obCon1"  items="${objCon1}" varStatus="">
 											<td align ="right">${obCon1}</td>
 										</c:forEach>
 									</tr>
@@ -335,7 +337,15 @@
 					 </div>
 					 
 					 <div id="divSettlementTot" style="width: 50%; height: 120px;margin-left: 5px;">
-					 
+					 <table style="height: 20px; width: 100%;font-size:11px;font-weight: bold; table-layout: fixed; overflow: scroll">
+							<thead style="background-color: #85cdffe6;">
+								<tr>
+									<td width="9%" style="border: 1px solid black;">Description</td>					
+									<td align ="right" width="9%" style="border: 1px solid black;">Amount</td>	
+									<td align ="right" width="9%" style="border: 1px solid black;">Bill  &nbsp &nbsp</td>
+								</tr>
+							</thead>
+						 </table>
 					 	<div id="divSettlementTotal" style="width: 100%; height: 97px;border: 1px solid #ccc;">
 							<table id="tblSettlementTotal" style="width: 100%; table-layout: fixed; overflow: scroll">
 								<tbody style="border-top: none;">
@@ -671,7 +681,7 @@
 			
 			
 <!-- 			<!-- <input id="btnEnd"  type="button" value="  End"   onclick="funEnd()" style="height:30px; background: url(./resources/images/big2.png) no-repeat; -->
-<!-- 				 background-size: 90px 30px;width: 90px;color: #fff;font-size: 13px; font-weight: normal;" /> --> -->
+<!-- 				 background-size: 90px 30px;width: 90px;color: #fff;font-size: 13px; font-weight: normal;" /> --> 
 <!-- 		</td> -->
 <!-- 		</tr> -->
 <!-- 		</table> -->

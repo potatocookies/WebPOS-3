@@ -196,8 +196,10 @@
 					
 					
 				}//Else block Of Response
-				
+				if($("#cmbViewBy").val()!="BILL REGISTER")
+				{	
 				funAddTotalHeaderRow(response.Header);
+				}
 				funAddUnderLine(response.Total,"tblTotal");
 			},
 			error : function(jqXHR, exception) {
@@ -272,7 +274,16 @@
 	    for(var i=0;i<rowData.length;i++)
 	    	 {
 	   			if(i>2)
+	   			{
+	   				if(typeof rowData[i] == 'number')   			
+	   				{	
 	   				 item=Math.round(rowData[i]);
+	   				}
+	   				else
+	   				{
+	   				 item=rowData[i];
+	   				}	
+	   			}
 	   			else
 	   			 item=rowData[i];
 	 	   		row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px \" class=\"cell\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+item+"' />";

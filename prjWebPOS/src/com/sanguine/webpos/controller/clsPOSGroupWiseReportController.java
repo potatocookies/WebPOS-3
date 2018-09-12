@@ -155,7 +155,7 @@ public class clsPOSGroupWiseReportController
 			String sgCode = "ALL";
 			if (!strSGName.equalsIgnoreCase("ALL"))
 			{
-				sgCode = hmSubGroupName.get("strSGName");// funGetSGCode(strSGName);
+				sgCode = hmSubGroupName.get(strSGName);// funGetSGCode(strSGName);
 			}
 
 			String strSGCode = sgCode;

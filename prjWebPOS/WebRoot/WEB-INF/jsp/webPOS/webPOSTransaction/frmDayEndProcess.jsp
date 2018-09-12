@@ -192,8 +192,9 @@ var emailReport,ReportWindow;
 	        	dataType: "json",
 	        
 	        	success: function (response) {
-	        		alert(response.get("msg"));
-	        		if("${gDayEnd}"=="Y")
+	        		alert(response.msg);
+	        		var isdayEnd='<%=session.getAttribute("gDayEnd").toString()%>';
+	        		if(response.msg=="Succesfully Day End")
 	        		{
 	        			window.location ="logout.html";
 	        		}

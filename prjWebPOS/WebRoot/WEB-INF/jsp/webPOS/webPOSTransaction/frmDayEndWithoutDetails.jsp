@@ -146,9 +146,9 @@ $(document).ready(function()
 	        	dataType: "json",
 	        
 	        	success: function (response) {
-	        		if("${gDayEnd}"=="Y")
+	        		alert(response.msg);
+	        		if(response.msg=="Succesfully Day End")
 	        		{
-	        			
 	        			window.location ="logout.html";
 	        		}
 	        		

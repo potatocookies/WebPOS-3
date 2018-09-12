@@ -118,11 +118,13 @@ public class clsPOSDayEndWithoutDetails
 		try{
 			jobj= funDayEndProcessWithoutDetails( strPOSCode,  ShiftNo, userCode, strPOSDate, strClientCode, req);
 			req.getSession().setAttribute("gDayEnd","Y");
-				
+			jobj.put("msg", "Succesfully Day End");
 		}catch(Exception e){
 			e.printStackTrace();
+		}finally{
+			jobj.put("msg", "Day End Not Done");
+			return jobj;
 		}
-		return jobj;
 		//return new ModelAndView("frmPOSDayEndWithoutDetails");
 	}
 	

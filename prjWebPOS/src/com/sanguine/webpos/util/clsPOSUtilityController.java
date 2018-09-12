@@ -1361,7 +1361,7 @@ public class clsPOSUtilityController
 
 		if (megabytes < 25)
 		{
-			obSendMail.funSendMail("sanguineapos@gmail.com", filePath, strClientCode, posCode, strPOSName, strPOSDate);
+			//obSendMail.funSendMail("sanguineapos@gmail.com", filePath, strClientCode, posCode, strPOSName, strPOSDate);
 		}
 		return 1;
 	}

@@ -178,8 +178,8 @@
 	    	    url: searchurl,
 	        	dataType: "json",
 	        	success: function (response) {
-	        		alert(response.get("msg"));
-	        		if("${gDayEnd}"=="Y")
+	        		alert(response.msg);
+	        		if(response.msg=="Succesfully Day End")
 	        		{
 	        			window.location ="logout.html";
 	        		}

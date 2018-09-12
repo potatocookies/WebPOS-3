@@ -5,14 +5,11 @@
  */
 package com.sanguine.webpos.comparator;
 
-import com.POSGlobal.controller.clsBillDtl;
-import com.POSGlobal.controller.clsSalesFlashColumns;
-import com.POSReport.controller.clsBillItemDtlBean;
-import com.sanguine.webpos.bean.clsPOSSalesFlashColumns;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
+import com.sanguine.webpos.bean.clsPOSSalesFlashColumns;
 
 
 public class clsSalesFlashComparator implements Comparator<clsPOSSalesFlashColumns>

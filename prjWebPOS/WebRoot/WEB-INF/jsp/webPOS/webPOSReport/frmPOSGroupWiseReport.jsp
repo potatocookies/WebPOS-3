@@ -42,6 +42,18 @@
     					$("#txtFromDate" ).datepicker('setDate', Dat); 
     					$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
     					$("#txtToDate" ).datepicker('setDate', Dat);  
+    					
+    					if(gEnableShiftYN=='Y')
+    					{
+    						document.getElementById("lblShift").style.visibility = "visible"; 
+    						document.getElementById("txtShiftCode").style.visibility = "visible"; 
+    					}
+    					else
+    					{
+    						document.getElementById("lblShift").style.visibility = "hidden";
+    						document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+    						
+    					}
     			}); 
 
 
@@ -109,6 +121,18 @@
 				    	</s:select>
 					</div>
 			 </div>
+			 <div class="row" style="background-color: #fff;display: -webkit-box;">			
+			 		<div class="element-input col-lg-6" style="width: 17%;"> 
+    					<label id="lblShift" style="display: inline-block; width: 100px">Shift 
+						</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<s:select colspan="3" type="text" items="${shiftList}"
+								id="txtShiftCode" path="strShiftCode" cssClass="BoxW124px" />
+					</div>
+					</div>
+			 </div> 
 	</div>
 	<br />
 	<br />

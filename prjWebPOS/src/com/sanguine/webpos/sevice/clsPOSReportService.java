@@ -17,11 +17,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.Set;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -55,6 +62,7 @@ import com.sanguine.webpos.comparator.clsPOSSalesFlashComparator;
 import com.sanguine.webpos.comparator.clsSalesFlashComparator;
 import com.sanguine.webpos.comparator.clsVoidBillComparator;
 import com.sanguine.webpos.comparator.clsWaiterWiseSalesComparator;
+import com.sanguine.webpos.model.clsShiftMasterModel;
 import com.sanguine.webpos.util.clsPOSGroupWiseComparator;
 import com.sanguine.webpos.util.clsPOSSetupUtility;
 import com.sanguine.webpos.util.clsPOSUtilityController;
@@ -16454,7 +16462,35 @@ public class clsPOSReportService {
 					
 	}
 	
-	
+	public List<clsShiftMasterModel> funGetPOSWiseShiftList(@RequestParam("POSCode") String posCode,HttpServletRequest req)throws Exception
+	{
+		String clientCode=req.getSession().getAttribute("gClientCode").toString();
+		List<clsShiftMasterModel> listShiftModel =new ArrayList();
+		String posName = null;
+		
+		StringBuilder sqlShift = new StringBuilder();
+		if (posCode.equalsIgnoreCase("All"))
+		{
+		    sqlShift.append("select max(a.intShiftCode) from tblshiftmaster a group by a.intShiftCode ");
+		}
+		else
+		{
+		    sqlShift.append("select a.intShiftCode from tblshiftmaster a where a.strPOSCode='" + posCode + "' ");
+		}
+
+		List listSql = objBaseService.funGetList(sqlShift, "sql");
+		if(listSql.size()>0)
+		{
+			for(int i=0 ;i<listSql.size();i++ )
+		      {
+				   Object[] obj= (Object[]) listSql.get(i);
+				   clsShiftMasterModel objModel=new clsShiftMasterModel();
+				   objModel.setIntShiftCode(obj[0].toString());
+				   listShiftModel.add(objModel);
+		      } 	
+		}
+		return listShiftModel;
+	}
 	
 
 }

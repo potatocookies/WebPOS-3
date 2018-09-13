@@ -29,7 +29,7 @@ public class clsPOSMainMenuService {
 	    				+ " FROM tblforms a WHERE (a.strModuleType='T' OR a.strModuleType='U' OR strModuleName='Customer Master') "
 	    				+ " AND a.strModuleName!='NCKOT' AND a.strModuleName!='Complimentry Settlement'  "
 	    				+ " AND a.strModuleName!='Discount On Bill' AND a.strModuleName!='NCKOT' "
-	    				+ " AND a.strModuleName!='Take Away' AND a.strModuleName LIKE '%"+searchFrom+"%';  ");
+	    				+ " AND a.strModuleName!='Take Away' AND a.strModuleName LIKE '%"+searchFrom+"%';");
 	    	}
 	    	else if (moduleType.equals("M"))
 	    	{
@@ -50,28 +50,26 @@ public class clsPOSMainMenuService {
 	    	{
 	    		sbSql.append("select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName "
 	          	    + "from tblforms a,tblsuperuserdtl b  "
-	           		+ " where b.strUserCode='"+userCode+"'  "
-	           	    +  "and a.strModuleName=b.strFormName "
-	           		+  "and  (a.strModuleType='T' or a.strModuleType='U'  or strModuleName='Customer Master')   "
+	           		+ " where b.strUserCode='"+userCode+"' and a.strModuleName=b.strFormName "
+	           		+ " and  (a.strModuleType='T' or a.strModuleType='U'  or strModuleName='Customer Master') "
+	           		+ " AND a.strModuleName LIKE '%"+searchFrom+"%' "
 	           	    + "order by b.intSequence ");
 	    	}
 	    	else if (moduleType.equals("M"))
 	    	{
 	    		sbSql.append("select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName "
-	          	    + "from tblforms a,tblsuperuserdtl b  "
-	           		+ " where b.strUserCode='"+userCode+"'  "
-	           	    +  "and a.strModuleName=b.strFormName "
-	           		+  "and  (a.strModuleType='M' or a.strModuleType='U')   "
-	           	    + "order by b.intSequence ");
+	          	    + " from tblforms a,tblsuperuserdtl b "
+	           		+ " where b.strUserCode='"+userCode+"' and a.strModuleName=b.strFormName "
+	           		+ " and (a.strModuleType='M' or a.strModuleType='U') AND a.strModuleName LIKE '%"+searchFrom+"%' "
+	           	    + " order by b.intSequence ");
 	    	}
 	    	else if (moduleType.equals("R"))
 	    	{
 	    		sbSql.append("select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName "
-	        	    + "from tblforms a,tblsuperuserdtl b  "
-	        		+ " where b.strUserCode='"+userCode+"' "
-	        	    +  "and a.strModuleName=b.strFormName "
-	        		+  "and  (a.strModuleType='R' or a.strModuleType='U')   "
-	        	    + "order by b.intSequence ");
+	        	    + " from tblforms a,tblsuperuserdtl b  "
+	        		+ " where b.strUserCode='"+userCode+"' and a.strModuleName=b.strFormName "
+	        		+ " and (a.strModuleType='R' or a.strModuleType='U') AND a.strModuleName LIKE '%"+searchFrom+"%' "
+	        	    + " order by b.intSequence ");
 	    	}
 	    	else
 	    	{
@@ -86,9 +84,9 @@ public class clsPOSMainMenuService {
 	    			+ "or a.strModuleName='TableStatusReport' or a.strModuleName='NCKOT' "
 	    	        + "or a.strModuleName='Take Away' or a.strModuleName='Table Reservation' "
 	    			+ "or a.strModuleName='POS Wise Sales' or a.strModuleName='Customer Order' "
-	    			//+ "or a.strModuleName='Non Available Items' or a.strModuleName='Mini Make KOT' "
 	    			+ "or a.strModuleName='Day End' or a.strModuleName='KDSForKOTBookAndProcess' "
-	    			+ "or a.strModuleName='Kitchen Process System' ) ");																		  
+	    			+ "or a.strModuleName='Kitchen Process System' ) "
+	    			+ "AND a.strModuleName LIKE '%"+searchFrom+"%' ");																		  
 	    	}
 	    }
 	    else
@@ -96,13 +94,14 @@ public class clsPOSMainMenuService {
 	    	if(moduleType.equals("T"))
 	    	{
 	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
-	    			+  "from tblforms a,tbluserdtl b  "
-	    	        +  "where (a.strModuleType='T' or a.strModuleType='U' or strModuleName='Customer Master')  "
-	    	        +  "and b.strUserCode='"+userCode+"'  "
-	    	        +   "and a.strModuleName=b.strFormName  "
-	    	        +   "and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
-	    	        +    "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true')  "
-	    	        +  "order by b.intSequence ");
+	    			+ " from tblforms a,tbluserdtl b  "
+	    	        + " where (a.strModuleType='T' or a.strModuleType='U' or strModuleName='Customer Master')  "
+	    	        + " and b.strUserCode='"+userCode+"'  "
+	    	        + " and a.strModuleName=b.strFormName  "
+	    	        + " and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
+	    	        + " or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true') "
+	    	        + " AND a.strModuleName LIKE '%"+searchFrom+"%' "
+	    	        + " order by b.intSequence ");
 	    	}
 	    	else if(moduleType.equals("M"))
 	    	{
@@ -112,7 +111,7 @@ public class clsPOSMainMenuService {
 	          	      +  "and b.strUserCode='"+userCode+"'  "
 	          	      +  "and a.strModuleName=b.strFormName  "
 	          	      +  "and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
-	          	      +  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true')  "
+	          	      +  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true') AND a.strModuleName LIKE '%"+searchFrom+"%' "
 	          	      +  "order by b.intSequence ");
 	    	}
 	    	else if (moduleType.equals("R"))
@@ -123,7 +122,7 @@ public class clsPOSMainMenuService {
 	            	+  "and b.strUserCode='"+userCode+"'  "
 	            	+  "and a.strModuleName=b.strFormName  "
 	            	+  "and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
-	            	+  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true')  "
+	            	+  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true') AND a.strModuleName LIKE '%"+searchFrom+"%' "
 	            	+  "order by b.intSequence ");
 	    	}
 	    	else 
@@ -140,6 +139,7 @@ public class clsPOSMainMenuService {
 					+ ",'NCKOT','Take Away','Table Reservation','POS Wise Sales','Customer Order'"
 					//+ ",'Non Available Items','Mini Make KOT','Day End','KDSForKOTBookAndProcess','Kitchen Process System') "
 					+ ",'Day End','KDSForKOTBookAndProcess','Kitchen Process System') "
+					+ "AND a.strModuleName LIKE '%"+searchFrom+"%' "
 					+ " order by b.intSequence");
 	    	}
 	    }

@@ -155,7 +155,7 @@ public class clsPOSGroupWiseReportController
 			List listModQFile = null;
 			List<clsPOSGroupWaiseSalesBean> list = new ArrayList<>();
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptGroupWiseSalesReport.jrxml");
-
+			String strClientCode = req.getSession().getAttribute("gClientCode").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
@@ -168,8 +168,8 @@ public class clsPOSGroupWiseReportController
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
-			String shiftNo = "ALL";
-			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gEnableShiftYN");
+			String shiftNo = "1";
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
 			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{
 				shiftNo=objBean.getStrShiftCode();
@@ -183,7 +183,7 @@ public class clsPOSGroupWiseReportController
 
 			String strSGCode = sgCode;
 			 String clientCode=req.getSession().getAttribute("gClientCode").toString();
-			list = objReportService.funProcessGroupWiseReport( strPOSCode, fromDate, toDate, strUserCode, shiftNo, strSGCode);
+			list = objReportService.funProcessGroupWiseReport( strPOSCode, fromDate, toDate, strUserCode, shiftNo, strSGCode,objSetupParameter.get("gEnableShiftYN").toString());
 			
 			JasperDesign jd = JRXmlLoader.load(reportName);
 			JasperReport jr = JasperCompileManager.compileReport(jd);

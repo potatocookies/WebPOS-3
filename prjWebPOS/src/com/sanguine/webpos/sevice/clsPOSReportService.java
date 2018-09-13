@@ -1740,13 +1740,12 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSGroupSubGroupItemBean> funProcessSubGroupWiseReport(String posCode, String fromDate,
-			String toDate, String strUserCode, String strShiftNo) {
+			String toDate, String strUserCode, String strShiftNo,String enableShiftYN) {
 		StringBuilder sbSqlLive = new StringBuilder();
 		StringBuilder sbSqlQFile = new StringBuilder();
 		StringBuilder sbSqlFilters = new StringBuilder();
 		StringBuilder sqlModLive = new StringBuilder();
 		StringBuilder sqlModQFile = new StringBuilder();
-		String enableShiftYN="N";
 		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
 		sbSqlLive.setLength(0);
 		sbSqlQFile.setLength(0);
@@ -1973,17 +1972,17 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSVoidBillDtl> funProcessVoidBillSummaryReport(String posCode, String fromDate, String toDate,
-			String strShiftNo, String reasonCode) {
+			String strShiftNo, String reasonCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
-		String enableShiftYN="N";
+		
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
 			sqlBuilder.append(
 					"select a.strBillNo,Date(a.dteBillDate) as BillDate,Date(a.dteModifyVoidBill) as VoidedDate, "
 							+ " Time(a.dteBillDate) As EntryTime,Time(a.dteModifyVoidBill) VoidedTime, "
-							+ " a.dblModifiedAmount as BillAmount,a.strReasonName as Reason,a.strUserEdited AS VoidedUser,a.strUserCreated CreatedUser,a.strRemark,a.strVoidBillType "
+							+ " SUM(b.dblAmount) AS BillAmount,a.strReasonName as Reason,a.strUserEdited AS VoidedUser,a.strUserCreated CreatedUser,a.strRemark,a.strVoidBillType "
 							+ " from tblvoidbillhd a,tblvoidbilldtl b " + " where a.strBillNo=b.strBillNo "
 							+ " and date(a.dteBillDate)=date(b.dteBillDate) " + " and b.strTransType='VB' "
 							+ " and a.strTransType='VB' " + " and (a.dblModifiedAmount)>0 "
@@ -2116,10 +2115,10 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSVoidBillDtl> funProcessVoidBillDetailReport(String posCode, String fromDate, String toDate,
-			String strShiftNo, String reasonCode) {
+			String strShiftNo, String reasonCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
-		String enableShiftYN="N";
+		
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
@@ -3734,7 +3733,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessSubGroupWiseSummaryReport(String posCode, String fromDate, String toDate, String strShiftNo,
-			String strUserCode) {
+			String strUserCode,String enableShiftYN) {
 		List listRet = new ArrayList();
 		List<clsPOSGroupSubGroupWiseSales> listOfData = new ArrayList<clsPOSGroupSubGroupWiseSales>();
 		try {
@@ -3787,8 +3786,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 			}
-			// sbSqlFilters.append(" AND a.intShiftCode = '" + strShiftNo+ "' ");
-
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+			    sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+		    
 			sbSqlFilters.append(" group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode");
 
 			sbSqlLive.append(sbSqlFilters);
@@ -7098,7 +7100,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessGroupWiseReport(String strPOSCode, String fromDate, String toDate, String strUserCode,
-			String strShiftNo, String strSGCode) {
+			String strShiftNo, String strSGCode,String enableShiftYN) {
 		StringBuilder sbSqlLive = new StringBuilder();
 		StringBuilder sbSqlQFile = new StringBuilder();
 		StringBuilder sbSqlFilters = new StringBuilder();
@@ -7155,9 +7157,12 @@ public class clsPOSReportService {
 			if (!strPOSCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append(" AND a.strPOSCode = '" + strPOSCode + "' ");
 			}
-
-			sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+			    sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+		    
+			
 			if (!strSGCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append("AND d.strSubGroupCode='" + strSGCode + "' ");
 			}

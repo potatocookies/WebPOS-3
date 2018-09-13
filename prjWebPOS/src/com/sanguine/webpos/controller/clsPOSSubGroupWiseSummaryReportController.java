@@ -1,6 +1,5 @@
 package com.sanguine.webpos.controller;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,22 +10,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,14 +17,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsSetupService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
 import com.sanguine.webpos.bean.clsPOSGroupSubGroupWiseSales;
-import com.sanguine.webpos.bean.clsPOSSubGroupWiseSummaryReportBean;
-import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
 import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
+import com.sanguine.webpos.model.clsShiftMasterModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 @Controller
 public class clsPOSSubGroupWiseSummaryReportController {
@@ -51,9 +48,6 @@ public class clsPOSSubGroupWiseSummaryReportController {
 	private clsGlobalFunctions objGlobalFunctions;
 	
 	@Autowired
-	private clsPOSGlobalFunctionsController objPOSGlobalFunctionsController; 
-	
-	@Autowired
 	private ServletContext servletContext;
 	
 	@Autowired
@@ -61,7 +55,9 @@ public class clsPOSSubGroupWiseSummaryReportController {
 	
 	@Autowired
 	private clsPOSReportService objReportService;
-	
+	@Autowired
+	private clsSetupService objSetupService;
+
 	
 	 Map<String,String> hmPOSData;
 	 
@@ -69,6 +65,7 @@ public class clsPOSSubGroupWiseSummaryReportController {
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
 		{
 			String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+			String POSCode=request.getSession().getAttribute("loginPOS").toString();	
 			String urlHits="1";
 			try{
 				urlHits=request.getParameter("saddr").toString();
@@ -92,6 +89,22 @@ public class clsPOSSubGroupWiseSummaryReportController {
 			}
 			model.put("posList",poslist);
 			
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+			model.put("gEnableShiftYN",objSetupParameter.get("gEnableShiftYN").toString());
+			
+			List shiftList = new ArrayList();
+			shiftList.add("All");
+			List listShiftData = objReportService.funGetPOSWiseShiftList(POSCode,request);
+			if(listShiftData!=null)
+			{
+				for(int cnt=0;cnt<listShiftData.size();cnt++)
+				{
+					clsShiftMasterModel objShiftModel= (clsShiftMasterModel) listShiftData.get(cnt);
+					poslist.add(objShiftModel.getIntShiftCode());
+				}
+			}
+			model.put("shiftList",poslist);
+			
 			if("2".equalsIgnoreCase(urlHits)){
 				return new ModelAndView("frmPOSSubGroupSummaryReport_1","command", new clsPOSReportBean());
 			}else if("1".equalsIgnoreCase(urlHits)){
@@ -110,7 +123,7 @@ public class clsPOSSubGroupWiseSummaryReportController {
 		{
 			try
 			{
-				
+				String strClientCode=req.getSession().getAttribute("gClientCode").toString();		
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String reportType = objBean.getStrViewType();
 			String strPOSName = objBean.getStrPOSName();
@@ -125,14 +138,19 @@ public class clsPOSSubGroupWiseSummaryReportController {
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
-			String strShiftNo = "1";	
+			String strShiftNo = "1";
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+			{
+				strShiftNo=objBean.getStrShiftCode();
+			}
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptSubGroupWiseSummaryReport.jrxml");
 			
 			List<clsPOSGroupSubGroupWiseSales> listOfData = new ArrayList<clsPOSGroupSubGroupWiseSales>();
 			List<clsPOSTaxCalculationDtls> listOfTaxData = new ArrayList<clsPOSTaxCalculationDtls>();
 			List<clsPOSBillItemDtlBean> listOfSettlementData = new ArrayList<clsPOSBillItemDtlBean>();
 			
-			listOfData = objReportService.funProcessSubGroupWiseSummaryReport(posCode,fromDate,toDate,strShiftNo,strUserCode);
+			listOfData = objReportService.funProcessSubGroupWiseSummaryReport(posCode,fromDate,toDate,strShiftNo,strUserCode,objSetupParameter.get("gEnableShiftYN").toString());
 			hm.put("listOfData",listOfData);
 			
 			listOfTaxData = objReportService.funProcessTaxSummaryForSubGroupWiseSummaryReport(posCode,fromDate,toDate);

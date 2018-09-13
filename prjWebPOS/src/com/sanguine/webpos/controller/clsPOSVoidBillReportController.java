@@ -2,10 +2,7 @@
 
 package com.sanguine.webpos.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +11,22 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sanguine.base.service.clsSetupService;
+import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
+import com.sanguine.webpos.model.clsReasonMasterModel;
+import com.sanguine.webpos.model.clsShiftMasterModel;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
+import com.sanguine.webpos.sevice.clsPOSReportService;
 
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -27,29 +40,6 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.sanguine.controller.clsGlobalFunctions;
-
-
-import com.sanguine.webpos.bean.clsPOSRevenueHeadWiseSalesReportBean;
-import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
-import com.sanguine.webpos.bean.clsPOSVoidBillReportBean;
-import com.sanguine.webpos.bean.clsPOSReportBean;
-import com.sanguine.webpos.comparator.clsVoidBillComparator;
-import com.sanguine.webpos.model.clsReasonMasterModel;
-import com.sanguine.webpos.sevice.clsPOSMasterService;
-import com.sanguine.webpos.sevice.clsPOSReportService;
-import com.sanguine.webpos.util.clsPOSRevenueHeadWiseComparator;
-import com.sanguine.webpos.util.clsPOSVoidBillReportBeanComparator;
 
 
 
@@ -68,6 +58,9 @@ public class clsPOSVoidBillReportController {
 	 
 	 @Autowired
 	 clsPOSReportService objReportService;
+	 
+	 @Autowired
+	private clsSetupService objSetupService;
 	
 	 Map<String,String> map=new HashMap<String,String>();
 	 Map<String,String> mapReason = new HashMap<String,String>();
@@ -75,6 +68,7 @@ public class clsPOSVoidBillReportController {
 	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
 	{
 		String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+		String POSCode=request.getSession().getAttribute("loginPOS").toString();	
 		String urlHits="1";
 		try{
 			urlHits=request.getParameter("saddr").toString();
@@ -107,6 +101,22 @@ public class clsPOSVoidBillReportController {
 		}
 		model.put("reasonList",reasonList);
 		
+		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+		model.put("gEnableShiftYN",objSetupParameter.get("gEnableShiftYN").toString());
+		
+		List shiftList = new ArrayList();
+		shiftList.add("All");
+		List listShiftData = objReportService.funGetPOSWiseShiftList(POSCode,request);
+		if(listShiftData!=null)
+		{
+			for(int cnt=0;cnt<listShiftData.size();cnt++)
+			{
+				clsShiftMasterModel objShiftModel= (clsShiftMasterModel) listShiftData.get(cnt);
+				reasonList.add(objShiftModel.getIntShiftCode());
+			}
+		}
+		model.put("shiftList",reasonList);
+		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSVoidBillReport_1","command", new clsPOSReportBean());
 		}else if("1".equalsIgnoreCase(urlHits)){
@@ -125,6 +135,7 @@ public class clsPOSVoidBillReportController {
 	{
 		try
 		{
+		String strClientCode=req.getSession().getAttribute("gClientCode").toString();	
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
 		Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 		String reportTypeView = objBean.getStrReportType();
@@ -149,12 +160,16 @@ public class clsPOSVoidBillReportController {
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
 		String strShiftNo = "1";
-		
+		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+		if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+		{
+			strShiftNo=objBean.getStrShiftCode();
+		}
 		if (reportTypeView.equalsIgnoreCase("Summary"))
         {
             
             String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptVoidBillReport.jrxml");
-            listOfVoidBillData = objReportService.funProcessVoidBillSummaryReport(posCode,fromDate,toDate,strShiftNo,reasonCode);
+            listOfVoidBillData = objReportService.funProcessVoidBillSummaryReport(posCode,fromDate,toDate,strShiftNo,reasonCode,objSetupParameter.get("gEnableShiftYN").toString());
             
             JasperDesign jd = JRXmlLoader.load(reportName);
 			JasperReport jr = JasperCompileManager.compileReport(jd);
@@ -207,7 +222,7 @@ public class clsPOSVoidBillReportController {
         {
             String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptVoidBillReportDtl.jrxml");
             
-            listOfVoidBillData = objReportService.funProcessVoidBillDetailReport(posCode,fromDate,toDate,strShiftNo,reasonCode);
+            listOfVoidBillData = objReportService.funProcessVoidBillDetailReport(posCode,fromDate,toDate,strShiftNo,reasonCode,objSetupParameter.get("gEnableShiftYN").toString());
             
             JasperDesign jd = JRXmlLoader.load(reportName);
 			JasperReport jr = JasperCompileManager.compileReport(jd);

@@ -52,7 +52,7 @@
 <script type="text/javascript">
 
 
-	
+var gEnableShiftYN="${gEnableShiftYN}";
 	$(document).ready(function() {
 		var message='';
 		<%if (session.getAttribute("success") != null) {
@@ -77,20 +77,22 @@
 		});
 
 		 $(function() 
-	    			{		
-		 var POSDate="${POSDate}"
-			    var startDate="${POSDate}";
-			  	var Date = startDate.split(" ");
-				var arr = Date[0].split("-");
-				Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
-				$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
-				$("#txtFromDate" ).datepicker('setDate', Dat); 
-				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-				$("#txtToDate" ).datepicker('setDate', Dat); 
- 				
-	    			
-				funLoadTableData();
-	    			}); 
+	    {		
+	    var POSDate="${POSDate}"
+	    var startDate="${POSDate}";
+	  	var Date = startDate.split(" ");
+		var arr = Date[0].split("-");
+		Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
+		$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
+		$("#txtFromDate" ).datepicker('setDate', Dat); 
+		$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+		$("#txtToDate" ).datepicker('setDate', Dat); 
+			
+   			
+		funLoadTableData();
+		
+		
+	    }); 
 		
 		$("[type='reset']").click(function(){
 			location.reload(true);
@@ -300,6 +302,17 @@
 		}
 	});
 
+	if(gEnableShiftYN=='Y')
+	{
+		document.getElementById("lblShift").style.visibility = "visible"; 
+		document.getElementById("txtShiftCode").style.visibility = "visible"; 
+	}
+	else
+	{
+		document.getElementById("lblShift").style.visibility = "hidden";
+		document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+		
+	}
 
 });
 
@@ -744,7 +757,7 @@
 		
 		<div class="title" >
 				
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
@@ -772,7 +785,7 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
 							
 							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">Type</label>
@@ -804,7 +817,7 @@
 							</div>
 					</div>
 					
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
 							<div style="border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblAuditFlash" style="width: 100%; text-align: center !important;">
@@ -817,7 +830,7 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
 							<div style="border: 1px solid #ccc; display: block; height: 60px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblTotal" style="width: 100%; text-align: center !important;margin-top: 3px;">
@@ -830,7 +843,7 @@
 							</div>
 					</div>
 		    		
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
 		    			
 		    				<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%;">
 					  		
@@ -848,7 +861,7 @@
 			  		  </div>
 
 			  		  
-			  		  <div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+			  		  <div class="row" style="background-color: #fff; display:block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 			  		  			<s:input type="hidden" id="txtAuditType" name="txtAuditType" path="strPSPCode" />
 							</div>

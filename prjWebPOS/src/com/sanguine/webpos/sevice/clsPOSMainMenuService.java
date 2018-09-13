@@ -95,7 +95,7 @@ public class clsPOSMainMenuService {
 	    {
 	    	if(moduleType.equals("T"))
 	    	{
-	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,b.intSequence,a.strFormName,a.strRequestMapping, a.strShortName  "
+	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
 	    			+  "from tblforms a,tbluserdtl b  "
 	    	        +  "where (a.strModuleType='T' or a.strModuleType='U' or strModuleName='Customer Master')  "
 	    	        +  "and b.strUserCode='"+userCode+"'  "
@@ -106,7 +106,7 @@ public class clsPOSMainMenuService {
 	    	}
 	    	else if(moduleType.equals("M"))
 	    	{
-	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,b.intSequence,a.strFormName,a.strRequestMapping, a.strShortName  "
+	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
 	          	      +  "from tblforms a,tbluserdtl b  "
 	          	      +  "where (a.strModuleType='M' or a.strModuleType='U')  "
 	          	      +  "and b.strUserCode='"+userCode+"'  "
@@ -117,7 +117,7 @@ public class clsPOSMainMenuService {
 	    	}
 	    	else if (moduleType.equals("R"))
 	    	{
-	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,b.intSequence,a.strFormName,a.strRequestMapping, a.strShortName  "
+	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
 	    			+  "from tblforms a,tbluserdtl b  "
 	            	+  "where (a.strModuleType='R' or a.strModuleType='U' )  "
 	            	+  "and b.strUserCode='"+userCode+"'  "
@@ -141,7 +141,6 @@ public class clsPOSMainMenuService {
 					//+ ",'Non Available Items','Mini Make KOT','Day End','KDSForKOTBookAndProcess','Kitchen Process System') "
 					+ ",'Day End','KDSForKOTBookAndProcess','Kitchen Process System') "
 					+ " order by b.intSequence");
-	    		
 	    	}
 	    }
 		

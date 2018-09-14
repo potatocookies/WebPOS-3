@@ -30,9 +30,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsSetupService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.model.clsShiftMasterModel;
+import com.sanguine.webpos.model.clsSubGroupMasterHdModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
 
@@ -56,10 +59,14 @@ public class clsPOSDailySalesReportController {
 	
 	 Map<String,String> hmPOSData;
 	 
+	 @Autowired
+	 private clsSetupService objSetupService;
+	 
 	 @RequestMapping(value = "/frmPOSDailySalesReport", method = RequestMethod.GET)
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
 		{
 			String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+			String POSCode=request.getSession().getAttribute("loginPOS").toString();	
 			String urlHits="1";
 			try{
 				urlHits=request.getParameter("saddr").toString();
@@ -83,6 +90,21 @@ public class clsPOSDailySalesReportController {
 			}
 			model.put("posList",poslist);
 			
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+			model.put("gEnableShiftYN",objSetupParameter.get("gEnableShiftYN").toString());
+			
+			List shiftList = new ArrayList();
+			shiftList.add("All");
+			List listShiftData = objReportService.funGetPOSWiseShiftList(POSCode,request);
+			if(listShiftData!=null)
+			{
+				for(int cnt=0;cnt<listShiftData.size();cnt++)
+				{
+					clsShiftMasterModel objShiftModel= (clsShiftMasterModel) listShiftData.get(cnt);
+					shiftList.add(objShiftModel.getIntShiftCode());
+				}
+			}
+			model.put("shiftList",shiftList);
 			
 			if("2".equalsIgnoreCase(urlHits)){
 				return new ModelAndView("frmPOSDailySalesReport_1","command", new clsPOSReportBean());
@@ -103,7 +125,7 @@ public class clsPOSDailySalesReportController {
 			try
 			{
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptDailySalesReport.jrxml");
-
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
@@ -117,10 +139,17 @@ public class clsPOSDailySalesReportController {
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
-			String strShiftNo = "1";
+			String strShiftNo = "ALL";
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+			{
+				strShiftNo=objBean.getStrShiftCode();
+			}
+			hm.remove("shiftNo");
+			hm.put("shiftNo", strShiftNo);
 			List<clsPOSBillItemDtlBean> listOfDailySaleData = new ArrayList<clsPOSBillItemDtlBean>();
 			
-            listOfDailySaleData = objReportService.funProcessDailySalesReport(posCode,fromDate,toDate,strShiftNo,userCode);
+            listOfDailySaleData = objReportService.funProcessDailySalesReport(posCode,fromDate,toDate,strShiftNo,userCode,objSetupParameter.get("gEnableShiftYN").toString());
 			
             JasperDesign jd = JRXmlLoader.load(reportName);
 			JasperReport jr = JasperCompileManager.compileReport(jd);

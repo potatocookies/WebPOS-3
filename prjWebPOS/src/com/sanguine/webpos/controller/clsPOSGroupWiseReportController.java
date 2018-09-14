@@ -168,12 +168,14 @@ public class clsPOSGroupWiseReportController
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
-			String shiftNo = "1";
+			String shiftNo = "ALL";
 			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
 			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{
 				shiftNo=objBean.getStrShiftCode();
 			}
+			hm.remove("shiftNo");
+			hm.put("shiftNo", shiftNo);
 			String strSGName = objBean.getStrSGName();
 			String sgCode = "ALL";
 			if (!strSGName.equalsIgnoreCase("ALL"))

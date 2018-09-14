@@ -2248,12 +2248,12 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSBillDtl> funProcessWaiterWiseIncentivesSummaryReport(String posCode, String fromDate,
-			String toDate, String strShiftNo) {
+			String toDate, String strShiftNo,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		StringBuilder sqlQBuilder = new StringBuilder();
 		sqlBuilder.setLength(0);
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-		String enableShiftYN="N";
+		
 		try {
 			// Q Data
 			sqlQBuilder.setLength(0);
@@ -2347,12 +2347,12 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSBillDtl> funProcessWaiterWiseIncentivesDetailReport(String posCode, String fromDate,
-			String toDate, String strShiftNo) {
+			String toDate, String strShiftNo,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		StringBuilder sqlQBuilder = new StringBuilder();
 		sqlBuilder.setLength(0);
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-		String enableShiftYN="N";
+		
 		try {
 			// Q Data
 			sqlQBuilder.setLength(0);
@@ -3623,11 +3623,11 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessDailySalesReport(String posCode, String fromDate, String toDate, String strShiftNo,
-			String userCode) {
+			String userCode,String enableShiftYN) {
 		List<clsPOSBillItemDtlBean> listOfDailySaleData = new ArrayList<clsPOSBillItemDtlBean>();
 		StringBuilder sbSqlBillWise = new StringBuilder();
 		StringBuilder sbSqlBillWiseQFile = new StringBuilder();
-		String enableShiftYN="N";
+		
 		try {
 			sbSqlBillWise.setLength(0);
 			sbSqlBillWise
@@ -3671,7 +3671,7 @@ public class clsPOSReportService {
 							+ "left outer join tblcustomermaster e on a.strCustomerCode=e.strCustomerCode "
 							+ "where date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'");
 
-			if (!posCode.equals("All")) {
+			if (!posCode.equalsIgnoreCase("All")) {
 				sbSqlBillWiseQFile.append(" and a.strPOSCode='" + posCode + "' ");
 			}
 			
@@ -3998,7 +3998,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessLiveDataForOperatorWiseReport(String posCode, String fromDate, String toDate, String userCode,
-			String strShiftNo, String settleCode) {
+			String strShiftNo, String settleCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List listSettlementWiseBills = new ArrayList();
 
@@ -4021,7 +4021,11 @@ public class clsPOSReportService {
 			if (!userCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and e.strUserCode='" + userCode + "'");
 			}
-			sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			
 			if (!settleCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and d.strSettelmentCode='" + settleCode + "'");
 			}
@@ -4036,7 +4040,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessQFileDataForOperatorWiseReport(String posCode, String fromDate, String toDate,
-			String userCode, String strShiftNo, String settleCode) {
+			String userCode, String strShiftNo, String settleCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List listSettlementWiseBills = new ArrayList();
 
@@ -4059,7 +4063,11 @@ public class clsPOSReportService {
 			if (!userCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and e.strUserCode='" + userCode + "'");
 			}
-			sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			
 			if (!settleCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and d.strSettelmentCode='" + settleCode + "'");
 			}
@@ -6872,8 +6880,8 @@ public class clsPOSReportService {
 		return listRet;
 	}
 
-	public List funProcessGroupSubGroupWiseReport(String posCode, String fromDate, String toDate, String shiftNo,
-			String subGroupCode, String groupCode, String userCode) {
+	public List funProcessGroupSubGroupWiseDetailReport(String posCode, String fromDate, String toDate, String shiftNo,
+			String subGroupCode, String groupCode, String userCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
 		try {
@@ -6893,8 +6901,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
+							+ "') ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
 							+ "order By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName");
 			List listOfData = objBaseService.funGetList(sqlBuilder, "sql");
 			if (listOfData.size() > 0) {
@@ -6940,8 +6952,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append( "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
 							+ "Group By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName "
 							+ "order By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName");
 			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -6985,8 +7001,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
+							+ "') "); 
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}				
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
 							+ "order By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName");
 			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
 			if (listOfData.size() > 0) {
@@ -7031,8 +7051,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
 							+ "Group By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName "
 							+ "order By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName");
 			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -7099,6 +7123,189 @@ public class clsPOSReportService {
 		return listOfGroupSubGroupWiseSales;
 	}
 
+	public List funProcessGroupSubGroupWiseSummaryReport(String posCode, String fromDate, String toDate, String shiftNo,
+			String subGroupCode, String groupCode, String userCode,String enableShiftYN) {
+		StringBuilder sqlBuilder = new StringBuilder();
+		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
+		try {
+			clsPOSGroupSubGroupItemBean objGroupSubGroupItemBean = null;
+
+			// QFile
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select b.strItemName,d.strSubGroupName,e.strGroupName ,ifnull(sum(b.dblQuantity),0) as Quantity "
+						    + ",IFNULL(SUM(b.dblAmount)- SUM(b.dblDiscountAmt),0)  as Amount "
+						    + "from tblqbillhd a "
+						    + "left outer join tblqbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+						    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+						    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+						    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+						    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+						    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+						    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			List listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) 
+			{
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+					objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+					objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+					objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+					objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+					objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+					listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+					}
+			}
+			
+
+			// QFile modifiers
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select f.strModifierName,d.strSubGroupName,e.strGroupName ,ifnull(sum(f.dblQuantity),0) as Quantity "
+						    + ", IFNULL(SUM(f.dblAmount)-SUM(f.dblDiscAmt),0)  as Amount "
+						    + "from tblqbillhd a "
+						    + "left outer join tblqbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + "left outer join tblqbillmodifierdtl f on b.strBillNo=f.strBillNo  and date(a.dteBillDate)=date(f.dteBillDate) "
+						    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+						    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+						    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+						    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+						    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+						    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+						    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append( "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) {
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					
+						objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+						objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+						objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+						objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+						objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+						objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+						listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+					
+				}
+			}
+
+			// Live
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select b.strItemName,d.strSubGroupName,e.strGroupName ,ifnull(sum(b.dblQuantity),0) as Quantity "
+				    + ",IFNULL(SUM(b.dblAmount)- SUM(b.dblDiscountAmt),0)  as Amount "
+				    + "from tblbillhd a "
+				    + "left outer join tblbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+				    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+				    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+				    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+				    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+				    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+				    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+				    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') "); 
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}				
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) {
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					
+					objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+					objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+					objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+					objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+					objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+					objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+					listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+				
+				}
+			}
+
+			// Live modifiers
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select f.strModifierName,d.strSubGroupName,e.strGroupName ,ifnull(sum(f.dblQuantity),0) as Quantity "
+						    + ", IFNULL(SUM(f.dblAmount)-SUM(f.dblDiscAmt),0)  as Amount "
+						    + "from tblbillhd a "
+						    + "left outer join tblbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + "left outer join tblbillmodifierdtl f on b.strBillNo=f.strBillNo  and date(a.dteBillDate)=date(f.dteBillDate) "
+						    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+						    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+						    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+						    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+						    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+						    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+						    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) {
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					
+						objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+						objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+						objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+						objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+						objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+						objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+						listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+					
+				}
+			}
+			Comparator<clsPOSGroupSubGroupItemBean> groupComparator = new Comparator<clsPOSGroupSubGroupItemBean>()
+		    {
+
+			@Override
+			public int compare(clsPOSGroupSubGroupItemBean o1, clsPOSGroupSubGroupItemBean o2)
+			{
+			    return o1.getStrGroupName().compareToIgnoreCase(o2.getStrGroupName());
+			}
+		    };
+
+		    Comparator<clsPOSGroupSubGroupItemBean> subGroupComparator = new Comparator<clsPOSGroupSubGroupItemBean>()
+		    {
+
+			@Override
+			public int compare(clsPOSGroupSubGroupItemBean o1, clsPOSGroupSubGroupItemBean o2)
+			{
+			    return o1.getStrSubGroupName().compareToIgnoreCase(o2.getStrSubGroupName());
+			}
+		    };
+
+		    Collections.sort(listOfGroupSubGroupWiseSales, new clsPOSGroupSubGroupComparator(groupComparator, subGroupComparator));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return listOfGroupSubGroupWiseSales;
+	}
+
+	
 	public List funProcessGroupWiseReport(String strPOSCode, String fromDate, String toDate, String strUserCode,
 			String strShiftNo, String strSGCode,String enableShiftYN) {
 		StringBuilder sbSqlLive = new StringBuilder();

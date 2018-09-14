@@ -61,7 +61,7 @@
 		
 		<div class="title" style="margin-left: 190px;">
 		
-			<div class="row" style="background-color: #fff;display: -webkit-box;">
+			<div class="row" style="background-color: #fff;display: block;">
 				<div class="element-input col-lg-6" style="width: 17%;" > 
     				<label class="title">POS Name</label>
     			</div>
@@ -70,7 +70,7 @@
 				 	</s:select>
 				</div>
 			</div>
-			<div class="row" style="background-color: #fff;display: -webkit-box;">
+			<div class="row" style="background-color: #fff;display: block;">
 			 		<div class="element-input col-lg-6" style="width: 17%;"> 
     					<label class="title">From Date</label>
 	    			</div>
@@ -78,7 +78,7 @@
 						<s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;" />
 					</div>
 		     </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">			
+			 <div class="row" style="background-color: #fff;display: block;">			
 			 		<div class="element-input col-lg-6" style="width: 17%;"> 
     					<label class="title">To Date</label>
 	    			</div>
@@ -86,7 +86,7 @@
 						<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
 					</div>
 			 </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">				
+			 <div class="row" style="background-color: #fff;display: block;">				
 				<div class="element-input col-lg-6" style="width: 17%;" > 
     				<label class="title">Report Type</label>
     			</div>
@@ -97,7 +97,7 @@
 				    </s:select>
 				</div>
 			 </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">				
+			 <div class="row" style="background-color: #fff;display: block;">				
 				<div class="element-input col-lg-6" style="width: 17%;" > 
     				<label class="title">Select Type</label>
     			</div>

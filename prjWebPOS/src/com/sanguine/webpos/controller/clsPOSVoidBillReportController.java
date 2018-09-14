@@ -151,7 +151,7 @@ public class clsPOSVoidBillReportController {
 		String reasonCode = "ALL";
 		if (!strReasonName.equalsIgnoreCase("ALL"))
 		{
-			reasonCode = (String) map.get(strReasonName);
+			reasonCode = (String) mapReason.get(strReasonName);
 		}
 		hm.put("reasonName", strReasonName);
 		

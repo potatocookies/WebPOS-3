@@ -1711,10 +1711,10 @@
 	  
 	  
 	  
-	  function funGetPrintData()
+	  function funSaveBtnClicked()
 	  {
 
-			 if(operationType=="DineIn" && transactionType!="Modify Bill")
+			 if(operationType=="DineIn" && transactionType=="Make KOT")
 			 {
 			 
 				    var tableName=gTableName;
@@ -1732,7 +1732,7 @@
 						
 					}		 		   
 			 }
-			 else  if(operationType=="HomeDelivery" && transactionType!="Modify Bill")
+			 else  if(operationType=="HomeDelivery" && transactionType=="Direct Biller")
 			 {
 				 $("#hidTransactionType").val("Direct Biller");
 				 
@@ -1740,7 +1740,7 @@
 		    	 document.frmBillSettlement.method = "POST";
 				 document.frmBillSettlement.submit();
 		     }
-			 else  if(operationType=="TakeAway" && transactionType!="Modify Bill")
+			 else  if(operationType=="TakeAway" && transactionType=="Direct Biller")
 			 {
 				 $("#hidTransactionType").val("Direct Biller");
 				 
@@ -1756,6 +1756,23 @@
 		    	 document.frmBillSettlement.method = "POST";
 				 document.frmBillSettlement.submit();
 		     }
+			 else if(operationType=="DineIn" && transactionType=="Bill For Items")
+			 {				 
+					var yes=confirm("Do you want to generate bill for items?");
+					if(yes)
+					{
+						$("#hidTransactionType").val("Bill For Items");
+						 
+						 
+						document.frmBillSettlement.action = "actionForBillForItems.html";
+						
+					    document.frmBillSettlement.submit();
+					}
+					else
+					{
+						
+					}		 		   
+			 }
 			 
 	    }
 	  
@@ -2499,7 +2516,7 @@ function funDiscOkClicked()
 					 <table>
 						 <tr>
 						 	<td style="padding-right: 5px;" ><input type="button" id="btnBack" value="BACK" style="width: 60px; height:40px;"  onclick="funBackButtonClicked(this)" class="btn btn-outline-success" ></input></td>
-						 	<td style="padding-right: 5px;"><input type="submit" id="btnPrint"  value="SAVE" style="width: 60px; height:40px;" onclick="return funGetPrintData()" class="btn btn-outline-success"></input></td>
+						 	<td style="padding-right: 5px;"><input type="submit" id="btnPrint"  value="SAVE" style="width: 60px; height:40px;" onclick="return funSaveBtnClicked()" class="btn btn-outline-success"></input></td>
 						 	<td style="padding-right: 5px;"><input type="button" id="btnSettle" name = "settleBill" value="Need To Remove" style="width: 130px; height:40px; display:none" class="btn btn-outline-success"></input></td>
 						 	<td style="padding-right: 5px;"><input type="button" id="btnGetOffer" value="CHECK OFFER" style="width: 80px; height:40px;display:block"  onclick="funGetOfferButtonClicked(this)" class="btn btn-outline-success"></input></td>			 	
 						 </tr> 

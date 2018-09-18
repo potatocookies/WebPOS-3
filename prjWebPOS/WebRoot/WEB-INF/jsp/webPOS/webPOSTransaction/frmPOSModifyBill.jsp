@@ -218,9 +218,9 @@ var selectedRowIndex="";
 		 	
 		 	
 		 	operationType="DineIn";
-		 	transactionType="Modify Bill";
+		 	transactionType="Modify Bill"; 
 		 	 
-		 	
+		  	
 		 	
 		 	finalSubTotal=0.00;
 		 	finalDiscountAmt=0.00;

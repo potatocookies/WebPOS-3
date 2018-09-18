@@ -229,6 +229,8 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		model.put("gCreditCardExpiryDate", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CreditCardExpiryDateCompulsoryYN"));
 
 		funLoadAllReasonMasterData(request);
+		
+		
 		List listDiscountCombo = new ArrayList<List>();
 		List listSubGroupName = new ArrayList<>();
 		List listSubGroupCode = new ArrayList<>();

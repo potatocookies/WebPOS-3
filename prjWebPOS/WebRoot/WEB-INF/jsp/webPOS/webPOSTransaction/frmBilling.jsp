@@ -190,59 +190,7 @@
 	}		 
 	//end PLU Search funactionality		
 	
-	//Footer btn click
 	
-	function funFooterButtonClicked(objFooterButton)
-	{
-		switch(objFooterButton.id)
-		{
-		
-			case "Dine In":
-				funDineInButtonClicked();
-				break;
-			
-			case "Done":
-	 			funValidateForDoneButton();			
-				break;
-				
-			case "Home Delivery":
-				funHomeDeliveryBtnClicked();
-				break;
-				
-			case "Customer":
-				funCustomerBtnClicked();
-				break;
-				
-			case "Delivery Boy":
-				funHelp1('POSDeliveryBoyMaster');
-				break;
-				
-			case "Take Away":
-				funTakeAwayBtnClicked();
-				break;
-				
-			case "Home":
-				funHomeBtnclicked();
-				break;
-				
-			case "Customer History" :
-				funCustomerHistoryBtnClicked();
-				break;
-				
-			case "PLU" :
-				funPLUItemData();
-				break;
-				
-			case "NC KOT":
-				funNCKOTClicked();
-				break;
-				
-			case "Make Bill":
-				funMakeBillClicked();
-				break;
-			
-		}
-	}
 	
 	
 	/*
@@ -1953,6 +1901,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		$(objHomeDeliveryButton).removeClass("active");
 		
 		operationType="TakeAway";
+		transactionType="Direct Biller";
 		
 		
 		 homeDeliveryForTax = "N";		 		
@@ -2012,6 +1961,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		$(objTakeAwayButton).removeClass("active");
 		
 		operationType="DineIn";
+		transactionType="Make KOT";
 		
 		funResetDineInFields();
 		funShowTables();
@@ -2095,6 +2045,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		$(objTakeAwayButton).removeClass("active");
 		
 		operationType="HomeDelivery";
+		transactionType="Direct Biller";
 		
 		funDisplayPLUButton(false);
 		funDisplayDoneButton(false);
@@ -3872,7 +3823,68 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	{
 		document.getElementById("divItemDtl").style.display='block';
 		document.getElementById("divPLU").style.display='none';
-	}	
+	}
+	
+	
+	
+	
+	
+	//Footer btn click
+	
+		function funFooterButtonClicked(objFooterButton)
+		{
+			switch(objFooterButton.id)
+			{
+			
+				case "Dine In":
+					funDineInButtonClicked();
+					break;
+				
+				case "Done":
+		 			funValidateForDoneButton();			
+					break;
+					
+				case "Home Delivery":
+					funHomeDeliveryBtnClicked();
+					break;
+					
+				case "Customer":
+					funCustomerBtnClicked();
+					break;
+					
+				case "Delivery Boy":
+					funHelp1('POSDeliveryBoyMaster');
+					break;
+					
+				case "Take Away":
+					funTakeAwayBtnClicked();
+					break;
+					
+				case "Home":
+					funHomeBtnclicked();
+					break;
+					
+				case "Customer History" :
+					funCustomerHistoryBtnClicked();
+					break;
+					
+				case "PLU" :
+					funPLUItemData();
+					break;
+					
+				case "NC KOT":
+					funNCKOTClicked();
+					break;
+					
+				case "Make Bill":
+					funMakeBillClicked();
+					break;
+				
+			}
+		}
+	
+	
+	
 				
 	
 </script>

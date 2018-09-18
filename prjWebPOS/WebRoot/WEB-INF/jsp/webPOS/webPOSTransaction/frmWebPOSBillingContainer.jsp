@@ -585,6 +585,10 @@ $(document).ready(function()
 						  	  <c:when test="${formToBeOpen == 'Modify Bill'}">
 						     	<jsp:include page="frmPOSModifyBill.jsp" />
 						      </c:when>
+						      
+						       <c:when test="${formToBeOpen == 'Bill For Items'}">
+						     	<jsp:include page="frmBillForItems.jsp" />
+						      </c:when>
 						
 						      <c:otherwise>
 						      	<jsp:include page="frmBilling.jsp" />

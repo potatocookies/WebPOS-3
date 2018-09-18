@@ -1480,15 +1480,15 @@ public class clsPOSBillingAPIController
 			}
 
 			/* updating table status */
-			if (listOfBillSettlementToBeSave != null && listOfBillSettlementToBeSave.size() > 0)
+			if (listOfBillSettlementToBeSave != null && listOfBillSettlementToBeSave.size() > 0 && operationTypeForBilling!="Bill For Items")
 			{
 				/* table billed and settled */
 				funUpdateTableStatus(tableNo, "Normal");
 			}
-			else
+			else if(operationTypeForBilling!="Bill For Items")
 			{
 				/* table only billed and not settled */
-				funUpdateTableStatus(tableNo, "Billed");
+				funUpdateTableStatus(tableNo, "Billed" );
 			}
 
 		}

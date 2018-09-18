@@ -17,6 +17,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.sanguine.base.model.clsBaseModel;
 
@@ -36,7 +38,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 	}
 	
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbilldtl" , joinColumns={@JoinColumn(name="dtBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -45,9 +47,10 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dtBillDate"))
 	})
 	@Embedded
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillDtlModel> listBillDtlModel= new ArrayList<clsBillDtlModel>();
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbilldiscdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -56,9 +59,10 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dteBillDate"))
 	})
 	@Embedded
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillDiscDtlModel> listBillDiscDtlModel= new ArrayList<clsBillDiscDtlModel>();
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbillmodifierdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -67,9 +71,10 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dteBillDate"))
 	})
 	@Embedded
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillModifierDtlModel> listBillModifierDtlModel= new ArrayList<clsBillModifierDtlModel>();
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbillcomplementrydtl" , joinColumns={@JoinColumn(name="dtBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -77,9 +82,10 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="strBillNo",column=@Column(name="strBillNo")),
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dtBillDate"))
 	})
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillComplementaryDtlModel> listBillComplementaryDtlModel= new ArrayList<clsBillComplementaryDtlModel>();
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbillpromotiondtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -88,10 +94,11 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dteBillDate"))
 	})
 	@Embedded
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillPromotionDtlModel> listBillPromotionDtlModel= new ArrayList<clsBillPromotionDtlModel>();
 	
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbilltaxdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -100,9 +107,10 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dteBillDate"))
 	})
 	@Embedded
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillTaxDtl> listBillTaxDtl= new ArrayList<clsBillTaxDtl>();
 	
-	@CollectionOfElements(fetch=FetchType.LAZY)
+	@CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="tblbillsettlementdtl" , joinColumns={@JoinColumn(name="dteBillDate"),@JoinColumn(name="strBillNo"),@JoinColumn(name="strClientCode")})
 	@Id
 	@AttributeOverrides({
@@ -111,6 +119,7 @@ public class clsBillHdModel  extends clsBaseModel implements Serializable{
 		@AttributeOverride(name="dtBillDate",column=@Column(name="dteBillDate"))
 	})
 	@Embedded
+	@Fetch(FetchMode.SUBSELECT)
 	private List<clsBillSettlementDtlModel> listBillSettlementDtlModel= new ArrayList<clsBillSettlementDtlModel>();
 	
 	

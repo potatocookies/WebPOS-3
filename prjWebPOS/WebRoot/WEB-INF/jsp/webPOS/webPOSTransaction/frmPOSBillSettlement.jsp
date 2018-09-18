@@ -1714,14 +1714,14 @@
 	  function funSaveBtnClicked()
 	  {
 
-			 if(operationType=="DineIn" && transactionType=="Make KOT")
+			 if(operationType=="DineIn" && transactionType=="Make KOT" )
 			 {
 			 
 				    var tableName=gTableName;
 					var yes=confirm("Do you want to generate bill for table : "+tableName);
 					if(yes)
 					{
-						$("#hidTransactionType").val("Make KOT");
+						
 						 
 						 
 						document.frmBillSettlement.action = "actionBillSettlementKOT.html";
@@ -1734,7 +1734,7 @@
 			 }
 			 else  if(operationType=="HomeDelivery" && transactionType=="Direct Biller")
 			 {
-				 $("#hidTransactionType").val("Direct Biller");
+				 
 				 
 		    	 document.frmBillSettlement.action = "actionBillSettlement.html";
 		    	 document.frmBillSettlement.method = "POST";
@@ -1742,7 +1742,7 @@
 		     }
 			 else  if(operationType=="TakeAway" && transactionType=="Direct Biller")
 			 {
-				 $("#hidTransactionType").val("Direct Biller");
+				 
 				 
 		    	 document.frmBillSettlement.action = "actionBillSettlement.html";
 		    	 document.frmBillSettlement.method = "POST";
@@ -1750,7 +1750,7 @@
 		     }
 			 else  if(transactionType=="Modify Bill")
 			 {
-				 $("#hidTransactionType").val("Modify Bill");
+				 
 				 
 		    	 document.frmBillSettlement.action = "actionModifyBill.html";
 		    	 document.frmBillSettlement.method = "POST";
@@ -1761,11 +1761,27 @@
 					var yes=confirm("Do you want to generate bill for items?");
 					if(yes)
 					{
-						$("#hidTransactionType").val("Bill For Items");
+						
 						 
 						 
 						document.frmBillSettlement.action = "actionForBillForItems.html";
 						
+					    document.frmBillSettlement.submit();
+					}
+					else
+					{
+						
+					}		 		   
+			 }
+			 else if((operationType=="DineIn" || operationType=="HomeDelivery" || operationType=="TakeAway" ) && transactionType=="Settle Bill" )
+			 {
+			 
+				 	var billNo=$("#hidBillNo").val();
+				 	
+					var yes=confirm("Do you want to settle bill : "+billNo);
+					if(yes)
+					{
+						document.frmBillSettlement.action = "actionBillSettle.html";
 					    document.frmBillSettlement.submit();
 					}
 					else

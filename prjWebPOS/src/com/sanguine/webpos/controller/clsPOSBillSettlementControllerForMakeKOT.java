@@ -150,7 +150,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 	JSONArray listReasonCode,
 			listReasonName;
 
-	@RequestMapping(value = "/frmPOSRestaurantBill", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/frmPOSRestaurantBill", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest request)
 	{
 		String clientCode = "",
@@ -290,7 +290,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 
 		return new ModelAndView("frmBillSettlementMakeKOT", "command", obBillSettlementBean);// frmWebPOSBilling//frmBillSettlementMakeKOT
 	}
-
+*/
 	public void funLoadAllReasonMasterData(HttpServletRequest request)
 	{
 		Map<String, String> mapModBill = new HashMap<String, String>();

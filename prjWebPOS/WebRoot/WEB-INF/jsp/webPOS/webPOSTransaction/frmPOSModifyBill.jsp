@@ -204,9 +204,9 @@ var selectedRowIndex="";
 		     document.getElementById("tab1").style.display='none';
 		 	 document.getElementById("tab2").style.display='block';
 		 	 /* Disable tab1 and display tab2 */
-			 	
+			  var $rows = $('#tblSettleItemTable').empty();	
 		 	 
-		 	 var $rows = $('#tblSettleItemTable').empty();
+		 	
 		 	 
 		 	$("#billNoForDisplay").text("Bill No: "+billNo);
 		 	

@@ -1060,7 +1060,7 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		// return new ModelAndView("frmWebPOSBilling","command",obBillSettlementBean);
-		return funOpenForm(model, request);
+		return  new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
 
 	}
 

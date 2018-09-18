@@ -1782,6 +1782,7 @@
 					if(yes)
 					{
 						document.frmBillSettlement.action = "actionBillSettle.html";
+						document.frmBillSettlement.method = "POST";
 					    document.frmBillSettlement.submit();
 					}
 					else

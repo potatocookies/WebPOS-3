@@ -2417,7 +2417,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 
 		// return funOpenForm(model, request);
 
-		return new ModelAndView("redirect:/frmWebPOSBilling.html");
+		return  new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
 	}
 
 	// kot ptinging logic

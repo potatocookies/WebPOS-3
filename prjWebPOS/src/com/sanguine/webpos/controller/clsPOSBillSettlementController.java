@@ -339,7 +339,8 @@ public class clsPOSBillSettlementController
 		return hmReturn;
 	}
 	
-	@RequestMapping(value = "/actionBillSettle", method = RequestMethod.GET)
+	@SuppressWarnings("finally")
+	@RequestMapping(value = "/actionBillSettle", method = RequestMethod.POST)
 	public ModelAndView printBill(@ModelAttribute("command") clsPOSBillSettlementBean objBean, BindingResult result, HttpServletRequest request) throws Exception
 	{
 		try
@@ -437,7 +438,7 @@ public class clsPOSBillSettlementController
 		}
 		finally
 		{
-			return new ModelAndView("redirect:/frmPOSRestaurantDtl.html");
+			return  new ModelAndView("redirect:/frmPOSRestaurantDtl.html?saddr=1");
 		}
 	}
 

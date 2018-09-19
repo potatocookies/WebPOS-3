@@ -647,6 +647,16 @@ public class clsSearchFormController
 				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
 				break;
 			}
+			case "BillForChangeSettlement":
+			{   
+				String posCode=req.getSession().getAttribute("loginPOS").toString();
+				String posDate = req.getSession().getAttribute("gPOSDate").toString();
+				listColumnNames="Bill No,Settle Mode,Settle Amount";
+				searchFormTitle="Bill For Change Settlement";
+				JSONObject jObjSearchData = funGetPOSSearchDetails(formName,clientCode+"#"+posCode+"#"+posDate);
+				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
+				break;
+			}
 			
 		}
 		
@@ -1742,6 +1752,38 @@ public class clsSearchFormController
 								}
 								jObjSearchData.put(masterName, jArrData);
 				    		break;		
+				    		
+				    		
+                           case "BillForChangeSettlement":
+				    		
+				    		String []splitClientCode=clientCode.split("#");
+				    		hqlQuery.setLength(0);
+				    		hqlQuery.append("select a.strBillNo as Bill_No,a.strSettelmentMode as Settlement_Mode,sum(b.dblSettlementAmt) as Settlement_Amount  "
+				    				+ " from tblbillhd a,tblbillsettlementdtl b, tblsettelmenthd c  "
+				    				+ " where a.strBillNo=b.strBillNo and b.strSettlementCode=c.strSettelmentCode "
+				    				+ " and c.strSettelmentType!='Complementary'  and date(a.dteBillDate)=date(b.dteBillDate)  "
+				    				+ " and a.strPOSCode='" + splitClientCode[1] + "'  and date(a.dteBillDate)='" + splitClientCode[2] + "'  "
+				    				+ " group by a.strBillNo") ;
+				    		 
+				    		 list=objBaseService.funGetList(hqlQuery, "sql");	
+				    		 if(null != list)		
+							{	 
+				    			 for(int cnt=0;cnt<list.size();cnt++)
+				    			 {
+				    				 Object[] objArr = (Object[]) list.get(cnt);
+						    
+				    				 JSONArray jArrDataRow = new JSONArray();
+						    
+				    				 jArrDataRow.add(objArr[0].toString());
+				    				 jArrDataRow.add(objArr[1].toString());
+				    				 jArrDataRow.add(objArr[2].toString());
+						   
+				    				 jArrData.add(jArrDataRow);
+				    			 }
+							}
+						      jObjSearchData.put(masterName, jArrData);
+						    
+							break;		
 
 		    }
 			

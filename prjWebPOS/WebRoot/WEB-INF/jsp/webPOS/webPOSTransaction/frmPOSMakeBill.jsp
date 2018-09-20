@@ -28,6 +28,10 @@
 </style>
 <script type="text/javascript">
 
+
+var selctedTableNo="";
+
+
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(document).ready(function () {
 		  $('input#txtAreaCode').mlKeyboard({layout: 'en_US'});
@@ -216,9 +220,10 @@
 		function funTableClicked(objTableButton)
 		{
 			funRemoveTableRows("tblBillItemDtl");
+			
 			var tblMenuItemDtl=document.getElementById('tblTableDtl');
 		
-			var selctedTableNo=objTableButton.id;
+			 selctedTableNo=objTableButton.id;
 			
 			var jsonArrForTableDtl=${command.jsonArrForTableDtl};	
 			
@@ -462,19 +467,150 @@
 		    }
 		 
 		 function funDoneBtnclicked()
-			{
+		 {
 			 var tblTableDtl=document.getElementById('tblBillItemDtl');
-				var rowCount = tblTableDtl.rows.length;
-				if(rowCount==1)
-					{
+			 var rowCount = tblTableDtl.rows.length;
+			 if(rowCount==1)
+			 {
 					alert("Please Select Table");
 					return;
-					} 
-		        else
-		        {
-		        	window.location ="frmPOSRestaurantDtl.html";
-		        }	
-		    }
+			 } 
+		     else
+		     {
+		    	 funMakeBillBtnClicked();
+		     }	
+		 }
+		 
+		 
+			//display billsettlement window tab
+			function funMakeBillBtnClicked()
+			{
+
+				var $rows = $('#tblSettleItemTable').empty();
+				document.getElementById("tab2").style.display='block';		
+			    document.getElementById("tab1").style.display='none';
+			    
+			    operationType="DineIn";
+			    transactionType="Make Bill";
+			    
+			    finalSubTotal=0.00;
+				finalDiscountAmt=0.00;
+				finalNetTotal=0.00;
+				taxTotal=0.00;
+				taxAmt=0.00;
+				finalGrandTotal=0.00;
+				
+				gTableNo=selctedTableNo;
+				gTableName=$("#txtTableName").val();
+
+				
+				$("#tableNameForDisplay").text("Table No : "+gTableName);
+			    
+			    var listItmeDtl=[];
+			    var mergeduplicateItm = new Map();
+			    var hmItempMap=new Map();
+			    
+			    
+			    
+			    var searchurl=getContextPath()+"/funGetItemsForTable.html?bussyTableNo="+gTableNo;
+				 $.ajax({
+					        type: "GET",
+					        url: searchurl,
+					        dataType: "json",
+					        async:false,
+					        success: function(response)
+					        {
+					        	$.each(response.itemList, function(i,item)
+			    				{			
+					        		
+					        		var itemName=item.strItemName;									
+									var itemQty=item.dblQuantity;									
+									var itemAmt=item.dblAmount;
+									var rate=item.dblRate;
+									var itemCode=item.strItemCode;
+					        		
+			    		    		
+					        		hmItempMap.set(itemCode,itemName);
+					        		
+					        		var isModifier=false;
+					  		    	if(itemName.startsWith("-->"))
+					  				{
+					  		    		isModifier=true;
+					  				}
+					  		    	
+					  		    	
+					  		    	var subgroupcode=item.strSubGroupCode;
+							 		var subgroupName=item.strSubGroupName;
+					  		    	var groupcode=item.strGroupCode;
+							 		var groupName=item.strGroupName;
+												 							
+									hmSubGroupMap.set(subgroupcode, subgroupName);
+									hmGroupMap.set(groupcode, groupName); 
+					  		    	
+					  		    	
+									
+									var singleObj = {}
+
+								    singleObj['itemCode'] =itemCode;
+									singleObj['itemName'] =itemName;				
+									singleObj['quantity'] =itemQty;																	    								   
+								    singleObj['rate'] =rate;				   								    
+								    singleObj['amount'] = itemAmt;								    
+								    singleObj['isModifier'] =isModifier;								    
+								    singleObj['discountPer'] = 0.0;
+								    singleObj['discountAmt'] =0.0;
+								    singleObj['strSubGroupCode'] =subgroupcode;
+								    singleObj['strGroupcode'] =groupcode;
+								    
+								   
+								    
+								    listItmeDtl.push(singleObj);
+					  		    	
+					  		    	
+					  		    	
+					  		    	
+			    		    		
+			    			  	});					        	  
+							},
+							error: function(jqXHR, exception) {
+					            if (jqXHR.status === 0) {
+					                alert('Not connect.n Verify Network.');
+					            } else if (jqXHR.status == 404) {
+					                alert('Requested page not found. [404]');
+					            } else if (jqXHR.status == 500) {
+					                alert('Internal Server Error [500].');
+					            } else if (exception === 'parsererror') {
+					                alert('Requested JSON parse failed.');
+					            } else if (exception === 'timeout') {
+					                alert('Time out error.');
+					            } else if (exception === 'abort') {
+					                alert('Ajax request aborted.');
+					            } else {
+					                alert('Uncaught Error.n' + jqXHR.responseText);
+					            }		            
+					        }
+				      });
+			    
+				 /**
+					*calculating promotions and filling data to grid for bill print	
+					*/
+					funCalculatePromotion(listItmeDtl);
+					
+					funRefreshSettlementItemGrid();
+			    
+		
+			}
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
 </script>
 </head>
 
@@ -526,11 +662,7 @@
 								</thead>		
 							</table>	
 								<table id="tblBillItemDtl"  cellpadding="0" cellspacing="0" >
-<!-- 									<tr> -->
-<!-- 										  <th><input type="button" value="Description" class="tblBillItemDtlColBtnGrp" ></input></th> -->
-<!-- 										  <th><input type="button" value="Qty"  class="tblBillItemDtlColBtnGrp" ></input></th> -->
-<!-- 										  <th><input type="button" value="Amount" class="tblBillItemDtlColBtnGrp"></input></th> -->
-<!-- 									</tr>																	 -->
+															
 								</table>
 				</div>
 				
@@ -554,10 +686,7 @@
 	    		<br/>
 			</div>
 			
-<!-- 		</div>	 -->
-		
-		
-<!-- 		<div class="title"> -->
+
 			<div style=" width: 50%; float:left;  border-collapse: separate; ">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
 	    			<div class="element-input col-lg-6" style="width: 40%;">
@@ -593,10 +722,13 @@
 			</div>
 			<br/>
 	    </div>
+
+
+		<br>
+		<br>
+		<br>
 				
-<!-- 				<div style="text-align: right; margin-left: 250px;"> -->
 				
-				<br/>
 					<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 25%;">
 						<div class="element-input col-lg-6" style="width: 15%;"> 
 		    				<input  type="button" id="Home"  value="Home"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funHomeBtnclicked()"/>
@@ -611,131 +743,6 @@
 		    				<input  type="button" id="Done"  value="Done"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funDoneBtnclicked()"/>
 		    			</div> 
 					</div>
-<!-- 				 </div> -->
-	    	    
-	  
-						
-<!-- 			<div id="divMain" style=" border: 1px solid #ccc; height: 520px;  width: 785px; margin-left: 70px; " >				 -->
-<!-- 				<table  > -->
-									
-<!-- 					<tr> -->
-<!-- 						<td> -->
-						
-<!-- 							<table > -->
-<!-- 								<tr> -->
-							
-<!-- 				<td> -->
-<!-- 					<label>Table</label> -->
-<!-- 				</td> -->
-<!-- 				<td>&nbsp;&nbsp;&nbsp;</td> -->
-<!-- 				<td> -->
-<!-- 					<input  type="text"  id="txtTableName" readonly="true" style="text-transform: uppercase; width:75px; height:20px;" class="longTextBox jQKeyboard form-control" />  -->
-			
-<!-- 				</td> -->
-<!-- 					<td>&nbsp;&nbsp;&nbsp;</td>			 -->
-<!-- 								<td> -->
-<!-- 					<label >Waiter</label> -->
-<!-- 				</td> -->
-<!-- 				<td>&nbsp;&nbsp;&nbsp;</td> -->
-<!-- 				<td> -->
-<!-- 					<input  type="text"  id="txtWaiterName" readonly="true" style="text-transform: uppercase; width:75px; height:20px;" class="longTextBox jQKeyboard form-control"/> -->
-<!-- 				</td> -->
-<!-- 				</tr> -->
-<!-- 				<tr> -->
-				
-<!-- 				<td> -->
-<!-- 					<label >PAX</label> -->
-<!-- 				</td> -->
-<!-- 				<td>&nbsp;&nbsp;&nbsp;</td> -->
-<!-- 				<td> -->
-<!-- 					<input  type="text"  id="txtPaxNo" readonly="true" style="width:75px; height:20px;" class="longTextBox jQKeyboard form-control"  />  -->
-<!-- 				</td> -->
-<!-- 								</tr> -->
-<!-- 								</table> -->
-							
-<!-- 							<div id="divBillItemDtl" style=" border: 1px solid #ccc; height: 400px;  overflow-x: auto; overflow-y: auto; width: 324px;"> -->
-								
-<!-- 								<table id="tblBillItemDtl"  cellpadding="0" cellspacing="0" >class="transTablex" -->
-<!-- 									<tr> -->
-<!-- 										  <th><input type="button" value="Description" style="width: 220px;" class="tblBillItemDtlColBtnGrp" ></input></th> -->
-<!-- 										  <th><input type="button" value="Qty" style="width: 47px;" class="tblBillItemDtlColBtnGrp" ></input></th> -->
-<!-- 										  <th><input type="button" value="Amount" style="width: 55px;" class="tblBillItemDtlColBtnGrp"></input></th> -->
-<!-- 									</tr>																	 -->
-<!-- 								</table> -->
-<!-- 						</div> -->
-						
-																
-<!-- 									<table> -->
-<!-- 								<tr> -->
-<!-- 				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> -->
-<!-- 				<td> -->
-<!-- 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label >TOTAL</label> -->
-<!-- 				</td> -->
-<!-- 				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> -->
-<!-- 				<td> -->
-<!-- 					<input  type="text"  id="txtTotal" readonly="true" style="width:70px;" class="longTextBox jQKeyboard form-control"  />  -->
-<!-- 				</td> -->
-<!-- 								</tr> -->
-<!-- 								<tr> -->
-<!-- 								<td><label >Customer :</label></td> -->
-<!-- 								<td><label id="CustomerName"></label> -->
-<!-- 								</td> -->
-<!-- 								</tr> -->
-<!-- 								</table> -->
-							
-<!-- 						</td>		 -->
-							
-<!-- 						<td> -->
-						
-<%-- 							<label id="lblAreaName"   class="transForm_button" style="margin-left: 150px;  width: 150px;height: 30px; display: inline-block;  text-align: center; "  onclick="funHelp('POSAreaMaster')" > ${areaName} </label> --%>
-															
-						
-<!-- 										<div id="divItemDtl" style=" border: 1px solid #ccc; top:10px; height: 437px;  overflow-x: auto; overflow-y: auto; width: 453px;">									 -->
-								
-<!-- 									<table id="tblTableDtl"   cellpadding="0" cellspacing="7"> -->
-<%-- 								 <c:set var="sizeOfMenuItems" value="${fn:length(command.jsonArrForTableDtl)}"></c:set>									    --%>
-<%-- 									   <c:set var="itemCounter" value="${0}"></c:set>									   									   					 --%>
-<%-- 									 <c:forEach var="objItemPriceDtl" items="${command.jsonArrForTableDtl}"  varStatus="varMenuItemStatus">																																		 --%>
-<!-- 												<tr> -->
-<%-- 												<% --%>
-<!-- // 													for(int x=0; x<4; x++) -->
-<!-- // 													{ -->
-<%-- 														%>														 --%>
-<%-- 															<c:if test="${itemCounter lt sizeOfMenuItems}">	 --%>
-																
-<%-- 																 	<td><input type="button" id="${command.jsonArrForTableDtl[itemCounter].strTableNo}" value="${command.jsonArrForTableDtl[itemCounter].strTableName}&#x00A;&#x00A;${command.jsonArrForTableDtl[itemCounter].intPaxNo}" style="width: 100px;height: 100px; background: #ff0d0d;"  onclick="funTableClicked(this)" /></td>																						 																											 		 --%>
-																
-<%-- 																<c:set var="itemCounter" value="${itemCounter +1}"></c:set> --%>
-																
-<%-- 														 	</c:if>																 															 --%>
-<%-- 												  <%} --%>
-<%-- 												%> --%>
-<!-- 											   </tr>																																 -->
-<%-- 										</c:forEach>	  --%>
-<!-- 									</table> -->
-<!-- 									</div>	 -->
-<!-- 						</td> -->
-						
-					
-<!-- 					</tr> -->
-<!-- 				</table> -->
-<!-- 			</div> -->
-		 
-		 
-<!-- 			<div style="text-align: right; margin-left: 250px;"> -->
-				
-<!-- 				 	<table id="tblFooterButtons"  cellpadding="0" cellspacing="5"  > class="table table-striped table-bordered table-hover"				 																																	 -->
-<!-- 							<tr>							 -->
-																
-<!-- 										<td><input  type="button" id="Home"  value="Home"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funHomeBtnclicked()"/></td> -->
-<!-- 										<td><input  type="button" id="Check KOT"  value="Check KOT"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funCheckKOTClicked()"/></td> -->
-<!-- 										<td><input  type="button" id="Customer"  value="Customer"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funCustomerBtnClicked()"/></td> -->
-<!-- 										<td><input  type="button" id="Done"  value="Done"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funDoneBtnclicked()"/></td>																				 -->
-<!-- 						    </tr>																																				 									   				   									   									   						 -->
-<!-- 					</table>			 -->
-<!-- 		 		</div>		 				 																						 -->
-<!-- 			</div> -->
-<!-- 			</div> -->
 		 
 		
 

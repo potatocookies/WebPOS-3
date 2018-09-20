@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.webpos.bean.clsPOSBillSettlementBean;
 import com.sanguine.webpos.bean.clsPOSMakeBillBean;
 import com.sanguine.webpos.util.clsPOSSortMapOnValue;
 
@@ -38,7 +39,7 @@ public class clsPOSMakeBillController {
 	@RequestMapping(value = "/frmPOSMakeBill", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest request)
 	{
-		clsPOSMakeBillBean objMakeBillBean = new clsPOSMakeBillBean();
+		clsPOSBillSettlementBean objBillSettlementBean = new clsPOSBillSettlementBean();
 	
 		
 		String clientCode = request.getSession().getAttribute("gClientCode").toString();
@@ -53,13 +54,21 @@ public class clsPOSMakeBillController {
 		 JSONArray jsonArrForTableDtl =(JSONArray)jObj.get("tableDtl");	
 		 String areaName=(String)jObj.get("areaName");	
 		
-		 objMakeBillBean.setJsonArrForTableDtl(jsonArrForTableDtl);
+		 objBillSettlementBean.setJsonArrForTableDtl(jsonArrForTableDtl);
 
 		 model.put("areaName",areaName);
 		 model.put("gCustAddressSelectionForBill", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CustAddressSelectionForBill"));
 		 model.put("gCRMInterface", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface"));
 		 model.put("gPrintType", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("PrintType"));
-			return new ModelAndView("frmPOSMakeBill", "command", objMakeBillBean);
+		 
+		 String operationFrom = "Make Bill";
+		 model.put("operationFrom", operationFrom);
+			
+		 String formToBeOpen="Make Bill";
+		 model.put("formToBeOpen", formToBeOpen);
+			
+		 
+		 return new ModelAndView("frmWebPOSBilling", "command", objBillSettlementBean);
 		
 		
 	}
@@ -406,6 +415,10 @@ public class clsPOSMakeBillController {
 				return jObjTableData;
 			}
 	}
+	
+	
+	
+	
 	
 
 }

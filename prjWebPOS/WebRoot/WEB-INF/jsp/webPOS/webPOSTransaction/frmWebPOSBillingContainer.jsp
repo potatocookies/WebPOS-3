@@ -589,7 +589,11 @@ $(document).ready(function()
 						       <c:when test="${formToBeOpen == 'Bill For Items'}">
 						     	<jsp:include page="frmBillForItems.jsp" />
 						      </c:when>
-						
+						      
+						       <c:when test="${formToBeOpen == 'Make Bill'}">
+						     	<jsp:include page="frmPOSMakeBill.jsp" />
+						      </c:when>
+													
 						      <c:otherwise>
 						      	<jsp:include page="frmBilling.jsp" />
 						      </c:otherwise>

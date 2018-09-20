@@ -136,6 +136,7 @@ public class clsPOSVoidBillReportController {
 		try
 		{
 		String strClientCode=req.getSession().getAttribute("gClientCode").toString();	
+		String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
 		Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 		String reportTypeView = objBean.getStrReportType();
@@ -160,7 +161,7 @@ public class clsPOSVoidBillReportController {
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
 		String strShiftNo = "1";
-		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
 		if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 		{
 			strShiftNo=objBean.getStrShiftCode();

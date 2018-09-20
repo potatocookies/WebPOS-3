@@ -156,6 +156,7 @@ public class clsPOSGroupSubGroupWiseReportController {
 		
 		String userCode=req.getSession().getAttribute("gUserCode").toString();
 		String strClientCode=req.getSession().getAttribute("gClientCode").toString();
+		String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
 		try
 		{
@@ -198,7 +199,7 @@ public class clsPOSGroupSubGroupWiseReportController {
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
 		String shiftNo = "ALL";
-		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
 		if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 		{
 			shiftNo=objBean.getStrShiftCode();

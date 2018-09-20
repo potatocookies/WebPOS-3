@@ -8147,7 +8147,7 @@ public class clsPOSReportService {
 						+ "WHERE a.strTableNo=b.strTableNo AND a.strWaiterNo=c.strWaiterNo "
 						+ " AND a.strReasonCode=d.strReasonCode \n" + "AND LENGTH(a.strKOTNo)>2 "
 						+ " and LEFT(a.strItemName,3)!='-->' " + " AND DATE(a.dteDateCreated) BETWEEN '" + fromDate
-						+ "' and '" + toDate + "'\n");
+						+ "' and '" + toDate + "' and a.strType!='MVKot';\n");
 				list = objBaseService.funGetList(sqlBuilder, "sql");
 			} else if (qType.equalsIgnoreCase("ncKots")) {
 				sqlBuilder.setLength(0);

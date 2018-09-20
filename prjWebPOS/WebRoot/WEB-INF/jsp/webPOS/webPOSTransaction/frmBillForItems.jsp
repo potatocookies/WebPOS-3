@@ -495,7 +495,7 @@ $(document).ready(function()
 		<div class="title">
 			<div style=" width: 98%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: auto;padding-left: 50px;padding-right: 50px;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 15px;">
-					<div class="element-input col-lg-6" style="width: 30%;"> 
+					<div class="element-input col-lg-6" style="width: 30%;margin-left: 34px;"> 
 	    				<s:select id="cmbTable" path="strTableName" items="${bussyTableList}" />
 	    			</div>
 	    			<div class="element-input col-lg-6" style="width: 25%;">

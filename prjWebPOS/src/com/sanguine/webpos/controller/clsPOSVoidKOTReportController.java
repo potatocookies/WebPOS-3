@@ -45,7 +45,6 @@ import com.sanguine.webpos.sevice.clsPOSReportService;
 @Controller
 public class clsPOSVoidKOTReportController {
 
-	
 	@Autowired
 	private clsGlobalFunctions objGlobalFunctions;
 	

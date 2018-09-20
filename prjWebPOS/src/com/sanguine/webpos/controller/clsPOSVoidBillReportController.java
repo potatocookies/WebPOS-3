@@ -284,8 +284,6 @@ public class clsPOSVoidBillReportController {
 			
 	}
 	
-	
-	
-	
+
 
 }

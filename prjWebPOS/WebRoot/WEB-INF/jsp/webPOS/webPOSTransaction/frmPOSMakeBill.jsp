@@ -470,9 +470,9 @@ var selctedTableNo="";
 		 {
 			 var tblTableDtl=document.getElementById('tblBillItemDtl');
 			 var rowCount = tblTableDtl.rows.length;
-			 if(rowCount==1)
+			 if(rowCount<=1)
 			 {
-					alert("Please Select Table");
+					alert("Please select table");
 					return;
 			 } 
 		     else
@@ -626,31 +626,30 @@ var selctedTableNo="";
 	 <div class="title">
 	
 			<div style=" width: 50%; float:left; border-collapse: separate; ">
-				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-					<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >Table</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 40%;">
-	    				<input  type="text"  id="txtTableName" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;margin-left: -20px;"> 
-	    				<label class="title" >Waiter</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 40%;">
-						<input  type="text"  id="txtWaiterName" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-					</div>
-				</div>
-				
-				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-					<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >PAX</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 40%;">
-	    				<input  type="text"  id="txtPaxNo" readonly="true" style="width:100px; height:25px;" />
-	    			</div>
-	    		</div>
+
 	    		
-				<div id="divBillItemDtl" style=" border: 1px solid #ccc; height: 400px;  overflow-x: hidden; overflow-y: scroll; width: 100%;">
+	    		<div style="width: 994px; margin-left: 124px;">
+     					
+     		  			<label class="title" >Table</label> 
+     		  			<input  type="text"  id="txtTableName" readonly="true" style="text-transform: uppercase;width: 152px;height:25px;" />
+     		  			
+     		  			<label class="title" >Waiter</label>
+     		  			<input  type="text"  id="txtWaiterName" readonly="true" style="text-transform: uppercase;width: 126px;height:25px;" />
+     		  			
+     		  			<label class="title" >PAX</label>
+     		  			<input  type="text"  id="txtPaxNo" readonly="true" style="width: 36px;height:25px;" />
+			     	
+			     	     <input  type="text"  id="lblAreaName" readonly="true" style="margin-left: 150px;  width: 150px;height: 30px; display: inline-block;  text-align: center; "  onclick="funHelp('POSAreaMaster')" > ${areaName} </input>		 
+     		    </div>
+	    		
+	    		
+	    		
+	    		
+	    		
+	    		
+	    		
+	    		
+				<div id="divBillItemDtl" style="border: 1px solid #ccc;height: 429px;overflow-x: hidden;overflow-y: scroll;width: 500px;margin-top: 31px;margin-left: 130px;">
 							
 							<table style="width: 100%">
 								<thead>
@@ -661,42 +660,32 @@ var selctedTableNo="";
 									</tr>
 								</thead>		
 							</table>	
-								<table id="tblBillItemDtl"  cellpadding="0" cellspacing="0" >
+							<table id="tblBillItemDtl"   >
 															
-								</table>
+							</table>
 				</div>
 				
-				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 233px;">
-					<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" style="margin-top: 5px;">Total</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 40%;">
+				<div style="margin-left: 129px;margin-top: 3px; ">
+					 
+					 	<label class="title" >Customer :</label>	    			
+	    				<input  type="text"  id="CustomerName" style="width: 265px; " />					 
+					 
+	    				<label class="title" >Total</label>	    				    		
 	    				<input  type="text"  id="txtTotal" readonly="true" style="width:100px;text-align: right;" />
-	    			</div>
+	    			
 	    		</div>
 	    		
-	    		<div class="row" style="background-color: #fff;margin-bottom: 10px;">
-					<div class="element-input col-lg-6" style="width: 35%;"> 
-	    				<label class="title" >Customer :</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 40%;">
-	    				<input  type="text"  id="CustomerName" />
-	    			</div>
-	    		</div>
+	    		
 	    		<br/>
 			</div>
 			
 
 			<div style=" width: 50%; float:left;  border-collapse: separate; ">
-				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-	    			<div class="element-input col-lg-6" style="width: 40%;">
-	    				<input  type="text"  id="lblAreaName" readonly="true" style="margin-left: 150px;  width: 150px;height: 30px; display: inline-block;  text-align: center; "  onclick="funHelp('POSAreaMaster')" > ${areaName} </input>
-	    			</div>
-	    	    </div>
+				
 	    	    
-	    	    <div id="divItemDtl" style=" border: 1px solid #ccc; top:10px; height: 430px;  overflow-x: auto; overflow-y: scroll; width: 453px;">									
+	    	    <div id="divItemDtl" style="border: 1px solid #ccc;/* top: 78px; */height: 430px;overflow-x: auto;overflow-y: scroll;width: 500px;margin-top: 60px;">									
 								
-						<table id="tblTableDtl"   cellpadding="0" cellspacing="7">
+						<table id="tblTableDtl"   >
 								 <c:set var="sizeOfMenuItems" value="${fn:length(command.jsonArrForTableDtl)}"></c:set>									   
 								 <c:set var="itemCounter" value="${0}"></c:set>									   									   					
 								 <c:forEach var="objItemPriceDtl" items="${command.jsonArrForTableDtl}"  varStatus="varMenuItemStatus">																																		
@@ -720,29 +709,26 @@ var selctedTableNo="";
 				</div>
 				
 			</div>
-			<br/>
+			
 	    </div>
+	    
+	   
+	    
 
-
-		<br>
-		<br>
-		<br>
-				
-				
-					<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 25%;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
-		    				<input  type="button" id="Home"  value="Home"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funHomeBtnclicked()"/>
-		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 15%;"> 
-		    				<input  type="button" id="Check KOT"  value="Check KOT"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funCheckKOTClicked()"/>
-		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 15%;">
-		    				<input  type="button" id="Customer"  value="Customer"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funCustomerBtnClicked()"/>
-		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 15%;">
-		    				<input  type="button" id="Done"  value="Done"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funDoneBtnclicked()"/>
-		    			</div> 
-					</div>
+		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
+     					
+		<p align="center">
+     		  
+		 		<input  type="button" id="Home"  value="Home"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funHomeBtnclicked()" class="btn btn-spos-outline-success" />
+		   			
+				<input  type="button" id="Check KOT"  value="Check KOT"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funCheckKOTClicked()" class="btn btn-spos-outline-success" />
+		    			
+				<input  type="button" id="Customer"  value="Customer"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funCustomerBtnClicked()" class="btn btn-spos-outline-success" />
+		   			
+				<input  type="button" id="Done"  value="Done"  style="width: 100px;height: 35px; white-space: normal;"   onclick="funDoneBtnclicked()" class="btn btn-spos-outline-success" />
+     		  
+   		</div>			
+					
 		 
 		
 

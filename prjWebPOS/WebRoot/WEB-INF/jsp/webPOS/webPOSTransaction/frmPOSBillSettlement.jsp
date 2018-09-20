@@ -1721,10 +1721,8 @@
 					var yes=confirm("Do you want to generate bill for table : "+tableName);
 					if(yes)
 					{
-						
-						 
-						 
 						document.frmBillSettlement.action = "actionBillSettlementKOT.html";
+						document.frmBillSettlement.method = "POST";
 					    document.frmBillSettlement.submit();
 					}
 					else
@@ -1732,6 +1730,23 @@
 						
 					}		 		   
 			 }
+			 else if(operationType=="DineIn" && transactionType=="Make Bill" )
+			 {
+				 
+				    var tableName=gTableName;
+					var yes=confirm("Do you want to generate bill for table : "+tableName);
+					if(yes)
+					{
+						document.frmBillSettlement.action = "actionBillSettlementKOT.html";
+						document.frmBillSettlement.method = "POST";
+					    document.frmBillSettlement.submit();
+					}
+					else
+					{
+						
+					}		 		   
+			 } 
+				 
 			 else  if(operationType=="HomeDelivery" && transactionType=="Direct Biller")
 			 {
 				 

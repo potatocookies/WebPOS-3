@@ -68,6 +68,46 @@
   border-color: #868e96;
 }
 
+
+/* This css is is for POS theme only */
+
+.btn-spos-outline-success {
+   color: #77bffb;
+    background-color: transparent;
+    background-image: none;
+    border-color: #74baf5;
+}
+
+.btn-spos-outline-success:hover {
+  color: #fff;
+    background-color: #78bef9;
+    border-color: #78bef9;
+}
+
+.btn-spos-outline-success:focus, .btn-spos-outline-success.focus {
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+}
+
+.btn-spos-outline-success.disabled, .btn-spos-outline-success:disabled {
+  color: #28a745;
+  background-color: transparent;
+}
+
+.btn-spos-outline-success:active, .btn-spos-outline-success.active,
+.show > .btn-outline-success.dropdown-toggle {
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+
+/* End of This css is is for POS theme only */
+
+
+
+
+
+
 .btn-outline-success {
   color: #28a745;
   background-color: transparent;

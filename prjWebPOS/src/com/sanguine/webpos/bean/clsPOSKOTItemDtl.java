@@ -1,8 +1,9 @@
 package com.sanguine.webpos.bean;
 
-public class clsPOSKOTItemDtl
+public class clsPOSKOTItemDtl implements Cloneable
 {
 
+	
 	private String strSerialNo;
 	private String strTableNo;
 	private String strCardNo;
@@ -502,6 +503,12 @@ public class clsPOSKOTItemDtl
 		this.dblDiscPer = dblDiscPer;
 	}
 	
+	@Override
+	public clsPOSKOTItemDtl clone() throws CloneNotSupportedException
+	{		
+		return (clsPOSKOTItemDtl)super.clone();
+	}
+
 	
 
 }

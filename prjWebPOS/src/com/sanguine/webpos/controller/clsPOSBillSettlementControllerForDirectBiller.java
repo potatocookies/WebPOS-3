@@ -229,6 +229,8 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		model.put("gCreditCardExpiryDate", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CreditCardExpiryDateCompulsoryYN"));
 
 		funLoadAllReasonMasterData(request);
+		
+		
 		List listDiscountCombo = new ArrayList<List>();
 		List listSubGroupName = new ArrayList<>();
 		List listSubGroupCode = new ArrayList<>();
@@ -1058,7 +1060,7 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		Map<String, Object> model = new HashMap<String, Object>();
 
 		// return new ModelAndView("frmWebPOSBilling","command",obBillSettlementBean);
-		return funOpenForm(model, request);
+		return  new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
 
 	}
 

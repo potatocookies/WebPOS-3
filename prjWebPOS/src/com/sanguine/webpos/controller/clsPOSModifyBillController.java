@@ -90,11 +90,7 @@ public class clsPOSModifyBillController
 			model.put("urlHits", urlHits);
 			model.put("billNo", "");
 			model.put("billDate", posDate.split("-")[2] + "-" + posDate.split("-")[1] + "-" + posDate.split("-")[0]);
-
-			String operationFrom = "Modify Bill";
-			model.put("operationFrom", operationFrom);
-			model.put("operationName", operationFrom);
-			model.put("operationType", operationFrom);
+			
 
 		}
 		catch (NullPointerException e)
@@ -103,6 +99,9 @@ public class clsPOSModifyBillController
 		}
 
 		/* Filling model attribute values */
+		
+		
+		model.put("transactionType", "Modify Bill");
 		model.put("urlHits", urlHits);
 		String formToBeOpen = "Modify Bill";
 		model.put("formToBeOpen", formToBeOpen);

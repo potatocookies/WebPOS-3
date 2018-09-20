@@ -42,6 +42,9 @@ public class clsPOSBillSettlementBean
     private String strGroupCode;
     private String strAreaCode;
     private double dblRate;
+    private String strTableName;
+    private String strPosCode;
+    private String strReasonName;
 
     
     private List<clsPOSPricingMasterBean> listOfDirectBillerMenuItemPricing=new  LinkedList<>();
@@ -635,6 +638,33 @@ public class clsPOSBillSettlementBean
 	{
 		this.operationType = operationType;
 	}
+	public String getStrTableName()
+	{
+		return strTableName;
+	}
+	public void setStrTableName(String strTableName)
+	{
+		this.strTableName = strTableName;
+	}
+	public String getStrPosCode()
+	{
+		return strPosCode;
+	}
+	public void setStrPosCode(String strPosCode)
+	{
+		this.strPosCode = strPosCode;
+	}
+	public String getStrReasonName()
+	{
+		return strReasonName;
+	}
+	public void setStrReasonName(String strReasonName)
+	{
+		this.strReasonName = strReasonName;
+	}
+	
+	
+	
 	
 	
 	

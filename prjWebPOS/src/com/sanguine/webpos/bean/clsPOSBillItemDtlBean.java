@@ -22,6 +22,7 @@ public class clsPOSBillItemDtlBean
     private String strItemCode;
     private String strItemName;
     private double dblQuantity;
+    private double dblRate;
     private double dblAmount;
     private double dblDiscountAmt;
     private double dblDiscountPer;
@@ -36,6 +37,7 @@ public class clsPOSBillItemDtlBean
     private String promoCode;
     private String promoType;
     private double freeItemQty;
+    private double moveItemQty;
     private double billAmt;
     private boolean isModifier;
     private double itemSalePrice;
@@ -70,15 +72,63 @@ public class clsPOSBillItemDtlBean
     private String strKotTime;
     private String strDifference;
     
-    String strTaxIndicator;
-    String strSubGroupCode;
-    String strSubGroupName;
-    String strGroupName;
+    private String strTaxIndicator;
+    private String strSubGroupCode;
+    private String strSubGroupName;
+    private String strGroupCode;
+    private String strGroupName;
     
     private String strKOTNo;
    
-    private String strTableName;
+    private String strTableCode;
+    
+    
+    
+    public String getStrGroupCode()
+	{
+		return strGroupCode;
+	}
+
+
+
+	public void setStrGroupCode(String strGroupCode)
+	{
+		this.strGroupCode = strGroupCode;
+	}
+
+
+
+	public String getStrTableCode()
+	{
+		return strTableCode;
+	}
+
+
+
+	public void setStrTableCode(String strTableCode)
+	{
+		this.strTableCode = strTableCode;
+	}
+
+
+
+	public String getStrWaiterCode()
+	{
+		return strWaiterCode;
+	}
+
+
+
+	public void setStrWaiterCode(String strWaiterCode)
+	{
+		this.strWaiterCode = strWaiterCode;
+	}
+
+
+
+	private String strTableName;
    
+    private String strWaiterCode;
     private String strWaiterName;
    
     private int intPaxNo;
@@ -827,6 +877,34 @@ public class clsPOSBillItemDtlBean
 	public void setListBusyTableDtl(List<clsPOSBillItemDtlBean> listBusyTableDtl)
 	{
 		this.listBusyTableDtl = listBusyTableDtl;
+	}
+
+
+
+	public double getDblRate()
+	{
+		return dblRate;
+	}
+
+
+
+	public void setDblRate(double dblRate)
+	{
+		this.dblRate = dblRate;
+	}
+
+
+
+	public double getMoveItemQty()
+	{
+		return moveItemQty;
+	}
+
+
+
+	public void setMoveItemQty(double moveItemQty)
+	{
+		this.moveItemQty = moveItemQty;
 	}
 
 

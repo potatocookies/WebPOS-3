@@ -219,7 +219,9 @@ var selctedTableNo="";
 		
 		function funTableClicked(objTableButton)
 		{
-			funRemoveTableRows("tblBillItemDtl");
+			//funRemoveTableRows("tblBillItemDtl");
+			
+			$("#tblBillItemDtl").empty();
 			
 			var tblMenuItemDtl=document.getElementById('tblTableDtl');
 		
@@ -245,12 +247,19 @@ var selctedTableNo="";
 				        success: function(response)
 				        {
 				        	$("#txtWaiterName").val(response.strWaiterName);	
-				        	$("#txtTotal").val(response.total);
 				        	
+				        	
+				        	var totalAmt=0;
 				        	$.each(response.itemDtl, function(i, obj) 
-			        				{									
-			        					funFillItemDtl(obj);
-			        				});
+			        		{									
+			        			
+				        		funFillItemDtl(obj);
+				        		
+				        		totalAmt=totalAmt+obj.dblAmount;
+				        		
+			        		});
+				        	
+				        	$("#txtTotal").val(totalAmt);
 					        
 						},
 						error: function(jqXHR, exception) {
@@ -282,9 +291,9 @@ var selctedTableNo="";
 		    var col1=insertRow.insertCell(0);
 		    var col2=insertRow.insertCell(1);
 		    var col3=insertRow.insertCell(2);
-		    col1.innerHTML = "<input readonly=\"readonly\" size=\"27px\"  class=\"itemName\"    style=\"text-align: left; \"   name=\"listOfMakeKOTBillItemDtl["+(rowCount)+"].strItemName\" id=\"strItemName."+(rowCount)+"\" value='"+obj.strItemName+"' />";
-		    col2.innerHTML = "<input readonly=\"readonly\" size=\"10px\"   class=\"itemQty\"      style=\"text-align: right;\"  name=\"listOfMakeKOTBillItemDtl["+(rowCount)+"].dblQuantity\" id=\"dblQuantity."+(rowCount)+"\" value='"+obj.dblItemQuantity+"' />";
-		    col3.innerHTML = "<input readonly=\"readonly\" size=\"12px\"   class=\"itemAmt\"      style=\"text-align: right; \"  name=\"listOfMakeKOTBillItemDtl["+(rowCount)+"].dblAmount\" id=\"dblAmount."+(rowCount)+"\" value='"+obj.dblAmount+"' />";
+		    col1.innerHTML = "<input readonly=\"readonly\"   class=\"itemName\"    style=\"text-align: left; width: 295px;\"   name=\"listOfMakeKOTBillItemDtl["+(rowCount)+"].strItemName\" id=\"strItemName."+(rowCount)+"\" value='"+obj.strItemName+"' />";
+		    col2.innerHTML = "<input readonly=\"readonly\"    class=\"itemQty\"      style=\"text-align: right; width: 50px;\"  name=\"listOfMakeKOTBillItemDtl["+(rowCount)+"].dblQuantity\" id=\"dblQuantity."+(rowCount)+"\" value='"+obj.dblItemQuantity+"' />";
+		    col3.innerHTML = "<input readonly=\"readonly\"    class=\"itemAmt\"      style=\"text-align: right;  width: 135px;\"  name=\"listOfMakeKOTBillItemDtl["+(rowCount)+"].dblAmount\" id=\"dblAmount."+(rowCount)+"\" value='"+obj.dblAmount+"' />";
 		}
 	
 		function funRemoveTableRows(tableId)
@@ -654,9 +663,15 @@ var selctedTableNo="";
 							<table style="width: 100%">
 								<thead>
 									<tr>
-										  <th style="width: 51%"><input type="button" value="Description" class="tblBillItemDtlColBtnGrp" style="width: 100%"></input></th>
-										  <th><input type="button" value="Qty"  class="tblBillItemDtlColBtnGrp" ></input></th>
-										  <th><input type="button" value="Amount" class="tblBillItemDtlColBtnGrp"></input></th>
+										  <th style="width: 51%">
+										  	<input type="button" value="Description" class="tblBillItemDtlColBtnGrp" style="width: 295px;background: #78BEF9;"></input>
+										  </th>
+										  <th>
+										  	<input type="button" value="Qty"  class="tblBillItemDtlColBtnGrp" style="width: 50px;background: #78BEF9;"></input>
+										  </th>
+										  <th>
+										  	<input type="button" value="Amount" class="tblBillItemDtlColBtnGrp" style="width: 135px;background: #78BEF9;"></input>
+										  </th>
 									</tr>
 								</thead>		
 							</table>	
@@ -696,9 +711,11 @@ var selctedTableNo="";
 											%>														
 													<c:if test="${itemCounter lt sizeOfMenuItems}">	
 																
-													 	<td><input type="button" id="${command.jsonArrForTableDtl[itemCounter].strTableNo}" value="${command.jsonArrForTableDtl[itemCounter].strTableName}&#x00A;&#x00A;${command.jsonArrForTableDtl[itemCounter].intPaxNo}" style="width: 100px;height: 100px; background: #ff0d0d;"  onclick="funTableClicked(this)" /></td>																						 																											 		
+													 	<td style="padding: 5px;" >													 															 
+													 		
+													 		<input type="button" id="${command.jsonArrForTableDtl[itemCounter].strTableNo}" value="${command.jsonArrForTableDtl[itemCounter].strTableName}" style="width: 100px;height: 100px; white-space: normal;" class="btn btn-danger"   onclick="funTableClicked(this)" /></td>																						 																											 		
 																
-															<c:set var="itemCounter" value="${itemCounter +1}"></c:set>
+														<c:set var="itemCounter" value="${itemCounter +1}"></c:set>
 																
 												 	</c:if>																 															
 											  <%}

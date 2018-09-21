@@ -84,12 +84,12 @@ var gSkipPax="${gSkipPax}";
 var gSkipWaiter="${gSkipWaiter}";
 var gPrintType="${gPrintType}";
 var gMultiWaiterSelOnMakeKOT="${gMultiWaiterSelOnMakeKOT}";
-
 var gSelectWaiterFromCardSwipe="${gSelectWaiterFromCardSwipe}";
 
 var gPOSCode="${gPOSCode}";
 var gClientCode="${gClientCode}";
 var gBillDate="${billDate}";
+var fieldName="";
 
 
 

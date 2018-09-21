@@ -357,7 +357,7 @@
                    break;
 
                 case "Credit":
-                	funHelp('POSCustomerMaster');
+                	//funHelp('POSCustomerMaster');
                 	settlementName = "Credit";
                     amountBox = "PaidAmount";
                    // objUtility.funCallForSearchForm("CustomerMaster");
@@ -716,7 +716,8 @@
         $("#hidSettlemnetType").val(settleType);
 	}
 	function funHelp(transactionName)
-	{	       
+	{	      
+		fieldName=transactionName;
        window.open("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
     }
 
@@ -724,26 +725,32 @@
 	{
 		
 		  
-		 switch(fieldName)
+		switch(fieldName)
 		{
-		case "POSCustomerMaster":
-			 if(operationFrom=="directBiller" || operationFrom=="MakeKOT" )
-			 {
-				 funSetCustomerDataForHD(code);
-			 }else{
-				 funGetCustomerData(code);
-					//funSetDataCustomer(code);	
-		  		    $("#lblCreditCustCode").val(code);
-				    customerCodeForCredit = code;
-				    $("#txtCoupenAmt").val(dblSettlementAmount);
-				  //  $("#hidCustomerName").val(code)
-			 }
-			
-			
+			case "POSCustomerMaster":
+				
+				 if(operationFrom=="directBiller" || operationFrom=="MakeKOT" )
+				 {
+					 funSetCustomerDataForHD(code);
+				 }
+				 else
+				 {
+					 funGetCustomerData(code);
+						
+			  		    $("#lblCreditCustCode").val(code);
+					    customerCodeForCredit = code;
+					    $("#txtCoupenAmt").val(dblSettlementAmount);
+					 
+				 }
+						
 			break;
+			
+			
 		case "NewCustomer":
 			funSetCustomerDataForHD(code);
 			break;
+			
+			
 		case "POSDeliveryBoyMaster":
 			funSetDeliveryBoy(code);
 			break;
@@ -752,9 +759,13 @@
 		case "POSTableMaster":
 			funTxtTableSearchClicked(code);
 			break;
+			
+			
 		case "POSWaiterMaster":
 			funTxtWaiterClicked(code);
 			break;
+			
+			
 // 		case "POSCustomerMaster":
 // 			funSetCustomerDataForHD(code);
 // 			break;

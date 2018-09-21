@@ -1036,6 +1036,11 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSChangeSettlement.jsp" />
 	</definition>
 	
+	<definition name="frmPOSCreditBillReceipt" extends="base.definition6">
+		<put-attribute name="title" value="Change Settlement" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSCreditBillReceipt.jsp" />
+	</definition>
+	
 	
 	
 <!-- 	End Of WebPOS Tiles Entry -->

@@ -73,6 +73,8 @@ public class clsSearchFormController
 	private String txtToDate = "";
 	String licenceCode="";
 	String strMenuCode="";
+	String strCustomerCode="";
+			
 	
 	//Variable For CRM
 	private String strSubConCode="";
@@ -100,14 +102,18 @@ public class clsSearchFormController
 			strMenuCode=req.getParameter("strMenuCode");
 		}
 		
-		
-		
-		
 		if(req.getParameter("POCode")!=null)
 		{
 			POCode=req.getParameter("POCode").toString();
 		}
-			strModule = "7";
+		
+		//Getting Varible From Request For WebPOS
+		if(req.getParameter("strCustomerCode")!=null)
+		{
+			strCustomerCode=req.getParameter("strCustomerCode");
+		}
+		
+		strModule = "7";
 			Map<String,Object> hmSearchData = funGetWebPOSSearchDetail( formName, search_with, req);
 			model.put("searchFormTitle", (String)hmSearchData.get("searchFormTitle"));
 		return new ModelAndView("frmSearch");
@@ -654,6 +660,16 @@ public class clsSearchFormController
 				listColumnNames="Bill No,Settle Mode,Settle Amount";
 				searchFormTitle="Bill For Change Settlement";
 				JSONObject jObjSearchData = funGetPOSSearchDetails(formName,clientCode+"#"+posCode+"#"+posDate);
+				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
+				break;
+			}
+			
+			case "BillForCreditBillReceipt":
+			{
+				String posCode=req.getSession().getAttribute("loginPOS").toString();
+				listColumnNames="Bill No,Bill Date,Credit Amount";
+				searchFormTitle="Search Master";
+				JSONObject jObjSearchData = funGetPOSSearchDetails(formName,strCustomerCode+"#"+posCode);
 				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
 				break;
 			}
@@ -1783,7 +1799,156 @@ public class clsSearchFormController
 							}
 						      jObjSearchData.put(masterName, jArrData);
 						    
-							break;		
+							break;	
+							
+                           case "BillForCreditBillReceipt":
+   				    		
+   				    		String []spData=clientCode.split("#");
+   				    	    
+   				    		//live
+   				    		hqlQuery.setLength(0);
+   				    		hqlQuery.append("SELECT a.strBillNo,date(a.dteBillDate),a.dteBillDate,a.strClientCode, SUM(b.dblSettlementAmt) "
+   				                    + "FROM tblbillhd a,tblbillsettlementdtl b,tblsettelmenthd c "
+   				                    + "WHERE a.strBillNo=b.strBillNo  "
+   				                    + "AND b.strSettlementCode=c.strSettelmentCode  "
+   				                    + "and date(a.dtebilldate)=date(b.dtebilldate)  "
+   				                    + "and a.strClientCode=b.strClientCode  "
+   				                    + "AND c.strSettelmentType='Credit'  "
+   				                    + "AND a.strPOSCode='" + spData[1] + "'  "
+   				                    + "AND a.strCustomerCode='" + spData[0] + "' "
+   				                    + "GROUP BY a.strBillNo ");
+   				    		 
+   				    		 list=objBaseService.funGetList(hqlQuery, "sql");	
+   				    		 if(null != list)		
+   							 {	 
+   				    			 for(int cnt=0;cnt<list.size();cnt++)
+   				    			 {
+   				    				 Object[] objArr = (Object[]) list.get(cnt);
+   				    				 String billNo = objArr[0].toString();
+   				    				 String filterBillDate = objArr[1].toString();
+   				    				 String billDate = objArr[2].toString();
+   				    				 clientCode = objArr[3].toString();
+   				    				 double creditAmount = Double.valueOf(objArr[4].toString());
+   				    				 
+	   				    			//remove full paid bills
+	   				                //live
+   				    				hqlQuery.setLength(0);
+   				    				hqlQuery.append("select a.strBillNo,date(a.dteBillDate),a.strPOSCode,a.strClientCode,sum(a.dblReceiptAmt) "
+			                          + "from tblqcreditbillreceipthd a "
+			                          + "where a.strPOSCode='" + spData[1] + "'  "
+			                          + "and a.strBillNo='" + billNo + "' "
+			                          + "and date(a.dteBillDate)='" + filterBillDate + "' "
+			                          + "and a.strClientCode='" + clientCode + "'  group by a.strBillNo");
+   				    				 
+	   				    			 List listPaidBill=objBaseService.funGetList(hqlQuery, "sql");	
+	   	   				    		 if(null != listPaidBill && listPaidBill.size()>0)		
+	   	   							  {	 
+	   	   				    			 for(int i=0;i<listPaidBill.size();i++)
+	   	   				    			 {
+	   	   				    				Object[] objPaidBillArr = (Object[]) listPaidBill.get(i);
+	   	   				    			    double totalReceiptAmt = Double.valueOf(objPaidBillArr[4].toString());
+			   	   		                    if (Math.rint(creditAmount) == Math.rint(totalReceiptAmt))
+			   	   		                    {
+			   	   		                        //dont add
+			   	   		                    }
+			   	   		                    else
+			   	   		                    {
+			   	   		                    	JSONArray jArrDataRow = new JSONArray();
+			   				    				jArrDataRow.add(billNo);
+			   				    				jArrDataRow.add(billDate);
+			   				    				jArrDataRow.add(creditAmount);
+			   				    				jArrDataRow.add(clientCode);
+			   				    				jArrData.add(jArrDataRow);
+			   	   		                    }
+	   	   				    			 }
+		   	   						   }
+			   	   				       else
+				   	   	                {
+					   	   	                    JSONArray jArrDataRow = new JSONArray();
+			   				    				jArrDataRow.add(billNo);
+			   				    				jArrDataRow.add(billDate);
+			   				    				jArrDataRow.add(creditAmount);
+			   				    				jArrDataRow.add(clientCode);
+			   				    				jArrData.add(jArrDataRow);
+				   	   	                }
+   				    			  }
+   							}
+   				    		
+   				    	//QFile
+    				    		hqlQuery.setLength(0);
+    				    		hqlQuery.append("SELECT a.strBillNo,date(a.dteBillDate),a.dteBillDate,a.strClientCode, SUM(b.dblSettlementAmt) "
+    				                    + "FROM tblqbillhd a,tblqbillsettlementdtl b,tblsettelmenthd c "
+    				                    + "WHERE a.strBillNo=b.strBillNo  "
+    				                    + "AND b.strSettlementCode=c.strSettelmentCode  "
+    				                    + "and date(a.dtebilldate)=date(b.dtebilldate)  "
+    				                    + "and a.strClientCode=b.strClientCode  "
+    				                    + "AND c.strSettelmentType='Credit'  "
+    				                    + "AND a.strPOSCode='" + spData[1]  + "'  "
+    				                    + "AND a.strCustomerCode='" + spData[0]  + "' "
+    				                    + "GROUP BY a.strBillNo ");
+    				    		
+    				    		
+    				    		 list=objBaseService.funGetList(hqlQuery, "sql");	
+    				    		 if(null != list)		
+    							 {	 
+    				    			 for(int cnt=0;cnt<list.size();cnt++)
+    				    			 {
+    				    				 Object[] objArr = (Object[]) list.get(cnt);
+    				    				 String billNo = objArr[0].toString();
+    				    				 String filterBillDate = objArr[1].toString();
+    				    				 String billDate = objArr[2].toString();
+    				    				 clientCode = objArr[3].toString();
+    				    				 double creditAmount = Double.valueOf(objArr[4].toString());
+    				    				 
+ 	   				    			//remove full paid bills
+ 	   				                //live
+    				    				hqlQuery.setLength(0);
+    				    				hqlQuery.append("select a.strBillNo,date(a.dteBillDate),a.strPOSCode,a.strClientCode,sum(a.dblReceiptAmt) "
+ 			                          + "from tblqcreditbillreceipthd a "
+ 			                          + "where a.strPOSCode='" + spData[1] + "'  "
+ 			                          + "and a.strBillNo='" + billNo + "' "
+ 			                          + "and date(a.dteBillDate)='" + filterBillDate + "' "
+ 			                          + "and a.strClientCode='" + clientCode + "'   group by a.strBillNo");
+    				    				 
+ 	   				    			 List listPaidBill=objBaseService.funGetList(hqlQuery, "sql");	
+ 	   	   				    		 if(null != listPaidBill && listPaidBill.size()>0)		
+ 	   	   							  {	 
+ 	   	   				    			 for(int i=0;i<listPaidBill.size();i++)
+ 	   	   				    			 {
+ 	   	   				    				Object[] objPaidBillArr = (Object[]) listPaidBill.get(i);
+ 		   	   				    			double totalReceiptAmt = Double.valueOf(objPaidBillArr[4].toString());
+ 			   	   		                    if (Math.rint(creditAmount) == Math.rint(totalReceiptAmt))
+ 			   	   		                    {
+ 			   	   		                        //dont add
+ 			   	   		                    }
+ 			   	   		                    else
+ 			   	   		                    {
+ 			   	   		                    	JSONArray jArrDataRow = new JSONArray();
+ 			   				    				jArrDataRow.add(billNo);
+ 			   				    				jArrDataRow.add(billDate);
+ 			   				    				jArrDataRow.add(creditAmount);
+ 			   				    				jArrDataRow.add(clientCode);
+ 			   				    				jArrData.add(jArrDataRow);
+ 			   	   		                    }
+ 	   	   				    			 }
+ 		   	   						   }
+ 			   	   				       else
+ 				   	   	                {
+ 					   	   	                    JSONArray jArrDataRow = new JSONArray();
+ 			   				    				jArrDataRow.add(billNo);
+ 			   				    				jArrDataRow.add(billDate);
+ 			   				    				jArrDataRow.add(creditAmount);
+ 			   				    				jArrDataRow.add(clientCode);
+ 			   				    				jArrData.add(jArrDataRow);
+ 				   	   	                }
+    				    			  }
+    							} 
+   				    		 
+   						     jObjSearchData.put(masterName, jArrData);
+   						    
+   							break;
+							
+							
 
 		    }
 			

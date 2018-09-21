@@ -84,12 +84,12 @@ var gSkipPax="${gSkipPax}";
 var gSkipWaiter="${gSkipWaiter}";
 var gPrintType="${gPrintType}";
 var gMultiWaiterSelOnMakeKOT="${gMultiWaiterSelOnMakeKOT}";
-
 var gSelectWaiterFromCardSwipe="${gSelectWaiterFromCardSwipe}";
 
 var gPOSCode="${gPOSCode}";
 var gClientCode="${gClientCode}";
 var gBillDate="${billDate}";
+var fieldName="";
 
 
 
@@ -589,7 +589,11 @@ $(document).ready(function()
 						       <c:when test="${formToBeOpen == 'Bill For Items'}">
 						     	<jsp:include page="frmBillForItems.jsp" />
 						      </c:when>
-						
+						      
+						       <c:when test="${formToBeOpen == 'Make Bill'}">
+						     	<jsp:include page="frmPOSMakeBill.jsp" />
+						      </c:when>
+													
 						      <c:otherwise>
 						      	<jsp:include page="frmBilling.jsp" />
 						      </c:otherwise>

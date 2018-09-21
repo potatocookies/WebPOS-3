@@ -619,14 +619,15 @@
 			}
 			else
 			{
-				if(parseInt($("#txtPaxNo").val().trim()) != 0)
-   				{
-					funShowMenuHead();
-   				}
-				else
-				{
-					//Enable Pax No buttons
-				}
+				
+				var pax=document.getElementById("txtPaxNo");
+				
+				funChangePAX(pax);
+				
+				funShowMenuHead();
+				
+				
+				
 				
 			}
 		
@@ -1348,6 +1349,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			    				cssClass="btn btn-info";
 			    			}
 			    			
+			    			//removed border:5px solid #2ba5cc; border-radius: 40px; 
+			    			if(obj.strStatus=="Reserve")
+			    			{				
+			    				style=" width: 100px;height: 100px; white-space: normal; ";
+			    				cssClass="btn btn-warning";
+			    			}
+			    			
 			    			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
 			    			{
 			    				var col=insertTR.insertCell(insertCol);
@@ -1391,41 +1399,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		
 		
 		
-		
-		/* $.each(jsonArrForTableDtl, function(i, obj) 
-		{	
-			var style=" width: 100px;height: 100px; white-space: normal;  border-radius: 40px; ";
-			if(obj.strStatus=="Occupied")
-			{
-				style=" width: 100px;height: 100px; white-space: normal; border:5px solid #a94442; border-radius: 40px; ";
-			}
-			if(obj.strStatus=="Billed")
-			{				
-				style=" width: 100px;height: 100px; white-space: normal; border:5px solid #2ba5cc; border-radius: 40px; ";
-			}
-			
-			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
-			{
-				var col=insertTR.insertCell(insertCol);
-				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'    style='"+style+"'  onclick=\"funTableNoClicked(this,"+i+")\" class=\"btn btn-primary\" /></td>";
-				col.style.padding = "5px";
-
-				insertCol++;
-			}
-			else
-			{					
-				insertTR=tblMenuItemDtl.insertRow();									
-				insertCol=0;
-				var col=insertTR.insertCell(insertCol);
-				col.innerHTML = "<td><input type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"'   style='"+style+"'   onclick=\"funTableNoClicked(this,"+i+")\" class=\"btn btn-primary\" /></td>";
-				col.style.padding = "5px";
-				
-				
-				
-				insertCol++;
-			}							
-			  
-		}); */
+	
 	}		
 	
 	
@@ -1851,7 +1825,11 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		var $rows = $('#tblTopButtonDtl').empty();
 		document.getElementById("divPLU").style.display='none';
 		
-		funDisplayNCKOTButton(false);
+		 funDisplayPLUButton(false);
+		 funDisplayDoneButton(false);
+		 funDisplayMakeBillButton(false);
+		 funDisplayPLUButton(false);
+		 funDisplayNCKOTButton(false);
 		 
 	}
 	
@@ -1964,6 +1942,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		transactionType="Make KOT";
 		
 		funResetDineInFields();
+		
 		funShowTables();
 		
 	}
@@ -2155,8 +2134,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			 funHelp1('POSCustomerMaster');
          }
 		 else
+		 {
 			 funCheckCustomer(strMobNo);
+		 }
 	}
+	
+	
+	
 	function funCheckCustomer(strMobNo)
 	{
 		var totalBillAmount = 0.00;
@@ -2449,23 +2433,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		return isOrdered;
 		
 	}
-// 	function funSetData(code)
-// 	{
+	
+	
 
-// 		switch(fieldName)
-// 		{
-		
-// 		case "POSCustomerMaster":
-// 			funSetCustomerDataForHD(code);
-// 			break;
-// 		case "NewCustomer":
-// 			funSetCustomerDataForHD(code);
-// 			break;
-// 		case "POSDeliveryBoyMaster":
-// 			funSetDeliveryBoy(code);
-// 			break;
-// 		}
-// 	}
 	
 	function funHelp1(transactionName)
 	{
@@ -2490,11 +2460,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				        dataType: "json",
 				        success: function(response)
 				        {
-				        	$("#Customer").val(response.strCustomerName);
+				        	
+				        					        	
 				        	gCustomerCode=response.strCustomerCode;
 				        	gCustomerName=response.strCustomerName;
 				        	
-				        	
+				        	 $("#customerName").text(gCustomerName);
+			        		 $("#Customer").val(response.intlongMobileNo);
 				        	
 				        	
 				        	funSetHomeDeliveryData(response.strCustomerCode,response.strCustomerName,response.strBuldingCode,"","");
@@ -3912,7 +3884,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 							<!-- <input type="button"  id="Customer" value="Customer"    style="width: 150px;height: 30px; white-space: normal;"   onclick="funFooterButtonClicked(this)" class="btn btn-default btn-link"/> -->														
 							 <%-- <a href="#" onclick="funFooterButtonClicked(this)" id="Customer" ><img src="../${pageContext.request.contextPath}/resources/images/Location-Master.png" width="45px" height="50px" id="Customer"></a>  --%>							
 							
-							<input  type="text"   style="width: 200px;" id="Customer"  class="searchTextBox jQKeyboard form-control" placeholder="Select customer..."   />							 					 																									
+							<input  type="text"   style="width: 200px;" id="Customer"  class="searchTextBox jQKeyboard form-control" placeholder="Select customer..."  ondblclick="funHelp('POSCustomerMaster')"  />							 					 																									
 						 </td>
 						 <td><label id="customerName" style="margin-left: -442px; "></label>	</td>						  							 	 											 
 					</tr>					

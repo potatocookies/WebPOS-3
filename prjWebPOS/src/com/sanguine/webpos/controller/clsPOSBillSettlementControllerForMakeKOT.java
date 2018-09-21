@@ -2218,7 +2218,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		return mapResult;
 	}
 
-	@RequestMapping(value = "/actionBillSettlementKOT", method = RequestMethod.GET)
+	@RequestMapping(value = "/actionBillSettlementKOT", method = RequestMethod.POST)
 	public ModelAndView printBill(@ModelAttribute("command") clsPOSBillSettlementBean objBean, BindingResult result, HttpServletRequest request) throws Exception
 	{
 		String clientCode = "",
@@ -2414,10 +2414,14 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		}
 		
 		
-
-		// return funOpenForm(model, request);
-
-		return  new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
+		if(objBean.getTransactionType().equalsIgnoreCase("Make Bill"))
+		{
+			return  new ModelAndView("redirect:/frmPOSMakeBill.html?saddr=1");
+		}
+		else
+		{
+			return  new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
+		}		
 	}
 
 	// kot ptinging logic

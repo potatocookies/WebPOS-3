@@ -227,6 +227,9 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		model.put("gPopUpToApplyPromotionsOnBill", gPopUpToApplyPromotionsOnBill);
 		model.put("gCreditCardSlipNo", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CreditCardSlipNoCompulsoryYN"));
 		model.put("gCreditCardExpiryDate", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CreditCardExpiryDateCompulsoryYN"));
+		
+		model.put("gSkipPax", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SkipPax"));
+		model.put("gSkipWaiter", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SkipWaiter"));
 
 		funLoadAllReasonMasterData(request);
 		

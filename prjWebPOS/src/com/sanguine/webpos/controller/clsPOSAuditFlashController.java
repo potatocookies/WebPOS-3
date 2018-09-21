@@ -135,11 +135,12 @@ public class clsPOSAuditFlashController {
 		{
 			userCode = (String) userMap.get(strUserName);
 		}
-		String posName=objBean.getStrPOSName();
 		String posCode= "ALL";
-		if (!posName.equalsIgnoreCase("ALL"))
+		posCode=objBean.getStrPOSName();
+		String posName = "ALL";
+		if (!posCode.equalsIgnoreCase("ALL"))
 		{
-			posCode = (String) posMap.get(posName);
+			posName = (String) posMap.get(posCode);
 		}
 		String strReasonName=objBean.getStrReasonMaster();
 		String reasonCode= "ALL";

@@ -1,8 +1,6 @@
 package com.sanguine.webpos.controller;
 
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +14,22 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sanguine.base.service.clsSetupService;
+import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
+import com.sanguine.webpos.bean.clsPOSGroupSubGroupWiseSales;
+import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.comparator.clsPOSDiscountComparator;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
+import com.sanguine.webpos.sevice.clsPOSReportService;
+
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -28,23 +42,6 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.sanguine.controller.clsGlobalFunctions;
-import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
-import com.sanguine.webpos.bean.clsPOSGroupSubGroupWiseSales;
-import com.sanguine.webpos.bean.clsPOSReportBean;
-import com.sanguine.webpos.comparator.clsPOSDiscountComparator;
-import com.sanguine.webpos.sevice.clsPOSMasterService;
-import com.sanguine.webpos.sevice.clsPOSReportService;
 
 
 @Controller
@@ -62,6 +59,9 @@ public class clsPOSDiscountWiseReportController
 	
 	@Autowired
 	private clsPOSReportService objReportService;
+	
+	 @Autowired
+	private clsSetupService objSetupService;
 	
 	Map map = new HashMap();
 
@@ -115,7 +115,8 @@ public class clsPOSDiscountWiseReportController
 		
 		try
 		{
-
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();	
+			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			String reportName;
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String reportType = objBean.getStrViewType();
@@ -131,14 +132,19 @@ public class clsPOSDiscountWiseReportController
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
-			String strShiftNo = "1";
+			String strShiftNo = "ALL";
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+			{
+				strShiftNo=objBean.getStrShiftCode();
+			}
 			
 			if(reportType.equalsIgnoreCase("Summary"))
 			{
 				reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillDiscountReport.jrxml");
 				List<clsPOSBillItemDtlBean> listOfBillItemDtl = new ArrayList<>();
 
-				listOfBillItemDtl = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Summary","",strUserCode,strShiftNo);
+				listOfBillItemDtl = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Summary","",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 JasperDesign jd = JRXmlLoader.load(reportName);
         		JasperReport jr = JasperCompileManager.compileReport(jd);
                 List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
@@ -187,9 +193,9 @@ public class clsPOSDiscountWiseReportController
 				double totalGrossSales=0.0;
                 List<clsPOSBillItemDtlBean> listOfBillItemDtl = new ArrayList<>();
 
-                listOfBillItemDtl = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Detail","",strUserCode,strShiftNo);
+                listOfBillItemDtl = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Detail","",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 
-                List listLiveGross = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Deatil","liveGross",strUserCode,strShiftNo);
+                List listLiveGross = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Detail","liveGross",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 if (listLiveGross.size()>0)
                 {
                 	
@@ -200,7 +206,7 @@ public class clsPOSDiscountWiseReportController
                 
                 //q
                 
-                listLiveGross = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Deatil","qGross",strUserCode,strShiftNo);
+                listLiveGross = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Detail","qGross",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 
                 if (listLiveGross.size()>0)
                 {
@@ -248,7 +254,7 @@ public class clsPOSDiscountWiseReportController
                 TreeMap<String, clsPOSGroupSubGroupWiseSales> mapGroupWiseSales = new TreeMap<String, clsPOSGroupSubGroupWiseSales>();
                 double totalDiscount = 0.00, totalNetRevenue = 0.00, totalSubTotal = 0.00;
 
-                List listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","live",strUserCode,strShiftNo);
+                List listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","live",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 if(listGroupWiseSales.size()>0)
                 {
                 	for(int i=0;i<listGroupWiseSales.size();i++)
@@ -283,7 +289,7 @@ public class clsPOSDiscountWiseReportController
                 	}
                 }
               
-                listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","modLive",strUserCode,strShiftNo);
+                listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","modLive",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 
                 if(listGroupWiseSales.size()>0)
                 {
@@ -320,7 +326,7 @@ public class clsPOSDiscountWiseReportController
                 }
                
 
-                listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","qFile",strUserCode,strShiftNo);
+                listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","qFile",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 if(listGroupWiseSales.size()>0)
                 {
                 	for(int i=0;i<listGroupWiseSales.size();i++)
@@ -355,7 +361,7 @@ public class clsPOSDiscountWiseReportController
                 	}
                 }
                 
-                listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","modQFile",strUserCode,strShiftNo);
+                listGroupWiseSales = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "GroupWise","modQFile",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 if(listGroupWiseSales.size()>0)
                 {
                 	for(int i=0;i<listGroupWiseSales.size();i++)

@@ -7394,7 +7394,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[3].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7403,8 +7403,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7414,8 +7414,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7436,7 +7436,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[10].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7445,8 +7445,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7456,8 +7456,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7477,7 +7477,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[10].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7486,8 +7486,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7497,8 +7497,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7517,7 +7517,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[10].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7526,8 +7526,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7537,8 +7537,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+//						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -8311,7 +8311,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessDiscountWiseReport(String posCode, String fromDate, String toDate, String type,
-			String querySubType, String strUserCode, String strShiftNo) {
+			String querySubType, String strUserCode, String strShiftNo,String enableShiftYN) {
 		List<clsPOSBillItemDtlBean> listOfBillItemDtl = new ArrayList<>();
 		StringBuilder sbSqlLiveDisc = new StringBuilder();
 		StringBuilder sbSqlQFileDisc = new StringBuilder();
@@ -8616,10 +8616,14 @@ public class clsPOSReportService {
 				if (!posCode.equals("All")) {
 					sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}
+				if(enableShiftYN.equalsIgnoreCase("Y"))
+				{	
 				sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+				}
 				sbSqlFilters.append(" Group BY c.strGroupCode ");
 
 				if (querySubType.equalsIgnoreCase("live")) {
+					sbSqlQFile.setLength(0);
 					sbSqlQFile.append("SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity)"
 							+ ",sum( b.dblAmount)-sum(b.dblDiscountAmt) " + ",f.strPosName, '" + strUserCode
 							+ "',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode,"
@@ -8629,10 +8633,11 @@ public class clsPOSReportService {
 							+ " and date(a.dteBillDate)=date(b.dteBillDate) " + " and a.strPOSCode=f.strPOSCode  "
 							+ " and a.strClientCode=b.strClientCode " + "and b.strItemCode=e.strItemCode "
 							+ "and c.strGroupCode=d.strGroupCode and d.strSubGroupCode=e.strSubGroupCode ");
-					sbSqlLive.append(sbSqlFilters);
-					listOfBillItemDtl = objBaseService.funGetList(sbSqlLive, "sql");
+					sbSqlQFile.append(sbSqlFilters);
+					listOfBillItemDtl = objBaseService.funGetList(sbSqlQFile, "sql");
 				} else if (querySubType.equalsIgnoreCase("qFile")) {
-					sbSqlLive.append("SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity)"
+					sbSqlQFile.setLength(0);
+					sbSqlQFile.append("SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity)"
 							+ ",sum( b.dblAmount)-sum(b.dblDiscountAmt) " + ",f.strPosName, '" + strUserCode
 							+ "',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode,"
 							+ " sum( b.dblAmount)-sum(b.dblDiscountAmt)+sum(b.dblTaxAmount)  "

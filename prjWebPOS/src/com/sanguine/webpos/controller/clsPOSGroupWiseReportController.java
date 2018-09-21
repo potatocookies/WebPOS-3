@@ -156,6 +156,7 @@ public class clsPOSGroupWiseReportController
 			List<clsPOSGroupWaiseSalesBean> list = new ArrayList<>();
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptGroupWiseSalesReport.jrxml");
 			String strClientCode = req.getSession().getAttribute("gClientCode").toString();
+			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
@@ -169,7 +170,7 @@ public class clsPOSGroupWiseReportController
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
 			String shiftNo = "ALL";
-			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
 			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{
 				shiftNo=objBean.getStrShiftCode();

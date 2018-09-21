@@ -160,7 +160,7 @@ public class clsPOSVoidBillReportController {
 		String toDate = hm.get("toDate").toString();
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
-		String strShiftNo = "1";
+		String strShiftNo = "ALL";
 		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
 		if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 		{

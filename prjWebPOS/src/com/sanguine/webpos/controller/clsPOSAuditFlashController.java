@@ -64,7 +64,7 @@ public class clsPOSAuditFlashController {
 			for(int i =0 ;i<listOfPos.size();i++)
 			{
 				Object[] obj = (Object[]) listOfPos.get(i);
-				posMap.put( obj[1].toString(), obj[0].toString());
+				posMap.put(obj[0].toString(), obj[1].toString());
 			}
 		}
 		model.put("posList",posMap);
@@ -102,6 +102,10 @@ public class clsPOSAuditFlashController {
 		listSorting.add("Bill");
 		listSorting.add("Amount");
 		model.put("listSorting", listSorting);
+		
+		String posDate = request.getSession().getAttribute("gPOSDate").toString();
+		request.setAttribute("POSDate", posDate);
+
 		
 		if("2".equalsIgnoreCase(urlHits)){
 			
@@ -211,12 +215,12 @@ public class clsPOSAuditFlashController {
 			String toDate=req.getParameter("toDate");
 		
 			String strReportType=req.getParameter("strReportType");
-			
-			String posName=req.getParameter("posName");
 			String posCode= "ALL";
-			if (!posName.equalsIgnoreCase("ALL"))
+			posCode=req.getParameter("posName");
+			String posName = "ALL";
+			if (!posCode.equalsIgnoreCase("ALL"))
 			{
-				posCode = (String) posMap.get(posName);
+				posName = (String) posMap.get(posCode);
 			}
 			
 			String strReasonName=req.getParameter("strReason");

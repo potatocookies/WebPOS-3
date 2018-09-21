@@ -295,7 +295,7 @@
 		
 		<div class="title" >
 				
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
@@ -317,7 +317,7 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 		    					<label class="title">Settlement Name</label>
 		    				</div>
@@ -346,7 +346,7 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 		    					<label class="title">View By</label>
 		    				</div>
@@ -365,7 +365,7 @@
 					</div>
 					
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
 							<div style="border: 1px solid #ccc; display: block; height: 200px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblDayWiseSales" style="width: 100%; text-align: center !important;">
@@ -378,7 +378,7 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
 							<div style="border: 1px solid #ccc; display: block; height: 100px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblTotal" style="width: 100%; text-align: center !important;">
@@ -410,104 +410,7 @@
 				   
 		</div>
 </s:form>
-	
-	
-<%-- 	<s:form name="POSDayWiseSalesSummeryFlash" method="POST" --%>
-<%-- 		action="processDayWiseSalesSummeryFlash.html?saddr=${urlHits}" --%>
-<%-- 		target="_blank"> --%>
-<!-- 		<div> -->
-<!-- 			<div> -->
 
-<!-- 				<table class="masterTable" style="margin: auto;"> -->
-
-<!-- 					<tr> -->
-<!-- 						<td width="140px">POS Name</td> -->
-<%-- 						<td><s:select id="cmbPOSName" name="cmbPOSName" --%>
-<%-- 								path="strPOSName" cssClass="BoxW124px" items="${posList}"> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 						<td><label>From Date</label></td> -->
-<%-- 						<td><s:input id="txtFromDate" required="required" --%>
-<%-- 								path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" --%>
-<%-- 								cssClass="calenderTextBox" /></td> --%>
-
-<!-- 						<td><label>To Date</label></td> -->
-<%-- 						<td><s:input id="txtToDate" required="required" path="toDate" --%>
-<%-- 								pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox" /></td> --%>
-								
-<!--  					<td><label>View By</label></td> -->
-<%-- 						<td><s:select id="cmbViewBy" path="strViewBy" --%>
-<%-- 								cssClass="BoxW124px"> --%>
-<%-- 								<s:option value="ITEM'S GROUP WISE">ITEM'S GROUP WISE</s:option> --%>
-<%-- 								<s:option value="NONE">NONE</s:option> --%>
-
-<%-- 							</s:select></td> --%>
- 		
-<!-- 					</tr> -->
-<!-- 					<tr> -->
-						
-<!-- 			<td width="140px">Settlement Name</td> -->
-<%-- 						<td><s:select id="cmbSettleName" name="cmbSettleName" --%>
-<%-- 								path="strSettlementName" cssClass="BoxW124px" items="${settlementList}"> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 						<td><label>Operation Type</label></td> -->
-<%-- 						<td><s:select id="cmbOperationType" path="strOperationType" --%>
-<%-- 								cssClass="BoxW124px" > --%>
-<%-- 								<s:option value="All">All</s:option> --%>
-<%-- 								<s:option value="Dine In">Dine In</s:option> --%>
-<%-- 								<s:option value="Direct Biller">Direct Biller</s:option> --%>
-<%-- 								<s:option value="Home Delivery">Home Delivery</s:option> --%>
-<%-- 								<s:option value="Take Away">Take Away</s:option> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 						<td><label>Group Name</label></td> -->
-<%-- 						<td><s:select id="cmbGroupName" path="strGroupName" --%>
-<%-- 								cssClass="BoxW124px" items="${groupList}"/></td> --%>
-<!--  						<td>  -->
-<%-- 						<s:checkbox element="li" id="chkWithDiscount" path="strWithDiscount" value="Yes" /> --%>
-<!-- 		       			<label>With Discount</label></td> -->
-						
-<!-- 						<td></td> -->
-<!-- 					</tr> -->
-
-<!-- 				</table> -->
-<!-- 			</div> -->
-			
-<!-- 			<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-<!-- 				<table id="tblDayWiseSales" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-				
-<!-- 			</div> -->
-<!-- 			<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 100px;  margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-	
-<!-- 				<table id="tblTotal" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="button" value="Execute" class="form_button" -->
-<!-- 				id="btnSubmit" /> <input type="submit" value="Export" -->
-<!-- 				class="form_button" id="submit" /> <input type="reset" value="Reset" -->
-<!-- 				class="form_button" id="btnReset" /> -->
-
-<!-- 		</p> -->
-<!-- 		<div id="wait" -->
-<!-- 			style="display: none; width: 60px; height: 60px; border: 0px solid black; position: absolute; top: 50%; left: 50%; padding: 2px;"> -->
-<!-- 			<img -->
-<%-- 				src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif" --%>
-<!-- 				width="60px" height="60px" /> -->
-<!-- 		</div> -->
-
-<%-- 	</s:form> --%>
 
 </body>
 </html>

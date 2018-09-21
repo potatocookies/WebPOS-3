@@ -141,6 +141,10 @@ public class clsPOSOperatorWiseReportController {
 				}
 			}
 			model.put("shiftList",shiftList);
+			
+			String posDate = request.getSession().getAttribute("gPOSDate").toString();
+			request.setAttribute("POSDate", posDate);
+
 		 
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSOperatorWiseReport_1","command", new clsPOSReportBean());
@@ -163,6 +167,7 @@ public class clsPOSOperatorWiseReportController {
 		try
 		{
 			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
+			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String reportType = objBean.getStrViewType();
 			String strPOSName = objBean.getStrPOSName();
@@ -190,7 +195,7 @@ public class clsPOSOperatorWiseReportController {
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
 			String strShiftNo = "ALL";
-			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
 			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{
 				strShiftNo=objBean.getStrShiftCode();

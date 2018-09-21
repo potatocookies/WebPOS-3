@@ -139,8 +139,9 @@ public class clsPOSVoidKOTReportController {
 		String strClientCode = req.getSession().getAttribute("gClientCode").toString();
 		String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 		String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptVoidKOTReport.jrxml");
-		String subReportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptVoidKOTSubReportForWaiterWiseVoidedKOT.jrxml");
+		InputStream subReportName = this.getClass().getClassLoader().getResourceAsStream("/WEB-INF/reports/webpos/rptVoidKOTSubReportForWaiterWiseVoidedKOT.jrxml");
 		
+
 		Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 		String reportSubType = objBean.getStrReportType();
 		String strPOSName = objBean.getStrPOSName();

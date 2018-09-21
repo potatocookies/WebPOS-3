@@ -4278,34 +4278,34 @@ public class clsPOSReportService {
 									+ " a.strUserEdited as UserEdited,ifnull(b.strReasonName,'') as ReasonName,ifnull(a.strRemark,'')"
 									+ " ,(a.dblActualAmount-a.dblModifiedAmount) as DiscAmt "
 									+ " from tblvoidbillhd a left outer join tblreasonmaster b on a.strReasonCode=b.strReasonCode ");
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strUserCreated='" + userCode + "'"
 								+ " and a.strPOSCode='" + strPOSCode + "'  and a.strreasonCode='" + reasonCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strPOSCode='" + strPOSCode + "'  and  "
 								+ "a.strreasonCode='" + reasonCode + "' group by a.strBillNo,a.dteModifyVoidBill");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strUserCreated='" + userCode + "'  "
 								+ "and a.strreasonCode='" + reasonCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strUserCreated='" + userCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strPOSCode='" + strPOSCode + "' "
@@ -4321,7 +4321,7 @@ public class clsPOSReportService {
 					} else {
 						sbSql.append(" and (a.strVoidBillType = 'Bill Void' or a.strVoidBillType = 'ITEM VOID' ) ");
 					}
-					if (strSorting.equals("BILL")) {
+					if (strSorting.equalsIgnoreCase("BILL")) {
 						sbSql.append(" order by a.strBillNo");
 					} else {
 						sbSql.append(" order by a.dblActualAmount");
@@ -4370,38 +4370,38 @@ public class clsPOSReportService {
 									+ "b.strUserCreated as Usercreated,b.strUserEdited as UserEdited,ifnull(b.strRemark,'') "
 									+ " from tblvoidbilldtl a, tblvoidbillhd b ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(
 								"where a.strBillNo=b.strBillNo and a.strTransType='MB' and Date(a.dteModifyVoidBill) between '"
 										+ fromDate + "' and '" + toDate + "' " + "and a.strPOSCode='" + strPOSCode
 										+ "' and " + "a.strUserCreated='" + userCode + "' and a.strreasonCode='"
 										+ reasonCode + "' " + "group by a.strItemName,a.strBillNo ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(
 								"where a.strBillNo=b.strBillNo and a.strTransType='MB' and Date(a.dteModifyVoidBill) between '"
 										+ fromDate + "' and '" + toDate + "' and  a.strUserCreated='" + userCode
 										+ "' and a.strreasonCode='" + reasonCode + "' "
 										+ "group by a.strItemName,a.strBillNo ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(
 								"where a.strBillNo=b.strBillNo and a.strTransType='MB' and Date(a.dteModifyVoidBill) between '"
 										+ fromDate + "' and '" + toDate + "'" + " and a.strPOSCode='" + strPOSCode
 										+ "' and a.strreasonCode='" + reasonCode + "' "
 										+ "group by a.strItemName,a.strBillNo ");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strPOSCode='" + strPOSCode + "' and a.strUserCreated='" + userCode + "' "
 								+ "group by a.strItemName,a.strBillNo ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strPOSCode='" + strPOSCode + "'  " + "group by a.strItemName,a.strBillNo ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and  a.strUserCreated='" + userCode + "' " + "group by a.strItemName,a.strBillNo ");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and  a.strreasonCode='" + reasonCode + "' " + "group by a.strItemName,a.strBillNo ");
@@ -4417,7 +4417,7 @@ public class clsPOSReportService {
 					} else {
 						sbSql.append("and (b.strVoidBillType = 'Bill Void' or b.strVoidBillType = 'ITEM VOID') ");
 					}
-					if (strSorting.equals("BILL")) {
+					if (strSorting.equalsIgnoreCase("BILL")) {
 						sbSql.append(" order by a.strBillNo asc");
 					} else {
 						sbSql.append(" order by sum(a.dblAmount) asc");
@@ -4466,28 +4466,28 @@ public class clsPOSReportService {
 									+ "a.strUserEdited as UserEdited, a.strReasonName as Reason,ifnull(a.strRemark,'')"
 									+ ",b.strPosCode,b.strPosName " + " from tblvoidbillhd a,tblposmaster b "
 									+ " where a.strTransType='VB'  " + " and a.strPosCode=b.strPosCode ");
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and " + "strUserCreated='" + userCode
 								+ "' and strreasonCode='" + reasonCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strPOSCode='" + strPOSCode + "' and " + "strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strUserCreated='" + userCode + "' " + "and strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) " + "between '" + fromDate + "' and '" + toDate
 								+ "' ");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strPOSCode='" + strPOSCode + "' " + "and strUserCreated='" + userCode
 								+ "'  and Date(a.dteModifyVoidBill) " + "between '" + fromDate + "' and '" + toDate
 								+ "' ");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and strreasonCode='" + reasonCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strPOSCode='" + strPOSCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and strUserCreated='" + userCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
 					} else {
@@ -4643,28 +4643,28 @@ public class clsPOSReportService {
 									+ "where a.strBillNo=b.strBillNo " + "and date(a.dteBillDate)=date(b.dteBillDate) "
 									+ "and a.strPosCode=c.strPosCode ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and a.strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strreasonCode='" + reasonCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and Date(a.dteModifyVoidBill) " + "between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill) "
 								+ "between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill)"
 								+ " between '" + fromDate + "' and '" + toDate + "'");
@@ -4692,28 +4692,28 @@ public class clsPOSReportService {
 									+ "where a.strBillNo=b.strBillNo " + "and date(a.dteBillDate)=date(b.dteBillDate) "
 									+ "and a.strPosCode=c.strPosCode ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and a.strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strreasonCode='" + reasonCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and Date(a.dteModifyVoidBill) " + "between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill) "
 								+ "between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill)"
 								+ " between '" + fromDate + "' and '" + toDate + "'");
@@ -4730,7 +4730,7 @@ public class clsPOSReportService {
 					}
 
 					sbSqlMod.append(" group by a.strBillNo,b.strModifierCode)");
-					if (strSorting.equals("BILL")) {
+					if (strSorting.equalsIgnoreCase("BILL")) {
 						sbSqlMod.append(" order by strBillNo");
 					} else {
 						sbSqlMod.append(" order by BillAmount");
@@ -5476,10 +5476,10 @@ public class clsPOSReportService {
 					sbSqlQFile.setLength(0);
 					sbFilters.setLength(0);
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5535,10 +5535,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Line Void";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode= '" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 
@@ -5577,10 +5577,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Void KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5631,10 +5631,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "NC KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5711,10 +5711,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Billed KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5806,10 +5806,10 @@ public class clsPOSReportService {
 					sbSqlQFile.setLength(0);
 					sbFilters.setLength(0);
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5869,10 +5869,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Line Void";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 
@@ -5915,10 +5915,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Void KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5966,10 +5966,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "NC KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -6063,23 +6063,23 @@ public class clsPOSReportService {
 							+ " and a.strPOSCode=d.strPOSCode and a.strTableNo=e.strTableNo "
 							+ " and a.strType='MVKot' ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteDateCreated) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strreasonCode='" + reasonCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
 					} else {
@@ -6132,23 +6132,23 @@ public class clsPOSReportService {
 							+ " where a.strreasonCode=c.strreasonCode and a.strPOSCode=d.strPOSCode "
 							+ " and a.strTableNo=e.strTableNo and a.strType='MVKot' ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteDateCreated) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strreasonCode='" + reasonCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
 					} else {
@@ -6198,10 +6198,10 @@ public class clsPOSReportService {
 				sbFilters.setLength(0);
 				operation = "Billed KOT";
 
-				if (!"All".equals(posName)) {
+				if (!"All".equalsIgnoreCase(posName)) {
 					sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 				}
-				if (!"All".equals(userName)) {
+				if (!"All".equalsIgnoreCase(userName)) {
 					sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 				}
 				if (!reasonCode.equalsIgnoreCase("All")) {
@@ -6289,10 +6289,10 @@ public class clsPOSReportService {
 				sbFilters.setLength(0);
 				operation = "Void KOT";
 
-				if (!"All".equals(posName)) {
+				if (!"All".equalsIgnoreCase(posName)) {
 					sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 				}
-				if (!"All".equals(userName)) {
+				if (!"All".equalsIgnoreCase(userName)) {
 					sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 				}
 				if (!reasonName.equalsIgnoreCase("All")) {
@@ -8613,7 +8613,7 @@ public class clsPOSReportService {
 				sqlModQFile.setLength(0);
 
 				sbSqlFilters.append(" and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
-				if (!posCode.equals("All")) {
+				if (!posCode.equalsIgnoreCase("All")) {
 					sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}
 				if(enableShiftYN.equalsIgnoreCase("Y"))

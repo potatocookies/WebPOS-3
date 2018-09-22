@@ -75,7 +75,7 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 			for(int i =0 ;i<listOfSettlement.size();i++)
 			{
 				clsSettlementMasterModel objModel = (clsSettlementMasterModel) listOfSettlement.get(i);
-				settlementMap.put( objModel.getStrSettelmentDesc(),objModel.getStrSettelmentCode());
+				settlementMap.put(objModel.getStrSettelmentCode(),objModel.getStrSettelmentDesc());
 			}
 		}
 		model.put("settlementList",settlementMap);
@@ -91,6 +91,9 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 			}
 		}
 		model.put("groupList",groupMap);
+		
+		String posDate = request.getSession().getAttribute("gPOSDate").toString();
+		request.setAttribute("POSDate", posDate);
 		
 		if("2".equalsIgnoreCase(urlHits)){
 			
@@ -203,11 +206,11 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 			String toDate=req.getParameter("toDate");
 		
 			String operationType=req.getParameter("operationType");
-			String settlementName=req.getParameter("settlementName");
+			String settlementCode=req.getParameter("settlementName");
 			String posName=req.getParameter("posName");
 			String groupName = req.getParameter("groupName");
 			
-			resMap=funGetData(clientCode,withDiscount,fromDate,toDate,operationType,settlementName,posName,"ITEM'S GROUP WISE",groupName);
+			resMap=funGetData(clientCode,withDiscount,fromDate,toDate,operationType,settlementCode,posName,"ITEM'S GROUP WISE",groupName);
 	        return resMap;
 	    }
 
@@ -230,16 +233,16 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 			String toDate=req.getParameter("toDate");
 		
 			String operationType=req.getParameter("operationType");
-			String settlementName=req.getParameter("settlementName");
+			String settlementCode=req.getParameter("settlementName");
 			String posName=req.getParameter("posName");
 			String groupName = req.getParameter("groupName");
-			resMap=funGetData(clientCode, withDiscount,fromDate,toDate,operationType,settlementName,posName,"NONE",groupName);
+			resMap=funGetData(clientCode, withDiscount,fromDate,toDate,operationType,settlementCode,posName,"NONE",groupName);
 	        return resMap;
 	    }
 
 	
 	  
-	  private LinkedHashMap funGetData(String clientCode, String withDiscount, String fromDate,String toDate, String operationType,String settlementName,String posName, String viewBy,String groupName)
+	  private LinkedHashMap funGetData(String clientCode, String withDiscount, String fromDate,String toDate, String operationType,String settlementCode,String posName, String viewBy,String groupName)
 	  {
 		  
 			  LinkedHashMap resMap = new LinkedHashMap();
@@ -255,11 +258,12 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 		      {
 				posCode=(String) posMap.get(posName);
 		      }
-		      String settlementCode= "ALL";
-		      if(settlementMap.containsKey(settlementName))
-		      {
-		    	  settlementCode=(String) settlementMap.get(settlementName);
-		      }
+//		      String settlementCode= "ALL";
+		     
+//		      if(settlementMap.containsKey(settlementName))
+//		      {
+//		    	  settlementCode=(String) settlementMap.get(settlementName);
+//		      }
 		      
 		      String groupCode = "ALL";
 		      if(groupMap.containsKey(groupName))
@@ -302,28 +306,57 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 			    
 			
 			    String prevColHeader=""; 
-				for(int i=2;i<colCount;i++)
-				{
-					
-					double total=0.00;
-					for(int j=0; j<rowCount; j++)
+			    if(viewBy.equalsIgnoreCase("ITEM'S GROUP WISE"))
+			      {
+			    	for(int i=2;i<=colCount;i++)
 					{
-						List arr=(List) list.get(j);
-						if(prevColHeader.equalsIgnoreCase((String) colHeader.get(i)))
-						{
-						total+=Double.parseDouble(arr.get(i).toString());
-						}
-						else
-						{
-						total+=Double.parseDouble(arr.get(i).toString());
-						prevColHeader = (String) colHeader.get(i);
-						}
-					}
-					listTotal.add(total);
-
 						
-				}
-	  		
+						double total=0.00;
+						for(int j=0; j<rowCount; j++)
+						{
+							List arr=(List) list.get(j);
+							if(prevColHeader.equalsIgnoreCase((String) colHeader.get(i)))
+							{
+							total+=Double.parseDouble(arr.get(i).toString());
+							}
+							else
+							{
+							total+=Double.parseDouble(arr.get(i).toString());
+							prevColHeader = (String) colHeader.get(i);
+							}
+						}
+						listTotal.add(total);
+
+							
+					}
+
+			      }
+			    else
+			    {
+			    	for(int i=2;i<colCount;i++)
+					{
+						
+						double total=0.00;
+						for(int j=0; j<rowCount; j++)
+						{
+							List arr=(List) list.get(j);
+							if(prevColHeader.equalsIgnoreCase((String) colHeader.get(i)))
+							{
+							total+=Double.parseDouble(arr.get(i).toString());
+							}
+							else
+							{
+							total+=Double.parseDouble(arr.get(i).toString());
+							prevColHeader = (String) colHeader.get(i);
+							}
+						}
+						listTotal.add(total);
+
+							
+					}
+
+			    }
+					  		
 				
 				
 				resMap.put("Header", colHeader);

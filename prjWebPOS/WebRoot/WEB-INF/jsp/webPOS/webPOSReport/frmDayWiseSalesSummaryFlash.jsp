@@ -289,46 +289,62 @@
 		<label>POS Day Wise Sales Summary Flash</label>
 	</div>
 
-	<s:form name="POSDayWiseSalesSummeryFlash" method="POST" action="processDayWiseSalesSummeryFlash.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+	<s:form name="POSDayWiseSalesSummeryFlash" method="POST" action="processDayWiseSalesSummeryFlash.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 
 		<br />
 		
 		<div class="title" >
 				
 					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 14%;"> 
 								<s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" items="${posList}" >
 				 				</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">From Date</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 10%;"> 
 								<s:input  id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 7%;"> 
 		    					<label class="title">To Date</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 10%;"> 
 								<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}"  style="width: 100%;"/>	
 							</div>
+							<div class="element-input col-lg-6" style="width: 7%;"> 
+		    					<label class="title">View By</label>
+		    				</div>
+		    				<div class="element-input col-lg-6" style="width: 17%;"> 
+								<s:select id="cmbViewBy" path="strViewBy">
+										<s:option value="ITEM'S GROUP WISE">ITEM'S GROUP WISE</s:option>
+										<s:option value="NONE">NONE</s:option>
+								</s:select>
+							</div>
+							<div class="element-input col-lg-6" style="width: 1%;">
+		    					<s:checkbox element="li" id="chkWithDiscount" path="strWithDiscount" value="Yes" />
+		    				</div>
+							<div class="element-input col-lg-6" style="width: 10%;"> 
+		    					<label class="title">With Discount</label>
+		    				</div>
+		    				
 					</div>
 					
 					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 11.4%;"> 
 		    					<label class="title">Settlement Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 14%;"> 
 								<s:select id="cmbSettleName" name="cmbSettleName" path="strSettlementName" items="${settlementList}">
 				 				</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 11%;"> 
 		    					<label class="title">Operation Type</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 13%;"> 
 								<s:select id="cmbOperationType" path="strOperationType">
 										<s:option value="All">All</s:option>
 										<s:option value="Dine In">Dine In</s:option>
@@ -338,35 +354,25 @@
 
 								</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 9.1%;"> 
 		    					<label class="title">Group Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 13%;"> 
 								<s:select id="cmbGroupName" path="strGroupName" items="${groupList}"/>	
 							</div>
+							<div class="element-input col-lg-6" style="width: 9%;"><input type="button" value="EXECUTE" id="btnSubmit" /></div>
+							<div class="element-input col-lg-6" style="width: 9%;"><input type="submit" value="EXPORT" id="submit" /></div>
+							<div class="element-input col-lg-6" style="width: 9%;"><input type="reset" value="RESET" id="btnReset" /></div>
+						
 					</div>
 					
 					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
-		    					<label class="title">View By</label>
-		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
-								<s:select id="cmbViewBy" path="strViewBy">
-										<s:option value="ITEM'S GROUP WISE">ITEM'S GROUP WISE</s:option>
-										<s:option value="NONE">NONE</s:option>
-								</s:select>
-							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
-		    					<label class="title">With Discount</label>
-		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;">
-		    					<s:checkbox element="li" id="chkWithDiscount" path="strWithDiscount" value="Yes" />
-		    				</div>
+							
 					</div>
 					
 					
 					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
-							<div style="border: 1px solid #ccc; display: block; height: 200px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+							<div style="border: 1px solid #ccc; display: block; height: 600px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblDayWiseSales" style="width: 100%; text-align: center !important;">
 								
@@ -396,10 +402,7 @@
 					<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%; margin-left: 10%;">
 					
 						<p align="center">
-							<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="EXECUTE" id="btnSubmit" /></div>
-							<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="EXPORT" id="submit" /></div>
-							<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="RESET" id="btnReset" /></div>
-						</p>
+							</p>
 						
 				   </div>
 				   

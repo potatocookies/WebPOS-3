@@ -8701,7 +8701,7 @@ public class clsPOSReportService {
 
 		listColHeaderArr.add("DATE");
 		listColHeaderArr.add("POS");
-		int colCount = 3;
+		int colCount = 2;
 		try {
 			// Q Date and POS
 			sbSql.setLength(0);
@@ -8964,7 +8964,7 @@ public class clsPOSReportService {
 
 				jRowArr.add(listDateArr.get(tblRow));
 				jRowArr.add(strPOSName);
-				for (int i = 2; i < colCount; i++) {
+				for (int i = 2; i <= colCount; i++) {
 					jRowArr.add(i, 0.00);
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
@@ -9005,7 +9005,7 @@ public class clsPOSReportService {
 
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <= colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("GRAND Total")
@@ -9474,35 +9474,35 @@ public class clsPOSReportService {
 
 			colCount++;
 			listColHeaderArr.add("Discount".toUpperCase());
-			listColHeaderArr.add("Round Off".toUpperCase());
-			listColHeaderArr.add("Net Total".toUpperCase());
+//			colCount++;
+			
+			
+			sbSql.setLength(0);
 			sbSql.setLength(0);
 			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
-					+ "FROM tblqbillhd a ,tblqbillsettlementdtl b " + "WHERE date(a.dteBillDate) between '" + fromDate
-					+ "' and '" + toDate + "' " + "AND a.strBillNo=b.strBillNo "
-					+ "and date(a.dteBillDate)=date(b.dteBillDate) ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sbSql.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and b.strSettlementCode='" + strSettlementCode + "' ");
-			}
-			sbSql.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			    + "FROM tblqbillhd a  "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");	  
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+		
 			listSql = objBaseService.funGetList(sbSql, "sql");
 			Map mapOfDiscount = new HashMap();
-			Map mapOfRoundOff = new HashMap();
+			
 			String discount = "Discount";
 			size = listSql.size();
 			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
 
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
+							
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Discount")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
 							mapOfDiscount.put(discount, discount);
@@ -9510,8 +9510,91 @@ public class clsPOSReportService {
 							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							colCount++;
+//							colCount++;
 						}
+						
+						
+
+					}
+
+				}
+				map.put(tblRow, jRowArr);
+
+			}
+
+			
+			sbSql.setLength(0);
+			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
+			    + "FROM tblbillhd a "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  ");	 
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
+			
+			listSql = objBaseService.funGetList(sbSql, "sql");
+			size = listSql.size();
+			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
+
+				List jRowArr = new ArrayList();
+				jRowArr = (List) map.get(tblRow);
+				for (int i = 3; i <= colCount; i++) {
+					for (int j = 0; j < size; j++) {
+						Object[] obj = (Object[]) listSql.get(j);
+							
+						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Discount")
+								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
+							jRowArr.add(i, 0.00);
+							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
+							jRowArr.remove(i);
+							jRowArr.add(i, value);
+//							if (mapOfDiscount.containsKey(discount)) {
+//
+//							} else {
+//								colCount++;
+//							}
+						}
+						
+						
+
+					}
+
+				}
+				map.put(tblRow, jRowArr);
+
+			}
+			
+			
+			listColHeaderArr.add("Round Off".toUpperCase());
+			colCount++;
+			sbSql.setLength(0);
+			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
+			    + "FROM tblqbillhd a "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  ");	 
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
+			listSql = objBaseService.funGetList(sbSql, "sql");
+			
+			Map mapOfRoundOff = new HashMap();
+			size = listSql.size();
+			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
+
+				List jRowArr = new ArrayList();
+				jRowArr = (List) map.get(tblRow);
+				for (int i = 3; i <= colCount; i++) {
+					for (int j = 0; j < size; j++) {
+						Object[] obj = (Object[]) listSql.get(j);
+						
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Round Off")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
 							jRowArr.add(i, 0.00);
@@ -9519,8 +9602,9 @@ public class clsPOSReportService {
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
 							mapOfRoundOff.put("Round Off", "Round Off");
-							colCount++;
+//							colCount++;
 						}
+						
 
 					}
 
@@ -9531,52 +9615,40 @@ public class clsPOSReportService {
 
 			sbSql.setLength(0);
 			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
-					+ "FROM tblbillhd a ,tblbillsettlementdtl b " + "WHERE date(a.dteBillDate) between '" + fromDate
-					+ "' and '" + toDate + "' " + "AND a.strBillNo=b.strBillNo "
-					+ "and date(a.dteBillDate)=date(b.dteBillDate) ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sbSql.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and b.strSettlementCode='" + strSettlementCode + "' ");
-			}
-			sbSql.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			    + "FROM tblbillhd a "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  ");	 
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
 			listSql = objBaseService.funGetList(sbSql, "sql");
 			size = listSql.size();
 			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
 
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <= colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
-						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Discount")
-								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
-							jRowArr.add(i, 0.00);
-							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
-							jRowArr.remove(i);
-							jRowArr.add(i, value);
-							if (mapOfDiscount.containsKey(discount)) {
-
-							} else {
-								colCount++;
-							}
-						}
+							
+					
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Round Off")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
 							jRowArr.add(i, 0.00);
 							Double value = Double.parseDouble(obj[2].toString()) + (double) jRowArr.get(i);
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							if (mapOfRoundOff.containsKey("Round Off")) {
-
-							} else {
-								colCount++;
-							}
+//							if (mapOfRoundOff.containsKey("Round Off")) {
+//
+//							} else {
+//								colCount++;
+//							}
 						}
+						
 
 					}
 
@@ -9586,7 +9658,8 @@ public class clsPOSReportService {
 			}
 
 			// fill Q data group
-
+			listColHeaderArr.add("Net Total".toUpperCase());
+			colCount++;
 			Double totNetTotal = 0.0;
 			sbSql.setLength(0);
 			sbSql.append("select DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),g.strGroupName," + columnForSalesAmount
@@ -9613,7 +9686,7 @@ public class clsPOSReportService {
 				Double netTotal = 0.0;
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
@@ -9663,7 +9736,7 @@ public class clsPOSReportService {
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
 
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
@@ -9709,7 +9782,7 @@ public class clsPOSReportService {
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
 
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
@@ -9931,26 +10004,25 @@ public class clsPOSReportService {
 
 			// Grand Total
 			listColHeaderArr.add("GRAND Total");
+			colCount++;
 			listColHeaderArr.add("Net Total");
 			StringBuilder sqlGrandTotal = new StringBuilder();
 			sqlGrandTotal.setLength(0);
-			sqlGrandTotal.append(
-					"SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(b.dblSettlementAmt),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
-							+ "FROM tblqbillhd a,tblqbillsettlementdtl b,tblsettelmenthd c "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND b.strSettlementCode=c.strSettelmentCode  "
-							+ "and b.dblSettlementAmt>0 " + "and date(a.dteBillDate) between '" + fromDate + "' and '"
-							+ toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(sqlGrandTotal + " and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(" and c.strSettelmentCode='" + strSettlementCode + "' ");
-			}
-			sqlGrandTotal.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			sqlGrandTotal.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblGrandTotal),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
+					    + "FROM tblqbillhd a "
+					    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    if (!strOperationType.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
+		    }
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append( " and a.strPOSCode='" + strPOSCode + "' ");
+		    }
 
+		    sqlGrandTotal.append( "GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
 			listSql = objBaseService.funGetList(sqlGrandTotal, "sql");
 			int size = listSql.size();
 			Map mapOfGrandTotal = new HashMap();
@@ -9970,7 +10042,7 @@ public class clsPOSReportService {
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
 							mapOfGrandTotal.put("GRAND Total", "GRAND Total");
-							colCount++;
+							
 						}
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
@@ -9989,22 +10061,21 @@ public class clsPOSReportService {
 
 			// Live
 			sqlGrandTotal.setLength(0);
-			sqlGrandTotal.append(
-					"SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(b.dblSettlementAmt),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
-							+ "FROM tblbillhd a,tblbillsettlementdtl b,tblsettelmenthd c "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND b.strSettlementCode=c.strSettelmentCode  "
-							+ "and b.dblSettlementAmt>0 " + "and date(a.dteBillDate) between '" + fromDate + "' and '"
-							+ toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and c.strSettelmentCode='" + strSettlementCode + "' ");
-			}
-			sqlGrandTotal.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			sqlGrandTotal.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblGrandTotal),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
+					    + "FROM tblbillhd a "
+					    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    if (!strOperationType.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
+		    }
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append( " and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+
+		    sqlGrandTotal.append( "GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
 			listSql = objBaseService.funGetList(sqlGrandTotal, "sql");
 			size = listSql.size();
 
@@ -10022,11 +10093,11 @@ public class clsPOSReportService {
 							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							if (mapOfGrandTotal.containsKey("GRAND Total")) {
-
-							} else {
-								colCount++;
-							}
+//							if (mapOfGrandTotal.containsKey("GRAND Total")) {
+//
+//							} else {
+//								colCount++;
+//							}
 						}
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
@@ -10113,6 +10184,10 @@ public class clsPOSReportService {
 			if (!strPOSCode.equalsIgnoreCase("All")) {
 				sqlTax.append(" and a.strPOSCode='" + strPOSCode + "' ");
 			}
+			if (!strSettlementCode.equalsIgnoreCase("All"))
+		    {
+				sqlTax.append(" and e.strSettelmentCode='" + strSettlementCode + "' ");
+		    }
 			sqlTax.append("group by date(a.dteBillDate),b.strTaxCode " + "order by date(a.dteBillDate),b.strTaxCode; ");
 
 			listSql = objBaseService.funGetList(sqlTax, "sql");
@@ -10216,6 +10291,10 @@ public class clsPOSReportService {
 			if (!strPOSCode.equalsIgnoreCase("All")) {
 				sqlTax.append(" and a.strPOSCode='" + strPOSCode + "' ");
 			}
+			if (!strSettlementCode.equalsIgnoreCase("All"))
+		    {
+				sqlTax.append(" and e.strSettelmentCode='" + strSettlementCode + "' ");
+		    }
 			sqlTax.append("group by date(a.dteBillDate),b.strTaxCode " + "order by date(a.dteBillDate),b.strTaxCode; ");
 
 			listSql = objBaseService.funGetList(sqlTax, "sql");

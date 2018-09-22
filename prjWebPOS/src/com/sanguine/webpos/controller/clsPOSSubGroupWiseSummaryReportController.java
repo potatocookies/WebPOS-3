@@ -123,7 +123,8 @@ public class clsPOSSubGroupWiseSummaryReportController {
 		{
 			try
 			{
-				String strClientCode=req.getSession().getAttribute("gClientCode").toString();		
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
+			String POSCode=req.getSession().getAttribute("loginPOS").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String reportType = objBean.getStrViewType();
 			String strPOSName = objBean.getStrPOSName();
@@ -139,7 +140,7 @@ public class clsPOSSubGroupWiseSummaryReportController {
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
 			String strShiftNo = "1";
-			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
 			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{
 				strShiftNo=objBean.getStrShiftCode();

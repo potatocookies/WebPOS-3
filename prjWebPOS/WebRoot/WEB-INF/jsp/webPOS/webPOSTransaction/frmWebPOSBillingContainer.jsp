@@ -299,6 +299,8 @@ function funRefreshSettlementItemGrid()
 
 function funNoPromtionCalculation(listItmeDtl)
 {
+	listBillItem=[];
+	
 	$.each(listItmeDtl,function(i,item)
 	{
 		funFillSettleTable(item.itemName,item.quantity,item.amount,item.discountPer,item.discountAmt,item.strGroupcode,item.strSubGroupCode,item.itemCode,item.rate);
@@ -354,6 +356,11 @@ function funFillSettleTable(strItemName,dblQuantity,dblAmount,dblDiscountPer1,db
 
 function funCalculatePromotion(listItmeDtl)
 {
+	
+	
+	listBillItem=[];
+	
+	
 	var searchurl=getContextPath()+"/promotionCalculate.html?";
 	$.ajax({
 		 type: "POST",

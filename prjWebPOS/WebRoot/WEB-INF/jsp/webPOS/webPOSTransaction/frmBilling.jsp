@@ -254,6 +254,8 @@
 		document.getElementById("tab2").style.display='block';		
 	    document.getElementById("tab1").style.display='none';	
 	    
+	    hmSettlemetnOptions=new Map();
+	    
 	    finalSubTotal=0.00;
 		finalDiscountAmt=0.00;
 		finalNetTotal=0.00;

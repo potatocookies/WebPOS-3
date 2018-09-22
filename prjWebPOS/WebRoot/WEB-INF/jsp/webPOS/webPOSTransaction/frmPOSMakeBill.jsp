@@ -479,7 +479,7 @@ var selctedTableNo="";
 		 {
 			 var tblTableDtl=document.getElementById('tblBillItemDtl');
 			 var rowCount = tblTableDtl.rows.length;
-			 if(rowCount<=1)
+			 if(rowCount<=0)
 			 {
 					alert("Please select table");
 					return;

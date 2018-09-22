@@ -31,9 +31,7 @@ import com.sanguine.webpos.sevice.clsPOSReportService;
 
 
 @Controller
-public class clsPOSAuditFlashController {
-	
-	 
+public class clsPOSAuditFlashController { 
 	 @Autowired
 	 private clsPOSReportService objReportService;
 	 

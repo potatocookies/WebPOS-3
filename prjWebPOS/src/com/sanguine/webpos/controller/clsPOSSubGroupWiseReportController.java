@@ -125,6 +125,7 @@ public class clsPOSSubGroupWiseReportController {
 		{
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptSubGroupWiseSalesReport.jrxml");
 			String strClientCode = req.getSession().getAttribute("gClientCode").toString();
+			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
@@ -140,7 +141,7 @@ public class clsPOSSubGroupWiseReportController {
 			
 			DecimalFormat decimalFormat2Decimal = new DecimalFormat("0.00");
             DecimalFormat decimalFormat = new DecimalFormat("0");
-            Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+            Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
             String strShiftNo = "1";
             if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{

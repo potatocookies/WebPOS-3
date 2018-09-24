@@ -17,7 +17,6 @@
  	   funFillGrid();
  	});
  	
-
     $(document).ready(function ()
     {
        $("#btnShowSimple").click(function (e)

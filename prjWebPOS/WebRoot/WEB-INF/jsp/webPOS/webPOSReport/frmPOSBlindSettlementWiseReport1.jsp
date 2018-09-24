@@ -52,8 +52,6 @@ $(function()
 		
 	}
 }); 
-
-	
 	/**
 	* Reset The Item Name TextField
 	**/

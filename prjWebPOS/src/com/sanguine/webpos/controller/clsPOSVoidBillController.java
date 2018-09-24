@@ -84,7 +84,6 @@ public class clsPOSVoidBillController {
 			return null;
 		}
 	}
-
 		
 		public List funLoadResonCode(){
 			

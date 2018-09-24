@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.ibm.icu.math.BigDecimal;
 import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.webpos.bean.clsPOSBillDiscountDtl;
 import com.sanguine.webpos.bean.clsPOSBillDtl;
@@ -1206,9 +1207,9 @@ public class clsPOSVoidBillController {
 	 	       	       if(listSqlProm.size()>0)
 	 	       	       {
 	 	        	     Object[] obj = (Object[]) listSqlProm.get(0);
-			            if (voidedItemQty < Integer.parseInt(obj[1].toString()))
+			            if (voidedItemQty < (new BigDecimal(obj[1].toString())).doubleValue())
 			            {
-			                double qty = voidedItemQty - Integer.parseInt(obj[1].toString());
+			                double qty = voidedItemQty - (new BigDecimal(obj[1].toString())).doubleValue();
 			                sqlBuilder.setLength(0);
 			                sqlBuilder.append("update tblbillpromotiondtl set dblQuantity='" + qty + "' "
 			                        + " where strBillNo='" + billNo.trim() + "' and strItemCode='" + itemCodeForVoid + "'"

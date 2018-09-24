@@ -2,8 +2,6 @@ package com.sanguine.webpos.controller;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sanguine.base.service.clsSetupService;
+import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
+import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
+import com.sanguine.webpos.sevice.clsPOSReportService;
 
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -26,22 +38,6 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.sanguine.controller.clsGlobalFunctions;
-import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
-import com.sanguine.webpos.bean.clsPOSSettlementWiseSalesReportBean;
-import com.sanguine.webpos.bean.clsPOSReportBean;
-import com.sanguine.webpos.sevice.clsPOSMasterService;
-import com.sanguine.webpos.sevice.clsPOSReportService;
-
 @Controller
 public class clsPOSBlindSettlementWiseReportController {
 
@@ -49,9 +45,7 @@ public class clsPOSBlindSettlementWiseReportController {
 	@Autowired
 	private clsGlobalFunctions objGlobalFunctions;
 	
-	@Autowired
-	private clsPOSGlobalFunctionsController objPOSGlobalFunctionsController; 
-	
+
 	@Autowired
 	private ServletContext servletContext;
 	
@@ -61,12 +55,16 @@ public class clsPOSBlindSettlementWiseReportController {
 	@Autowired
 	private clsPOSReportService objReportService;
 	
+	@Autowired
+	private clsSetupService objSetupService;
+	
 	 Map<String,String> hmPOSData;
 	 
 	 @RequestMapping(value = "/frmPOSBlindSettlementWiseReport1", method = RequestMethod.GET)
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request) throws Exception
 		{
 			String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+			String POSCode=request.getSession().getAttribute("loginPOS").toString();	
 			String urlHits="1";
 			try{
 				urlHits=request.getParameter("saddr").toString();
@@ -90,6 +88,12 @@ public class clsPOSBlindSettlementWiseReportController {
 			}
 			model.put("posList",poslist);
 			
+			 Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+			 model.put("gEnableShiftYN",objSetupParameter.get("gEnableShiftYN").toString());
+			
+			String posDate = request.getSession().getAttribute("gPOSDate").toString();
+			request.setAttribute("POSDate", posDate);
+			 
 			if("2".equalsIgnoreCase(urlHits)){
 				return new ModelAndView("frmPOSBlindSettlementWiseReport1_1","command", new clsPOSReportBean());
 			}else if("1".equalsIgnoreCase(urlHits)){
@@ -108,7 +112,8 @@ public class clsPOSBlindSettlementWiseReportController {
 			try
 			{
 				String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBlindSettelementWiseSalesReport.jrxml");
-
+				String strClientCode=req.getSession().getAttribute("gClientCode").toString();	
+				String POSCode=req.getSession().getAttribute("loginPOS").toString();
 				Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 				String strPOSName = objBean.getStrPOSName();
 				String posCode = "ALL";
@@ -122,7 +127,14 @@ public class clsPOSBlindSettlementWiseReportController {
 				String toDate = hm.get("toDate").toString();
 				String strUserCode = hm.get("userName").toString();
 				String strPOSCode = posCode;
-				String strShiftNo = "1";
+				String strShiftNo = "ALL";
+				Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+				if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+				{
+					strShiftNo=objBean.getStrShiftCode();
+				}
+				hm.remove("shiftNo");
+				hm.put("shiftNo", strShiftNo);
 				
 				StringBuilder sbSqlLive = new StringBuilder();
 	            StringBuilder sbSqlQFile = new StringBuilder();
@@ -130,7 +142,7 @@ public class clsPOSBlindSettlementWiseReportController {
 	            DecimalFormat decimalFormat2Dec = new DecimalFormat("0.00");
 	            DecimalFormat decimalFormat0Dec = new DecimalFormat("0");
 
-	            List listSqlLiveData = objReportService.funProcessLiveBlindSettlementWiseReport(posCode,fromDate,toDate,"live");
+	            List listSqlLiveData = objReportService.funProcessLiveBlindSettlementWiseReport(posCode,fromDate,toDate,"live",objSetupParameter.get("gEnableShiftYN").toString(),strShiftNo);
 
 	            List<clsPOSBillItemDtlBean> listOfSettlementData = new ArrayList<clsPOSBillItemDtlBean>();
 	            double grossRevenue = 0;
@@ -151,7 +163,7 @@ public class clsPOSBlindSettlementWiseReportController {
 	            	}
 	            }
 
-	            List listSqlQFileData = objReportService.funProcessLiveBlindSettlementWiseReport(posCode,fromDate,toDate,"qFile");
+	            List listSqlQFileData = objReportService.funProcessLiveBlindSettlementWiseReport(posCode,fromDate,toDate,"qFile",objSetupParameter.get("gEnableShiftYN").toString(),strShiftNo);
 	            if(listSqlQFileData.size()>0)
 	            {
 	            	for(int i=0;i<listSqlQFileData.size();i++)

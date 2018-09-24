@@ -569,13 +569,11 @@
  	
  	function funDeleteRow(obj)
 	{
- 		if(deletedIndex=="")
- 		{	
- 			deletedIndex = obj.parentNode.parentNode.rowIndex;
- 		}
+ 		var deletedIndex = obj.parentNode.parentNode.rowIndex;
+ 	
  		var table = document.getElementById("tblData");
- 		var originalQty=((document.getElementById("txtQty."+deletedIndex)||{}).value)||"";
-		 var amount = ((document.getElementById("txtAmount."+deletedIndex)||{}).value)||"";
+ 		var originalQty=obj.parentNode.parentNode.children[1].firstChild.defaultValue;
+		 var amount = obj.parentNode.parentNode.children[2].firstChild.defaultValue;
 		 var rate = amount/originalQty;
 		 var qty="",newamount="",person="";
 		    if(originalQty>1)
@@ -588,19 +586,19 @@
 		    }	
 		    if (person != null || person != "") 
 		    {
-		    	qty = originalQty - person ;
+		    	qty = parseFloat(originalQty) - parseFloat(person) ;
 		    }
 		    else
 		    {
-		    	qty = originalQty - document.getElementById("txtQty."+deletedIndex).value;
+		    	qty = parseFloat(originalQty) - parseFloat(obj.parentNode.parentNode.children[1].firstChild.defaultValue);
 		    }
 		    var amt = qty * rate;
 		    newamount = rate * person;
 		    if(qty!="" || qty > 0)
 		    {
-		    	document.getElementById("txtQty."+deletedIndex).value=(parseFloat(qty));
-		    	document.getElementById("txtAmount."+deletedIndex).value=(parseFloat(amt));
-		    	var voidedItemDtl=document.getElementById("txtItemCode."+deletedIndex).value+"#"+document.getElementById("txtItemName."+deletedIndex).value+"#"+document.getElementById("txtItemCode."+deletedIndex).value+"#"+qty+"#"+amt+"#"+person+"#"+newamount;
+		    	obj.parentNode.parentNode.children[1].firstChild.defaultValue=qty;
+		    	obj.parentNode.parentNode.children[2].firstChild.defaultValue=amt;
+				var voidedItemDtl=obj.parentNode.parentNode.children[3].firstChild.defaultValue+"#"+obj.parentNode.parentNode.children[0].firstChild.defaultValue+"#"+obj.parentNode.parentNode.children[3].firstChild.defaultValue+"#"+qty+"#"+amt+"#"+person+"#"+newamount;
 			    arrVoidedItemDtlList[count]=voidedItemDtl;
 			    count++;	
 		    }
@@ -608,10 +606,7 @@
 		    {
 		    	 table.deleteRow(deletedIndex);
 		    }	
-		  	if(person!=null)
-		 	{
-		  		deletedIndex++;
-		 	}
+		  	
 	}
  	
    

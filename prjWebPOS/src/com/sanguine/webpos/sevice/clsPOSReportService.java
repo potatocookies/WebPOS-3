@@ -3939,7 +3939,7 @@ public class clsPOSReportService {
 		return listOfSettlementData;
 	}
 
-	public List funProcessLiveBlindSettlementWiseReport(String posCode, String fromDate, String toDate, String qType) {
+	public List funProcessLiveBlindSettlementWiseReport(String posCode, String fromDate, String toDate, String qType,String enableShiftYN,String strShiftNo) {
 		StringBuilder sbSqlLive = new StringBuilder();
 
 		StringBuilder sqlFilter = new StringBuilder();
@@ -3960,9 +3960,10 @@ public class clsPOSReportService {
 				if (!"All".equalsIgnoreCase(posCode)) {
 					sqlFilter.append("and  a.strPosCode='" + posCode + "' ");
 				}
-
-				// sqlFilter.append(" and a.intShiftCode = '" + shiftNo + "' ");
-
+				if(enableShiftYN.equalsIgnoreCase("Y"))
+				{	
+				 sqlFilter.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+				}	
 				sqlFilter.append("GROUP BY c.strSettelmentDesc, a.strPosCode");
 
 				sbSqlLive.append(sqlFilter);
@@ -3983,7 +3984,10 @@ public class clsPOSReportService {
 					sqlFilter.append("and  a.strPosCode='" + posCode + "' ");
 				}
 
-				// sqlFilter.append(" and a.intShiftCode = '" + shiftNo + "' ");
+				if(enableShiftYN.equalsIgnoreCase("Y"))
+				{	
+				 sqlFilter.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+				}	
 
 				sqlFilter.append("GROUP BY c.strSettelmentDesc, a.strPosCode");
 

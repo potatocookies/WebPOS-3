@@ -60,7 +60,8 @@ var selectedRowIndex="";
 		
 	}
 	
-	function funAddFullRow(data,gShowBillsType,gCMSIntegrationYN){
+	function funAddFullRow(data,gShowBillsType,gCMSIntegrationYN)
+	{
 		
 		
 			$('#tblData tbody').empty()
@@ -70,56 +71,45 @@ var selectedRowIndex="";
 
 			if(gShowBillsType=="Table Detail Wise")
             {
-        	  row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Bill No >";
-        	  row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Table >";
-        	  row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Waiter >";
-        	  
-//                dmBills.addColumn("Bill No");
-//                dmBills.addColumn("Table");
-//                dmBills.addColumn("Waiter");
+        	  row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"BillNo\" value=Bill No >";
+        	  row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"TableName\" value=Table >";
+        	  row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"WaiterName\" value=Waiter >";
 
 
                 if (gCMSIntegrationYN=='Y')
                 {
-                	row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Member >";
-//                     dmBills.addColumn("Member");
+                	row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Member\" value=Member >";
                 }
                 else
                 {
-                	row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Customer >";
-//                    dmBills.addColumn("Customer");
+                	row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Customer\" value=Customer >";
                 }
-                row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Time >";
-                row.insertCell(5).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Amount >";
-//                dmBills.addColumn("Time");
-//                dmBills.addColumn("Amount");
+                row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"BillTime\" value=Time >";
+                row.insertCell(5).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"GrandTotal\" value=Amount >";
            }
-            else//Delivery Detail Wise
+           else//Delivery Detail Wise
            {
-            	  row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Bill No >";
-            	  row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Table >";
-//                dmBills.addColumn("Bill No");
-//                dmBills.addColumn("Table");
-            if (gCMSIntegrationYN=='Y')
+            	  row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"BillNo\" value=Bill No >";
+            	  row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"TableName\" value=Table >";
+            	  
+	           if (gCMSIntegrationYN=='Y')
                {
-            	  row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Member >";
-//                    dmBills.addColumn("Member");
+            	  row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Member\" value=Member >";
                }
                else
                {
-            	   row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Customer >";
-//                    dmBills.addColumn("Customer");
+            	   row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Customer\" value=Customer >";
                }
-            row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Area >";
-            row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Del Boy >";
-            row.insertCell(5).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Time >";
-            row.insertCell(6).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"KOT NO.\" value=Amount >";
+	           
+	            row.insertCell(3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"Area\" value=Area >";
+	            row.insertCell(4).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"DelBoy\" value=Del Boy >";
+	            row.insertCell(5).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"BillTime\" value=Time >";
+	            row.insertCell(6).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"GrandTotal\" value=Amount >";
         
-           }
-	
-          
+           }	         
 			
 			rowCount++;
+			
 		    for(var i=0;i<data.length;i++)
 		    {
 		    	row = table.insertRow(rowCount);
@@ -131,6 +121,10 @@ var selectedRowIndex="";
 		              {
 		    			  row.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowData[j]+"\" value='"+rowData[j]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
 				      }
+		    		  else
+		    		  {
+		    			  row.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+rowData[j]+"\" value='"+rowData[j]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+		    		  }
 		    	}
 		    	rowCount++;		    
             }
@@ -170,6 +164,7 @@ var selectedRowIndex="";
 			 row.style.backgroundColor='#ffd966';
 			 row.hilite = true;
 		 }
+		 
 		 funOpenBillSettlement()
 		
 	}
@@ -205,6 +200,17 @@ var selectedRowIndex="";
 		 	 document.getElementById("tab2").style.display='block';
 		 	 /* Disable tab1 and display tab2 */
 			  var $rows = $('#tblSettleItemTable').empty();	
+		 	 
+		 	 //invisible div Extra Fileds div
+			  document.getElementById("divAmt").style.display='none'; 
+		 	 
+			  //invisible settlement amount div
+			  document.getElementById("divExtraFileds").style.display='none'; 
+			  
+			  //invisible div Numeric Pad amount div
+			  document.getElementById("divNumericPad").style.display='none'; 
+			  
+			  
 		 	 
 		 	
 		 	 
@@ -262,6 +268,9 @@ var selectedRowIndex="";
 			 			var itemAmt=item.dblAmount;
 			 			var itemCode=item.strItemCode;
 			 			var itemDiscAmt=item.dblDiscountAmt;
+			 			
+			 			var itemDiscPer=(itemDiscAmt/itemAmt)*100;
+			 						 			
 			 	 		var groupcode=item.strGroupCode;
 			 	 		var subgroupcode=item.strSubGroupCode;
 			 	 		var subgroupName=item.strSubGroupName;
@@ -279,8 +288,8 @@ var selectedRowIndex="";
 			 		    singleObj['itemName'] =itemName;
 			 		    singleObj['quantity'] =itemQty;
 			 		    singleObj['amount'] = itemAmt;
-			 		    singleObj['discountPer'] = 0.0;
-			 		    singleObj['discountAmt'] =0.0;
+			 		    singleObj['discountPer'] = itemDiscPer;
+			 		    singleObj['discountAmt'] =itemDiscAmt;
 			 		    singleObj['strSubGroupCode'] =subgroupcode;
 			 		    singleObj['strGroupcode'] =groupcode;
 			 		    singleObj['itemCode'] =itemCode;

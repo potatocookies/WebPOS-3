@@ -1840,8 +1840,11 @@
 // 	///Click on OK Button of Discount
 function funDiscOkClicked()
 { 
- 		
+	
+	
 
+	var discOnType="Total";
+	var discOnValue="Total";
   		
 	      var discGroup=disountType;
 		  var totamt = 0.00;
@@ -1850,6 +1853,8 @@ function funDiscOkClicked()
 		 //Totlal Radio button is Selected
 		  if(discGroup=='Total')
 	      {
+			  discOnType="Total";
+			  discOnValue="Total";
 
 			  $.each(listBillItem,function(i,obj)
 			  { 
@@ -1871,11 +1876,17 @@ function funDiscOkClicked()
 		//Item  is Selected
 		  if(discGroup=='item')
 		  {
+			  discOnType="Item";			  			  
+			  
  			   $.each(listBillItem,function(i,obj)
 		        { 
 			
 			      if($('#cmbItemCategary').val()==obj.itemCode)
 			      {
+			    	  
+			      
+			    	discOnValue= obj.itemName;
+			    	  
 	        	    var singleObj = {}
 	        	    
 	        	    singleObj['itemCode'] = obj.itemCode;
@@ -1894,12 +1905,22 @@ function funDiscOkClicked()
 		
 		  if(discGroup=='group')
 		  {  
-			  var groupcode=$('#cmbItemCategary').val();
+
+			  discOnType="Group";		
+			  			  
+			  
+			  var groupcode=$('#cmbItemCategary option:selected').val();
+			  var groupName=$('#cmbItemCategary option:selected').text();
+			  
+			  
 			  $.each(listBillItem, function(i, obj) 
 			  {
 				  if(groupcode==obj.strGroupcode)
 				  {
-			       	    var singleObj = {}
+			       	    
+					  discOnValue=groupName;
+					  
+					  var singleObj = {}
 			       	    
 			       	 singleObj['itemCode'] = obj.itemCode;
 			       	    singleObj['itemName'] = obj.itemName;
@@ -1917,12 +1938,22 @@ function funDiscOkClicked()
 			
 		  if(discGroup=='subGroup')
 		  {
-			  var subgroupcode=$('#cmbItemCategary').val();
+			  discOnType="SubGroup";		
+			  
+			  
+			  
+			  var subgroupcode=$('#cmbItemCategary  option:selected').val();
+			  var subGroupName=$('#cmbItemCategary  option:selected').text();
+			  
+			  
 			  $.each(listBillItem, function(i, obj) 
 			  {
 			      if(subgroupcode==obj.strSubGroupCode)
 			      {
-	        	    var singleObj = {}
+	        	   
+			    	  discOnValue=subGroupName;
+			    	  
+			    	  var singleObj = {}
 	        	    
 	        	    singleObj['itemCode'] = obj.itemCode;
 	        	    singleObj['itemName'] = obj.itemName;
@@ -1937,13 +1968,16 @@ function funDiscOkClicked()
 		       })
 		  }
 	
-
-		   var amtDisc= $('#txtDiscountAmt').val();
-		   var perDisc=$('#txtDiscountPer').val();
+		  var perDisc=$('#txtDiscountPer').val();
+		  
+		  var amtDisc= $('#txtDiscountAmt').val();
+		  
 	
 		  var listOfDicountItem=[];
+		  
 		  var checkTaxTotal=0;
 		  var dblTaxTotal=0;
+		  
 		  totalDiscAmt=0;
 		  
 		  var dblDiscountOnAmt= getTotalAmt(listOfDiscApplicableItems) ;
@@ -1981,8 +2015,11 @@ function funDiscOkClicked()
  		  });
 		  
 		  $("#txtDiscountAmt").val(totalDiscAmt);
-		 	 var listItmeDtl=[];	   
-			 var hmItempMap=new Map();	
+		  
+		 	 
+		  var listItmeDtl=[];	   
+		  
+		  var hmItempMap=new Map();	
 			 
 			 $.each(listBillItem,function(i,obj)
 			 { 
@@ -2016,6 +2053,7 @@ function funDiscOkClicked()
 			 })		  
 			 
 		 var totalamount=getTotalAmt(listBillItem) ;
+			 
 			var oTable = document.getElementById('tblSettleItemTable');
 			var rowLength = oTable.rows.length;
 			
@@ -2064,17 +2102,18 @@ function funDiscOkClicked()
 	    
 		  var per= $("#txtDiscountPer").val();
 		  var amt=$("#txtDiscountAmt").val();
-		  var cat= $('#cmbItemCategary').val();
+
 	  
 	    col1.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountPer\" id=\"discountPer."+(disCount)+"\" value='"+per+"' />" ;;
  	    col2.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountAmt\" id=\"discountAmt."+(disCount)+"\" value='"+amt+"' />";
- 	    col3.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnAmt\" id=\"discountOnAmt."+(disCount)+"\" value='"+totalDiscAmt+"' />";
- 	    col4.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnType\" id=\"discountOnType."+(disCount)+"\" value='"+discGroup+"' />";
-	    col5.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnValue\" id=\"discountOnValue."+(disCount)+"\" value='"+cat+"' />";
+ 	    col3.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnAmt\" id=\"discountOnAmt."+(disCount)+"\" value='"+dblDiscountOnAmt+"' />";
+ 	    col4.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnType\" id=\"discountOnType."+(disCount)+"\" value='"+discOnType+"' />";
+	    col5.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnValue\" id=\"discountOnValue."+(disCount)+"\" value='"+discOnValue+"' />";
  	    col6.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountReasonCode\" id=\"discountReasonCode."+(disCount)+"\" value='' />";	    
- 	    col7.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountRemarks\" id=\"discountRemarks."+(disCount)+"\" value='' />";
+ 	    col7.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountRemarks\" id=\"discountRemarks."+(disCount)+"\" value='Discount' />";
  	    
-     		disCount++;
+     		
+ 	    disCount++;
      		
 	
 			
@@ -2283,7 +2322,7 @@ function funDiscOkClicked()
 				 		<tr>
 					 		<td><label id="lblExpiryDate" style=" display: inline-block;width: 70px;text-align: left;">Expiry Date</label></td>
 					 		
-					 		<td><s:input id="dteExpiry"  path="dteExpiryDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox hasDatepicker"/> </td>
+					 		<td><s:input id="dteExpiry"  path="dteExpiryDate"  cssClass="calenderTextBox hasDatepicker"/> </td>
 				 		</tr>
 			 		</table>
 			 	</div>

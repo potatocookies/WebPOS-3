@@ -958,12 +958,12 @@
 			        {
 
 			           alert("Please select the customer");
-			            return;
+			        
+			           return;
 			        }
-					else
-			        {
-						funCheckHomeDelStatus();
-			        }
+					
+					
+					funCheckHomeDelStatus();
 					
 					/**
 					*This methis is in frmBilling.jsp								
@@ -1220,10 +1220,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		    		 
 					 $('#tblOldKOTItemDtl').empty();
 					 
-			    	 if(operationType=="DineIn")
-			    	  {
-			    			funDineInButtonClicked();
-			    	  }
+					 funDineInButtonClicked();
+					 
+			    	 
 
 	        	}
 	        	else
@@ -1447,6 +1446,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	
 	 function funShowMenuHead()
 	{
+		 	funDisplayPLUButton(true);
+		 
 			var jsonArrForMenuHeads=${command.jsonArrForMenuHeads};	
 		
 			$.each(jsonArrForMenuHeads, function(i, obj) 
@@ -1454,6 +1455,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 				
 				funAddMenuHeadData(obj.strMenuCode,obj.strMenuName);
 			});
+			
 			funLoadPopularItems();
 	}
 	 
@@ -1653,8 +1655,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        			{
 			        				if(response.waiterNo=="all")
 				        			{
-			        					funAddWaiterDtl();
-			        					funDisplayPLUButton(true);
+			        					funAddWaiterDtl();			        					
 				        			}
 			        				else
 			        				{
@@ -1670,7 +1671,6 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        							gWaiterName=obj.strWShortName;
 			        							
 			        							
-			        							funDisplayPLUButton(true);
 			        						}
 			        					});	
 			        				}
@@ -1694,8 +1694,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	        					var $rows = $('#tblMenuItemDtl').empty();
 	        					var $rows = $('#tblMenuHeadDtl').empty();
 	        					var $rows = $('#tblTopButtonDtl').empty();
-	        					
-	        					funDisplayPLUButton(true);
+	        						        					
 	        					funShowMenuHead();
 	        					funCheckHomeDelivery(tableNo);
         					}
@@ -1712,7 +1711,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        	{
 			        		/* document.all[ 'tblPaxNo' ].style.display = 'block'; */
 			        		funAddWaiterDtl();
-			        		funDisplayPLUButton(true);
+			        		
 			        	}
 			        	
 			        	gAreaCode=response.AreaCode;
@@ -1823,6 +1822,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		gPAX=0;
 		gLastKOTNo="";
 		
+		homeDeliveryForTax="N";
+		
 		var $rows = $('#tblMenuHeadDtl').empty();
 		var $rows = $('#tblTopButtonDtl').empty();
 		document.getElementById("divPLU").style.display='none';
@@ -1832,6 +1833,12 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		 funDisplayMakeBillButton(false);
 		 funDisplayPLUButton(false);
 		 funDisplayNCKOTButton(false);
+		 
+		 var ncKOTButton=document.getElementById('NC KOT');
+		 isNCKOT=false;
+		 $(ncKOTButton).removeClass("active");
+	
+					
 		 
 	}
 	
@@ -1943,6 +1950,9 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		operationType="DineIn";
 		transactionType="Make KOT";
 		
+		 homeDeliveryForTax = "N";		 		
+		 gTakeAway="No";
+		
 		funResetDineInFields();
 		
 		funShowTables();
@@ -2043,36 +2053,23 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 	{
 		homeDeliveryForTax = "Y";
 
-		if (arrListHomeDelDetails.length == 0)
-        {
-			operationType="HomeDelivery";
-			
+		operationType="HomeDelivery";
+		
         
-            arrListHomeDelDetails[0]=gCustomerCode;
-            arrListHomeDelDetails[1]=gCustomerName;
-            arrListHomeDelDetails[2]=gBuildingCodeForHD;
-            arrListHomeDelDetails[3]="Home Delivery";
-            arrListHomeDelDetails[4]="";
-            arrListHomeDelDetails[5]="";
-            document.getElementById("Home Delivery").style.backgroundColor = "lightblue";
+        arrListHomeDelDetails[0]=gCustomerCode;
+        arrListHomeDelDetails[1]=gCustomerName;
+        arrListHomeDelDetails[2]=gBuildingCodeForHD;
+        arrListHomeDelDetails[3]="Home Delivery";
+        arrListHomeDelDetails[4]="";
+        arrListHomeDelDetails[5]="";
         
-        }
-		else
-		{
-        	
-        	operationType="DineIn";
-        	
-			
-        	homeDeliveryForTax = "N";
-        	arrListHomeDelDetails= new Array();	
-        	document.getElementById("Home Delivery").style.backgroundColor = "";
-        	
-        }
         
 		if(gTakeAway=="Yes")
 		{
 		    gTakeAway="No";
 		}
+		
+		
 		if(gCustAddressSelectionForBill=="Y")
 		{
 		 	window.open("frmHomeDeliveryAddress.html?strMobNo="+gMobileNo+"","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;");

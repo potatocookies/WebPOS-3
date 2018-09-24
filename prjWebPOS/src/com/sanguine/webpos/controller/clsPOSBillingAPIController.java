@@ -1201,7 +1201,7 @@ public class clsPOSBillingAPIController
 			/**
 			 * save discount
 			 */
-			List<clsBillDiscDtlModel> listBillDiscDtlModel = funSaveBillDiscountDetail(voucherNo, rootBeanObjectForReference, dateTime, POSCode, clientCode);
+			List<clsBillDiscDtlModel> listBillDiscDtlModel = funSaveBillDiscountDetail(voucherNo, rootBeanObjectForReference, dateTime, POSCode, userCode);
 
 			/**
 			 * calculating list of items for tax calculation
@@ -1519,7 +1519,7 @@ public class clsPOSBillingAPIController
 				objDiscModel.setStrPOSCode(POSCode);
 				objDiscModel.setDblDiscAmt(discAmt);
 				objDiscModel.setDblDiscPer(discPer);
-				objDiscModel.setDblAmount(discOnAmt);
+				objDiscModel.setDblDiscOnAmt(discOnAmt);
 				objDiscModel.setStrDiscOnType(discOnType);
 				objDiscModel.setStrDiscOnValue(discOnValue);
 				objDiscModel.setDteDateCreated(dateTime);
@@ -1529,7 +1529,9 @@ public class clsPOSBillingAPIController
 				objDiscModel.setStrDiscReasonCode(reason);
 				objDiscModel.setStrDiscRemarks(remark);
 				objDiscModel.setStrDataPostFlag("N");
+				
 				listBillDiscDtlModel.add(objDiscModel);
+				
 				totalDiscAmt += discAmt;
 			}
 		}

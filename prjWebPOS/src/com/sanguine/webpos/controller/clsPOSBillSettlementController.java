@@ -177,6 +177,7 @@ public class clsPOSBillSettlementController
 					setFillGrid.add(hmtemp.get("strCustomerName").toString());
 					setFillGrid.add(hmtemp.get("dteBillDate").toString());
 					setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
+					
 					listUnsettlebill.add(setFillGrid);
 				}
 				else
@@ -188,6 +189,7 @@ public class clsPOSBillSettlementController
 					setFillGrid.add(hmtemp.get("strDPName").toString());
 					setFillGrid.add(hmtemp.get("dteBillDate").toString());
 					setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
+					
 					listUnsettlebill.add(setFillGrid);
 
 				}

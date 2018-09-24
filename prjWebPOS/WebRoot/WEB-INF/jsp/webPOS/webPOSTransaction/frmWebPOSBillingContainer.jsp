@@ -161,6 +161,7 @@ $(document).ready(function()
 function funDoneBtnDirectBiller()
 {
 
+	var $rows = $('#tblSettleItemTable').empty();
     document.getElementById("tab1").style.display='none';
 	document.getElementById("tab2").style.display='block';
 	
@@ -273,8 +274,9 @@ function funRefreshSettlementItemGrid()
     funFillTableFooterDtl("GrandTotal",finalGrandTotal);
     funFillTableFooterDtl("PaymentMode","");
     
-    
-      
+    var discPer=(finalDiscountAmt/finalSubTotal)*100;
+    $('#txtDiscountPer').val(discPer);	 
+	$('#txtDiscountAmt').val(finalDiscountAmt);  
 	    
     $('#txtAmount').val(finalGrandTotal);
  	$('#txtPaidAmount').val(finalGrandTotal);
@@ -299,6 +301,8 @@ function funRefreshSettlementItemGrid()
 
 function funNoPromtionCalculation(listItmeDtl)
 {
+	listBillItem=[];
+	
 	$.each(listItmeDtl,function(i,item)
 	{
 		funFillSettleTable(item.itemName,item.quantity,item.amount,item.discountPer,item.discountAmt,item.strGroupcode,item.strSubGroupCode,item.itemCode,item.rate);
@@ -354,6 +358,11 @@ function funFillSettleTable(strItemName,dblQuantity,dblAmount,dblDiscountPer1,db
 
 function funCalculatePromotion(listItmeDtl)
 {
+	
+	
+	listBillItem=[];
+	
+	
 	var searchurl=getContextPath()+"/promotionCalculate.html?";
 	$.ajax({
 		 type: "POST",
@@ -432,10 +441,14 @@ function funCalculatePromotion(listItmeDtl)
 		        data : JSON.stringify(listBillItem),
 		        contentType: 'application/json',
 		        async: false,
-	        success: function (response){
-	        	    	$.each(response,function(i,item){
+	        success: function (response)
+	        {
+	        	    	$.each(response,function(i,item)
+	        	    	{
 			        		taxTotal=taxTotal+response[i].taxAmount;
+			        		
 			        		funFillTableTaxDetials(response[i].taxName,response[i].taxAmount,response[i].taxCode,response[i].taxCalculationType,response[i].taxableAmount ,rowCountTax);
+			        		
 			        		rowCountTax++;
 			        	});
              
@@ -444,7 +457,8 @@ function funCalculatePromotion(listItmeDtl)
 	        },
 	        error: function(jqXHR, exception)
 	        {
-	            if (jqXHR.status === 0) {
+	            if (jqXHR.status === 0) 
+	            {
 	                alert('Not connect.n Verify Network.');
 	            } else if (jqXHR.status == 404) {
 	                alert('Requested page not found. [404]');

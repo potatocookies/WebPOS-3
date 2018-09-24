@@ -20,7 +20,7 @@
 
 
 		var operationFrom="${operationFrom}";
-		var balanceAmount=0,paidAmount=0,refundAmount=0,loyalityPoints=0;
+		var balanceAmount=0,paidAmount=0.00,refundAmount=0,loyalityPoints=0;
 		var settleType = "",debitCardNo = "";
 		var takeAwayRemarks = "";
 		var custAddType = "Home";
@@ -838,13 +838,17 @@
 
 	 function funEnterButtonClicked()
 	 {
+		 
+		
+		 
+		 
 		 if ($("#txtPaidAmount").val().length==0)
 	        {
 	            paidAmount = 0.00;
 	        }
 	        else
 	        {
-	            paidAmount =$("#txtPaidAmount").val();
+	            paidAmount =parseFloat($("#txtPaidAmount").val());
 	        }
 	        if (paidAmount == 0.00 && finalGrandTotal != 0.00)
 	        {
@@ -854,7 +858,7 @@
 	        }
 	        
 	        
-	        var txtPaidAmount=$("#txtPaidAmount").val()
+	        var txtPaidAmount=parseFloat($("#txtPaidAmount").val());
 	        if(txtPaidAmount==0)
 	        {
 	        	alert("Bill Amount is Zero");
@@ -865,7 +869,7 @@
 	        if (settleType=="Debit Card")
 	        {
 
-	                var cardBal =$("#lblCardBalance").val();
+	                var cardBal =parseFloat($("#lblCardBalance").val());
 	                if (cardBal < paidAmount)
 	                {
 	                	alert("Insufficient Amount in Card");
@@ -885,134 +889,176 @@
 
 	        	if(settleType!="")
 	        	{
-	            switch (settleType)
-	            {
-	                 case "Cash":
-	                	if (hmSettlemetnOptions.has(settleName))
-	                    {
-	                		var arrSettleOptions=[];
-	                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-	                        var tempPaidAmt = arrSettleOptions[3];
-	                        tempPaidAmt = parseFloat(tempPaidAmt) + paidAmount;
-	                        arrSettleOptions[3]=tempPaidAmt;
-	                        arrSettleOptions[5]=refundAmount;
-	                     
-	                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-	                    }
-	                    else
-	                    {
-	                    	var arrSettleOptions=[];
-	                    	 arrSettleOptions.push(settleName);
-	                    	 arrSettleOptions.push(settlementCode);
-	                    	 arrSettleOptions.push(dblSettlementAmount);
-	                    	 arrSettleOptions.push(paidAmount);
-	                    	 arrSettleOptions.push(finalGrandTotal);
-	                    	 arrSettleOptions.push(refundAmount);
-	                    	 arrSettleOptions.push(settelmentDesc);
-	                    	 arrSettleOptions.push(settleType);
-	                    	 arrSettleOptions.push("");
-	                    	 arrSettleOptions.push("");
-	                    	 arrSettleOptions.push("");
-	                    	 arrSettleOptions.push("");
-	                		
-	                		 
-	                        hmSettlemetnOptions.set(settleName,arrSettleOptions);   // settlementCode, dblSettlementAmount, paidAmount, "", settleName, "", "", finalGrandTotal, refundAmount, "", getStrSettelmentDesc(), getStrSettelmentType()));
-	                      
-	                    }
-	                	break; 
-	                	
-	                 case "Credit Card":
-	                     if (""==$("#txtPaidAmount").val())
-	                     {
-	                    	 alert("Please Enter Amount");
-	                    	 return;
-	                     }
-	                     if ($("#txtPaidAmount").val() < 0)
-	                     {
-	                    	 alert("Invalid paid amount");
-	                    	 return;
-	                 	 }
-	                     if ("${gCreditCardSlipNo}"=="Y")
-	                     {
-	                         if ($("#txtCardName").val().length <= 0)
-	                         {
-	                        	 prompt("Please Enter Slip No");
-	                           	 $("#txtCardName").focus();
-	                             return;
-	                         }
-	                     }
-	                     var objCreditCardExpDate = $("#dteExpiry").val();
-	                     var expiryDate = "";
-	                     if ("${gCreditCardExpiryDate}"=="Y")
-	                     {
-	                         if (objCreditCardExpDate == null)
-	                         {
-	                            alert("Please Select Expiry Date");
-	                        	return;
-	                         }
-	                         else
-	                         {
-	                             expiryDate = objCreditCardExpDate;
-	                         }
-	                     }
-	                     if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    		var arrSettleOptions=new Array();
+		            switch (settleType)
+		            {
+		                 case "Cash":
+		                	if (hmSettlemetnOptions.has(settleName))
+		                    {
+		                		var arrSettleOptions=[];
 		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
+		                        var tempPaidAmt = parseFloat(arrSettleOptions[3]);
 		                        tempPaidAmt = tempPaidAmt + paidAmount;
 		                        arrSettleOptions[3]=tempPaidAmt;
 		                        arrSettleOptions[5]=refundAmount;
-		                        arrSettleOptions[9]=$("#txtCardName").val();
+		                     
 		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-	                    	
-	                     }
-	                     else
-	                     {
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]=expiryDate;
-	                		 arrSettleOptions[9]=$("#txtCardName").val();
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]="";
-	                		 
-	                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
-	                    }
-	                     break;
-	                	
-	                 case "Coupon":
-
-	                     paidAmount =$("#txtCoupenAmt").val();
-	                     if ($("#txtCoupenAmt").length <= 0)
-	                     {
-	                    	 alert("Please Enter Amount");
-	                       //  new frmOkPopUp(null, "Please Enter Amount", "Warning", 1).setVisible(true);
-	                         return;
-	                     }
-	                     if (paidAmount < 0)
-	                     {
-	                    	 alert("Invalid paid amount");
-	                         //new frmOkPopUp(null, "Invalid paid amount", "Warning", 1).setVisible(true);
-	                         return;
-	                     }
-	                     if ($("#txtCoupenAmt").val()=="")
-	                     {
-	                    	 alert("Please Enter Remark");
-	                         //new frmOkPopUp(null, "Please Enter Remark", "Warning", 1).setVisible(true);
-	                         return;
-	                     }
-	                     else
-	                     {
-	                         if (hmSettlemetnOptions.has(settleName))
-	                         {
-	                        	 	var arrSettleOptions=new Array();
+		                    }
+		                    else
+		                    {
+		                    	var arrSettleOptions=[];
+		                    	 arrSettleOptions.push(settleName);
+		                    	 arrSettleOptions.push(settlementCode);
+		                    	 arrSettleOptions.push(dblSettlementAmount);
+		                    	 arrSettleOptions.push(paidAmount);
+		                    	 arrSettleOptions.push(finalGrandTotal);
+		                    	 arrSettleOptions.push(refundAmount);
+		                    	 arrSettleOptions.push(settelmentDesc);
+		                    	 arrSettleOptions.push(settleType);
+		                    	 arrSettleOptions.push("");
+		                    	 arrSettleOptions.push("");
+		                    	 arrSettleOptions.push("");
+		                    	 arrSettleOptions.push("");
+		                		
+		                		 
+		                        hmSettlemetnOptions.set(settleName,arrSettleOptions);   // settlementCode, dblSettlementAmount, paidAmount, "", settleName, "", "", finalGrandTotal, refundAmount, "", getStrSettelmentDesc(), getStrSettelmentType()));
+		                      
+		                    }
+		                	break; 
+		                	
+		                 case "Credit Card":
+		                     if (""==$("#txtPaidAmount").val())
+		                     {
+		                    	 alert("Please Enter Amount");
+		                    	 return;
+		                     }
+		                     if ($("#txtPaidAmount").val() < 0)
+		                     {
+		                    	 alert("Invalid paid amount");
+		                    	 return;
+		                 	 }
+		                     if ("${gCreditCardSlipNo}"=="Y")
+		                     {
+		                         if ($("#txtCardName").val().length <= 0)
+		                         {
+		                        	 prompt("Please Enter Slip No");
+		                           	 $("#txtCardName").focus();
+		                             return;
+		                         }
+		                     }
+		                     var objCreditCardExpDate = $("#dteExpiry").val();
+		                     var expiryDate = "";
+		                     if ("${gCreditCardExpiryDate}"=="Y")
+		                     {
+		                         if (objCreditCardExpDate == null)
+		                         {
+		                            alert("Please Select Expiry Date");
+		                        	return;
+		                         }
+		                         else
+		                         {
+		                             expiryDate = objCreditCardExpDate;
+		                         }
+		                     }
+		                     if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    		var arrSettleOptions=new Array();
+			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+			                        var tempPaidAmt = arrSettleOptions[3];
+			                        tempPaidAmt = tempPaidAmt + paidAmount;
+			                        arrSettleOptions[3]=tempPaidAmt;
+			                        arrSettleOptions[5]=refundAmount;
+			                        arrSettleOptions[9]=$("#txtCardName").val();
+			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+		                    	
+		                     }
+		                     else
+		                     {
+		                    	 var arrSettleOptions=new Array();
+		                    	 arrSettleOptions[0]=settleName;
+		                		 arrSettleOptions[1]=settlementCode;
+		                		 arrSettleOptions[2]=dblSettlementAmount;
+		                		 arrSettleOptions[3]=paidAmount;
+		                		 arrSettleOptions[4]=finalGrandTotal;
+		                		 arrSettleOptions[5]=refundAmount;
+		                		 arrSettleOptions[6]=settelmentDesc;
+		                		 arrSettleOptions[7]=settleType;
+		                		 arrSettleOptions[8]=expiryDate;
+		                		 arrSettleOptions[9]=$("#txtCardName").val();
+		                		 arrSettleOptions[10]="";
+		                		 arrSettleOptions[11]="";
+		                		 
+		                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
+		                    }
+		                     break;
+		                	
+		                 case "Coupon":
+	
+		                     paidAmount =$("#txtCoupenAmt").val();
+		                     if ($("#txtCoupenAmt").length <= 0)
+		                     {
+		                    	 alert("Please Enter Amount");
+		                       //  new frmOkPopUp(null, "Please Enter Amount", "Warning", 1).setVisible(true);
+		                         return;
+		                     }
+		                     if (paidAmount < 0)
+		                     {
+		                    	 alert("Invalid paid amount");
+		                         //new frmOkPopUp(null, "Invalid paid amount", "Warning", 1).setVisible(true);
+		                         return;
+		                     }
+		                     if ($("#txtCoupenAmt").val()=="")
+		                     {
+		                    	 alert("Please Enter Remark");
+		                         //new frmOkPopUp(null, "Please Enter Remark", "Warning", 1).setVisible(true);
+		                         return;
+		                     }
+		                     else
+		                     {
+		                         if (hmSettlemetnOptions.has(settleName))
+		                         {
+		                        	 	var arrSettleOptions=new Array();
+				                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+				                        var tempPaidAmt = arrSettleOptions[3];
+				                        tempPaidAmt = tempPaidAmt + paidAmount;
+				                        arrSettleOptions[3]=tempPaidAmt;
+				                        arrSettleOptions[5]=refundAmount;
+				                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+				                 }
+		                         else
+		                         {
+		                        	 var arrSettleOptions=new Array();
+			                    	 arrSettleOptions[0]=settleName;
+			                		 arrSettleOptions[1]=settlementCode;
+			                		 arrSettleOptions[2]=dblSettlementAmount;
+			                		 arrSettleOptions[3]=paidAmount;
+			                		 arrSettleOptions[4]=finalGrandTotal;
+			                		 arrSettleOptions[5]=refundAmount;
+			                		 arrSettleOptions[6]=settelmentDesc;
+			                		 arrSettleOptions[7]=settleType;
+			                		 arrSettleOptions[8]="";
+			                		 arrSettleOptions[9]="";
+			                		 arrSettleOptions[10]="";
+			                		 arrSettleOptions[11]="";
+			                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
+		                        	 
+		                             //_balanceAmount = fun_get_BalanceAmount(_balanceAmount, _paidAmount, settleType);
+		                         }
+		                     }
+		                     break;
+		                     
+		                 case "Cheque":
+	
+		                     break;
+	
+		                 case "Gift Voucher":
+		                     if (!flgGiftVoucherOK)
+		                     {
+		                    	 alert("Press OK button on Gift Voucher");
+		                         return;
+		                     }
+							  if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    	 	var arrSettleOptions=new Array();
 			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
 			                        var tempPaidAmt = arrSettleOptions[3];
 			                        tempPaidAmt = tempPaidAmt + paidAmount;
@@ -1020,9 +1066,9 @@
 			                        arrSettleOptions[5]=refundAmount;
 			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
 			                 }
-	                         else
-	                         {
-	                        	 var arrSettleOptions=new Array();
+		                     else
+		                     {
+		                    	 var arrSettleOptions=new Array();
 		                    	 arrSettleOptions[0]=settleName;
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
@@ -1034,199 +1080,91 @@
 		                		 arrSettleOptions[8]="";
 		                		 arrSettleOptions[9]="";
 		                		 arrSettleOptions[10]="";
-		                		 arrSettleOptions[11]="";
-		                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
-	                        	 
-	                             //_balanceAmount = fun_get_BalanceAmount(_balanceAmount, _paidAmount, settleType);
-	                         }
-	                     }
-	                     break;
-	                     
-	                 case "Cheque":
-
-	                     break;
-
-	                 case "Gift Voucher":
-	                     if (!flgGiftVoucherOK)
-	                     {
-	                    	 alert("Press OK button on Gift Voucher");
-	                         return;
-	                     }
-						  if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    	 	var arrSettleOptions=new Array();
-		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
-		                        tempPaidAmt = tempPaidAmt + paidAmount;
-		                        arrSettleOptions[3]=tempPaidAmt;
-		                        arrSettleOptions[5]=refundAmount;
-		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-		                 }
-	                     else
-	                     {
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]="";
-	                		 arrSettleOptions[9]="";
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]=giftVoucherSeriesCode+""+giftVoucherCode;
-	                		 
-	                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
-	                     }
-	                     break;
-
-	                 case "Complementary":
-
-	                     if (hmSettlemetnOptions.size() > 0)
-	                     {
-	                    	 alert("Coplimentary Settlement is Not Allowed In MultiSettlement!!!");
-	                         return;
-	                     }
-	                     if ($("#txtRemark").val().length == 0)
-	                     {
-	                    	 alert("Please Enter Remarks");
-	                         return;
-	                     }
-	                     if (arrObjReasonCode.length==0) 
-	                     {
-	                    	 alert("No complementary reasons are created");
-	                         return;
-	                     }
-	                     else
-	                     {
-	                        var selectedReason= prompt("Please Select Reason?",arrObjReasonName);
-	                        if (null == selectedReason)
-	                         {
-	                             alert("Please Select Reason");
-	                             return;
-	                         }
-	                         else
-	                         {
-	                              for (var cntReason = 0; cntReason < arrObjReasonCode.length; cntReason++)
-	                             {
-	                                 if (arrObjReasonName[cntReason]==selectedReason)
-	                                 {
-	                                     selectedReasonCode = arrObjReasonName[cntReason];
-	                                     break;
-	                                 }
-	                             } 
-	                             refundAmount = 0.00;
-	                             balanceAmount = 0.00;
-	                             
-	                             var arrSettleOptions=new Array();
-		                    	 arrSettleOptions[0]=settleName;
-		                		 arrSettleOptions[1]=settlementCode;
-		                		 arrSettleOptions[2]=dblSettlementAmount;
-		                		 arrSettleOptions[3]=paidAmount;
-		                		 arrSettleOptions[4]=finalGrandTotal;
-		                		 arrSettleOptions[5]=refundAmount;
-		                		 arrSettleOptions[6]=settelmentDesc;
-		                		 arrSettleOptions[7]=settleType;
-		                		 arrSettleOptions[8]=expiryDate;
-		                		 arrSettleOptions[9]="";
-		                		 arrSettleOptions[10]=$("#txtRemark").val();
-		                		 arrSettleOptions[11]="";
+		                		 arrSettleOptions[11]=giftVoucherSeriesCode+""+giftVoucherCode;
 		                		 
-		                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
-		                         
-	                         }
-	                     }
-	                     break;
-	                     
-	                 case "Credit":
-
-	                     if (customerCodeForCredit=="")
-	                     {
-	                    	 alert("Please Select Customer!!!");
-	                         return;
-	                     }
-
-	                     if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    		var arrSettleOptions=new Array();
-		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
-		                        tempPaidAmt = tempPaidAmt + paidAmount;
-		                        arrSettleOptions[3]=tempPaidAmt;
-		                        arrSettleOptions[5]=refundAmount;
-		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-	                     }
-	                     else
-	                     {
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]="";
-	                		 arrSettleOptions[9]="";
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]="";
-	                		
-	                		 hmSettlemetnOptions.set(settleName,arrSettleOptions);
-	                       }
-	                     break;
-
-	                 case "Debit Card":
-	                     if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    	 	var arrSettleOptions=new Array();
-		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
-		                        tempPaidAmt = tempPaidAmt + paidAmount;
-		                        arrSettleOptions[3]=tempPaidAmt;
-		                        arrSettleOptions[5]=refundAmount;
-		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-		                  
-	                     }
-	                     else
-	                     {
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]="";
-	                		 arrSettleOptions[9]="";
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]="";
-	                		
-	                		 hmSettlemetnOptions.set(settleName,arrSettleOptions);
-	                     }
-	                     break;
-	                 case "Loyality Points":
-	                	 var flgResult=funCheckPointsAgainstCustome();
-	                     if (flgResult)
-	                     {
-	                         if (hmSettlemetnOptions.has(settleName))
-	                         {
-	                        	 	var arrSettleOptions=new Array();
+		                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
+		                     }
+		                     break;
+	
+		                 case "Complementary":
+	
+		                     if (hmSettlemetnOptions.size() > 0)
+		                     {
+		                    	 alert("Coplimentary Settlement is Not Allowed In MultiSettlement!!!");
+		                         return;
+		                     }
+		                     if ($("#txtRemark").val().length == 0)
+		                     {
+		                    	 alert("Please Enter Remarks");
+		                         return;
+		                     }
+		                     if (arrObjReasonCode.length==0) 
+		                     {
+		                    	 alert("No complementary reasons are created");
+		                         return;
+		                     }
+		                     else
+		                     {
+		                        var selectedReason= prompt("Please Select Reason?",arrObjReasonName);
+		                        if (null == selectedReason)
+		                         {
+		                             alert("Please Select Reason");
+		                             return;
+		                         }
+		                         else
+		                         {
+		                              for (var cntReason = 0; cntReason < arrObjReasonCode.length; cntReason++)
+		                             {
+		                                 if (arrObjReasonName[cntReason]==selectedReason)
+		                                 {
+		                                     selectedReasonCode = arrObjReasonName[cntReason];
+		                                     break;
+		                                 }
+		                             } 
+		                             refundAmount = 0.00;
+		                             balanceAmount = 0.00;
+		                             
+		                             var arrSettleOptions=new Array();
+			                    	 arrSettleOptions[0]=settleName;
+			                		 arrSettleOptions[1]=settlementCode;
+			                		 arrSettleOptions[2]=dblSettlementAmount;
+			                		 arrSettleOptions[3]=paidAmount;
+			                		 arrSettleOptions[4]=finalGrandTotal;
+			                		 arrSettleOptions[5]=refundAmount;
+			                		 arrSettleOptions[6]=settelmentDesc;
+			                		 arrSettleOptions[7]=settleType;
+			                		 arrSettleOptions[8]=expiryDate;
+			                		 arrSettleOptions[9]="";
+			                		 arrSettleOptions[10]=$("#txtRemark").val();
+			                		 arrSettleOptions[11]="";
+			                		 
+			                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
+			                         
+		                         }
+		                     }
+		                     break;
+		                     
+		                 case "Credit":
+	
+		                     if (customerCodeForCredit=="")
+		                     {
+		                    	 alert("Please Select Customer!!!");
+		                         return;
+		                     }
+	
+		                     if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    		var arrSettleOptions=new Array();
 			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
 			                        var tempPaidAmt = arrSettleOptions[3];
 			                        tempPaidAmt = tempPaidAmt + paidAmount;
 			                        arrSettleOptions[3]=tempPaidAmt;
 			                        arrSettleOptions[5]=refundAmount;
 			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-	                        
-	                         }
-	                         else
-	                         {
-	                        	 var arrSettleOptions=new Array();
+		                     }
+		                     else
+		                     {
+		                    	 var arrSettleOptions=new Array();
 		                    	 arrSettleOptions[0]=settleName;
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
@@ -1241,42 +1179,141 @@
 		                		 arrSettleOptions[11]="";
 		                		
 		                		 hmSettlemetnOptions.set(settleName,arrSettleOptions);
-	                         }
-	                     }
-	                     else
-	                     {
-	                         return;
-	                     }
-	                     break;
-
-	                 case "Member":
-	                     if (cmsStopCredit=="Y")
-	                     {
-	                    	 alert("Credit Facility Is Stopped For This Member!!!");
-	                     }
-	                     else if (cmsMemberCreditLimit > 0)
-	                     {
-	                         if (cmsMemberBalance < dblSettlementAmount)
-	                         {
-	                             alert("Credit Limit Exceeds, Balance Credit: " + cmsMemberBalance+"");
-	                        	 return;
-	                         }
-	                         if (paidAmount <= cmsMemberBalance)
-	                         {
-	                             cmsMemberBalance = 0;
-	                             if (hmSettlemetnOptions.has(settleName))
-	                             {
-	                            	 	var arrSettleOptions=new Array();
+		                       }
+		                     break;
+	
+		                 case "Debit Card":
+		                     if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    	 	var arrSettleOptions=new Array();
+			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+			                        var tempPaidAmt = arrSettleOptions[3];
+			                        tempPaidAmt = tempPaidAmt + paidAmount;
+			                        arrSettleOptions[3]=tempPaidAmt;
+			                        arrSettleOptions[5]=refundAmount;
+			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+			                  
+		                     }
+		                     else
+		                     {
+		                    	 var arrSettleOptions=new Array();
+		                    	 arrSettleOptions[0]=settleName;
+		                		 arrSettleOptions[1]=settlementCode;
+		                		 arrSettleOptions[2]=dblSettlementAmount;
+		                		 arrSettleOptions[3]=paidAmount;
+		                		 arrSettleOptions[4]=finalGrandTotal;
+		                		 arrSettleOptions[5]=refundAmount;
+		                		 arrSettleOptions[6]=settelmentDesc;
+		                		 arrSettleOptions[7]=settleType;
+		                		 arrSettleOptions[8]="";
+		                		 arrSettleOptions[9]="";
+		                		 arrSettleOptions[10]="";
+		                		 arrSettleOptions[11]="";
+		                		
+		                		 hmSettlemetnOptions.set(settleName,arrSettleOptions);
+		                     }
+		                     break;
+		                 case "Loyality Points":
+		                	 var flgResult=funCheckPointsAgainstCustome();
+		                     if (flgResult)
+		                     {
+		                         if (hmSettlemetnOptions.has(settleName))
+		                         {
+		                        	 	var arrSettleOptions=new Array();
 				                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
 				                        var tempPaidAmt = arrSettleOptions[3];
 				                        tempPaidAmt = tempPaidAmt + paidAmount;
 				                        arrSettleOptions[3]=tempPaidAmt;
 				                        arrSettleOptions[5]=refundAmount;
 				                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-	                             }
-	                             else
-	                             {
-	                            	 var arrSettleOptions=new Array();
+		                        
+		                         }
+		                         else
+		                         {
+		                        	 var arrSettleOptions=new Array();
+			                    	 arrSettleOptions[0]=settleName;
+			                		 arrSettleOptions[1]=settlementCode;
+			                		 arrSettleOptions[2]=dblSettlementAmount;
+			                		 arrSettleOptions[3]=paidAmount;
+			                		 arrSettleOptions[4]=finalGrandTotal;
+			                		 arrSettleOptions[5]=refundAmount;
+			                		 arrSettleOptions[6]=settelmentDesc;
+			                		 arrSettleOptions[7]=settleType;
+			                		 arrSettleOptions[8]="";
+			                		 arrSettleOptions[9]="";
+			                		 arrSettleOptions[10]="";
+			                		 arrSettleOptions[11]="";
+			                		
+			                		 hmSettlemetnOptions.set(settleName,arrSettleOptions);
+		                         }
+		                     }
+		                     else
+		                     {
+		                         return;
+		                     }
+		                     break;
+	
+		                 case "Member":
+		                     if (cmsStopCredit=="Y")
+		                     {
+		                    	 alert("Credit Facility Is Stopped For This Member!!!");
+		                     }
+		                     else if (cmsMemberCreditLimit > 0)
+		                     {
+		                         if (cmsMemberBalance < dblSettlementAmount)
+		                         {
+		                             alert("Credit Limit Exceeds, Balance Credit: " + cmsMemberBalance+"");
+		                        	 return;
+		                         }
+		                         if (paidAmount <= cmsMemberBalance)
+		                         {
+		                             cmsMemberBalance = 0;
+		                             if (hmSettlemetnOptions.has(settleName))
+		                             {
+		                            	 	var arrSettleOptions=new Array();
+					                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+					                        var tempPaidAmt = arrSettleOptions[3];
+					                        tempPaidAmt = tempPaidAmt + paidAmount;
+					                        arrSettleOptions[3]=tempPaidAmt;
+					                        arrSettleOptions[5]=refundAmount;
+					                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+		                             }
+		                             else
+		                             {
+		                            	 var arrSettleOptions=new Array();
+				                    	 arrSettleOptions[0]=settleName;
+				                		 arrSettleOptions[1]=settlementCode;
+				                		 arrSettleOptions[2]=dblSettlementAmount;
+				                		 arrSettleOptions[3]=paidAmount;
+				                		 arrSettleOptions[4]=finalGrandTotal;
+				                		 arrSettleOptions[5]=refundAmount;
+				                		 arrSettleOptions[6]=settelmentDesc;
+				                		 arrSettleOptions[7]=settleType;
+				                		 arrSettleOptions[8]="";
+				                		 arrSettleOptions[9]="";
+				                		 arrSettleOptions[10]="";
+				                		 arrSettleOptions[11]="";
+				                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
+				                	 }
+		                         }
+		                     }
+		                     else
+		                     {
+		                         cmsMemberBalance = 0;
+		                         if (hmSettlemetnOptions.has(settleName))
+		                         {
+		                        	 	var arrSettleOptions=new Array();
+				                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+				                        var tempPaidAmt = arrSettleOptions[3];
+				                        tempPaidAmt = tempPaidAmt + paidAmount;
+				                        arrSettleOptions[3]=tempPaidAmt;
+				                        arrSettleOptions[5]=refundAmount;
+				                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+				                }
+		                         else
+		                         {
+		                        	 
+		                        	 var arrSettleOptions=new Array();
 			                    	 arrSettleOptions[0]=settleName;
 			                		 arrSettleOptions[1]=settlementCode;
 			                		 arrSettleOptions[2]=dblSettlementAmount;
@@ -1291,25 +1328,87 @@
 			                		 arrSettleOptions[11]="";
 			                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
 			                	 }
-	                         }
-	                     }
-	                     else
-	                     {
-	                         cmsMemberBalance = 0;
-	                         if (hmSettlemetnOptions.has(settleName))
-	                         {
-	                        	 	var arrSettleOptions=new Array();
+		                     }
+		                     break;
+		                     
+		                 case "Room":
+		                     if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    	 	var arrSettleOptions=new Array();
 			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
 			                        var tempPaidAmt = arrSettleOptions[3];
 			                        tempPaidAmt = tempPaidAmt + paidAmount;
 			                        arrSettleOptions[3]=tempPaidAmt;
 			                        arrSettleOptions[5]=refundAmount;
 			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-			                }
-	                         else
-	                         {
-	                        	 
-	                        	 var arrSettleOptions=new Array();
+		                     }
+		                     else
+		                     {
+		                    	 
+		                    	 var arrSettleOptions=new Array();
+		                    	 arrSettleOptions[0]=settleName;
+		                		 arrSettleOptions[1]=settlementCode;
+		                		 arrSettleOptions[2]=dblSettlementAmount;
+		                		 arrSettleOptions[3]=paidAmount;
+		                		 arrSettleOptions[4]=finalGrandTotal;
+		                		 arrSettleOptions[5]=refundAmount;
+		                		 arrSettleOptions[6]=settelmentDesc;
+		                		 arrSettleOptions[7]=settleType;
+		                		 arrSettleOptions[8]=$("#txtFolioNo").val(); //assign for temprary
+		                		 arrSettleOptions[9]=$("#txtRoomNo").val();
+		                		 arrSettleOptions[10]="";
+		                		 arrSettleOptions[11]=$("#txtGuestCode").val();
+		                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
+		                	       
+		                     }
+		                     break;
+	
+	
+		                 case "JioMoney":
+	
+		                     if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    	 	var arrSettleOptions=new Array();
+			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+			                        var tempPaidAmt = arrSettleOptions[3];
+			                        tempPaidAmt = tempPaidAmt + paidAmount;
+			                        arrSettleOptions[3]=tempPaidAmt;
+			                        arrSettleOptions[5]=refundAmount;
+			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+			                 }
+		                     else
+		                     {
+		                    	 var arrSettleOptions=new Array();
+		                    	 arrSettleOptions[0]=settleName;
+		                		 arrSettleOptions[1]=settlementCode;
+		                		 arrSettleOptions[2]=dblSettlementAmount;
+		                		 arrSettleOptions[3]=paidAmount;
+		                		 arrSettleOptions[4]=finalGrandTotal;
+		                		 arrSettleOptions[5]=refundAmount;
+		                		 arrSettleOptions[6]=settelmentDesc;
+		                		 arrSettleOptions[7]=settleType;
+		                		 arrSettleOptions[8]="";
+		                		 arrSettleOptions[9]="";
+		                		 arrSettleOptions[10]="";
+		                		 arrSettleOptions[11]="";
+		                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
+		                   }
+		                     break;
+		                     
+		                 case "Online Payment":
+		                     if (hmSettlemetnOptions.has(settleName))
+		                     {
+		                    		var arrSettleOptions=new Array();
+			                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
+			                        var tempPaidAmt = arrSettleOptions[3];
+			                        tempPaidAmt = tempPaidAmt + paidAmount;
+			                        arrSettleOptions[3]=tempPaidAmt;
+			                        arrSettleOptions[5]=refundAmount;
+			                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
+			                 }
+		                     else
+		                     {
+		                    	 var arrSettleOptions=new Array();
 		                    	 arrSettleOptions[0]=settleName;
 		                		 arrSettleOptions[1]=settlementCode;
 		                		 arrSettleOptions[2]=dblSettlementAmount;
@@ -1324,102 +1423,7 @@
 		                		 arrSettleOptions[11]="";
 		                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
 		                	 }
-	                     }
-	                     break;
-	                     
-	                 case "Room":
-	                     if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    	 	var arrSettleOptions=new Array();
-		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
-		                        tempPaidAmt = tempPaidAmt + paidAmount;
-		                        arrSettleOptions[3]=tempPaidAmt;
-		                        arrSettleOptions[5]=refundAmount;
-		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-	                     }
-	                     else
-	                     {
-	                    	 
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]=$("#txtFolioNo").val(); //assign for temprary
-	                		 arrSettleOptions[9]=$("#txtRoomNo").val();
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]=$("#txtGuestCode").val();
-	                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
-	                	       
-	                     }
-	                     break;
-
-
-	                 case "JioMoney":
-
-	                     if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    	 	var arrSettleOptions=new Array();
-		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
-		                        tempPaidAmt = tempPaidAmt + paidAmount;
-		                        arrSettleOptions[3]=tempPaidAmt;
-		                        arrSettleOptions[5]=refundAmount;
-		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-		                 }
-	                     else
-	                     {
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]="";
-	                		 arrSettleOptions[9]="";
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]="";
-	                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
-	                   }
-	                     break;
-	                     
-	                 case "Online Payment":
-	                     if (hmSettlemetnOptions.has(settleName))
-	                     {
-	                    		var arrSettleOptions=new Array();
-		                		arrSettleOptions = hmSettlemetnOptions.get(settleName);
-		                        var tempPaidAmt = arrSettleOptions[3];
-		                        tempPaidAmt = tempPaidAmt + paidAmount;
-		                        arrSettleOptions[3]=tempPaidAmt;
-		                        arrSettleOptions[5]=refundAmount;
-		                        hmSettlemetnOptions.set(settleName, arrSettleOptions); 
-		                 }
-	                     else
-	                     {
-	                    	 var arrSettleOptions=new Array();
-	                    	 arrSettleOptions[0]=settleName;
-	                		 arrSettleOptions[1]=settlementCode;
-	                		 arrSettleOptions[2]=dblSettlementAmount;
-	                		 arrSettleOptions[3]=paidAmount;
-	                		 arrSettleOptions[4]=finalGrandTotal;
-	                		 arrSettleOptions[5]=refundAmount;
-	                		 arrSettleOptions[6]=settelmentDesc;
-	                		 arrSettleOptions[7]=settleType;
-	                		 arrSettleOptions[8]="";
-	                		 arrSettleOptions[9]="";
-	                		 arrSettleOptions[10]="";
-	                		 arrSettleOptions[11]="";
-	                		 hmSettlemetnOptions.set(settleName, arrSettleOptions);
-	                	 }
-	                     break;
+		                     break;
 	            }
 	            
 	            balanceAmount=$('#txtAmount').val()-$('#txtPaidAmount').val();
@@ -1428,8 +1432,8 @@
 	        
 	        flgEnterBtnPressed=true;
 	        funSettlementDtlFill(); //for refresh item table
+		}
 }
-	 }
  
 	 
 	function funSettlementDtlFill()
@@ -1725,6 +1729,13 @@
 	  function funSaveBtnClicked()
 	  {
 
+		  	if(balanceAmount>0)
+		  	{
+		  		 alert("Balance is not zero.")
+		  		 return;
+		  	}
+		  
+		  
 			 if(operationType=="DineIn" && transactionType=="Make KOT" )
 			 {
 			 
@@ -1829,8 +1840,11 @@
 // 	///Click on OK Button of Discount
 function funDiscOkClicked()
 { 
- 		
+	
+	
 
+	var discOnType="Total";
+	var discOnValue="Total";
   		
 	      var discGroup=disountType;
 		  var totamt = 0.00;
@@ -1839,6 +1853,8 @@ function funDiscOkClicked()
 		 //Totlal Radio button is Selected
 		  if(discGroup=='Total')
 	      {
+			  discOnType="Total";
+			  discOnValue="Total";
 
 			  $.each(listBillItem,function(i,obj)
 			  { 
@@ -1860,11 +1876,17 @@ function funDiscOkClicked()
 		//Item  is Selected
 		  if(discGroup=='item')
 		  {
+			  discOnType="Item";			  			  
+			  
  			   $.each(listBillItem,function(i,obj)
 		        { 
 			
 			      if($('#cmbItemCategary').val()==obj.itemCode)
 			      {
+			    	  
+			      
+			    	discOnValue= obj.itemName;
+			    	  
 	        	    var singleObj = {}
 	        	    
 	        	    singleObj['itemCode'] = obj.itemCode;
@@ -1883,12 +1905,22 @@ function funDiscOkClicked()
 		
 		  if(discGroup=='group')
 		  {  
-			  var groupcode=$('#cmbItemCategary').val();
+
+			  discOnType="Group";		
+			  			  
+			  
+			  var groupcode=$('#cmbItemCategary option:selected').val();
+			  var groupName=$('#cmbItemCategary option:selected').text();
+			  
+			  
 			  $.each(listBillItem, function(i, obj) 
 			  {
 				  if(groupcode==obj.strGroupcode)
 				  {
-			       	    var singleObj = {}
+			       	    
+					  discOnValue=groupName;
+					  
+					  var singleObj = {}
 			       	    
 			       	 singleObj['itemCode'] = obj.itemCode;
 			       	    singleObj['itemName'] = obj.itemName;
@@ -1906,12 +1938,22 @@ function funDiscOkClicked()
 			
 		  if(discGroup=='subGroup')
 		  {
-			  var subgroupcode=$('#cmbItemCategary').val();
+			  discOnType="SubGroup";		
+			  
+			  
+			  
+			  var subgroupcode=$('#cmbItemCategary  option:selected').val();
+			  var subGroupName=$('#cmbItemCategary  option:selected').text();
+			  
+			  
 			  $.each(listBillItem, function(i, obj) 
 			  {
 			      if(subgroupcode==obj.strSubGroupCode)
 			      {
-	        	    var singleObj = {}
+	        	   
+			    	  discOnValue=subGroupName;
+			    	  
+			    	  var singleObj = {}
 	        	    
 	        	    singleObj['itemCode'] = obj.itemCode;
 	        	    singleObj['itemName'] = obj.itemName;
@@ -1926,13 +1968,16 @@ function funDiscOkClicked()
 		       })
 		  }
 	
-
-		   var amtDisc= $('#txtDiscountAmt').val();
-		   var perDisc=$('#txtDiscountPer').val();
+		  var perDisc=$('#txtDiscountPer').val();
+		  
+		  var amtDisc= $('#txtDiscountAmt').val();
+		  
 	
 		  var listOfDicountItem=[];
+		  
 		  var checkTaxTotal=0;
 		  var dblTaxTotal=0;
+		  
 		  totalDiscAmt=0;
 		  
 		  var dblDiscountOnAmt= getTotalAmt(listOfDiscApplicableItems) ;
@@ -1970,8 +2015,11 @@ function funDiscOkClicked()
  		  });
 		  
 		  $("#txtDiscountAmt").val(totalDiscAmt);
-		 	 var listItmeDtl=[];	   
-			 var hmItempMap=new Map();	
+		  
+		 	 
+		  var listItmeDtl=[];	   
+		  
+		  var hmItempMap=new Map();	
 			 
 			 $.each(listBillItem,function(i,obj)
 			 { 
@@ -2005,6 +2053,7 @@ function funDiscOkClicked()
 			 })		  
 			 
 		 var totalamount=getTotalAmt(listBillItem) ;
+			 
 			var oTable = document.getElementById('tblSettleItemTable');
 			var rowLength = oTable.rows.length;
 			
@@ -2053,17 +2102,18 @@ function funDiscOkClicked()
 	    
 		  var per= $("#txtDiscountPer").val();
 		  var amt=$("#txtDiscountAmt").val();
-		  var cat= $('#cmbItemCategary').val();
+
 	  
 	    col1.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountPer\" id=\"discountPer."+(disCount)+"\" value='"+per+"' />" ;;
  	    col2.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountAmt\" id=\"discountAmt."+(disCount)+"\" value='"+amt+"' />";
- 	    col3.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnAmt\" id=\"discountOnAmt."+(disCount)+"\" value='"+totalDiscAmt+"' />";
- 	    col4.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnType\" id=\"discountOnType."+(disCount)+"\" value='"+discGroup+"' />";
-	    col5.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnValue\" id=\"discountOnValue."+(disCount)+"\" value='"+cat+"' />";
+ 	    col3.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnAmt\" id=\"discountOnAmt."+(disCount)+"\" value='"+dblDiscountOnAmt+"' />";
+ 	    col4.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnType\" id=\"discountOnType."+(disCount)+"\" value='"+discOnType+"' />";
+	    col5.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountOnValue\" id=\"discountOnValue."+(disCount)+"\" value='"+discOnValue+"' />";
  	    col6.innerHTML = "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountReasonCode\" id=\"discountReasonCode."+(disCount)+"\" value='' />";	    
- 	    col7.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountRemarks\" id=\"discountRemarks."+(disCount)+"\" value='' />";
+ 	    col7.innerHTML =  "<input type=\"hidden\"  name=\"listDiscountDtlOnBill["+(disCount)+"].discountRemarks\" id=\"discountRemarks."+(disCount)+"\" value='Discount' />";
  	    
-     		disCount++;
+     		
+ 	    disCount++;
      		
 	
 			
@@ -2272,7 +2322,7 @@ function funDiscOkClicked()
 				 		<tr>
 					 		<td><label id="lblExpiryDate" style=" display: inline-block;width: 70px;text-align: left;">Expiry Date</label></td>
 					 		
-					 		<td><s:input id="dteExpiry"  path="dteExpiryDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox hasDatepicker"/> </td>
+					 		<td><s:input id="dteExpiry"  path="dteExpiryDate"  cssClass="calenderTextBox hasDatepicker"/> </td>
 				 		</tr>
 			 		</table>
 			 	</div>

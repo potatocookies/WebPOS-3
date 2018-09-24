@@ -38,6 +38,7 @@ public class clsBillDiscDtlModel implements Serializable{
 	
 	@Transient
 	private   double dblAmount;
+	
 	private  double dblDiscOnAmt;
 
 	public String getStrPOSCode() {

@@ -480,6 +480,7 @@ public class clsPOSBillSettlementControllerForDirectBiller
 				objRows.put("strItemName", listItemDtl.get("itemName"));
 				objRows.put("dblItemQuantity", listItemDtl.get("quantity"));
 				objRows.put("dblAmount", listItemDtl.get("amount"));
+				objRows.put("dblDiscAmt", listItemDtl.get("discountAmt"));
 				objRows.put("strClientCode", clientCode);
 				objRows.put("OperationType", operationTypeForTax);// operationTypeFor
 																	// Tax
@@ -543,6 +544,9 @@ public class clsPOSBillSettlementControllerForDirectBiller
 				mJsonObject = (JSONObject) mJsonArray.get(i);
 				String itemName = mJsonObject.get("strItemName").toString();
 				String itemCode = mJsonObject.get("strItemCode").toString();
+				double discAmt = Double.parseDouble(mJsonObject.get("dblDiscAmt").toString());
+				
+				
 				System.out.println(itemName);
 				double amt = Double.parseDouble(mJsonObject.get("dblAmount").toString());
 				operationType = mJsonObject.get("OperationType").toString();
@@ -569,11 +573,12 @@ public class clsPOSBillSettlementControllerForDirectBiller
 				objItemDtl.setItemCode(itemCode);
 				objItemDtl.setItemName(itemName);
 				objItemDtl.setAmount(amt);
-				objItemDtl.setDiscAmt(0);
-				objItemDtl.setDiscPer(0);
+				objItemDtl.setDiscAmt(discAmt);
+				
 				arrListItemDtls.add(objItemDtl);
+				
 				subTotalForTax += amt;
-				// tableNo=mJsonObject.get("strTableNo").toString();
+				
 
 			}
 

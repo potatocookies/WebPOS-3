@@ -599,8 +599,13 @@
 			    arrVoidedItemDtlList[count]=voidedItemDtl;
 			    count++;	
 		    }
-		    else
+		    else if(originalQty==1)
 		    {
+		    	obj.parentNode.parentNode.children[1].firstChild.defaultValue=qty;
+		    	obj.parentNode.parentNode.children[2].firstChild.defaultValue=amt;
+				var voidedItemDtl=obj.parentNode.parentNode.children[3].firstChild.defaultValue+"#"+obj.parentNode.parentNode.children[0].firstChild.defaultValue+"#"+obj.parentNode.parentNode.children[3].firstChild.defaultValue+"#"+originalQty+"#"+amount+"#"+person+"#"+newamount;
+			    arrVoidedItemDtlList[count]=voidedItemDtl;
+			    count++;	
 		    	 table.deleteRow(deletedIndex);
 		    }	
 		  	

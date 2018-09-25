@@ -10,12 +10,7 @@
        $('#clientCode').focus();
   });
   
-  function funApplyNumberValidation(){
-		$(".numeric").numeric();
-		$(".integer").numeric(false, function() { alert("Integers only"); this.value = ""; this.focus(); });
-		$(".positive").numeric({ negative: false }, function() { alert("No negative values"); this.value = ""; this.focus(); });
-		$(".positive-integer").numeric({ decimal: false, negative: false }, function() { alert("Positive integers only"); this.value = ""; this.focus(); });
-	}
+ 
 </script>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Client Login</title>
@@ -23,9 +18,9 @@
   
 <body>
 	<div>
-	<div style="float: left;padding-left: 40px">
+	<%-- <div style="float: left;padding-left: 40px">
 		<img alt=""src="../${pageContext.request.contextPath}/resources/images/Sanguine_ERP_Logo_1.jpg" height="100px" width="466px">
-	</div>
+	</div> --%>
       <div style="padding-top: 100px">
 		<s:form name="login" method="POST" action="validateClient.html"  >
 			<div style="padding-right: 12%; padding-bottom: 0px;">
@@ -73,7 +68,7 @@
 					<div
 						style="width: 340px; height: 36px; background-image: url(../${pageContext.request.contextPath}/resources/images/loginfoot.png);">
 						<p align="right" style="padding-right: 22px; padding-top: 9px">
-							<input type="submit" value="" class="loginButton" />
+							<input type="submit" value="Submit" class="loginButton" />
 						</p>
 					</div>
 				</div>

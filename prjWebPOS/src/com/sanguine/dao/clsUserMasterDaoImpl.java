@@ -58,7 +58,11 @@ public class clsUserMasterDaoImpl implements clsUserMasterDao {
 		Query query=webPOSSessionFactory.getCurrentSession().createQuery(" from clsUserHdModel "
                 + "where strUserCode='" + userCode + "' and strClientCode like'" +clientCode+"%' " ) ;
 		List<clsUserHdModel> list = query.list();
-		clsUserHdModel obj =(clsUserHdModel)list.get(0);
+		clsUserHdModel obj =null;
+		if(list!=null && list.size()>0)
+		{
+			obj=(clsUserHdModel)list.get(0);
+		}
 
 	  return obj;
 	}

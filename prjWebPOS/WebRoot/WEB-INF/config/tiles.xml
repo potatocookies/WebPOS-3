@@ -114,6 +114,12 @@
 		<put-attribute name="title" value="User Login"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/jsp/frmLogin.jsp"></put-attribute>
 	</definition>
+	
+	
+	<definition name="frmClientLogin" extends="base.mainPageDefination">
+		<put-attribute name="title" value="Client Login"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/frmClientLogin.jsp"></put-attribute>
+	</definition>
 
 
 	<definition name="frmModuleSelection" extends="base.mainPageDefination">
@@ -1030,6 +1036,9 @@
 		<put-attribute name="title" value="Move Items To Table" />
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmMoveItemsToTable.jsp" />
 	</definition>
+	
+	
+
 	
 <!-- 	End Of WebPOS Tiles Entry -->
 

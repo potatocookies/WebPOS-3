@@ -263,18 +263,18 @@ function funOnLoad(oprType)
 		operationType="KOT";
 		kotFor="DirectBiller";	
 	}
-// 	else if(operationType=="DayEnd")
-// 	{
-// 		document.all[ 'divBill' ].style.display = 'none';
-// 		document.all[ 'divDirectBiller' ].style.display = 'none';
-// 		document.all[ 'divKOTAndDina' ].style.display = 'none';
-// 		document.all[ 'divDayEnd' ].style.display = 'block';
+ 	else if(operationType=="DayEnd")
+ 	{
+ 		document.all[ 'divBill' ].style.display = 'none';
+ 		document.all[ 'divDirectBiller' ].style.display = 'none';
+		document.all[ 'divKOTAndDina' ].style.display = 'none';
+		document.all[ 'divDayEnd' ].style.display = 'block';
 		
-// 		$("#divDayEnd").datepicker({ dateFormat: 'yy-mm-dd' });
-// 		$("#divDayEnd" ).datepicker('setDate', 'today');
-// 		$("#divDayEnd").datepicker();
+ 		$("#divDayEnd").datepicker({ dateFormat: 'yy-mm-dd' });
+ 		$("#divDayEnd" ).datepicker('setDate', 'today');
+ 		$("#divDayEnd").datepicker();
 		
-// 	}
+ 	}
 	else if(operationType=="Bill")
 	{
 		kotFor="Bill";
@@ -282,12 +282,12 @@ function funOnLoad(oprType)
 	  
          
 	}
-	else
-	{
-		operationType="DayEnd";
-		document.all[ 'divDayEnd' ].style.display = 'block';
-	}
-	funForAllTableDtl(operationType,kotFor);
+	
+	if(operationType!="DayEnd")
+ 	{
+		funForAllTableDtl(operationType,kotFor);
+ 	}
+	
 }
 
 function funOnClickPOSName(obj)
@@ -396,7 +396,7 @@ function funFillTableForKOTAndDina(KOTNo,Time,WaiterName,TableName,PaxNo,UserCre
       row.insertCell(0).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].KOTNo\" readonly=\"readonly\" class=\"Box \" size=\"10%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+KOTNo+"' onclick=\"funGetSelectedRowIndex(this,'tblKOTAndDinaDtl')\" >";
 	  row.insertCell(1).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].Time\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtTime."+(rowCount)+"\" value='"+Time+"' >";
 	  row.insertCell(2).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].WaiterName\" readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"txtWaiterName."+(rowCount)+"\" value='"+WaiterName+"' >";
-	  row.insertCell(3).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].TableName\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtTableName."+(rowCount)+"\" value='"+TableName+"' >";	  
+	  row.insertCell(3).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].TableName\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtTableName."+(rowCount)+"\" value='"+TableName+"' >";	  
 	  row.insertCell(4).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].PaxNo\" readonly=\"readonly\" class=\"Box \" size=\"2%\" id=\"txtPaxNo."+(rowCount)+"\" value='"+PaxNo+"' >";
 	  row.insertCell(5).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].UserCreated\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtUserCreated."+(rowCount)+"\" value='"+UserCreated+"' >";
 	  row.insertCell(6).innerHTML= "<input name=\"listForTableDtl["+(rowCount)+"].Amount\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtAmount."+(rowCount)+"\" value='"+Amount+"' >";
@@ -475,7 +475,7 @@ function funRemoveTableRows(tableId)
 			
 		</div>
 		
-		<div id="divKOTAndDina" style="width:70%;margin-bottom:5px; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:390px;">
+		<div id="divKOTAndDina" style="width:70%;margin-bottom:5px; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:100%;">
 			
 				<table style="width: 100%; margin: auto; border: 1px solid black;" >
 					<thead>
@@ -483,7 +483,7 @@ function funRemoveTableRows(tableId)
 							<th style="width:10%">KOT No</th>
 							<th style="width:7%">Time</th>
 							<th style="width:15%">Waiter Name</th>
-							<th style="width:7%">Table Name</th>
+							<th style="width:12%">Table Name</th>
 							<th style="width:2%">PaxNo</th>
 							<th style="width:12%">User Created</th>
 							<th style="width:7%">Amount</th>
@@ -491,7 +491,7 @@ function funRemoveTableRows(tableId)
 					</thead>
 				</table>
 				
-				<div style="display: block; height: 500px;margin: auto;width: 100%; border: 1px solid #ccc;">
+				<div style="display: block; height: 350px;margin: auto;width: 100%; border: 1px solid #ccc;">
 							
 					<table id="tblKOTAndDinaDtl" style="width: 100%;">
 						<tbody style="border-top: none;">    
@@ -509,9 +509,8 @@ function funRemoveTableRows(tableId)
 				
 		</div>
 		
-		<div id="divDirectBiller" style="width:70%;margin-bottom:5px; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:390px;">
-	
-			<table style="width: 100%; margin: auto; border: 1px solid black;" >
+		<div id="divDirectBiller" style="width:70%;margin-bottom:5px; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:100%; ">
+		    <table style="width: 100%; margin: auto; border: 1px solid black;" >
 				 <thead style="background-color: #85cdffe6;">
 						<tr>
 							<th style="width:12%">BillNo</th>
@@ -522,7 +521,7 @@ function funRemoveTableRows(tableId)
 				 </thead>
 			</table>
 			
-			<div style="display: block; height: 500px; margin: auto;width: 100%;">
+			<div style="display: block; height: 350px; margin: auto;width: 100%; border: 1px solid #ccc;">
 			
 					<table id="tblDirectBillerDtl" style="width: 100%;">
 						 <tbody style="border-top: none;">    
@@ -536,7 +535,7 @@ function funRemoveTableRows(tableId)
 			
 		</div>
 		
-		<div id="divBill" style="width:70%;margin-bottom:5px; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:390px;">
+		<div id="divBill" style="width:70%;margin-bottom:5px; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:100%; ">
 	
 				<table style="width: 100%; margin: auto; border: 1px solid black;" >
 					   <thead style="background-color: #85cdffe6;">
@@ -549,7 +548,7 @@ function funRemoveTableRows(tableId)
 						</thead>
 				</table>
 				
-				<div style="display: block; height: 600px; margin: auto;width: 100%; border: 1px solid #ccc;">
+				<div style="display: block; height: 350px; margin: auto;width: 100%; border: 1px solid #ccc;">
 					 
 					 <table id="tblBillDtl" style="width: 100%;">
 							<tbody style="border-top: none;">    
@@ -581,137 +580,7 @@ function funRemoveTableRows(tableId)
 		
 		
 	</div>
-	
 
-<!-- 	<div style="width:29%;height:600px;margin:auto;float:left"> -->
-<!-- 	<div style="margin-left: 30px;width:100%;height:100px;float:left;padding: 2px;"> -->
-<%-- 	<c:forEach items="${posList}" var="posList1"> --%>
-	
-<%-- 		<input type="button" id="${posList1}" value="${posList1}" tabindex="3" class="transForm_button " style="margin-bottom:2px" onclick=""/>	 --%>
-		
-<%-- 	</c:forEach> --%>
-<!-- 	<br><br><br><br/> -->
-<!-- 	</div> -->
-	
-<!-- 	<div style="margin-left: 30px;width:100%;height:400px;float:left;padding: 2px;"> -->
-<!-- 	<br><br><br><br> -->
-<!-- 	<input type="button" id="KOT" name="KOT" value="KOT" tabindex="3" class="transForm_button " style="margin-bottom:2px"/> -->
-<!-- 	<input type="button" id="Bill" name="Bill" value="Bill" tabindex="3" class="transForm_button " style="margin-bottom:2px"/> -->
-<!-- 	<input type="button" id="DayEnd" name="DayEnd" value="DayEnd" tabindex="3" class="transForm_button "  style="margin-bottom:2px"/> -->
-<!-- 	<br><br> -->
-<!-- 	<div style="width:100%;height:400px;margin:auto;float:left"> -->
-<!-- 	<input type="button" id="Dina" name="Dina" value="Dina" tabindex="3" class="transForm_button "  style="margin-bottom:2px"/> -->
-<!-- 	<input type="button" id="DirectBiller" name="DirectBiller" value="DirectBiller" tabindex="3" class="transForm_button " style="margin-bottom:2px"/> -->
-<!-- 	</div> -->
-<!-- 	</div> -->
-<!-- 	</div> -->
-	
-<!-- 	<div id="divKOTAndDina" style="width:70%;margin-bottom:5px;background-color: #a4d7ff;display: none; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:600px;border:0px solid"> -->
-<!-- 	<table border="1" class="myTable" style="width: 100%;margin: auto;" > -->
-<!-- 										<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="width:10%">KOT No</th> -->
-<!-- 											<th style="width:7%">Time</th> -->
-<!-- 											<th style="width:15%">Waiter Name</th> -->
-<!-- 											<th style="width:7%">Table Name</th> -->
-<!-- 											<th style="width:2%">PaxNo</th> -->
-<!-- 											<th style="width:12%">User Created</th> -->
-<!-- 											<th style="width:7%">Amount</th> -->
-<!-- 										</tr> -->
-										
-<!-- 										</thead> -->
-<!-- 	</table> -->
-<!-- <!-- 	<table id="tblAllTableDtl" class="transTablex" style="width:100%;"> -->
-<!-- 	<div style="background-color: #a4d7ff;display: block; height: 500px; -->
-<!-- 			    				margin: auto;width: 100%;"> -->
-<!-- 									<table id="tblKOTAndDinaDtl" class="transTablex col5-center" style="width: 100%;"> -->
-<!-- 									<tbody>     -->
-<%-- 											<col align="right" style="width:10%"><!--  COl1   --> --%>
-<%-- 											<col style="width:7%"><!--  COl2   --> --%>
-<%-- 											<col style="width:15%"><!--  COl3   -->	 --%>
-<%-- 											<col style="width:7%"><!--  COl4   -->	 --%>
-<%-- 											<col style="width:3%"><!--  COl5   -->	 --%>
-<%-- 											<col style="width:12%"><!--  COl6   -->	 --%>
-<%-- 											<col style="width:7%"><!--  COl7   -->	 --%>
-																		
-<!-- 									</tbody>							 -->
-<!-- 									</table> -->
-<!-- <!-- 	</table> -->
-<!-- 	</div> -->
-<!-- </div> -->
-
-<!-- <div id="divDirectBiller" style="width:70%;margin-bottom:5px;background-color: #a4d7ff;display: none; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:600px;border:0px solid"> -->
-<!-- 	<table border="1" class="myTable" style="width: 100%;margin: auto;" > -->
-<!-- 										<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="width:12%">BillNo</th> -->
-<!-- 											<th style="width:12%">Time</th> -->
-<!-- 											<th style="width:12%">POS</th> -->
-<!-- 											<th style="width:12%">TotalAmount</th> -->
-											
-<!-- 										</tr> -->
-										
-<!-- 										</thead> -->
-<!-- 	</table> -->
-<!-- <!-- 	<table id="tblAllTableDtl" class="transTablex" style="width:100%;"> -->
-<!-- 	<div style="background-color: #a4d7ff;display: block; height: 500px; -->
-<!-- 			    				margin: auto;width: 100%;"> -->
-<!-- 									<table id="tblDirectBillerDtl" class="transTablex col5-center" style="width: 100%;"> -->
-<!-- 									<tbody>     -->
-<%-- 											<col style="width:12%"><!--  COl1   --> --%>
-<%-- 											<col style="width:12%"><!--  COl2   --> --%>
-<%-- 											<col style="width:12%"><!--  COl3   -->	 --%>
-<%-- 											<col style="width:12%"><!--  COl4   -->	 --%>
-																											
-<!-- 									</tbody>							 -->
-<!-- 									</table> -->
-<!-- <!-- 	</table> -->
-<!-- 	</div> -->
-<!-- </div> -->
-
-<!-- <div id="divBill" style="width:70%;margin-bottom:5px;background-color: #a4d7ff;display: none; overflow-x: hidden; overflow-y: scroll;float:right;margin-right: 4px;height:600px;border:0px solid"> -->
-<!-- 	<table border="1" class="myTable" style="width: 100%;margin: auto;" > -->
-<!-- 										<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="width:12%">BillNo</th> -->
-<!-- 											<th style="width:12%">TableName</th> -->
-<!-- 											<th style="width:12%">Time</th> -->
-<!-- 											<th style="width:12%">TotalAmount</th> -->
-											
-<!-- 										</tr> -->
-										
-<!-- 										</thead> -->
-<!-- 	</table> -->
-<!-- <!-- 	<table id="tblAllTableDtl" class="transTablex" style="width:100%;"> --> 
-<!-- 	<div style="background-color: #a4d7ff;display: block; height: 500px; -->
-<!-- 			    				margin: auto;width: 100%;"> -->
-<!-- 									<table id="tblBillDtl" class="transTablex col5-center" style="width: 100%;"> -->
-<!-- 									<tbody>     -->
-<%-- 											<col style="width:12%"><!--  COl1   --> --%>
-<%-- 											<col style="width:12%"><!--  COl2   --> --%>
-<%-- 											<col style="width:12%"><!--  COl3   -->	 --%>
-<%-- 											<col style="width:12%"><!--  COl4   -->	 --%>
-																											
-<!-- 									</tbody>							 -->
-<!-- 									</table> -->
-<!-- <!-- 	</table> -->
-<!-- 	</div> -->
-<!-- </div> -->
-<!-- <div style="width:70%;height:600px;margin:auto;margin-top:50px"> -->
-<%-- <center> --%>
-<!-- <div id="divDayEnd" style="width:50%;margin-bottom:5px;display: none; float:right;margin-right: 4px;height:300px;border:0px solid"> -->
-
-<%-- </div></center></div> --%>
-<!-- 		<br/> -->
-<!-- 		<br/> -->
-<!-- 		<br/> -->
-<!-- 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-<!-- 		<p align="center" > -->
-<!-- 			<input type="button" value="View"  class="form_button" onclick="funGetSelectedRowIndex(this,this)"/> -->
-<!-- 			<input type="reset" value="Print" class="form_button" onclick="" /> -->
-<!-- 			<input type="button" value="Close" class="form_button" onclick="" /> -->
-<!-- 		</p> -->
-		
 	</s:form>
 </body>
 </html>

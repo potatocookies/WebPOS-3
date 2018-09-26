@@ -1361,7 +1361,7 @@ public class clsPOSUtilityController
 
 		if (megabytes < 25)
 		{
-			//obSendMail.funSendMail("sanguineapos@gmail.com", filePath, strClientCode, posCode, strPOSName, strPOSDate);
+			obSendMail.funSendMail("sanguineapos@gmail.com", filePath, strClientCode, posCode, strPOSName, strPOSDate);
 		}
 		return 1;
 	}
@@ -4179,8 +4179,10 @@ public class clsPOSUtilityController
 			{
 				reprintYN = "Reprint";
 			}
+			
+			mapResult = funGenerateBillForJasperFormat1(voucherNo, reprintYN, "", "sale", billDate, clientCode, POSCode, PrintVatNoPOS, vatNo, printServiceTaxNo, serviceTaxNo);
 
-			Map objSetupParameter = objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gBillFormatType");
+			/*Map objSetupParameter = objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gBillFormatType");
 
 			if (objSetupParameter.get("gBillFormatType").toString().equalsIgnoreCase("Jasper 1"))
 			{
@@ -4194,6 +4196,7 @@ public class clsPOSUtilityController
 			{
 				mapResult = funGenerateBillForJasperFormat3(voucherNo, reprintYN, "", "sale", billDate, clientCode, POSCode, PrintVatNoPOS, vatNo, printServiceTaxNo, serviceTaxNo);
 			}
+			*/
 
 		}
 		catch (Exception e)
@@ -4753,7 +4756,7 @@ public class clsPOSUtilityController
 
 			sql.append("select b.strSettelmentType from " + billSettlementdtl + " a,tblsettelmenthd b " + " where a.strSettlementCode=b.strSettelmentCode and a.strBillNo='" + billNo + "' and b.strSettelmentType='Complementary' ");
 			List listSettlementType = objBaseService.funGetList(sql, "sql");
-			if (null != listSettlementType)
+			if (null != listSettlementType && listSettlementType.size()>0)
 			{
 				flgComplimentaryBill = true;
 			}
@@ -5125,7 +5128,7 @@ public class clsPOSUtilityController
 
 			List listTax = objBaseService.funGetList(sql, "sql");
 			String taxDesc = "";
-			double taxAmount = 0;
+			BigDecimal taxAmount = null;
 
 			if (listTax.size() != 0)
 			{
@@ -5136,7 +5139,7 @@ public class clsPOSUtilityController
 					{
 						Object[] obj = (Object[]) listTax.get(i);
 						taxDesc = (String) Array.get(obj, 0);
-						taxAmount = (double) Array.get(obj, 1);
+						taxAmount = (BigDecimal) Array.get(obj, 1);
 
 					}
 					if (flgComplimentaryBill)
@@ -5148,7 +5151,7 @@ public class clsPOSUtilityController
 					}
 					else
 					{
-						jObjList.put("taxAmount", taxAmount);
+						jObjList.put("taxAmount", taxAmount.doubleValue());
 						jObjList.put("taxDesc", taxDesc);
 						listOfTaxDetail.add(jObjList);
 						listOfTaxDetail.add(jObjList);
@@ -5173,7 +5176,7 @@ public class clsPOSUtilityController
 			sql.setLength(0);
 			sql.append("select a.dblSettlementAmt, b.strSettelmentDesc, b.strSettelmentType " + " from " + billSettlementdtl + " a ,tblsettelmenthd b " + "where a.strBillNo='" + billNo + "' and a.strSettlementCode=b.strSettelmentCode");
 			List listBill_Settlement = objBaseService.funGetList(sql, "sql");
-			double settleAmt = 0;
+			BigDecimal settleAmt = null;
 			String settleDesc = "";
 
 			if (null != listBill_Settlement)
@@ -5182,7 +5185,7 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listBill_Settlement.size(); i++)
 				{
 					Object[] obj = (Object[]) listBill_Settlement.get(i);
-					settleAmt = (double) Array.get(obj, 0);
+					settleAmt = (BigDecimal) Array.get(obj, 0);
 					settleDesc = (String) Array.get(obj, 1);
 
 					if (flgComplimentaryBill)
@@ -5197,7 +5200,7 @@ public class clsPOSUtilityController
 						// objBillDtl = new clsPOSBillDtl();
 						// jObjList = new HashMap();
 						jObjList.put("settleDesc", settleDesc);
-						jObjList.put("settleAmt", settleAmt);
+						jObjList.put("settleAmt", settleAmt.doubleValue());
 						// listOfSettlementDetail.put(jObjList);
 					}
 					listOfSettlementDetail.add(jObjList);
@@ -5208,8 +5211,7 @@ public class clsPOSUtilityController
 			sql.setLength(0);
 			sql.append("select sum(dblPaidAmt),sum(dblSettlementAmt),(sum(dblPaidAmt)-sum(dblSettlementAmt)) RefundAmt " + " from " + billSettlementdtl + " where strBillNo='" + billNo + "' " + " group by strBillNo");
 			List listTenderAmt = objBaseService.funGetList(sql, "sql");
-			double paidAmt = 0,
-					refundAmt = 0;
+			BigDecimal paidAmt = null,refundAmt = null;
 
 			if (null != listTenderAmt)
 			{
@@ -5217,22 +5219,22 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listTenderAmt.size(); i++)
 				{
 					Object[] obj = (Object[]) listTenderAmt.get(i);
-					paidAmt = (double) Array.get(obj, 0);
-					refundAmt = (double) Array.get(obj, 2);
+					paidAmt = (BigDecimal) Array.get(obj, 0);
+					refundAmt = (BigDecimal) Array.get(obj, 2);
 
 					if (flgComplimentaryBill)
 					{
-						jObjList.put("PAID AMT", "PAID AMT");
+						jObjList.put("settleDesc", "PAID AMT");
 						jObjList.put("paidAmt", 0.00);
 					}
 					else
 					{
-						jObjList.put("PAID AMT", "PAID AMT");
-						jObjList.put("paidAmt", paidAmt);
-						if (refundAmt > 0)
+						jObjList.put("settleDesc", "PAID AMT");
+						jObjList.put("paidAmt", paidAmt.doubleValue());
+						if (refundAmt.doubleValue() > 0)
 						{
-							jObjList.put("REFUND AMT", "REFUND AMT");
-							jObjList.put("refundAmt", refundAmt);
+							jObjList.put("settleDesc", "REFUND AMT");
+							jObjList.put("refundAmt", refundAmt.doubleValue());
 						}
 					}
 					listOfSettlementDetail.add(jObjList);
@@ -6224,7 +6226,7 @@ public class clsPOSUtilityController
 			sql.append("select b.strTaxDesc,sum(a.dblTaxAmount) " + " from " + billtaxdtl + " a,tbltaxhd b " + " where a.strBillNo='" + billNo + "' and a.strTaxCode=b.strTaxCode " + " group by a.strTaxCode");
 			List listTax = objBaseService.funGetList(sql, "sql");
 			String taxDesc = "";
-			double taxAmount = 0;
+			BigDecimal taxAmount = null;
 
 			if (listTax != null)
 			{
@@ -6232,7 +6234,7 @@ public class clsPOSUtilityController
 				{
 					Object[] obj = (Object[]) listTax.get(i);
 					taxDesc = (String) Array.get(obj, 0);
-					taxAmount = (double) Array.get(obj, 1);
+					taxAmount = (BigDecimal) Array.get(obj, 1);
 
 					if (flgComplimentaryBill)
 					{
@@ -6244,7 +6246,7 @@ public class clsPOSUtilityController
 					else
 					{
 						jObjList = new HashMap();
-						jObjList.put("taxAmount", taxAmount);
+						jObjList.put("taxAmount", taxAmount.doubleValue());
 						jObjList.put("taxDesc", taxDesc);
 						listOfTaxDetail.add(jObjList);
 					}
@@ -6266,7 +6268,7 @@ public class clsPOSUtilityController
 			sql.setLength(0);
 			sql.append("select a.dblSettlementAmt, b.strSettelmentDesc, b.strSettelmentType " + " from " + billSettlementdtl + " a ,tblsettelmenthd b " + "where a.strBillNo='" + billNo + "' and a.strSettlementCode=b.strSettelmentCode");
 			List listBill_Settlement = objBaseService.funGetList(sql, "sql");
-			double settleAmt = 0;
+			BigDecimal settleAmt = null;
 			String settleDesc = "";
 
 			if (listBill_Settlement != null)
@@ -6275,7 +6277,7 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listBill_Settlement.size(); i++)
 				{
 					Object[] obj = (Object[]) listBill_Settlement.get(i);
-					settleAmt = (double) Array.get(obj, 0);
+					settleAmt = (BigDecimal) Array.get(obj, 0);
 					settleDesc = (String) Array.get(obj, 1);
 
 					if (flgComplimentaryBill)
@@ -6290,7 +6292,7 @@ public class clsPOSUtilityController
 						// objBillDtl = new clsPOSBillDtl();
 						// jObjList = new HashMap();
 						jObjList.put("settleDesc", settleDesc);
-						jObjList.put("settleAmt", settleAmt);
+						jObjList.put("settleAmt", settleAmt.doubleValue());
 						// listOfSettlementDetail.put(jObjList);
 					}
 					listOfSettlementDetail.add(jObjList);
@@ -6301,8 +6303,7 @@ public class clsPOSUtilityController
 			sql.setLength(0);
 			sql.append("select sum(dblPaidAmt),sum(dblSettlementAmt),(sum(dblPaidAmt)-sum(dblSettlementAmt)) RefundAmt " + " from " + billSettlementdtl + " where strBillNo='" + billNo + "' " + " group by strBillNo");
 			List listTenderAmt = objBaseService.funGetList(sql, "sql");
-			double paidAmt = 0,
-					refundAmt = 0;
+			BigDecimal paidAmt = null,refundAmt = null;
 
 			if (listTenderAmt != null)
 			{
@@ -6310,8 +6311,8 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listTenderAmt.size(); i++)
 				{
 					Object[] obj = (Object[]) listTenderAmt.get(i);
-					paidAmt = (double) Array.get(obj, 0);
-					refundAmt = (double) Array.get(obj, 2);
+					paidAmt = (BigDecimal) Array.get(obj, 0);
+					refundAmt = (BigDecimal) Array.get(obj, 2);
 
 					if (flgComplimentaryBill)
 					{
@@ -6324,13 +6325,13 @@ public class clsPOSUtilityController
 					{
 						// jObjList = new HashMap();
 						jObjList.put("PAID AMT", "PAID AMT");
-						jObjList.put("paidAmt", paidAmt);
+						jObjList.put("paidAmt", paidAmt.doubleValue());
 						// listOfSettlementDetail.put(jObjList);
-						if (refundAmt > 0)
+						if (refundAmt.doubleValue() > 0)
 						{
 							// jObjList = new HashMap();
 							jObjList.put("REFUND AMT", "REFUND AMT");
-							jObjList.put("refundAmt", refundAmt);
+							jObjList.put("refundAmt", refundAmt.doubleValue());
 							// listOfSettlementDetail.put(jObjList);
 						}
 					}
@@ -7377,7 +7378,7 @@ public class clsPOSUtilityController
 			List listTax = objBaseService.funGetList(sql, "sql");
 			String taxDesc = "";
 			BigDecimal taxAmt = null;
-			double taxAmount = 0;
+			BigDecimal taxAmount = null;
 
 			if (listTax != null)
 			{
@@ -7386,7 +7387,7 @@ public class clsPOSUtilityController
 					Object[] obj = (Object[]) listTax.get(i);
 					taxDesc = (String) Array.get(obj, 0);
 					taxAmt = (BigDecimal) Array.get(obj, 1);
-					taxAmount = taxAmt.doubleValue();
+					taxAmount = (BigDecimal) Array.get(obj, 1);
 
 					if (flgComplimentaryBill)
 					{
@@ -7398,7 +7399,7 @@ public class clsPOSUtilityController
 					else
 					{
 						jObjList = new HashMap();
-						jObjList.put("taxAmount", taxAmount);
+						jObjList.put("taxAmount", taxAmount.doubleValue());
 						jObjList.put("taxDesc", taxDesc);
 						listOfTaxDetail.add(jObjList);
 					}
@@ -7418,7 +7419,7 @@ public class clsPOSUtilityController
 			sql.setLength(0);
 			sql.append("select a.dblSettlementAmt, b.strSettelmentDesc, b.strSettelmentType " + " from " + billSettlementdtl + " a ,tblsettelmenthd b " + "where a.strBillNo='" + billNo + "' and a.strSettlementCode=b.strSettelmentCode");
 			List listBill_Settlement = objBaseService.funGetList(sql, "sql");
-			double settleAmt = 0;
+			BigDecimal settleAmt = null;
 			String settleDesc = "";
 
 			if (listBill_Settlement != null)
@@ -7427,7 +7428,7 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listBill_Settlement.size(); i++)
 				{
 					Object[] obj = (Object[]) listBill_Settlement.get(i);
-					settleAmt = (double) Array.get(obj, 0);
+					settleAmt = (BigDecimal) Array.get(obj, 0);
 					settleDesc = (String) Array.get(obj, 1);
 
 					if (flgComplimentaryBill)
@@ -7442,7 +7443,7 @@ public class clsPOSUtilityController
 						// objBillDtl = new clsPOSBillDtl();
 						// jObjList = new HashMap();
 						jObjList.put("settleDesc", settleDesc);
-						jObjList.put("settleAmt", settleAmt);
+						jObjList.put("settleAmt", settleAmt.doubleValue());
 						// listOfSettlementDetail.put(jObjList);
 					}
 					listOfSettlementDetail.add(jObjList);
@@ -7452,8 +7453,7 @@ public class clsPOSUtilityController
 			sql.setLength(0);
 			sql.append("select sum(dblPaidAmt),sum(dblSettlementAmt),(sum(dblPaidAmt)-sum(dblSettlementAmt)) RefundAmt " + " from " + billSettlementdtl + " where strBillNo='" + billNo + "' " + " group by strBillNo");
 			List listTenderAmt = objBaseService.funGetList(sql, "sql");
-			double paidAmt = 0,
-					refundAmt = 0;
+			BigDecimal paidAmt = null,refundAmt = null;
 
 			if (listTenderAmt != null)
 			{
@@ -7461,8 +7461,8 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listTenderAmt.size(); i++)
 				{
 					Object[] obj = (Object[]) listTenderAmt.get(i);
-					paidAmt = (double) Array.get(obj, 0);
-					refundAmt = (double) Array.get(obj, 2);
+					paidAmt = (BigDecimal) Array.get(obj, 0);
+					refundAmt = (BigDecimal) Array.get(obj, 2);
 
 					if (flgComplimentaryBill)
 					{
@@ -7475,13 +7475,13 @@ public class clsPOSUtilityController
 					{
 						// jObjList = new HashMap();
 						jObjList.put("PAID AMT", "PAID AMT");
-						jObjList.put("paidAmt", paidAmt);
+						jObjList.put("paidAmt", paidAmt.doubleValue());
 						// listOfSettlementDetail.put(jObjList);
-						if (refundAmt > 0)
+						if (refundAmt.doubleValue() > 0)
 						{
 							// jObjList = new HashMap();
 							jObjList.put("REFUND AMT", "REFUND AMT");
-							jObjList.put("refundAmt", refundAmt);
+							jObjList.put("refundAmt", refundAmt.doubleValue());
 							// listOfSettlementDetail.put(jObjList);
 						}
 					}

@@ -1037,9 +1037,11 @@
 	</definition>
 	
 	<definition name="frmPOSCreditBillReceipt" extends="base.definition6">
-		<put-attribute name="title" value="Change Settlement" />
+		<put-attribute name="title" value="Credit Receipt" />
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSCreditBillReceipt.jsp" />
 	</definition>
+	
+
 	
 	<definition name="frmConsolidatedDiscountReport" extends="base.definition6">
 		<put-attribute name="title" value="Consolidated Discount Report" />

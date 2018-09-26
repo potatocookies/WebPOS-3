@@ -15,6 +15,7 @@ public class clsPOSChangeSettlementBean
    private double dblBalAmount;
    private String strRemark;
    private String strCustomerCode;
+   private String strReasonCode;
    
    private List<clsPOSBillSettlementDtl> listOfBillSettleMode;
    
@@ -115,6 +116,14 @@ public void setListOfBillSettleMode(List<clsPOSBillSettlementDtl> listOfBillSett
 	public void setStrCustomerCode(String strCustomerCode)
 	{
 		this.strCustomerCode = strCustomerCode;
+	}
+	public String getStrReasonCode()
+	{
+		return strReasonCode;
+	}
+	public void setStrReasonCode(String strReasonCode)
+	{
+		this.strReasonCode = strReasonCode;
 	}
    
 	

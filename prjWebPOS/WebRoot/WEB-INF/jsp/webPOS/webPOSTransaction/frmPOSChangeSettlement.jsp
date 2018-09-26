@@ -173,7 +173,7 @@
 					$.each(response.listOfBillSettleMode, function(i,item)
 					{
 						var row = table.insertRow(rowCount);
-						row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+item.strSettlementCode+"\" value='"+item.strSettlementCode+"' >";
+						row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+item.strSettlementCode+"\" value='"+item.strSettlementName+"' >";
 						row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\"style=\"text-align: right\"   id=\""+item.dblSettlementAmt+"\" value='"+item.dblSettlementAmt+"' >";
 						rowCount++;
 						settleDesc=item.strSettlementName;
@@ -203,6 +203,9 @@
 						funSetSettlementTableData();
 					}
 					//document.getElementById().focus();
+					
+					$("#txtRemark").val("");
+					$("#txtSlipNo").val("");
 					$("#txtPaidAmt").focus();
 					
 				},
@@ -231,6 +234,11 @@
 			    
 		function funOnClickSettleName(obj,settleType)
 		{
+			if ($("#txtBillNo").val()=="")
+	        {
+				alert("Please Enter Bill No");
+		       	return false;
+	        }
 			$('#lblPaymentMode').text("Payment Mode  "+obj.id);
 			$('#txtPaymentMode').val("Payment Mode  "+obj.id);
 			
@@ -261,10 +269,14 @@
 								funShowDiv("divCreditSettle")
 								document.getElementById("divCustName").style.visibility="visible";
 								document.getElementById("txtCustomerName").style.visibility="visible";
+								document.getElementById("divReason").style.visibility="hidden";
+								document.getElementById("divReasonName").style.visibility="hidden";
 							}
 							else 
 							{
 								funShowDiv("divCreditSettle")
+								document.getElementById("divReason").style.visibility="visible";
+								document.getElementById("divReasonName").style.visibility="visible";
 						    }  
 					   }
 	            </c:forEach>
@@ -290,10 +302,15 @@
 					funShowDiv("divCreditSettle")
 					document.getElementById("divCustName").style.visibility="visible";
 					document.getElementById("txtCustomerName").style.visibility="visible";
+					document.getElementById("divReason").style.visibility="hidden";
+					document.getElementById("divReasonName").style.visibility="hidden";
+					
 				}
 				else 
 				{
 					funShowDiv("divCreditSettle")
+					document.getElementById("divReason").style.visibility="visible";
+					document.getElementById("divReasonName").style.visibility="visible";
 			    }
 			}
 			
@@ -359,9 +376,11 @@
 	        {
 	            _paidAmount = $("#txtPaidAmt").val();
 	        }
-			if (_paidAmount == 0.00 && _grandTotal != 0.00)
+			if (_paidAmount == 0.00 )
 	        {
-				alert("Please Enter Amount");
+				alert("Balance amount is 0");
+				$("#txtCustomerName").val("");
+     			$("#lblCustCode").val("");
 		       	return false;
 	        }
 			$("#txtSettleRemark").val($("#txtRemark").val());
@@ -393,6 +412,11 @@
 				if ($("#txtCreditRemark").val()=="")
 		        {
 					alert("Please Enter Remarks");
+			       	return false;
+		        }
+				if ($("#txtReasonCode").val()=="")
+		        {
+					alert("Please Select Reason");
 			       	return false;
 		        }
 				$("#txtSettleRemark").val($("#txtCreditRemark").val());
@@ -473,10 +497,10 @@
 <body>
        
      <div id="formHeading" >
-		<label>Change Customer On Bill</label>
+		<label>Change Settlement</label>
 			</div>
 
-	<s:form name="Customer Change On Bill" method="POST" action="saveChangeSettlement.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:65%;min-width:150px;margin-top:2%;">
+	<s:form name="Change Settlement" method="POST" action="saveChangeSettlement.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:70%;min-width:150px;margin-top:2%;">
 	   
 	   <div class="title"  >
 	   
@@ -484,18 +508,20 @@
 			<div style=" width: 40%; height: 570px;float:left;  overflow-x: scroll; border-collapse: separate; border: 3px solid #ccc; overflow-y: auto;">
 				
 				<div class="row" style="background-color: #fff;margin-top:2%;margin-bottom:2%;display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 25%;"> 
+						<div class="element-input col-lg-6" style="width: 25%; margin-top:1%;"> 
 		    				<label class="title" >Bill Date.</label>
 		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 26%;">
+		    			<div class="element-input col-lg-6" style="width: 26%; margin-top:1%;">
 		    				<s:input type="text" id="txtBillDate" path="strBillDate" style="width: 100px; height: 25px;" required="required"  cssClass="calenderTextBox" />
 		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 20%;"> 
+		    			<div class="element-input col-lg-6" style="width: 20%; margin-top:1%;"> 
 		    				<label class="title" >Bill No.</label>
 		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 20%;">
+		    			<div class="element-input col-lg-6" style="width: 20%; margin-top:1%;">
 		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100px; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
 		    			</div>
+		    			
+		    			
 		    	</div>
 				<div>
 					<table style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll">
@@ -582,13 +608,13 @@
 		    	</div>
    		 		<div id="divCashSettle" class="row" style="background-color:#D3D3D3; margin-top:2%; margin-left: 1%;display: -webkit-box;width:50%;height:190px;">
 					    <div class="element-input col-lg-6" style="width: 38%;margin-top:2%"> 
-		    				<label class="title" >Bill Amount.</label>
+		    				<label class="title" >Bill Amt.</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="margin-top:2%;">
 		    				<input type="text"  id="txtBillAmt" path="dblBillAmount"  readonly="true" style="width:80%; height: 25px;  text-align: right"/>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width:38%;margin-top:2%;"> 
-		    				<label class="title" >Paid Amount.</label>
+		    				<label class="title" >Paid Amt.</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="margin-top:2%;">
 		    				<input type="text"  id="txtPaidAmt" path="dblPaidAmt" style="width:80%; height: 25px;  text-align: right"/>
@@ -637,9 +663,18 @@
 		    			<div class="element-input col-lg-6" style="margin-top:2%;">
 		    				<input type="text"  id="txtCustomerName" path="" style="width:140%; height: 25px;"/>
 		    			</div>
+		    			<div id="divReason" class="element-input col-lg-6" style="width:38%; margin-top:2%;"> 
+		    				<label class="title" >Reason.</label>
+		    			</div>
+		    			<div id="divReasonName"class="element-input col-lg-6" style="margin-top:2%;">
+		    				<s:select id="txtReasonCode" path="strReasonCode" items="${ReasonNameList}" required="true"/>
+		    			</div>
 		    			<div id="divCustCode" class="element-input col-lg-6" style="width:38%; margin-top:2%;"> 
 		    				<s:input type="hidden" id="lblCustCode" path="strCustomerCode" style="width:140%; height: 25px;"/>
 		    			</div>
+		    			
+		    			
+		    			
 				</div>	
 				
 				

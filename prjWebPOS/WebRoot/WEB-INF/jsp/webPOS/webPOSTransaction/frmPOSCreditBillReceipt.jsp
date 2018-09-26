@@ -10,21 +10,7 @@
 <title>Change Customer On Bill</title>
 <script type="text/javascript">
  	var fieldName,_paidAmount=0,_grandTotal=0,settleCode="";
- 	var myMap = new Map(); 
- 	
-	$(document).ready(function()
-	{
-        funShowDiv("");
-	});
-	
-	
-	$(function() 
-	{
-		$("#txtBillDate").datepicker({ dateFormat: 'yy-mm-dd' });
-		$("#txtBillDate" ).datepicker('setDate', 'today');
-	});
-			
-			
+ 			
 	function funHelp(transactionName)
 	{	       
 		fieldName=transactionName;
@@ -45,8 +31,6 @@
 		 {
 			window.open("searchform.html?formname="+transactionName+"&searchText=","","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;")
 		 }	
-		
-		
     }
 			
 			
@@ -60,7 +44,7 @@
 	 			break;
 	 		case "BillForCreditBillReceipt":
 	 			$("#txtBillNo").val(code);
-	 			//funGetBillDate(code);
+	 			funSetBillDetails();
 	 			break;	
  		}
  	}
@@ -123,6 +107,136 @@
 				        }
 			      });
 		}
+		
+		
+		function funSetBillDetails()
+		{
+		  var customerCode=$("#txtCustomerCode").val();	
+		  var billNo=$("#txtBillNo").val();	
+		  var searchurl=getContextPath()+"/getCreditBillReceiptData.html?BillNo="+billNo+ "&CustomerCode=" + customerCode ;
+			$.ajax({
+				type : "GET",
+				url : searchurl,
+				dataType : "json",
+				success : function(response){ 
+					$.each(response, function(i,item)
+					{
+						$("#txtBillDate").val(item.dteBillDate);
+						$("#txtCreditAmt").val(item.dblCreditAmount);
+						$("#txtPaidAmt").val(item.dblPaidAmount);
+						var balanceAmt=item.dblCreditAmount-item.dblPaidAmount;
+						$("#txtBalanceAmt").val(balanceAmt);
+						$("#txtReceiptAmt").val(balanceAmt);
+						$("#txtRefundAmt").val(0);
+						$('#lblPaymentMode').text("Payment Mode  Cash");
+						$('#txtSettleName').val("Cash");
+						$('#txtSettleCode').val("S01");
+						
+						
+					});	
+				},
+				error : function(e){
+					if (jqXHR.status === 0) {
+		                alert('Not connect.n Verify Network.');
+		            } else if (jqXHR.status == 404) {
+		                alert('Requested page not found. [404]');
+		            } else if (jqXHR.status == 500) {
+		                alert('Internal Server Error [500].');
+		            } else if (exception === 'parsererror') {
+		                alert('Requested JSON parse failed.');
+		            } else if (exception === 'timeout') {
+		                alert('Time out error.');
+		            } else if (exception === 'abort') {
+		                alert('Ajax request aborted.');
+		            } else {
+		                alert('Uncaught Error.n' + jqXHR.responseText);
+		            }
+				}
+			});
+		}
+		
+		
+		function funOnClickSettleName(obj,settleType)
+		{
+			$('#lblPaymentMode').text("Payment Mode  "+obj.id);
+			$('#txtSettleName').val(obj.id);
+			
+			if(settleType=='')
+			{
+				<c:forEach items="${settlementList}" var="settlementList1">
+				    var setteleDesc="${settlementList1.value.split('#')[0]}";
+				     if(obj.id==setteleDesc)
+					   {
+				    	 settleType="${settlementList1.value.split('#')[1]}";
+				    	 var settleCode="${settlementList1.key}";
+				    	 $('#txtSettleCode').val(settleCode);
+						    if(settleType=="Cash")
+							{
+						    	
+							}
+						    else if(settleType=="Credit Card")
+							{
+						    	
+							}
+						    else if(settleType=="Credit")
+							{
+						    	
+							}
+							else 
+							{
+								
+						    }  
+					   }
+	            </c:forEach>
+			}
+			 
+		}	
+		
+		
+		function funEnterButtonPressed()
+		{
+			var creditAmt = parseFloat($("#txtCreditAmt").val());
+			var paidAmt = parseFloat($("#txtPaidAmt").val());
+			var balanceAmt = parseFloat($("#txtBalanceAmt").val());
+			var receiptAmt = parseFloat($("#txtReceiptAmt").val());
+			
+			if (creditAmt == paidAmt || balanceAmt <= 0)
+	        {
+	            alert("Full Payment Received");
+	            return false;
+	        }
+			
+			if (receiptAmt > balanceAmt)
+	        {
+				var refundAmt = receiptAmt - balanceAmt;
+				$("#txtRefundAmt").val(refundAmt);
+				$("#txtReceiptAmt").val(balanceAmt);
+	            receiptAmt = parseFloat($("#txtReceiptAmt").val());
+	        }
+		}
+		
+		
+		function funValidateFields()
+		{
+			var creditAmt = parseFloat($("#txtCreditAmt").val());
+			var paidAmt = parseFloat($("#txtPaidAmt").val());
+			var balanceAmt = parseFloat($("#txtBalanceAmt").val());
+			var receiptAmt = parseFloat($("#txtReceiptAmt").val());
+			
+			if (creditAmt == paidAmt || balanceAmt <= 0)
+	        {
+	            alert("Full Payment Received");
+	            return false;
+	        }
+			
+			if (receiptAmt > balanceAmt)
+	        {
+				var refundAmt = receiptAmt - balanceAmt;
+				$("#txtRefundAmt").val(refundAmt);
+				$("#txtReceiptAmt").val(balanceAmt);
+	            receiptAmt = parseFloat($("#txtReceiptAmt").val());
+	        }
+		}
     	    
 		
 			    
@@ -130,10 +244,10 @@
 <body>
        
      <div id="formHeading" >
-		<label>Change Customer On Bill</label>
+		<label>Credit Receipt</label>
 			</div>
 
-	<s:form name="Customer Change On Bill" method="POST" action="saveChangeSettlement.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:65%;min-width:150px;margin-top:2%;">
+	<s:form name="Credit Receipt" method="POST" action="saveCreditReceipt.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:70%;min-width:150px;margin-top:2%;">
 	   
 	   <div class="title"  >
 	   
@@ -141,7 +255,7 @@
 			<div style=" width: 80%; height: 570px;float:left;  overflow-x: scroll; border-collapse: separate; border: 3px solid #ccc; overflow-y: auto;">
 				
 				<div class="row" style="background-color: #fff;margin-top:2%;margin-bottom:2%;display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 100%; text-align:center;font-size:14px;"> 
+						<div class="element-input col-lg-6" style="width: 100%; text-align:center;font-size:20px;"> 
 		    				<label class="title" >Credit Bill Receipt</label>
 		    			</div>
 		    	</div>
@@ -152,8 +266,8 @@
 		    			<div class="element-input col-lg-6" style="width: 15%;"> 
 		    				<label class="title" >Receipt No</label>
 		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;"  required="true" readonly="true"/>
+		    			<div class="element-input col-lg-6" style="width: 40%;">
+		    			   <s:input type="text" id="txtReceiptNo" path="" style="width: 100%; height: 25px;"  required="true" readonly="true"/>
 		    			</div>	
 		    	</div>
 		    	
@@ -163,7 +277,7 @@
 		    				<label class="title" >customer</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 50%;">
-		    			   <s:input type="text" id="txtCustomerName" path="" style="width: 100%; height: 25px;" ondblclick="funHelp('POSCustomerMaster')" required="true" readonly="true"/>
+		    			   <s:input type="text" id="txtCustomerName" path="strCustomerName" style="width: 100%; height: 25px;" ondblclick="funHelp('POSCustomerMaster')" required="true" readonly="true"/>
 		    			</div>
 		    				
 		    	</div>
@@ -179,8 +293,8 @@
 		    			<div class="element-input col-lg-6" style="width: 15%;"> 
 		    				<label class="title" >Bill Date</label>
 		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			<div class="element-input col-lg-6" style="width: 25%;">
+		    			   <s:input type="text" id="txtBillDate" path="dteBillDate" style="width: 100%; height: 25px;" readonly="true"/>
 		    			</div>	
 		    	</div>
 		    	
@@ -190,20 +304,20 @@
 		    				<label class="title" >Credit Amt</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			   <s:input type="text" id="txtCreditAmt" path="dblCreditAmount" style="width: 100%; height: 25px; text-align: right;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
 		    			</div>	
 		    			<div class="element-input col-lg-6" style="width: 15%;"> 
 		    				<label class="title" >Paid Amt</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			   <s:input type="text" id="txtPaidAmt" path="dblPaidAmount" style="width: 100%; height: 25px; text-align: right;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
 		    			</div>
 		    			
 		    			<div class="element-input col-lg-6" style="width: 14%;"> 
 		    				<label class="title" >Balance Amt</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 18%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			   <s:input type="text" id="txtBalanceAmt" path="dblBalanceAmount" style="width: 100%; height: 25px; text-align: right;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
 		    			</div>	
 		    	</div>
 		    	<div class="row" style="background-color: #fff;margin-top:2%;margin-bottom:2%;display: -webkit-box;">
@@ -222,14 +336,14 @@
 		    	
 		    	<div class="row" style="background-color: #fff;margin-top:5%;margin-bottom:2%;display: -webkit-box;">
 						
-		    			<div class="element-input col-lg-6" style="width: 15%;"> 
-		    				<label class="title" >Payment Mode</label>
+		    			<div class="element-input col-lg-6" style="width: 35%;"> 
+		    				<label class="title" id="lblPaymentMode" >Payment Mode</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 15%;"> 
 		    				<label class="title" >Remark</label>
 		    			</div>
-		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			<div class="element-input col-lg-6" style="width: 40%;">
+		    			   <s:input type="text" id="txtRemark" path="strRemark" style="width: 100%; height: 25px;" />
 		    			</div>	
 		    	</div>
 		    	
@@ -239,13 +353,13 @@
 		    				<label class="title" >Receipt Amt</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			   <s:input type="text" id="txtReceiptAmt" path="dblReceiptAmount" style="width: 100%; height: 25px; text-align: right;" />
 		    			</div>	
 		    			<div class="element-input col-lg-6" style="width: 15%;"> 
 		    				<label class="title" >Refund Amt</label>
 		    			</div>
 		    			<div class="element-input col-lg-6" style="width: 20%;">
-		    			   <s:input type="text" id="txtBillNo" path="strBillNo" style="width: 100%; height: 25px;" ondblclick="funHelp('BillForChangeSettlement')" required="true" readonly="true"/>
+		    			   <s:input type="text" id="txtRefundAmt" path="" style="width: 100%; height: 25px; text-align: right;" />
 		    			</div>
 		    			
 		    		    <div class="submit col-lg-4 col-sm-4 col-xs-4">
@@ -273,6 +387,8 @@
 		     	 
    		   </div>
    		   <s:input type="hidden" id="txtCustomerCode" path="strCustomerCode" />
+   		   <s:input type="hidden" id="txtSettleCode" path="strSettleCode" />
+   		   <s:input type="hidden" id="txtSettleName" path="strSettleName" />
 			
 	</div>
 

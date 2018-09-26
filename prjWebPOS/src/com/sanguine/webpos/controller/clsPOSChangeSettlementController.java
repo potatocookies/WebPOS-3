@@ -38,6 +38,7 @@ import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
 import com.sanguine.webpos.bean.clsPOSVoidBillHd;
 import com.sanguine.webpos.bean.clsPOSVoidBillModifierDtl;
 import com.sanguine.webpos.bean.clsPOSVoidKotBean;
+import com.sanguine.webpos.model.clsReasonMasterModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.util.clsPOSUtilityController;
 
@@ -62,6 +63,7 @@ public class clsPOSChangeSettlementController {
 	clsPOSMasterService objMasterService;
 	
 	Map mapSettle=new TreeMap();
+	Map mapReason=new HashMap();
 
 	@RequestMapping(value = "/frmPOSChangeSettlement", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request) throws Exception
@@ -77,6 +79,18 @@ public class clsPOSChangeSettlementController {
 		String clientCode=request.getSession().getAttribute("gClientCode").toString();
 		mapSettle=funLoadSettelementModeList();
 		model.put("settlementList",mapSettle);
+		
+		List listOfReasons =funGetReasonList();
+		if(listOfReasons!=null)
+		 {
+			for(int i =0 ;i<listOfReasons.size();i++)
+			{
+				clsReasonMasterModel objModel = (clsReasonMasterModel) listOfReasons.get(i);
+				mapReason.put(objModel.getStrReasonCode(),objModel.getStrReasonName());
+			}
+		}
+		model.put("ReasonNameList",mapReason);
+		
 		
      	if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSChangeSettlement_1","command", new clsPOSChangeSettlementBean());
@@ -238,7 +252,7 @@ public class clsPOSChangeSettlementController {
 	               objBaseServiceImpl.funExecuteUpdate(sqlBuilder.toString(),"sql");	
 
 	               // For Complimentary Bill
-	               funClearComplimetaryBillAmt(objBean.getStrBillNo(),tableType,listObjBillSettlementDtl,posCode,clientCode,"R01",objBean.getStrRemark(),objBean.getStrBillDate(),userCode);
+	               funClearComplimetaryBillAmt(objBean.getStrBillNo(),tableType,listObjBillSettlementDtl,posCode,clientCode,objBean.getStrReasonCode(),objBean.getStrRemark(),objBean.getStrBillDate(),userCode);
 	               //for live data it will calculate at day end time 
 	               //this is for QData
 	               objUtility.funCalculateDayEndCashForQFile(objBean.getStrBillDate(), 1,req);
@@ -409,7 +423,7 @@ public class clsPOSChangeSettlementController {
     					{
     					  for(int i=0;i<listBillCustomer.size();i++)
     					  {
-    					    Object[] obj = (Object[]) listBillCustomer.get(cnt);
+    					    Object[] obj = (Object[]) listBillCustomer.get(i);
     					    String mobileNo = obj[1].toString();//mobileNo
 	                        funSendComplementaryBillSMS(billNo, mobileNo,posCode,userCode);
     					  }
@@ -519,5 +533,24 @@ public class clsPOSChangeSettlementController {
 	            e.printStackTrace();
 	        }
 	    }
+	   
+	   
+	   
+		  public List<clsReasonMasterModel> funGetReasonList()throws Exception
+		  {
+			  StringBuilder sql = new StringBuilder();
+			  List<clsReasonMasterModel> listReason=new ArrayList();
+			  sql.append("select strReasonCode,strReasonName from tblreasonmaster where strComplementary='Y'");
+	          List list = objBaseServiceImpl.funGetList(sql, "sql");
+	          for(int i1=0 ;i1<list.size();i1++ )
+	      	  {
+	          	  Object[] obj = (Object[]) list.get(i1);
+	          	  clsReasonMasterModel objModel=new clsReasonMasterModel();
+	          	  objModel.setStrReasonCode(obj[0].toString());
+	          	  objModel.setStrReasonName(obj[1].toString());
+	          	  listReason.add(objModel);
+	      	  }	
+	          return listReason;
+		  }
 	
 }

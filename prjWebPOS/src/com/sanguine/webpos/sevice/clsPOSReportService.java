@@ -3,6 +3,8 @@ package com.sanguine.webpos.sevice;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +20,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.lang.reflect.Array;
+
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.HashPrintServiceAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.PrintServiceAttributeSet;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.PrinterName;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15627,7 +15637,7 @@ public class clsPOSReportService {
      					}
      				}
  			    
- 			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+ 			    /*if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
  			    {
  			    	 hmData=funRemotePrintUsingTextFile(TableNo, code.trim(), "", "Reprint", "Dina", "N",posCode,clientCode,posName,webStockUserCode);
  			    	
@@ -15637,6 +15647,8 @@ public class clsPOSReportService {
                 	 hmData=funRemotePrintUsingTextFile(TableNo, code.trim(), "", "Reprint", "Dina", "N",posCode,clientCode,posName,webStockUserCode);
                 	
                  }
+ 			    */
+ 			   hmData=funRemotePrintUsingTextFile(TableNo, code.trim(), "", "Reprint", "Dina", "N",posCode,clientCode,posName,webStockUserCode);
  			  
              }
         	 catch (Exception e)
@@ -15648,19 +15660,21 @@ public class clsPOSReportService {
          else if (kotFor.equalsIgnoreCase("DirectBiller"))
          {
  			    
- 			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+ 			    /*if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
 				 {
 				 }
 				 else
 				 {
 					 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
 				 }
+ 			    */
+        	    hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
         	    code = "";
             }
          } 
          else if (transactionType.equalsIgnoreCase("Bill"))
          {
-                 if (objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+                 /*if (objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
 				 {
 				    // funTextFilePreviewBill(docNo);
 				 }
@@ -15668,6 +15682,8 @@ public class clsPOSReportService {
 				 {
 					 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
 				 }
+                 */
+        	 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
         	 code = "";
          }
          else 
@@ -15707,115 +15723,284 @@ public class clsPOSReportService {
 	    {
 	        String p2="",p3="",p4="",p5="",p6="",p7="";
 	        String c2="",c3="",c4="",c5="",c6="";
-	        switch (type)
-	        {
-	            case "Dina":
-
-	                String areaCodeForAll = "";
-	                sql.append("select strAreaCode from tblareamaster where strAreaName='All'");
-	                List rsAreaCode=objBaseService.funGetList(sql, "sql");
-	               
-	       		 if (rsAreaCode!=null)
-					{
-						for(int i=0; i<rsAreaCode.size(); i++)
-						{
-	                
-	                    areaCodeForAll =(String) rsAreaCode.get(i);
-	                }
-					}
-	       		   sql.setLength(0);
-	       		   sql.append("select a.strItemName,a.strNCKotYN,d.strCostCenterCode,d.strPrimaryPrinterPort,d.strSecondaryPrinterPort,d.strCostCenterName "
-	                        + " ,ifnull(e.strLabelOnKOT,'KOT') strLabelOnKOT "
-	                        + " from tblitemrtemp a "
-	                        + " left outer join tblmenuitempricingdtl c on a.strItemCode = c.strItemCode "
-	                        + " left outer join tblprintersetup d on c.strCostCenterCode=d.strCostCenterCode "
-	                        + " left outer join tblcostcentermaster e on c.strCostCenterCode=e.strCostCenterCode  "
-	                        + " where a.strKOTNo='"+KOTNo+"' and a.strTableNo='"+tableNo+"' and (c.strPosCode='"+POSCode+"' or c.strPosCode='All') "
-	                        + " and (c.strAreaCode IN (SELECT strAreaCode FROM tbltablemaster where strTableNo='"+tableNo+"' ) "
-	                        + " OR c.strAreaCode ='"+areaCodeForAll+"') "
-	                        + " group by d.strCostCenterCode");
-	              List list1 =objBaseService.funGetList(sql, "sql");
-	              if (list1!=null)
-						{
-	            	  for(int i=0; i<list1.size(); i++)
-						{
-	            		    Object[] obj = (Object[]) list1.get(i);
-							p3 = (String) Array.get(obj, 2);
-		            	  	p2 = (String) Array.get(obj, 1);
-		            	  	p4 = (String) Array.get(obj, 3);
-		            	  	p5 = (String) Array.get(obj, 4);
-		            	  	p6 = (String) Array.get(obj, 5);
-		            	  	p7 = (String) Array.get(obj, 6);
-						}	
-					 	
-	            	  	
-	            	  
-	            	  	Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintType");
-	     			    
-	     			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Jasper"))
-	                     {
-	     			    	
-	     			    //	jObj1=funGenerateJasperForTableWiseKOT("Dina", tableNo, p3, "", areaCodeForAll, KOTNo, reprint, p4, p5, p6, printYN, p2, p7,posName,POSCode,clientCode,webStockUserCode);
-	     			    	//jArr.put(jObj1);
-	                     }
-	                    else
-	                    {
-	                        //funGenerateTextFileForTableWiseKOT(tableNo,p3, areaCodeForAll, KOTNo, reprint, p4, p5, p6, printYN, p2, p7,posName,POSCode,clientCode,webStockUserCode);
-	                    }
-	     			    
-	                }
-	              // jObjRet.put("DinajArr", jArr);
-	                break;
-
-	            case "DirectBiller":
-
-	            	 sql.setLength(0);
-	            	 sql.append("select a.strItemName,c.strCostCenterCode,c.strPrimaryPrinterPort "
-	                        + ",c.strSecondaryPrinterPort,c.strCostCenterName,d.strLabelOnKOT "
-	                        + " from tblbilldtl  a,tblmenuitempricingdtl b,tblprintersetup c,tblcostcentermaster d   "
-	                        + " where a.strBillNo='"+billNo+"' "
-	                        + " and  a.strItemCode=b.strItemCode "
-	                        + " and b.strCostCenterCode=c.strCostCenterCode "
-	                        + " and b.strCostCenterCode=d.strCostCenterCode "
-	                        + " and (b.strPosCode='"+POSCode+"' or b.strPosCode='All') "
-	                        + " group by c.strCostCenterCode;");
-	              List rsPrintDirect = objBaseService.funGetList(sql, "sql");
-	              if (rsPrintDirect!=null)
-						{
-	            	  for(int i=0; i<rsPrintDirect.size(); i++)
-							{
-	          		            Object[] obj = (Object[]) rsPrintDirect.get(i);
-						
-			            		 c2 = (String) Array.get(obj,2);
-			            	  	 c3 = (String) Array.get(obj,3);
-			            	  	 c4 = (String) Array.get(obj,4);
-			            	  	 c5 = (String) Array.get(obj,5);
-			            	  	 c6 = (String) Array.get(obj,6);
-							} 	
-	            	  	Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gDirectAreaCode");
-	     			    
-	     			   String directAreaCode = objSetupParameter.get("gDirectAreaCode").toString();
-	                   objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintType");
-	     			    
-	     			    if(objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Jasper"))
-	                    {
-	     			    	
-	                    }
-	                    else
-	                    {
-	                        //funGenerateTextFileForKOTDirectBiller(c2, directAreaCode, billNo, reprint, c3, c4, c5, c6,posName,POSCode,clientCode,webStockUserCode);
-	                    }
-	                }
-	                
-	                break;
-	        }
-	    }
-	        catch (Exception ex)
+	        String areaCodeForAll = "";
+            sql.append("select strAreaCode from tblareamaster where strAreaName='All'");
+            List rsAreaCode=objBaseService.funGetList(sql, "sql");
+           
+	   		if (rsAreaCode!=null)
 			{
-				ex.printStackTrace();
+				for(int i=0; i<rsAreaCode.size(); i++)
+				{
+					areaCodeForAll =(String) rsAreaCode.get(i);
+                }
 			}
+   		   sql.setLength(0);
+   		   sql.append("select a.strItemName,a.strNCKotYN,d.strCostCenterCode,d.strPrimaryPrinterPort,d.strSecondaryPrinterPort,d.strCostCenterName "
+                + " ,ifnull(e.strLabelOnKOT,'KOT') strLabelOnKOT "
+                + " from tblitemrtemp a "
+                + " left outer join tblmenuitempricingdtl c on a.strItemCode = c.strItemCode "
+                + " left outer join tblprintersetup d on c.strCostCenterCode=d.strCostCenterCode "
+                + " left outer join tblcostcentermaster e on c.strCostCenterCode=e.strCostCenterCode  "
+                + " where a.strKOTNo='"+KOTNo+"' and a.strTableNo='"+tableNo+"' and (c.strPosCode='"+POSCode+"' or c.strPosCode='All') "
+                + " and (c.strAreaCode IN (SELECT strAreaCode FROM tbltablemaster where strTableNo='"+tableNo+"' ) "
+                + " OR c.strAreaCode ='"+areaCodeForAll+"') "
+                + " group by d.strCostCenterCode");
+          List list1 =objBaseService.funGetList(sql, "sql");
+          if (list1!=null)
+		   {
+        	  for(int i=0; i<list1.size(); i++)
+				{
+        		    Object[] obj = (Object[]) list1.get(i);
+					p3 = (String) Array.get(obj, 2);
+            	  	p2 = (String) Array.get(obj, 1);
+            	  	p4 = (String) Array.get(obj, 3);
+            	  	p5 = (String) Array.get(obj, 4);
+            	  	p6 = (String) Array.get(obj, 5);
+            	  	p7 = (String) Array.get(obj, 6);
+				}	
+			 	Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintType");
+ 			    hmData=funGenerateJasperForTableWiseKOT("Dina", tableNo, p3, "", areaCodeForAll, KOTNo, reprint, p4, p5, p6, printYN, p2, p7,posName,POSCode,clientCode,webStockUserCode);
+ 			 }
+        }
+        catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
 	    return hmData;
 	}
+
+	
+	
+	
+	
+	 private Map funGenerateJasperForTableWiseKOT(String billingType, String tableNo, String CostCenterCode, String ShowKOT, String AreaCode, String KOTNO, String Reprint, String primaryPrinterName, String secondaryPrinterName, String CostCenterName, String printYN, String NCKotYN, String labelOnKOT,String posName,String POSCode,String clientCode,String webStockUserCode)
+	    {
+		    Map hmData = new HashMap();
+	        Map hm = new HashMap();
+	        StringBuilder sql = new StringBuilder();
+	        List listData = new ArrayList();
+	       // List<List<clsPOSBillDtl>> listData = new ArrayList<>();
+	        try
+	        {
+	            
+	            boolean isReprint = false;
+	            if ("Reprint".equalsIgnoreCase(Reprint))
+	            {
+	                isReprint = true;
+	                hm.put("dublicate", "[DUPLICATE]");
+	            }
+	            if ("Y".equalsIgnoreCase(NCKotYN))
+	            {
+	                hm.put("KOTorNC", "NCKOT");
+	            }
+	            else
+	            {
+	                hm.put("KOTorNC", labelOnKOT);
+	            }
+	            hm.put("POS", posName);
+	            hm.put("costCenter", CostCenterName);
+
+	            String tableName = "";
+	            int pax = 0;
+	            sql.append("select strTableName,intPaxNo "
+	                    + " from tbltablemaster "
+	                    + " where strTableNo='"+tableNo+"' and strOperational='Y'");
+	            
+	            List rs_Dina_Table = objBaseService.funGetList(sql, "sql");
+                if (rs_Dina_Table!=null)
+				 {
+        	       for(int i=0; i<rs_Dina_Table.size(); i++)
+					{
+        	    	   Object[] obj = (Object[]) rs_Dina_Table.get(i);
+				       tableName = (String) Array.get(obj,0);
+                       pax = (int) Array.get(obj,1);
+					}
+				 }
+	           
+	            String itemName = "b.strItemName";
+	            Map mapSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintShortNameOnKOT");
+			    String pringShortNameOnKOT = (String) mapSetupParameter.get("gPrintShortNameOnKOT");
+			    if ("gPrintShortNameOnKOT".equalsIgnoreCase(pringShortNameOnKOT))
+	            {
+	                itemName = "d.strShortName";
+	            }
+	            String sqlKOTItems = "";
+	            List<clsPOSBillDtl> listOfKOTDetail = new ArrayList<>();
+	            mapSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gAreaWisePricing");
+			    
+	            sql.setLength(0);
+	            if (mapSetupParameter.get("gAreaWisePricing").equals("Y"))
+	            {
+	            	sql.append("select LEFT(a.strItemCode,7)," + itemName + ",a.dblItemQuantity,a.strKOTNo,a.strSerialNo "
+	                        + " from tblitemrtemp a,tblmenuitempricingdtl b,tblprintersetup c,tblitemmaster d "
+	                        + " where a.strTableNo='"+tableNo+"' and a.strKOTNo='"+KOTNO+"' and b.strCostCenterCode=c.strCostCenterCode "
+	                        + " and b.strCostCenterCode='"+CostCenterCode+"' and a.strItemCode=d.strItemCode "
+	                        + " and (b.strPOSCode='"+POSCode+"' or b.strPOSCode='All') "
+	                        + " and (b.strAreaCode IN (SELECT strAreaCode FROM tbltablemaster where strTableNo='"+tableNo+"' )) "
+	                        + " and LEFT(a.strItemCode,7)=b.strItemCode and b.strHourlyPricing='No' "
+	                        + " order by a.strSerialNo ");
+	            }
+	            else
+	            {
+	            	sql.append("select LEFT(a.strItemCode,7)," + itemName + ",a.dblItemQuantity,a.strKOTNo,a.strSerialNo "
+	                        + " from tblitemrtemp a,tblmenuitempricingdtl b,tblprintersetup c,tblitemmaster d "
+	                        + " where a.strTableNo='"+tableNo+"' and a.strKOTNo='"+KOTNO+"' and b.strCostCenterCode=c.strCostCenterCode "
+	                        + " and b.strCostCenterCode='"+CostCenterCode+"' and a.strItemCode=d.strItemCode "
+	                        + " and (b.strPOSCode='"+POSCode+"' or b.strPOSCode='All') "
+	                        + " and (b.strAreaCode IN (SELECT strAreaCode FROM tbltablemaster where strTableNo='"+tableNo+"' ) "
+	                        + " OR b.strAreaCode ='" + AreaCode + "') "
+	                        + " and LEFT(a.strItemCode,7)=b.strItemCode and b.strHourlyPricing='No' "
+	                        + " order by a.strSerialNo ");
+	            }
+	            
+	            
+	          List list_KOT_Items= objBaseService.funGetList(sql, "sql");
+	          String KOTType = "DINE";
+	          Map hmTakeAway = new HashMap<String, String>();
+	          sql.setLength(0);
+	          sql.append("select strTableNo from tblitemrtemp where strTakeAwayYesNo='Yes'");
+	          List listTakeAway = objBaseService.funGetList(sql, "sql");
+              if (listTakeAway!=null)
+			   {
+	  	           for(int i=0; i<listTakeAway.size(); i++)
+					{
+	  	    	       hmTakeAway.put((String) listTakeAway.get(i), "Yes");
+					}
+			   }
+	          
+	          if (null != hmTakeAway.get(tableNo))
+	           {
+	                KOTType = "Take Away";
+	            }
+	          	String gCounterWise = "No";
+	            hm.put("KOTType", KOTType);
+	            if (gCounterWise.equals("Yes"))
+	            {
+	                hm.put("CounterName", "");
+	            }
+	            hm.put("KOT", KOTNO);
+	            hm.put("tableNo", tableName);
+	            if (clientCode.equals("124.001"))
+	            {
+	                hm.put("124.001", tableName);
+	            }
+	            hm.put("PAX", String.valueOf(pax));
+
+	            sql.setLength(0);
+		        sql.append("select strWaiterNo from tblitemrtemp where strKOTNo='"+KOTNO+"'  and strTableNo='"+tableNo+"' group by strKOTNo ");
+		        String waiterNo="";
+		        List listWaiterDtl = objBaseService.funGetList(sql, "sql");
+	              if (listWaiterDtl!=null)
+				   {
+	            	  for(int i=0; i<listWaiterDtl.size(); i++)
+						{
+		            		waiterNo =(String) listWaiterDtl.get(i);
+		   				}
+	            	  
+	            	  if (!"null".equalsIgnoreCase(waiterNo) && waiterNo.trim().length() > 0)
+		                {
+	            		  sql.setLength(0);
+	      		          sql.append("select strWShortName from tblwaitermaster where strWaiterNo='"+waiterNo+"'");
+		                  List listWaiter =objBaseService.funGetList(sql, "sql");
+		                  for(int i=0; i<listWaiter.size(); i++)
+							{
+		                	  hm.put("waiterName",(String) listWaiter.get(i));
+							}
+		                }
+				   }
+		      
+	            sql.setLength(0);
+  		        sql.append("select date(dteDateCreated),time(dteDateCreated) from tblitemrtemp where strKOTNo='"+KOTNO+"'  and strTableNo='"+tableNo+"' group by strKOTNo ");
+  		        List listDate =objBaseService.funGetList(sql, "sql");
+  		        Date dt = null;
+	            Time ti = null;
+	            if(listDate!=null)
+	            {
+	            	for(int i=0; i<listDate.size(); i++)
+					{
+	            		Object[] obj = (Object[]) listDate.get(i);
+	            		dt = (Date) Array.get(obj,0);
+	            		ti=(Time)Array.get(obj,1);
+	            	}
+	              hm.put("DATE_TIME", dt + " " + ti);
+	            }
+	            
+	            InetAddress ipAddress = InetAddress.getLocalHost();
+	            String hostName = ipAddress.getHostName();
+	            hm.put("KOTFrom", hostName);
+	            
+	            BigDecimal itemQty=null;
+	            String itemNam="",serialNo="",itemCode="";
+	            String modifierName="";
+	            if (list_KOT_Items!=null)
+	             {
+	        	   for(int i=0; i<list_KOT_Items.size(); i++)
+					{
+	           		   Object[] obj = (Object[]) list_KOT_Items.get(i);
+	           		   itemQty = (BigDecimal) Array.get(obj,2);
+	        	       itemNam=(String)Array.get(obj,1);
+	        	       serialNo=(String)Array.get(obj,4);
+	        	       itemCode=(String)Array.get(obj, 0);
+	        	     
+		        	   double d1=itemQty.doubleValue();
+		               clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
+		               objBillDtl.setDblQuantity(d1);
+		               objBillDtl.setStrItemName(itemNam);
+		               listOfKOTDetail.add(objBillDtl);
+		               sql.setLength(0);
+		  		       sql.append("select a.strItemName,sum(a.dblItemQuantity) from tblitemrtemp a "
+		                        + " where a.strItemCode like'" + itemCode + "M%' and a.strKOTNo='" + KOTNO + "' "
+		                        + " and strSerialNo like'" + serialNo + ".%' "
+		                        + " group by a.strItemCode,a.strItemName ");
+		                //System.out.println(sql_Modifier);
+		  		       List listModifierItems =objBaseService.funGetList(sql, "sql");
+		               if (listModifierItems!=null && listModifierItems.size()>0)
+		                {
+		            	   for(int cnt=0; cnt<listModifierItems.size(); cnt++)
+			   				{
+			              		Object[] objModifier = (Object[]) listModifierItems.get(cnt);
+			              		modifierName = (String) Array.get(objModifier,0);
+			              		itemQty = (BigDecimal) Array.get(objModifier,1);
+			                }
+		            	    d1=itemQty.doubleValue();
+		                    objBillDtl = new clsPOSBillDtl();
+		                   
+		                    if (modifierName.startsWith("-->"))
+		                    {
+		                    	
+		                      mapSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintModQtyOnKOT");
+		            		  if ((boolean)mapSetupParameter.get("gPrintModQtyOnKOT"))
+		                       {
+		                            objBillDtl.setDblQuantity(d1);
+		                            objBillDtl.setStrItemName(modifierName);
+		                        }
+		                        else
+		                        {
+		                            objBillDtl.setDblQuantity(0);
+		                            objBillDtl.setStrItemName(modifierName);
+		                        }
+		                    }
+		                    listOfKOTDetail.add(objBillDtl);
+		                }
+	             }
+	          }  
+	          mapSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gNoOfLinesInKOTPrint");
+		      String noOfLinesOnKOTPrint = (String) mapSetupParameter.get("gNoOfLinesInKOTPrint");
+		      hm.put("listOfItemDtl", listOfKOTDetail);
+	          listData.add(hm);
+	            
+              hmData.put("listData", listData);
+              hmData.put("gNoOfLinesInKOTPrint", noOfLinesOnKOTPrint);
+              hmData.put("listOfKOTDetail", listOfKOTDetail);
+	        
+	        }
+	        catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }
+	        
+	        return hmData;
+	    }
 
 
 	

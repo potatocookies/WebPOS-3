@@ -23,13 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.POSGlobal.controller.clsManagerReportBean;
-import com.POSGlobal.controller.clsPosConfigFile;
-import com.POSGlobal.controller.clsSendMail;
 import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
-import com.sanguine.webpos.bean.clsPOSAreaMasterBean;
+import com.sanguine.webpos.bean.clsManagerReportBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
@@ -168,16 +165,17 @@ public class clsPOSBillWiseSettlementWiseGroupWiseBreakupReportController {
 			    pw.println();
 				
 				int ret = funBillWiseSettlementWiseGroupWiseBreakup(fromDate,toDate,posCode,pw);
-
+				String printOS = "Windows";
+				String printerType = "Inbuild";
 				 pw.println();
 				 pw.println();
-				 if ("linux".equalsIgnoreCase(clsPosConfigFile.gPrintOS))
+				 if ("linux".equalsIgnoreCase(printOS))
 				 {
 					 pw.println("V");//Linux
 				 }
-				 else if ("windows".equalsIgnoreCase(clsPosConfigFile.gPrintOS))
+				 else if ("windows".equalsIgnoreCase(printOS))
 				 {
-					if ("Inbuild".equalsIgnoreCase(clsPosConfigFile.gPrinterType))
+					if ("Inbuild".equalsIgnoreCase(printerType))
 					{
 					    pw.println("V");
 					}
@@ -257,19 +255,23 @@ public class clsPOSBillWiseSettlementWiseGroupWiseBreakupReportController {
 
 			 pw.println();
 			 pw.println();
-			 if ("linux".equalsIgnoreCase(clsPosConfigFile.gPrintOS))
+			 String printOS = "Windows";
+			String printerType = "Inbuild";
+			 pw.println();
+			 pw.println();
+			 if ("linux".equalsIgnoreCase(printOS))
 			 {
-				 pw.println("V");//Linux
+				 pw.println(" V ");//Linux
 			 }
-			 else if ("windows".equalsIgnoreCase(clsPosConfigFile.gPrintOS))
+			 else if ("windows".equalsIgnoreCase(printOS))
 			 {
-				if ("Inbuild".equalsIgnoreCase(clsPosConfigFile.gPrinterType))
+				if ("Inbuild".equalsIgnoreCase(printerType))
 				{
-				    pw.println("V");
+				    pw.println(" V ");
 				}
 				else
 				{
-				    pw.println("m");//windows
+				    pw.println(" m ");//windows
 				}
 			 }
 

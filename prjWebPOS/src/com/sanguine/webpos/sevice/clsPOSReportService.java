@@ -19,28 +19,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-
 import java.util.Set;
 import java.util.Vector;
 
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.HashPrintServiceAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.PrintServiceAttributeSet;
-import javax.print.attribute.standard.Copies;
-import javax.print.attribute.standard.MediaSizeName;
-import javax.print.attribute.standard.PrinterName;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.POSGlobal.controller.clsReprintDocs;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sanguine.base.service.clsSetupService;
@@ -58,12 +45,12 @@ import com.sanguine.webpos.bean.clsPOSGroupWaiseSalesBean;
 import com.sanguine.webpos.bean.clsPOSItemWiseConsumption;
 import com.sanguine.webpos.bean.clsPOSKOTAnalysisBean;
 import com.sanguine.webpos.bean.clsPOSOperatorDtl;
-import com.sanguine.webpos.bean.clsPOSReprintDocumentsBean;
 import com.sanguine.webpos.bean.clsPOSSalesFlashColumns;
 import com.sanguine.webpos.bean.clsPOSSalesFlashReportsBean;
 import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
 import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
 import com.sanguine.webpos.bean.clsPOSWaiterAnalysisBean;
+import com.sanguine.webpos.bean.clsReprintDocs;
 import com.sanguine.webpos.comparator.clsPOSBillComparator;
 import com.sanguine.webpos.comparator.clsPOSBillComplimentaryComparator;
 import com.sanguine.webpos.comparator.clsPOSCostCenterComparator;
@@ -17883,7 +17870,7 @@ public class clsPOSReportService {
 	
 	public List funReprintDocsDtailReport(String fromDate,String toDate,String strType,String userName,String documentNo,String type) throws Exception
 	{
-		List<clsReprintDocs> listOfReprintTextData = new ArrayList<>();
+		List<clsReprintDocs> listOfReprintTextData = new ArrayList<clsReprintDocs>();
 		if(type.equalsIgnoreCase("Detail"))
 		{
 			StringBuilder sqlQData = new StringBuilder();

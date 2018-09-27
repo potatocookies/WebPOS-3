@@ -1056,7 +1056,8 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		    {
 		    	 window.location.href=searchurl;
 		    	 var w= window.open(getContextPath()+"/printPDF.html?fileName=kotSlip.pdf");
-				 w.print();  	
+				 w.print();  
+				 w.close();
 		    },
 		    error: function(jqXHR, exception)
 		    {
@@ -1196,7 +1197,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		        	 
 		        	
 		        	/* Disable while in development */ 
-		        	//funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
+		        	funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
 		        	
 		        	 if(gMultiWaiterSelOnMakeKOT=="")
 		    		{
@@ -1582,7 +1583,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        		
 			        		}
 			        	else
-			        		$("#Customer").val("New Customer");
+			        		$("#Customer").val("");
 					},
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {

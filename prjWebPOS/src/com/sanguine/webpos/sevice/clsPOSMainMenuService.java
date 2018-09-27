@@ -189,7 +189,10 @@ public class clsPOSMainMenuService {
 					       	
 		            sbSql.setLength(0);
 		            sbSql.append("select count(*) from tbldayendprocess "
-		            	+ " where strPOSCode='" + POSCode + "' and strDayEnd='N' and (strShiftEnd='' or strShiftEnd='N')");
+		            	+ " where strPOSCode='" + POSCode + "' "
+		            			+ " and strDayEnd='N' "
+		            			+ " and (strShiftEnd='' or strShiftEnd='N') "
+		            			+ " and strClientCode='"+clientCode+"' ");
 			        listSet=objBaseService.funGetList(sbSql, "sql");
 					int countEnd=0;
 					if (listSet.size() > 0)
@@ -200,8 +203,10 @@ public class clsPOSMainMenuService {
 			        {
 						sbSql.setLength(0);
 			            sbSql.append("select date(max(dtePOSDate)),intShiftCode,strShiftEnd,strDayEnd"
-				            + " from tbldayendprocess where strPOSCode='"+ POSCode + "' and strDayEnd='N' "
-				            + " and (strShiftEnd='' or strShiftEnd='N')");
+				            + " from tbldayendprocess where strPOSCode='"+ POSCode + "' "
+				            		+ "and strDayEnd='N' "
+				            + " and (strShiftEnd='' or strShiftEnd='N') "
+				            + " and strClientCode='"+clientCode+"'  ");
 			            listSet=objBaseService.funGetList(sbSql, "sql");
 			 			if (listSet.size() > 0)
 			 			{
@@ -215,8 +220,9 @@ public class clsPOSMainMenuService {
 				            {
 			 					sbSql.setLength(0);
 					            sbSql.append("select intShiftCode,strBillDateTimeType from tblshiftmaster "
-			 						+ "where strPOSCode='" + POSCode + "' and "
-					                + "intShiftCode=" + Integer.parseInt(obSett[1].toString()));
+			 						+ "where strPOSCode='" + POSCode + "' "
+			 								+ " and intShiftCode=" + Integer.parseInt(obSett[1].toString()) +""
+			 										+ " and strClientCode='"+clientCode+"' ");
 					            List listShiftInfo=objBaseService.funGetList(sbSql, "sql");
 					 	 		if (listShiftInfo.size() > 0)
 					 	 		{

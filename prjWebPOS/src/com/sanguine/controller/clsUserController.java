@@ -710,7 +710,7 @@ public class clsUserController
 			String userType = req.getSession().getAttribute("gUserType").toString();
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
 			String sql="select a.strPosName from tblposmaster a "
-					+ " where a.strPosCode='"+POSCode+"' ";
+					+ " where a.strPosCode='"+POSCode+"' and a.strClientCode='"+clientCode+"' ";
 			
 			List list=objGlobalService.funGetList(sql,"sql");
 
@@ -794,7 +794,7 @@ public class clsUserController
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
 			
-			objPOSTools.funPOSUpdateStructure(req);
+		//	objPOSTools.funPOSUpdateStructure(req);
 			
 		}
 		

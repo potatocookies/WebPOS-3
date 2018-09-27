@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.DriverManager;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ import com.sanguine.model.clsPropertySetupModel;
 import com.sanguine.service.clsGlobalFunctionsService;
 import com.sanguine.service.clsSetupMasterService;
 import com.sanguine.webpos.bean.clsPOSReportBean;
+import com.sanguine.webpos.controller.clsPOSGlobalFunctionsController;
+import com.sanguine.webpos.util.clsPOSSetupUtility;
 
 
 
@@ -59,7 +62,10 @@ public class clsGlobalFunctions
 	@Autowired
 	private ServletContext servletContext;
 
-
+	@Autowired
+	static
+	clsPOSSetupUtility objPOSSetupUtility;
+	
 	public final String NARRATION="strNarration";
 	public final String COMPANY_NAME="strCompanyName";
 	public final String USER_CODE="strUserCode";
@@ -2824,7 +2830,7 @@ public class clsGlobalFunctions
 		String clientCode = req.getSession().getAttribute("gClientCode").toString();
 		String userCode = req.getSession().getAttribute("gUserCode").toString();
 		String companyName = req.getSession().getAttribute("gCompanyName").toString();
-
+		String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 		String imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 		String fromDateToDisplay = objBean.getFromDate();
 		String toDateToDisplay = objBean.getToDate();
@@ -2834,8 +2840,8 @@ public class clsGlobalFunctions
 		String toDate = objBean.getToDate().split("-")[2] + "-" + objBean.getToDate().split("-")[1] + "-" + objBean.getToDate().split("-")[0];
 
 		String type = objBean.getStrDocType();
-
 		String strPOSName = objBean.getStrPOSName();
+		final String gDecimalFormatString = funGetGlobalDecimalFormatString(clientCode,POSCode);
 
 		hm.put("posName", strPOSName);
 		hm.put("imagePath", imagePath);
@@ -2849,10 +2855,38 @@ public class clsGlobalFunctions
 		hm.put("shiftNo", "1");
 		hm.put("userName", userCode);
 		hm.put("type", type);
-
+		hm.put("decimalFormaterForDoubleValue", gDecimalFormatString);
+		hm.put("decimalFormaterForIntegerValue", "0");
 		return hm;
 	}
+	
+//	public static DecimalFormat funGetGlobalDecimalFormatter()
+//    {
+//
+//	DecimalFormat gDecimalFormat = new DecimalFormat(funGetGlobalDecimalFormatString());
+//
+//	return gDecimalFormat;
+//    }
 
+    public static String funGetGlobalDecimalFormatString(String strClientCode,String POSCode)
+    {
+
+	StringBuilder decimalFormatBuilderForDoubleValue = new StringBuilder("0");
+	int gNoOfDecimalPlace = Integer.parseInt(clsPOSGlobalFunctionsController.hmPOSSetupValues.get("dblNoOfDecimalPlace").toString());
+	for (int i = 0; i < gNoOfDecimalPlace; i++)
+	{
+	    if (i == 0)
+	    {
+		decimalFormatBuilderForDoubleValue.append(".0");
+	    }
+	    else
+	    {
+		decimalFormatBuilderForDoubleValue.append("0");
+	    }
+	}
+	return decimalFormatBuilderForDoubleValue.toString();
+    }
+	
 	 public JSONObject funPOSTMethodUrlJosnObjectData(String strUrl,JSONObject objRows)
 		{
 			JSONObject josnObjRet = new JSONObject();

@@ -586,6 +586,9 @@ public class clsSetupHdModel extends clsBaseModel implements Serializable
 	@Column(name="strPostSalesCostOrLoc")
 	private String strPostSalesCostOrLoc;
 	
+	@Column(name="dblNoOfDecimalPlace")
+	private int dblNoOfDecimalPlace;
+	
 //Setter-Getter Methods
 	public String getStrClientCode()
 	{
@@ -2389,6 +2392,16 @@ public class clsSetupHdModel extends clsBaseModel implements Serializable
 	}
 	public void setStrPostSalesCostOrLoc(String strPostSalesCostOrLoc){
 		this. strPostSalesCostOrLoc = (String) setDefaultValue( strPostSalesCostOrLoc, "NA");
+	}
+
+	public int getDblNoOfDecimalPlace()
+	{
+		return dblNoOfDecimalPlace;
+	}
+
+	public void setDblNoOfDecimalPlace(int dblNoOfDecimalPlace)
+	{
+		this.dblNoOfDecimalPlace = dblNoOfDecimalPlace;
 	}
 
 	

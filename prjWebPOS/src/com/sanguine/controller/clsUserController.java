@@ -1032,6 +1032,8 @@ public class clsUserController
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strEnableDineIn","N");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strAutoAreaSelectionInMakeKOT","N");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strConsolidatedKOTPrinterPort","");
+	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("dblNoOfDecimalPlace",objSetupHdModel.getDblNoOfDecimalPlace());
+	    	
 		}
 		
 		

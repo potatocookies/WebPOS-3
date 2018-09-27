@@ -249,7 +249,8 @@ public class clsPOSSetupUtility {
 				case "gNewBillSeriesForNewDay"  : columnName ="strNewBillSeriesForNewDay";
 				break;
 				
-				
+				case "gNoOfDecimalPlace" : columnName="dblNoOfDecimalPlace";
+				break;
 				
 				
 			}

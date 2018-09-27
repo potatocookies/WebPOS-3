@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.POSGlobal.controller.clsSMSSender;
+
 import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.webpos.bean.clsPOSAddKOTToBillBean;
 import com.sanguine.webpos.bean.clsPOSBillDiscountDtl;
@@ -33,6 +33,7 @@ import com.sanguine.webpos.bean.clsPOSBillSettlementDtl;
 import com.sanguine.webpos.bean.clsPOSBillTaxDtl;
 import com.sanguine.webpos.bean.clsPOSChangeSettlementBean;
 import com.sanguine.webpos.bean.clsPOSKOTItemDtl;
+import com.sanguine.webpos.bean.clsPOSSMSSender;
 import com.sanguine.webpos.bean.clsPOSSettelementOptions;
 import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
 import com.sanguine.webpos.bean.clsPOSVoidBillHd;
@@ -525,7 +526,7 @@ public class clsPOSChangeSettlementController {
 	            {
 	                mobileNoList.add(mn);
 	            }
-	            clsSMSSender objSMSSender = new clsSMSSender(mobileNoList, mainSMSBuilder.toString());
+	            clsPOSSMSSender objSMSSender = new clsPOSSMSSender(mobileNoList, mainSMSBuilder.toString());
 	            objSMSSender.start();
 	        }
 	        catch (Exception e)

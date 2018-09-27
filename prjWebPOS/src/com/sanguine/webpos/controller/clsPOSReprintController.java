@@ -163,34 +163,6 @@ public class clsPOSReprintController
 		String posDate= request.getSession().getAttribute("gPOSDate").toString();
 		String PrintVatNoPOS="",vatNo="",printServiceTaxNo="",serviceTaxNo="";
 
-	    /*List listPrintVatNo=objMasterService.funGetPrintVatNoPOS(posCode);
-	   
-	     for(int cnt=0;cnt<listPrintVatNo.size();cnt++)
-		  {
-	    	 PrintVatNoPOS=listPrintVatNo.get(cnt).toString();
-		  }   
-		 
-		 List listVatNo=objMasterService.funGetVatNoPOS(posCode);
-	     for(int cnt=0;cnt<listVatNo.size();cnt++)
-		  {
-	    	 vatNo=listVatNo.get(cnt).toString();
-		  }
-		 	
-	    
-		 List listServiceTaxNo=objMasterService.funPrintServiceTaxNo(posCode);
-	     for(int cnt=0;cnt<listServiceTaxNo.size();cnt++)
-		  {
-	    	 printServiceTaxNo=listServiceTaxNo.get(cnt).toString();
-		  }
-		 
-		 List listServiceTax=objMasterService.funGetServiceTaxNo(posCode);
-	     for(int cnt=0;cnt<listServiceTax.size();cnt++)
-		  {
-	    	 serviceTaxNo=listServiceTax.get(cnt).toString();
-		  }
-	     */
-
-		
 		clsPOSMasterModel objModel=objMasterService.funSelectedPOSMasterData(posCode, clientCode);
 		posName=objModel.getStrPosName();
 		
@@ -199,7 +171,7 @@ public class clsPOSReprintController
 		try
 		{
 			
-		String KOT="",kotType="",dublicate="",POS="",hostName="",costCenter="",PAX="",DATE_TIME="",KOTorNC="",tableNo="",waiterName="";
+		    String KOT="",kotType="",dublicate="",POS="",hostName="",costCenter="",PAX="",DATE_TIME="",KOTorNC="",tableNo="",waiterName="";
 			
 			
 		    Map mapViewData=objReportService.funViewButtonPressed(code,transactionType,kotFor,posCode,
@@ -220,18 +192,18 @@ public class clsPOSReprintController
 			{
 				reportName= servletContext.getRealPath("/WEB-INF/reports/webpos/rptGenrateKOTJasperReport.jrxml");
 				 imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-				 listMain=(List) mapViewData.get("jArr");
+				 listMain=(List) mapViewData.get("listData");
 				 noOfLines =  (String) mapViewData.get("gNoOfLinesInKOTPrint"); 
-				 
-					if(null!=listMain)
+				 listMain1 = (List) mapViewData.get("listOfKOTDetail");
+				 if(null!=listMain)
 					{	
 						for(int i=0;i<listMain.size();i++)
 						{
 							//JSONObject jObjtemp =(JSONObject) jarr.get(i);
-							Map mapTemp=(Map) listMain.get(i);
-							KOTorNC = mapTemp.get("KOTorNC").toString();
-							tableNo = mapTemp.get("tableNo").toString();
-							KOT=mapTemp.get("KOT").toString();
+							 Map mapTemp=(Map) listMain.get(i);
+							 KOTorNC = mapTemp.get("KOTorNC").toString();
+							 tableNo = mapTemp.get("tableNo").toString();
+							 KOT=mapTemp.get("KOT").toString();
 							 kotType=mapTemp.get("KOTType").toString();
 							 dublicate=mapTemp.get("dublicate").toString();
 							 POS=mapTemp.get("POS").toString();
@@ -242,18 +214,9 @@ public class clsPOSReprintController
 							 DATE_TIME=mapTemp.get("DATE_TIME").toString();
 						} 
 					}	
-					if(null!=listMain1)
+					if(null!=listMain1 && listMain1.size()>0)
 					{
-						for(int i=0;i<listMain1.size();i++)
-						{
-							Map mapTemp1 =(Map) listMain1.get(i);
-							
-							clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
-							
-							objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("itemQty").toString()));
-							objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
-							list.add(objclsPOSBillDtl);
-						}
+						list=listMain1;
 					 }
 						for (int cntLines = 0; cntLines < Integer.parseInt(noOfLines); cntLines++)
 			            {
@@ -286,26 +249,26 @@ public class clsPOSReprintController
 			else if(kotFor.equalsIgnoreCase("DirectBiller"))
 			{
 				
+				int result =  (int) mapViewData.get("result"); 
 				format =  (String) mapViewData.get("format"); 
-				boolean flag_DirectBillerBlill =  (boolean) mapViewData.get("flag_DirectBillerBlill"); 
-			   if(format.equalsIgnoreCase("Jasper1"))
-			   {
 				listMain1 = (List) mapViewData.get("listOfBillDetail");
-				long result =  (long) mapViewData.get("result"); 
-				long lengthListOfHomeDeliveryDtl =  (long) mapViewData.get("lengthListOfHomeDeliveryDtl"); 
-				
+				List listItemDtl = new ArrayList<>();
+				 
 				String posWiseHeading="",duplicate="",BillType="",ClientName="",ClientAddress1="",ClientAddress2="",ClientAddress3="",ClientCity="",TEL_NO="";
 				String EMAIL_ID="",TAX_INVOICE="",BillNo="",Totl="",name="",address="",mobile_no="",footer="";
 				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
 				
 				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				listMain = (List) mapViewData.get("jArr");
+				listMain = (List) mapViewData.get("listData");
 				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
+				List<clsPOSBillDtl> listOfFoodBillDetail = new ArrayList<>();
+				List<clsPOSBillDtl> listOfLiqourBillDetail = new ArrayList<>();
 				List<clsPOSBillDtl> listOfHomeDeliveryDtl =new ArrayList<>();
 				List<clsPOSBillDtl> listOfServiceVatDetail =new ArrayList<>();
 				List<clsPOSBillDtl> listOfFooterDtl =new ArrayList<>();
 				List<clsPOSBillDtl> listOfTaxDtl = new ArrayList<>();
 				List<clsPOSBillDtl> listOfDiscountDtl = new ArrayList<>();
+				List<clsPOSBillDtl> listSubTotal = new ArrayList<>();
 				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
 				
 				if(null!=listMain)
@@ -314,252 +277,18 @@ public class clsPOSReprintController
 					{
 						Map mapTemp =(Map) listMain.get(i);
 						
-						List mapTotal = (List) mapTemp.get("listOfGrandTotalDtl");
+						List listTotal = (List) mapTemp.get("listOfGrandTotalDtl");
 						
-						if(null!=mapTotal)
+						if(null!=listTotal)
 						{	
-							for(i=0;i<mapTotal.size();i++)
+							for(i=0;i<listTotal.size();i++)
 							{
-								objBillDtl = new clsPOSBillDtl();
-								Map mapTot= (Map) mapTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(mapTot.get("grandTotal").toString())); 
-								listOfGrandTotal.add(objBillDtl);
-							}
-						}	
-						
-						List listSettle = (List) mapTemp.get("listOfSettlementDetail");
-						
-						if(null!=listSettle)
-						{	
-							for(i=0;i<listSettle.size();i++)
-							{
-								objBillDtl = new clsPOSBillDtl();
-								Map mapSettle= (Map) listSettle.get(i);
-								objBillDtl.setStrItemName(mapSettle.get("settleDesc").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("settleAmt").toString()));
-								listOfSettlementDetail.add(objBillDtl);
+								 objBillDtl = new clsPOSBillDtl();
+								Map mapjTot= (Map) listTotal.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapjTot.get("grandTotal").toString())); 
 								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName(mapSettle.get("PaidAmtTxt").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("paidAmt").toString())); 
-								listOfSettlementDetail.add(objBillDtl);
+								 listOfGrandTotal.add(objBillDtl);
 								
-							}
-						}	
-						
-						List listHomeDel = (List) mapTemp.get("listOfHomeDeliveryDtl");
-						
-						if(null!=listHomeDel)
-						{	
-							for(i=0;i<listHomeDel.size();i++)
-							{
-								objBillDtl = new clsPOSBillDtl();
-								Map mapHomeDel= (Map) listHomeDel.get(i);
-								objBillDtl.setStrItemName("Name         : "+mapHomeDel.get("Name         : ").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
-								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address      : "+mapHomeDel.get("Address      : ").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
-								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("MOBILE_NO  :"+mapHomeDel.get("MOBILE_NO  :").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
-								 
-							}
-						}
-						
-						List listServiceTaxDtl = (List) mapTemp.get("listOfServiceVatDetail");
-						
-						if(null!=listServiceTaxDtl)
-						{	
-							for(i=0;i<listServiceTaxDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map jObjServieTaxDtl= (Map) listServiceTaxDtl.get(i);
-								objBillDtl.setStrItemName("Service Tax No.    :"+jObjServieTaxDtl.get("Service Tax No.:").toString());	
-								listOfServiceVatDetail.add(objBillDtl);
-							}
-						}
-						
-						List listFooterDtl = (List) mapTemp.get("listOfFooterDtl");
-						
-						if(null!=listFooterDtl)
-						{	
-							for(i=0;i<listFooterDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapFooterDtl= (Map) listFooterDtl.get(i);
-								objBillDtl.setStrItemName(mapFooterDtl.get("Thank").toString());	
-								listOfFooterDtl.add(objBillDtl);
-							}
-						}
-						List listTaxDtl = (List) mapTemp.get("listOfTaxDtl");
-						
-						if(null!=listTaxDtl)
-						{	
-							for(i=0;i<listTaxDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapTax= (Map) listTaxDtl.get(i);
-								objBillDtl=new clsPOSBillDtl();
-								
-								 objBillDtl.setDblAmount(Double.parseDouble(mapTax.get("taxAmount").toString()));
-								 objBillDtl.setStrItemName(mapTax.get("taxDesc").toString());
-								
-								 listOfTaxDtl.add(objBillDtl);
-							}
-						}	
-						
-						List listDiscountDtl= (List) mapTemp.get("listOfDiscountDtl");
-						
-						if(null!=listDiscountDtl)
-						{	
-							for(i=0;i<listDiscountDtl.size();i++)
-							{
-							    objBillDtl = new clsPOSBillDtl();
-								Map mapDiscount= (Map) listDiscountDtl.get(i);
-								objBillDtl.setStrItemName(mapDiscount.get("Discount").toString());
-								objBillDtl.setStrItemName(mapDiscount.get("discText").toString());
-								objBillDtl.setDblAmount(Double.parseDouble(mapDiscount.get("discAmt").toString()));
-								objBillDtl.setStrItemName(mapDiscount.get("Reason").toString());
-								objBillDtl.setStrItemName(mapDiscount.get("Remark").toString());
-								listOfDiscountDtl.add(objBillDtl);
-								
-							}
-						}	
-						
-						
-						posWiseHeading = mapTemp.get("posWiseHeading").toString();
-						duplicate = mapTemp.get("duplicate").toString();
-						posName = mapTemp.get("POS").toString();
-						BillType=mapTemp.get("BillType").toString();
-						ClientName=mapTemp.get("ClientName").toString();
-						ClientAddress1=mapTemp.get("ClientAddress1").toString();
-						ClientAddress2=mapTemp.get("ClientAddress2").toString();
-						ClientAddress3=mapTemp.get("ClientAddress3").toString(); 
-						ClientCity=mapTemp.get("ClientCity").toString();
-						TEL_NO=mapTemp.get("TEL NO").toString();
-						EMAIL_ID=mapTemp.get("EMAIL ID").toString();
-						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
-						DATE_TIME = mapTemp.get("DATE_TIME").toString();
-						BillNo = mapTemp.get("BillNo").toString();
-						
-					} 
-				}
-				
-				if(null!=listMain1)
-				{
-					for(int i=0;i<listMain1.size();i++)
-					{
-						 Map maptemp1 =(Map) listMain1.get(i);
-						
-						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
-						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(maptemp1.get("qty").toString()));
-						objclsPOSBillDtl.setStrItemName(maptemp1.get("itemName").toString());
-						objclsPOSBillDtl.setDblAmount(Double.parseDouble(maptemp1.get("amount").toString()));
-						
-						list.add(objclsPOSBillDtl);
-					}
-				 }
-				
-				hm.put("posWiseHeading", posWiseHeading);
-				hm.put("duplicate", duplicate);
-				hm.put("POS", posName);
-				hm.put("ClientName", ClientName);
-				hm.put("TAX_INVOICE", TAX_INVOICE);
-				hm.put("ClientAddress1", ClientAddress1);
-				hm.put("ClientAddress2", ClientAddress2);
-				hm.put("ClientAddress3", ClientAddress3);
-				hm.put("ClientCity", ClientCity);
-				hm.put("TEL NO", TEL_NO);
-				hm.put("EMAIL ID", EMAIL_ID);
-				hm.put("BillNo", BillNo);
-				hm.put("DATE_TIME", DATE_TIME);
-				hm.put("BillType", BillType);
-				hm.put("listOfItemDtl", list);
-				hm.put("listOfTaxDtl", listOfTaxDtl);
-				hm.put("listOfGrandTotalDtl", listOfGrandTotal);
-				hm.put("listOfServiceVatDetail", listOfServiceVatDetail);
-				hm.put("listOfFooterDtl", listOfFooterDtl);
-				hm.put("listOfHomeDeliveryDtl", listOfHomeDeliveryDtl);
-				hm.put("listOfDiscountDtl", listOfDiscountDtl);
-				hm.put("listOfSettlementDetail", listOfSettlementDetail);
-				
-				
-//	            hm.put("listOfItemDtl", list);
-			
-	            listData.add(list);
-				
-				
-//			if(format.equalsIgnoreCase("Jasper1"))	
-//			{	
-	            if (listOfHomeDeliveryDtl.size() > 0)
-	            {
-	                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportHD.jrxml");
-					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	            }
-	            else if (result == 1)
-	            {
-	                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
-					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	            }
-				else
-	            {
-	                reportName =servletContext.getRealPath( "/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
-					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	            }
-	            
-//	            
-//	            
-//	            
-//	            reportName =servletContext.getRealPath( "/WEB-INF/reports/webpos//rptBillFormat5JasperReportNormalBill.jrxml");
-//				imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-//			 }
-			
-		}
-			else if(format.equalsIgnoreCase("Jasper2"))	
-			{
-				int result =  (int) mapViewData.get("result"); 
-//				long listOfHDSize= (long) jObj.get("listOfHDSize");
-
-				
-				
-				listMain1 = (List) mapViewData.get("listOfBillDetail");
-				
-//				long lengthListOfHomeDeliveryDtl =  (long) jObj.get("lengthListOfHomeDeliveryDtl"); 
-				
-				String posWiseHeading="",tableName="",duplicate="",BillType="",ClientName="",ClientAddress1="",ClientAddress2="",ClientAddress3="",ClientCity="",TEL_NO="";
-				String EMAIL_ID="",TAX_INVOICE="",BillNo="",Totl="",name="",address="",mobile_no="",footer="";
-				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
-				
-				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				listMain = (List) mapViewData.get("jArr");
-				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
-				List<clsPOSBillDtl> listOfHomeDeliveryDtl =new ArrayList<>();
-				List<clsPOSBillDtl> listOfServiceVatDetail =new ArrayList<>();
-				List<clsPOSBillDtl> listOfFooterDtl =new ArrayList<>();
-				List<clsPOSBillDtl> listOfTaxDtl = new ArrayList<>();
-				List<clsPOSBillDtl> listOfDiscountDtl = new ArrayList<>();
-				List<clsPOSBillDtl> listOfCustomerDtl = new ArrayList<>();
-				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
-				
-				if(null!=listMain)
-				{	
-					for(int i=0;i<listMain.size();i++)
-					{
-						Map mapTemp =(Map) listMain.get(i);
-						
-						List mapTotal = (List) mapTemp.get("listOfGrandTotalDtl");
-						
-						if(null!=mapTotal)
-						{	
-							for(i=0;i<mapTotal.size();i++)
-							{
-								objBillDtl = new clsPOSBillDtl();
-								Map mapTot= (Map) mapTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(mapTot.get("grandTotal").toString())); 
-								listOfGrandTotal.add(objBillDtl);
 							}
 						}	
 						
@@ -570,16 +299,16 @@ public class clsPOSReprintController
 							for(i=0;i<listHomeDel.size();i++)
 							{
 								 objBillDtl = new clsPOSBillDtl();
-								Map mapHomeDel= (Map) listHomeDel.get(i);
-								objBillDtl.setStrItemName("Name         : "+mapHomeDel.get("NAME").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
+								 Map mapHomeDel= (Map) listHomeDel.get(i);
+								 objBillDtl.setStrItemName("Name:"+mapHomeDel.get("NAME").toString());
+								 listOfHomeDeliveryDtl.add(objBillDtl);
 								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address      : "+mapHomeDel.get("Address").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
+								 objBillDtl = new clsPOSBillDtl();
+								 objBillDtl.setStrItemName("Address:"+mapHomeDel.get("Address").toString());
+								 listOfHomeDeliveryDtl.add(objBillDtl);
 								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("MOBILE_NO  :"+mapHomeDel.get("MOBILE_NO").toString());
+								 objBillDtl = new clsPOSBillDtl();
+								 objBillDtl.setStrItemName("Mobile No"+mapHomeDel.get("MOBILE_NO").toString());
 								 listOfHomeDeliveryDtl.add(objBillDtl);
 								 
 							}
@@ -591,8 +320,8 @@ public class clsPOSReprintController
 						{	
 							for(i=0;i<listServiceTaxDtl.size();i++)
 							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapServieTaxDtl= (Map) listServiceTaxDtl.get(i);
+								 objBillDtl=new clsPOSBillDtl();
+								 Map mapServieTaxDtl= (Map) listServiceTaxDtl.get(i);
 								 objBillDtl.setStrItemName("Service Tax No.    :"+mapServieTaxDtl.get("Service Tax No.:").toString());	
 								 listOfServiceVatDetail.add(objBillDtl);
 							}
@@ -644,46 +373,71 @@ public class clsPOSReprintController
 								
 							}
 						}
-						List listSettle = (List) mapTemp.get("listOfSettlementDetail");
+						List listSettlementDtl = (List) mapTemp.get("listOfSettlementDetail");
 						
-						if(null!=listSettle)
+						if(null!=listSettlementDtl)
 						{	
-							for(i=0;i<listSettle.size();i++)
+							for(i=0;i<listSettlementDtl.size();i++)
 							{
-								 objBillDtl = new clsPOSBillDtl();
-								Map mapSettle= (Map) listSettle.get(i);
-								objBillDtl.setStrItemName(mapSettle.get("settleDesc").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("settleAmt").toString()));
-								listOfSettlementDetail.add(objBillDtl);
-								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName(mapSettle.get("PaidAmtTxt").toString()); 
-								objBillDtl.setDblAmount(Double.parseDouble(mapSettle.get("paidAmt").toString())); 
-								listOfSettlementDetail.add(objBillDtl);
-								
-							}
-						}	
-						
-						
-						List listCustomerDtl= (List) mapTemp.get("listOfCustomerDtl");
-						
-						if(null!=listCustomerDtl)
-						{	
-							for(i=0;i<listCustomerDtl.size();i++)
-							{
-								 objBillDtl = new clsPOSBillDtl();
-								Map mapDiscount= (Map) listCustomerDtl.get(i);
-								objBillDtl.setStrItemName(mapDiscount.get("CUSTOMER NAME:").toString());
-				                listOfCustomerDtl.add(objBillDtl);
-				                objBillDtl = new clsPOSBillDtl();
-				                objBillDtl.setStrItemName(mapDiscount.get("mobileNo").toString());
-				                listOfCustomerDtl.add(objBillDtl);
+								objBillDtl=new clsPOSBillDtl();
+								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
+								if(!mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT"))
+								{
+									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));	 
+								}
+								else
+								{
+									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("paidAmt").toString()));
+									if(mapSettlementDtl.get("settleDesc").toString().equals("REFUND AMT"))
+									{
+										objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+										objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("refundAmt").toString()));	 
+									}
+								}
+									
+								 listOfSettlementDetail.add(objBillDtl);
 								
 							}
 						}
 						
+						List listLiqur = (List) mapTemp.get("listOfLiqourBillDetail");
+						if(null!=listLiqur)
+						{
+							for( i=0;i<listLiqur.size();i++)
+							{
+								 Map mapTemp1 =(Map) listLiqur.get(i);
+								
+								clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
+								
+								objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+								objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+								objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+								listOfLiqourBillDetail.add(objclsPOSBillDtl);
+							}
+						 }
 						
-						posWiseHeading =mapTemp.get("posWiseHeading").toString();
+						
+						List listSubTotalDtl= (List) mapTemp.get("listSubTotal");
+						
+						if(null!=listSubTotalDtl)
+						{	
+							for(i=0;i<listSubTotalDtl.size();i++)
+							{
+								 objBillDtl = new clsPOSBillDtl();
+								Map mapSubTotal= (Map) listSubTotalDtl.get(i);
+								objBillDtl.setDblAmount(Double.parseDouble(mapSubTotal.get("subTotal").toString()));
+								listSubTotal.add(objBillDtl);
+							}
+						}
+//						
+						
+						if (clientCode.equalsIgnoreCase("117.001"))
+						{
+							posWiseHeading = mapTemp.get("posWiseHeading").toString();
+							
+						}
 						duplicate = mapTemp.get("duplicate").toString();
 						posName = mapTemp.get("POS").toString();
 						BillType=mapTemp.get("BillType").toString();
@@ -697,38 +451,29 @@ public class clsPOSReprintController
 						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
 						DATE_TIME = mapTemp.get("DATE_TIME").toString();
 						BillNo = mapTemp.get("BillNo").toString();
-						if(!flag_DirectBillerBlill)
-						{
-						tableName= mapTemp.get("tableName").toString();
-						waiterName = mapTemp.get("waiterName").toString();
-						}
+						
 					} 
 				}
 				
+				if(format.equalsIgnoreCase("Jasper1"))
+				{	
 				if(null!=listMain1)
 				{
 					for(int i=0;i<listMain1.size();i++)
 					{
-						 Map maptemp1 =(Map) listMain1.get(i);
+						 Map mapTemp1 =(Map) listMain1.get(i);
 						
 						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 						
-						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(maptemp1.get("saleQty").toString()));
-						objclsPOSBillDtl.setStrItemName(maptemp1.get("itemName").toString());
-						objclsPOSBillDtl.setDblAmount(Double.parseDouble(maptemp1.get("dblAmount").toString()));
-						objclsPOSBillDtl.setDblRate(Double.parseDouble(maptemp1.get("rate").toString()));
-						objclsPOSBillDtl.setDblDiscountAmt(Double.parseDouble(maptemp1.get("discountAmt").toString()));
+						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("qty").toString()));
+						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
+						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("amount").toString()));
 						list.add(objclsPOSBillDtl);
 					}
 				 }
 				
 				hm.put("posWiseHeading", posWiseHeading);
 				hm.put("duplicate", duplicate);
-				if(!flag_DirectBillerBlill)
-				{
-				hm.put("TABLE NAME",tableName);
-				hm.put("waiterName", waiterName);
-				}
 				hm.put("POS", posName);
 				hm.put("ClientName", ClientName);
 				hm.put("TAX_INVOICE", TAX_INVOICE);
@@ -748,304 +493,34 @@ public class clsPOSReprintController
 				hm.put("listOfFooterDtl", listOfFooterDtl);
 				hm.put("listOfHomeDeliveryDtl", listOfHomeDeliveryDtl);
 				hm.put("listOfDiscountDtl", listOfDiscountDtl);
-			    hm.put("listOfSettlementDetail", listOfSettlementDetail);
-				hm.put("listOfCustomerDtl", listOfCustomerDtl);
+				hm.put("listOfSettlementDetail", listOfSettlementDetail);
+				
 				
 //	            hm.put("listOfItemDtl", list);
 			
 	            listData.add(list);
 				
-				if (listOfHomeDeliveryDtl.size() > 0)
+				
+//			if(format.equalsIgnoreCase("Jasper1"))	
+//			{	
+	            if (listOfHomeDeliveryDtl.size() > 0)
 	            {
-					 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat6ForJasperReport.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
+	                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportHD.jrxml");
+					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 	            }
 	            else if (result == 1)
 	            {
-	            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat6ForJasperReport.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
+	                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
+					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 	            }
-	            else
+				else
 	            {
-	            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat6ForJasperReport.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	               // reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
+	                reportName =servletContext.getRealPath( "/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
+					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 	            }
-				
-			}
-			else if(format.equalsIgnoreCase("Jasper3"))	
-			{
-				int result =  (int) mapViewData.get("result"); 
-//				long listOfHDSize= (long) jObj.get("listOfHDSize");
-
-				
-				
-				listMain1 = (List) mapViewData.get("listOfFoodBillDetail");
-				
-//				long lengthListOfHomeDeliveryDtl =  (long) jObj.get("lengthListOfHomeDeliveryDtl"); 
-				
-				String posWiseHeading="",tableName="",duplicate="",BillType="",ClientName="",ClientAddress1="",ClientAddress2="",ClientAddress3="",ClientCity="",TEL_NO="";
-				String EMAIL_ID="",TAX_INVOICE="",BillNo="",Totl="",name="",address="",mobile_no="",footer="";
-				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
-				
-				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				listMain = (List) mapViewData.get("jArr");
-				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
-				List<clsPOSBillDtl> listOfFoodBillDetail = new ArrayList<>();
-				List<clsPOSBillDtl> listOfLiqourBillDetail = new ArrayList<>();
-				List<clsPOSBillDtl> listOfHomeDeliveryDtl =new ArrayList<>();
-				List<clsPOSBillDtl> listOfServiceVatDetail =new ArrayList<>();
-				List<clsPOSBillDtl> listOfFooterDtl =new ArrayList<>();
-				List<clsPOSBillDtl> listOfTaxDtl = new ArrayList<>();
-				List<clsPOSBillDtl> listOfDiscountDtl = new ArrayList<>();
-				List<clsPOSBillDtl> listSubTotal = new ArrayList<>();
-				List<clsPOSBillDtl> listOfSettlementDetail = new ArrayList<>();
-				
-				if(null!=listMain)
-				{	
-					for(int i=0;i<listMain.size();i++)
-					{
-						Map mapTemp =(Map) listMain.get(i);
-						
-						List mapTotal = (List) mapTemp.get("listOfGrandTotalDtl");
-						
-						if(null!=mapTotal)
-						{	
-							for(i=0;i<mapTotal.size();i++)
-							{
-								 objBillDtl = new clsPOSBillDtl();
-								Map mapTot= (Map) mapTotal.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(mapTot.get("grandTotal").toString())); 
-								
-								 listOfGrandTotal.add(objBillDtl);
-								
-							}
-						}	
-						
-						
-						List listLiqur = (List) mapTemp.get("listOfLiqourBillDetail");
-						if(null!=listLiqur)
-						{
-							for( i=0;i<listLiqur.size();i++)
-							{
-								 Map mapTemp1 =(Map) listLiqur.get(i);
-								
-								clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
-								
-								objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
-								objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
-								objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
-								listOfLiqourBillDetail.add(objclsPOSBillDtl);
-							}
-						 }
-						
-						List listHomeDel = (List) mapTemp.get("listOfHomeDeliveryDtl");
-						
-						if(null!=listHomeDel)
-						{	
-							for(i=0;i<listHomeDel.size();i++)
-							{
-								 objBillDtl = new clsPOSBillDtl();
-								Map mapHomeDel= (Map) listHomeDel.get(i);
-								objBillDtl.setStrItemName("Name         : "+mapHomeDel.get("NAME").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
-								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("Address      : "+mapHomeDel.get("Address").toString());
-								listOfHomeDeliveryDtl.add(objBillDtl);
-								
-								objBillDtl = new clsPOSBillDtl();
-								objBillDtl.setStrItemName("MOBILE_NO  :"+mapHomeDel.get("MOBILE_NO").toString());
-								 listOfHomeDeliveryDtl.add(objBillDtl);
-								 
-							}
-						}
-						
-						List listServiceTaxDtl = (List) mapTemp.get("listOfServiceVatDetail");
-						
-						if(null!=listServiceTaxDtl)
-						{	
-							for(i=0;i<listServiceTaxDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapServieTaxDtl= (Map) listServiceTaxDtl.get(i);
-								 objBillDtl.setStrItemName("Service Tax No.    :"+mapServieTaxDtl.get("Service Tax No.:").toString());	
-								 listOfServiceVatDetail.add(objBillDtl);
-							}
-						}
-						
-						List listFooterDtl = (List) mapTemp.get("listOfFooterDtl");
-						
-						if(null!=listFooterDtl)
-						{	
-							for(i=0;i<listFooterDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapFooterDtl= (Map) listFooterDtl.get(i);
-								objBillDtl.setStrItemName(mapFooterDtl.get("Thank").toString());	
-								 listOfFooterDtl.add(objBillDtl);
-							}
-						}
-						List listTaxDtl = (List) mapTemp.get("listOfTaxDtl");
-						
-						if(null!=listTaxDtl)
-						{	
-							for(i=0;i<listTaxDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapTax= (Map) listTaxDtl.get(i);
-								objBillDtl=new clsPOSBillDtl();
-								
-								 objBillDtl.setDblAmount(Double.parseDouble(mapTax.get("taxAmount").toString()));
-								 objBillDtl.setStrItemName(mapTax.get("taxDesc").toString());
-								
-								 listOfTaxDtl.add(objBillDtl);
-							}
-						}	
-						
-						List mapDiscountDtl= (List) mapTemp.get("listOfDiscountDtl");
-						
-						if(null!=mapDiscountDtl)
-						{	
-							for(i=0;i<mapDiscountDtl.size();i++)
-							{
-								objBillDtl = new clsPOSBillDtl();
-								Map mapDiscount= (Map) mapDiscountDtl.get(i);
-								objBillDtl.setStrItemName(mapDiscount.get("Discount").toString());
-								objBillDtl.setStrItemName(mapDiscount.get("discText").toString());
-								objBillDtl.setDblAmount(Double.parseDouble(mapDiscount.get("discAmt").toString()));
-								objBillDtl.setStrItemName(mapDiscount.get("Reason").toString());
-								objBillDtl.setStrItemName(mapDiscount.get("Remark").toString());
-								listOfDiscountDtl.add(objBillDtl);
-								
-							}
-						}
-						List listSettlementDtl = (List) mapTemp.get("listOfSettlementDetail");
-						
-						if(null!=listSettlementDtl)
-						{	
-							for(i=0;i<listSettlementDtl.size();i++)
-							{
-								objBillDtl=new clsPOSBillDtl();
-								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
-								objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
-								objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));
-								listOfSettlementDetail.add(objBillDtl);
-							}
-						}
-						
-						
-						List listSubTotalDtl= (List) mapTemp.get("listSubTotal");
-						
-						if(null!=listSubTotalDtl)
-						{	
-							for(i=0;i<listSubTotalDtl.size();i++)
-							{
-								 objBillDtl = new clsPOSBillDtl();
-								Map mapSubTotal= (Map) listSubTotalDtl.get(i);
-								objBillDtl.setDblAmount(Double.parseDouble(mapSubTotal.get("subTotal").toString()));
-								listSubTotal.add(objBillDtl);
-							}
-						}
-//						
-						
-						posWiseHeading = mapTemp.get("posWiseHeading").toString();
-						duplicate = mapTemp.get("duplicate").toString();
-						posName = mapTemp.get("POS").toString();
-						BillType=mapTemp.get("BillType").toString();
-						ClientName=mapTemp.get("ClientName").toString();
-						ClientAddress1=mapTemp.get("ClientAddress1").toString();
-						ClientAddress2=mapTemp.get("ClientAddress2").toString();
-						ClientAddress3=mapTemp.get("ClientAddress3").toString(); 
-						ClientCity=mapTemp.get("ClientCity").toString();
-						TEL_NO=mapTemp.get("TEL NO").toString();
-						EMAIL_ID=mapTemp.get("EMAIL ID").toString();
-						TAX_INVOICE=mapTemp.get("TAX_INVOICE").toString();
-						DATE_TIME = mapTemp.get("DATE_TIME").toString();
-						BillNo = mapTemp.get("BillNo").toString();
-						if(!flag_DirectBillerBlill)
-						{
-						tableName= mapTemp.get("TABLE NAME").toString();
-						waiterName = mapTemp.get("waiterName").toString();
-						}
-						
-					} 
-				}
-				
-				if(null!=listMain1)
-				{
-					for(int i=0;i<listMain1.size();i++)
-					{
-						 Map mapTemp1 =(Map) listMain1.get(i);
-						
-						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
-						
-						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
-						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
-						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
-						list.add(objclsPOSBillDtl);
-					}
-				 }
-				
-				hm.put("posWiseHeading", posWiseHeading);
-				hm.put("duplicate", duplicate);
-				hm.put("POS", posName);
-				hm.put("ClientName", ClientName);
-				if(!flag_DirectBillerBlill)
-				{
-				hm.put("TABLE NAME",tableName);
-				hm.put("waiterName", waiterName);
-				}
-				
-				hm.put("TAX_INVOICE", TAX_INVOICE);
-				hm.put("ClientAddress1", ClientAddress1);
-				hm.put("ClientAddress2", ClientAddress2);
-				hm.put("ClientAddress3", ClientAddress3);
-				hm.put("ClientCity", ClientCity);
-				hm.put("TEL NO", TEL_NO);
-				hm.put("EMAIL ID", EMAIL_ID);
-				hm.put("BillNo", BillNo);
-				hm.put("DATE_TIME", DATE_TIME);
-				hm.put("BillType", BillType);
-				hm.put("listOfFoodBillDetail", list);
-				hm.put("listOfLiqourBillDetail", listOfLiqourBillDetail);
-				hm.put("listOfTaxDtl", listOfTaxDtl);
-				hm.put("listOfGrandTotalDtl", listOfGrandTotal);
-				hm.put("listOfServiceVatDetail", listOfServiceVatDetail);
-				hm.put("listOfFooterDtl", listOfFooterDtl);
-				hm.put("listOfHomeDeliveryDtl", listOfHomeDeliveryDtl);
-				hm.put("listOfDiscountDtl", listOfDiscountDtl);
-			    hm.put("listOfSettlementDetail", listOfSettlementDetail);
-			    hm.put("listSubToal", listSubTotal);
-				
-//	            hm.put("listOfItemDtl", list);
+	            
+              }
 			
-	            listData.add(list);
-				
-				if (listOfHomeDeliveryDtl.size() > 0)
-	            {
-					 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat10ForHDJasperBillPrint.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-	            }
-	            else if (result == 1)
-	            {
-	            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat10ForHDJasperBillPrint.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-	            }
-	            else
-	            {
-	            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat10ForHDJasperBillPrint.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	               // reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-	            }
-
-			
-			}
-				
 			}
 			else if(kotFor.equalsIgnoreCase("Bill"))
 			{
@@ -1067,7 +542,7 @@ public class clsPOSReprintController
 				String taxAmount="",taxDesc="",discount="",discText="",discAmt="",reason="",remark="";
 				
 				clsPOSBillDtl objBillDtl = new clsPOSBillDtl();
-				listMain = (List) mapViewData.get("jArr");
+				listMain = (List) mapViewData.get("listData");
 				List<clsPOSBillDtl> listOfGrandTotal =new ArrayList<>();
 				List<clsPOSBillDtl> listOfFoodBillDetail = new ArrayList<>();
 				List<clsPOSBillDtl> listOfLiqourBillDetail = new ArrayList<>();
@@ -1189,8 +664,22 @@ public class clsPOSReprintController
 							{
 								objBillDtl=new clsPOSBillDtl();
 								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
-								 objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
-								 objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));
+								if(!mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT"))
+								{
+									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));	 
+								}
+								else
+								{
+									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("paidAmt").toString()));
+									if(mapSettlementDtl.get("settleDesc").toString().equals("REFUND AMT"))
+									{
+										objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+										objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("refundAmt").toString()));	 
+									}
+								}
+									
 								 listOfSettlementDetail.add(objBillDtl);
 								
 							}
@@ -1227,7 +716,11 @@ public class clsPOSReprintController
 						}
 //						
 						
-						posWiseHeading = mapTemp.get("posWiseHeading").toString();
+						if (clientCode.equalsIgnoreCase("117.001"))
+						{
+							posWiseHeading = mapTemp.get("posWiseHeading").toString();
+							
+						}
 						duplicate = mapTemp.get("duplicate").toString();
 						posName = mapTemp.get("POS").toString();
 						BillType=mapTemp.get("BillType").toString();
@@ -1247,159 +740,21 @@ public class clsPOSReprintController
 				
 				if(format.equalsIgnoreCase("Jasper1"))
 				{	
-				if(null!=listMain1)
-				{
-					for(int i=0;i<listMain1.size();i++)
+					if(null!=listMain1)
 					{
-						 Map mapTemp1 =(Map) listMain1.get(i);
-						
-						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
-						
-						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("qty").toString()));
-						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
-						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("amount").toString()));
-						list.add(objclsPOSBillDtl);
-					}
-				 }
-				
-				hm.put("posWiseHeading", posWiseHeading);
-				hm.put("duplicate", duplicate);
-				hm.put("POS", posName);
-				hm.put("ClientName", ClientName);
-				hm.put("TAX_INVOICE", TAX_INVOICE);
-				hm.put("ClientAddress1", ClientAddress1);
-				hm.put("ClientAddress2", ClientAddress2);
-				hm.put("ClientAddress3", ClientAddress3);
-				hm.put("ClientCity", ClientCity);
-				hm.put("TEL NO", TEL_NO);
-				hm.put("EMAIL ID", EMAIL_ID);
-				hm.put("BillNo", BillNo);
-				hm.put("DATE_TIME", DATE_TIME);
-				hm.put("BillType", BillType);
-				hm.put("listOfItemDtl", list);
-				hm.put("listOfTaxDtl", listOfTaxDtl);
-				hm.put("listOfGrandTotalDtl", listOfGrandTotal);
-				hm.put("listOfServiceVatDetail", listOfServiceVatDetail);
-				hm.put("listOfFooterDtl", listOfFooterDtl);
-				hm.put("listOfHomeDeliveryDtl", listOfHomeDeliveryDtl);
-				hm.put("listOfDiscountDtl", listOfDiscountDtl);
-				hm.put("listOfSettlementDetail", listOfSettlementDetail);
-				
-				
-//	            hm.put("listOfItemDtl", list);
-			
-	            listData.add(list);
-	            
-	            if (listOfHomeDeliveryDtl.size() > 0)
-	            {
-	                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportHD.jrxml");
-					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	            }
-	            else if (result == 1)
-	            {
-	                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
-					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	            }
-				else
-	            {
-	                reportName =servletContext.getRealPath( "/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
-					imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	            }
-				}
-				else if(format.equalsIgnoreCase("Jasper2"))
-				{	
-					listItemDtl = (List) mapViewData.get("listOfBillDetail");
-					
-				if(null!=listItemDtl)
-				{
-					for(int i=0;i<listItemDtl.size();i++)
-					{
-						 Map mapTemp1 =(Map) listItemDtl.get(i);
-						
-						clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
-						
-						objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
-						objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
-						objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
-						objclsPOSBillDtl.setDblRate(Double.parseDouble(mapTemp1.get("rate").toString()));
-						objclsPOSBillDtl.setDblDiscountAmt(Double.parseDouble(mapTemp1.get("discountAmt").toString()));
-						list.add(objclsPOSBillDtl);
-					}
-				}
-				
-				hm.put("posWiseHeading", posWiseHeading);
-				hm.put("duplicate", duplicate);
-//				if(!flag_DirectBillerBlill)
-//				{
-//				hm.put("TABLE NAME",tableName);
-				hm.put("waiterName", waiterName);
-//				}
-				hm.put("POS", posName);
-				hm.put("ClientName", ClientName);
-				hm.put("TAX_INVOICE", TAX_INVOICE);
-				hm.put("ClientAddress1", ClientAddress1);
-				hm.put("ClientAddress2", ClientAddress2);
-				hm.put("ClientAddress3", ClientAddress3);
-				hm.put("ClientCity", ClientCity);
-				hm.put("TEL NO", TEL_NO);
-				hm.put("EMAIL ID", EMAIL_ID);
-				hm.put("BillNo", BillNo);
-				hm.put("DATE_TIME", DATE_TIME);
-				hm.put("BillType", BillType);
-				hm.put("listOfItemDtl", list);
-				hm.put("listOfTaxDtl", listOfTaxDtl);
-				hm.put("listOfGrandTotalDtl", listOfGrandTotal);
-				hm.put("listOfServiceVatDetail", listOfServiceVatDetail);
-				hm.put("listOfFooterDtl", listOfFooterDtl);
-				hm.put("listOfHomeDeliveryDtl", listOfHomeDeliveryDtl);
-				hm.put("listOfDiscountDtl", listOfDiscountDtl);
-			    hm.put("listOfSettlementDetail", listOfSettlementDetail);
-				//hm.put("listOfCustomerDtl", listOfCustomerDtl);
-				
-//	            hm.put("listOfItemDtl", list);
-			
-	            listData.add(list);
-				
-				if (listOfHomeDeliveryDtl.size() > 0)
-	            {
-					 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat6ForJasperReport.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-	            }
-	            else if (result == 1)
-	            {
-	            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat6ForJasperReport.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-	            }
-	            else
-	            {
-	            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat6ForJasperReport.jrxml");
-						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-	               // reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-	            }
-				
-				}
-				else if(format.equalsIgnoreCase("Jasper3"))
-				{	
-					listBillDtl = (List) mapViewData.get("listOfFoodBillDetail");
-					if(null!=listBillDtl)
-					{
-						for(int i=0;i<listBillDtl.size();i++)
+						for(int i=0;i<listMain1.size();i++)
 						{
-							 Map mapTemp1 =(Map) listBillDtl.get(i);
+							 Map mapTemp1 =(Map) listMain1.get(i);
 							
 							clsPOSBillDtl objclsPOSBillDtl=new clsPOSBillDtl();
 							
-							objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("saleQty").toString()));
+							objclsPOSBillDtl.setDblQuantity(Double.parseDouble(mapTemp1.get("qty").toString()));
 							objclsPOSBillDtl.setStrItemName(mapTemp1.get("itemName").toString());
-							objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("dblAmount").toString()));
+							objclsPOSBillDtl.setDblAmount(Double.parseDouble(mapTemp1.get("amount").toString()));
 							list.add(objclsPOSBillDtl);
 						}
 					 }
-					
-					
-					
+				
 					hm.put("posWiseHeading", posWiseHeading);
 					hm.put("duplicate", duplicate);
 					hm.put("POS", posName);
@@ -1414,42 +769,36 @@ public class clsPOSReprintController
 					hm.put("BillNo", BillNo);
 					hm.put("DATE_TIME", DATE_TIME);
 					hm.put("BillType", BillType);
-					hm.put("listOfFoodBillDetail", list);
-					hm.put("listOfLiqourBillDetail", listOfLiqourBillDetail);
+					hm.put("listOfItemDtl", list);
 					hm.put("listOfTaxDtl", listOfTaxDtl);
 					hm.put("listOfGrandTotalDtl", listOfGrandTotal);
 					hm.put("listOfServiceVatDetail", listOfServiceVatDetail);
 					hm.put("listOfFooterDtl", listOfFooterDtl);
 					hm.put("listOfHomeDeliveryDtl", listOfHomeDeliveryDtl);
 					hm.put("listOfDiscountDtl", listOfDiscountDtl);
-				    hm.put("listOfSettlementDetail", listOfSettlementDetail);
-				    hm.put("listSubToal", listSubTotal);
+					hm.put("listOfSettlementDetail", listOfSettlementDetail);
 					
-//		            hm.put("listOfItemDtl", list);
+					
+	//	            hm.put("listOfItemDtl", list);
 				
 		            listData.add(list);
-					
-					if (listOfHomeDeliveryDtl.size() > 0)
+	            
+		            if (listOfHomeDeliveryDtl.size() > 0)
 		            {
-						 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat10ForHDJasperBillPrint.jrxml");
-							imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-		                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
+		                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportHD.jrxml");
+						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 		            }
 		            else if (result == 1)
 		            {
-		            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat10ForHDJasperBillPrint.jrxml.jrxml");
-							imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-		                //reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
+		                reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
+						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 		            }
-		            else
+					else
 		            {
-		            	 reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillFormat10ForHDJasperBillPrint.jrxml");
-							imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
-		               // reportName = "com/POSGlobal/reports/rptBillFormat6ForJasperReport.jrxml";
-		            
+		                reportName =servletContext.getRealPath( "/WEB-INF/reports/webpos/rptBillFormat5JasperReportNormalBill.jrxml");
+						imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
+		            }
 				}
-				 
-			}
 				
 			}
 			else
@@ -1465,10 +814,6 @@ public class clsPOSReprintController
 				double taxableAmount=0.00,dblNetTotalPlusTax=0.00;
 				double settlementAmt=0.00;
 				
-				/*JSONArray listGroupAmtWithTaxDtl =new JSONArray();
-				JSONArray listSettelementBrkUP = new JSONArray();
-				JSONArray listSettelementTaxDtl = new JSONArray();
-				*/
 				List listGroupAmtWithTaxDtl =new ArrayList<>();
 				List listSettelementBrkUP = new ArrayList<>();
 				List listSettelementTaxDtl = new ArrayList<>();
@@ -1485,12 +830,7 @@ public class clsPOSReprintController
 						{	
 							for(i=0;i<listGroupAmtTax.size();i++)
 							{
-								//Map jObjRet = new JSONObject();
 								Map mapTot= (Map) listGroupAmtTax.get(i);
-//								
-//								groupName =jObjTot.get("groupName").toString();
-//								dblNetTotalPlusTax=Double.parseDouble(jObjTot.get("dblNetTotalPlusTax").toString()); 
-//								
 								clsPOSReprintDocumentsBean objGroupDtl = new clsPOSReprintDocumentsBean();
 								objGroupDtl.setStrgroupName(mapTot.get("groupName").toString());
 								objGroupDtl.setDblNetTotalPlusTax(Double.parseDouble(mapTot.get("dblNetTotalPlusTax").toString()));
@@ -1506,11 +846,7 @@ public class clsPOSReprintController
 						{	
 							for(i=0;i<listSettlementBrkUp.size();i++)
 							{
-								//JSONObject jObjRet = new JSONObject();
 								Map mapSettleBrkUp= (Map) listSettlementBrkUp.get(i);
-//								settlementDesc =jObjSettleBrkUp.get("settlementDesc").toString();
-//								settlementAmt=Double.parseDouble(jObjSettleBrkUp.get("settlementAmt").toString()); 
-								
 								clsPOSReprintDocumentsBean objBillSettleBrkUp = new clsPOSReprintDocumentsBean();
 								objBillSettleBrkUp.setStrSettleDesc(mapSettleBrkUp.get("settlementDesc").toString());
 								objBillSettleBrkUp.setDblSettleAmt(Double.parseDouble(mapSettleBrkUp.get("settlementAmt").toString()));
@@ -1526,12 +862,7 @@ public class clsPOSReprintController
 						{	
 							for(i=0;i<listSettleTaxDtl.size();i++)
 							{
-								//JSONObject jObjRet = new JSONObject();
 								Map mapSettleTaxDtl= (Map) listSettleTaxDtl.get(i);
-//								taxDesc =jObjSettleTaxDtl.get("taxDesc").toString();
-//								taxableAmount=Double.parseDouble(jObjSettleTaxDtl.get("taxableAmount").toString()); 
-//								taxAmount=Double.parseDouble(jObjSettleTaxDtl.get("taxAmount").toString());
-//								
 								clsPOSReprintDocumentsBean objSettleTaxDtl = new clsPOSReprintDocumentsBean();
 								objSettleTaxDtl.setStrTaxDesc(mapSettleTaxDtl.get("taxDesc").toString());
 								objSettleTaxDtl.setDblTaxableAmount(Double.parseDouble(mapSettleTaxDtl.get("taxableAmount").toString()));
@@ -1623,15 +954,12 @@ public class clsPOSReprintController
 				imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 			}
 			
-			 List<JasperPrint> jprintlist =new ArrayList<JasperPrint>();
+			   List<JasperPrint> jprintlist =new ArrayList<JasperPrint>();
 	
 	            
-			 JasperDesign jd = JRXmlLoader.load(reportName);
-	    	    JasperReport jr = JasperCompileManager.compileReport(jd);
+			   JasperDesign jd = JRXmlLoader.load(reportName);
+	    	   JasperReport jr = JasperCompileManager.compileReport(jd);
 	    	   
-	    	   //jp =  JasperFillManager.fillReport(jr, hm,  new JREmptyDataSource());
-	            
-	         
 	            JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listData,false);
 	            JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 	            jprintlist.add(print);

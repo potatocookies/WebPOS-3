@@ -26,7 +26,7 @@ import com.sanguine.base.model.clsBaseModel;
 @IdClass(clsPOSMasterModel_ID.class)
 @NamedQueries({ @NamedQuery(name = "getAllPOSMaster", 
 query = "select m.strPosCode,m.strPosName " 
-		+ "from clsPOSMasterModel m where m.strClientCode=:clientCode "),
+		+ "from clsPOSMasterModel m where m.strClientCode=:clientCode and m.strOperationalYN='Y' "),
 
 		@NamedQuery(name = "getPOSMaster", query = "from clsPOSMasterModel where strPosCode=:posCode and strClientCode=:clientCode") })
 public class clsPOSMasterModel extends clsBaseModel  implements Serializable

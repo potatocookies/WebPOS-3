@@ -18,6 +18,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import jxl.Workbook;
+import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
@@ -74,7 +75,7 @@ public class clsPOSDayEndProcess {
 	 @Autowired
 	 clsPOSSetupUtility objPOSSetupUtility;
 	 
-	 boolean pendingBills,busyTable;
+	
 	 String strPOSCode="",strPOSName="",strPOSDate="",strClientCode="",userCode="",strShiftNo="";
 	 public static JSONObject jsonDayEndReturn=new JSONObject();
 	 public static String gTransactionType = "",gDayEndReportForm="";
@@ -107,6 +108,20 @@ public class clsPOSDayEndProcess {
 			strPOSDate=request.getSession().getAttribute("gPOSDate").toString();
 			strShiftNo="1";
 			
+			StringBuilder sql =new StringBuilder("select dtePOSDate,intShiftCode from tbldayendprocess "
+				    + "where strDayEnd='N' and strPOSCode='" + strPOSCode + "' and (strShiftEnd='' or strShiftEnd='N')   ");
+			    try{
+			    	List listShiftNo = objBaseService.funGetList(sql, "sql");
+			    	
+			    	if (listShiftNo.size()>0)
+				    {
+				    	Object[] obj=(Object[]) listShiftNo.get(0);
+				    	strShiftNo = obj[1].toString();
+				    }
+			    }catch(Exception e){
+			    	
+			    }
+			    
 			JSONObject jsDayEnd= new JSONObject();
 			JSONObject jsSettlement= new JSONObject();
 			JSONObject jsSalesInProg= new JSONObject();
@@ -184,7 +199,6 @@ public class clsPOSDayEndProcess {
 			
 		return DayEndDataProcess;
 	}
-
 
 	public JSONObject funFillCurrencyGrid()throws Exception
 	{
@@ -457,7 +471,6 @@ public class clsPOSDayEndProcess {
 	return jsonDayEnd;
 	}
 
-	
 	public JSONObject funFillSettlementWiseSalesGrid() throws Exception
     {
 		
@@ -483,7 +496,8 @@ public class clsPOSDayEndProcess {
 			    			 JSONObject js=new JSONObject();
 			    			 js.put("0",obj[0].toString());
 			    			 js.put("1",obj[1].toString());
-				        
+			    			 js.put("2",obj[2].toString());
+			    			 
 				            totalDiscount = totalDiscount + (Double.parseDouble(obj[2].toString()));
 				            totalSales = totalSales + (Double.parseDouble(obj[1].toString()));
 				            jArrSettt.add(js);
@@ -512,8 +526,7 @@ public class clsPOSDayEndProcess {
 			         List listTotalBills = objBaseService.funGetList(sql, "sql");
 				    	if (listTotalBills.size() > 0) 
 						{
-				    		
-				    			totalBillNo = Integer.parseInt(String.valueOf(listTotalBills.get(0)));
+				    		totalBillNo = Integer.parseInt(String.valueOf(listTotalBills.get(0)));
 			            }
 			    	
 				    	JSONObject job=new JSONObject();
@@ -530,12 +543,12 @@ public class clsPOSDayEndProcess {
 			         
 			    	
 			         //tblSettlementWiseSalesTotal
-			    	if (jArrSettt.size() > 0)
+			    	/*if (jArrSetttTot.size() > 0)
 			        {
-			    		JSONObject jo=(JSONObject) jArrSettt.get(0);
+			    		JSONObject jo=(JSONObject) jArrSetttTot.get(0);
 			    		jo.put("2", totalBillNo);
 			            
-			        }
+			        }*/
 			        dblApproxSaleAmount += totalSales;
 			        
 			        jsonSettlement.put("settlement", jArrSettt);
@@ -651,188 +664,10 @@ public class clsPOSDayEndProcess {
 		    	 
 		return jsonUnSettleBill;
 	}
-	
-	public JSONObject funGetAllParameterValuesPOSWise(String strPOSCode, String clientCode)
-	{
-		JSONObject objJsonObject=new JSONObject();
 		
-		try
-		{
-			List list=objBaseService.funGetList(new StringBuilder("select strDayEnd,strShiftWiseDayEndYN from tblsetup where (strPOSCode='"+strPOSCode+"'  OR strPOSCode='All') "), "sql");				
-			System.out.println(list);
-			if(list!=null && list.size()>0)
-			{			
-				
-				Object[] ob= (Object[]) list.get(0); 
-				objJsonObject.put("gShiftEnd", ob[1].toString());
-				objJsonObject.put("gDayEnd", ob[0].toString());  
-			}
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			return objJsonObject;
-		}			
-	}
-	
-	
-	public JSONObject funLoadAllReportsName(String strPOSCode,String strClientCode)
-	{
-		JSONObject jsReportNames=new JSONObject();
-		ArrayList alReportName=new ArrayList<String>();
-		ArrayList alCheckRpt=new ArrayList<Boolean>();
-		try{
-		
-			sql=new StringBuilder("select a.strModuleName,a.strFormName from tblforms a "
-                    + "where a.strModuleType='R' "
-                    + "order by a.intSequence;");
-			 List listRPT=objBaseService.funGetList(sql, "sql");
-             if(listRPT.size()>0)
-             {
-             	for(int i=0;i<listRPT.size();i++)
-             	{
-             		Object[] ob=(Object[])listRPT.get(i);
-             		alReportName.add(ob[0].toString());
-             	}
-             }
-             
-             sql=new StringBuilder("select  strPOSCode,strReportName,date(dtePOSDate) "
-                    + "from tbldayendreports "
-                    + "where strPOSCode='"+strPOSCode+"' "
-                    + "and strClientCode='" + strClientCode + "';");
-             
-             listRPT=objBaseService.funGetList(sql, "sql");
-             if(listRPT.size()>0)
-             {
-             	for(int i=0;i<listRPT.size();i++)
-             	{
-             		Object[] ob=(Object[])listRPT.get(i);
-             		 String reportName=ob[1].toString();
-             		for (int j = 0; j < alReportName.size(); j++)
-                    {
-             			if(alCheckRpt.size()==alReportName.size())
-             			{
-	                       if(alReportName.get(j)!=null && alReportName.get(j).toString().equalsIgnoreCase(reportName))                        
-	                        {
-	                        	alCheckRpt.set(j, Boolean.parseBoolean("true"));
-	                        }
-	                       
-             			}
-             			else{
-             				 if(alReportName.get(j)!=null && alReportName.get(j).toString().equalsIgnoreCase(reportName))                        
- 	                        {
- 	                        	alCheckRpt.add(j, Boolean.parseBoolean("true"));
- 	                        }
- 	                        else{
- 	                        	alCheckRpt.add(j, Boolean.parseBoolean("false"));
- 	                        }
-             			}
-                    }
-             		//al.add(ob[0].toString());
-             	}
-             }
-             
-             		Gson gson = new Gson();
-			 	    Type type = new TypeToken<List<String>>() {}.getType();
-		            String ReportName = gson.toJson(alReportName, type);
-		            String CheckReport = gson.toJson(alCheckRpt, type);
-		            jsReportNames.put("ReportName", ReportName);
-		            jsReportNames.put("CheckReport", CheckReport);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		return jsReportNames;
-	}
-	//fill old data
-	//funSendEmailClicked here get Selected reports and store in tblDayEndReports Table.. 
-	public JSONObject funSendDayEndMailReports(JSONObject jsonData)
-	{
-		ArrayList alReportName=new ArrayList<String>();
-		ArrayList alCheckRpt=new ArrayList<Boolean>();
-		JSONObject jsonReturn=new JSONObject();
-		JSONObject jsonFinal=new JSONObject();
-		try{
-			
-			Gson gson = new Gson();
-			Type listType = new TypeToken<List<String>>() {}.getType();
-			alReportName= gson.fromJson(jsonData.get("ReportName").toString(), listType);
-			//alCheckRpt= gson.fromJson(jsonData.get("CheckReport").toString(), listType);
-			
-			
-			userCode=jsonData.get("userCode").toString();
-			strClientCode=jsonData.get("strClientCode").toString();
-			String strPOSDate=jsonData.get("strPOSDate").toString();
-			String strPOSCode=jsonData.get("strPOSCode").toString();
-			strPOSName=objUtilityController.funGetPOSName(strPOSCode);
-			
-			sql=new StringBuilder("select date(max(dtePOSDate)) from tbldayendprocess where strPOSCode='"+ strPOSCode + "' "
-					+ " and strDayEnd='N' and (strShiftEnd='' or strShiftEnd='N') ");
-		 	List list=objBaseService.funGetList(sql, "sql");
-		 	if(list.size()>0)
-		 	{
-		 		strPOSDate=list.get(0).toString();
-		 	}
-		 	//SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
-		  	//Date posDateForTrans = dFormat.parse(strPOSDate);
-		  	//String POSDateforRTransaction = (posDateForTrans.getYear() + 1900) + "-" + (posDateForTrans.getMonth() + 1) + "-" + posDateForTrans.getDate();
-		 	Date dtCurrent = new Date(); 
-		 	String currentTime = dtCurrent.getHours() + ":" + dtCurrent.getMinutes() + ":" + dtCurrent.getSeconds();
-		 	String POSDateforRTransaction=strPOSDate+" "+currentTime;
-		 	
-		 	objBaseService.funExecuteUpdate("truncate table tbldayendreports;", "sql");
-		 	for(int j=0;j<alReportName.size();j++)
-		 	{
-		 		sql=new StringBuilder("INSERT INTO tbldayendreports (strPOSCode, strClientCode, strReportName, dtePOSDate, "
-		 				+ "strUserCreated,strUserEdited, dteDateCreated, dteDateEdited,strDataPostFlag)"
-		 				+ " VALUES ('"+strPOSCode+"', '"+strClientCode+"', '"+alReportName.get(j).toString()+"', '"+strPOSDate+"',"
-		 						+ " '"+userCode+"','"+userCode+"', '"+POSDateforRTransaction+"', '"+POSDateforRTransaction+"','N');");
-		 		objBaseService.funExecuteUpdate(sql.toString(), "sql");
-		 		//String posCode,String posName,String fromDate,String toDate,String reportName
-		 		funGenerateReport(strPOSCode,strPOSName,strPOSDate,strPOSDate,alReportName.get(j).toString());
-		 	}
-		 	jsonReturn.put("Status", "true");
-		 	
-		 	jsonFinal.put("final", jsonReturn);
-		 	 
-//		 	  clsGlobalVarClass.dbMysql.execute("delete from tbldayendreports "
-//	                    +"where strPOSCode='"+posCode+"' "
-//	                    +"and strClientCode='"+clsGlobalVarClass.gClientCode+"' ");
-//	            //insert dy end reports             
-//	            clsGlobalVarClass.dbMysql.execute(sqlBuilder.toString());
-
-		 	//funSendEmailClicked(strPOSDate,strPOSDate,strPOSDate,strPOSCode);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return jsonReturn;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/StartDayProcess",  method = RequestMethod.GET)
-	public @ResponseBody ModelAndView funDayEndStart(HttpServletRequest req)
+	public @ResponseBody JSONObject funDayEndStart(HttpServletRequest req)
 	{
 		String strShiftNo="1";
 
@@ -840,43 +675,62 @@ public class clsPOSDayEndProcess {
 		 jsonDayStart.put("DayStart", "Day Not Start");
 	
 		try{
-			
-			int shiftNo=Integer.parseInt(strShiftNo);
-			String sql = "update tbldayendprocess set strShiftEnd='N' "
-				    + "where strPOSCode='" + strPOSCode + "' and strDayEnd='N' and strShiftEnd=''";
-			objBaseService.funExecuteUpdate(sql,"sql");
-			
+			String gShifts=req.getSession().getAttribute("gShifts").toString();
+			strPOSCode=req.getSession().getAttribute("gShifts").toString();
+			if (gShifts.equalsIgnoreCase("true"))
+			{
+			    sql =new StringBuilder("update tbldayendprocess set strShiftEnd='N' "
+				    + "where strPOSCode='" + strPOSCode + "' and strDayEnd='N' and strShiftEnd=''");
+			    
+			    objBaseService.funExecuteUpdate(sql.toString(), "sql");
+			    sql.setLength(0);
+			    sql.append("select count(intShiftCode) from tblshiftmaster where strPOSCode='" + strPOSCode + "'");
+			    List listShiftNoCount =objBaseService.funGetList(sql, "sql");
+			    if(listShiftNoCount.size()>0){
+			    	
+			    	int shiftCount =Integer.parseInt(((Object)listShiftNoCount.get(0)).toString());
+				    if (shiftCount > 0)
+				    {
+						if (shiftNo == shiftCount)
+						{
+						    shiftNo = 1;
+						}
+				    }
+
+			    }
+			    req.getSession().setAttribute("gShiftEnd","N");
+			    req.getSession().setAttribute("gDayEnd","N");
+			    req.getSession().setAttribute("gShiftNo",shiftNo);
+			    jsonDayStart.put("DayStart", "Shift Started Successfully");
+			}else{
+				 
+			    int shiftNo=Integer.parseInt(strShiftNo);
+				String sql = "update tbldayendprocess set strShiftEnd='N' "
+					    + "where strPOSCode='" + strPOSCode + "' and strDayEnd='N' and strShiftEnd=''";
+				objBaseService.funExecuteUpdate(sql,"sql");
 				if (shiftNo == 0)
 				{
 				    shiftNo++;
 				}
 				sql = "update tbldayendprocess set intShiftCode= " + shiftNo + " "
-				    + "where strPOSCode='" + strPOSCode + "' and strShiftEnd='N' and strDayEnd='N'";
+					    + "where strPOSCode='" + strPOSCode + "' and strShiftEnd='N' and strDayEnd='N'";
 				objBaseService.funExecuteUpdate(sql,"sql");
-			
-				  req.getSession().setAttribute("ShiftEnd","N");
-				  req.getSession().setAttribute("DayEnd","N");
+		
+				  req.getSession().setAttribute("gShiftEnd","N");
+				  req.getSession().setAttribute("gDayEnd","N");
+				  req.getSession().setAttribute("gShiftNo",shiftNo);
 				  jsonDayStart.put("DayStart", "Day Started Successfully");
-			
+		  		   
+			}
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace();
 			}
 		
-		return new ModelAndView("frmPOSDayEndProcess");//return jsonDayStart; //new clsDayEndProcessBean();
+		return jsonDayStart;//new ModelAndView("frmPOSDayEndProcess");//return jsonDayStart; //new clsDayEndProcessBean();
  }
-	
-	public int funShiftStartProcess() throws Exception
-    {
-	
 		
-
-        return 1;
-    }
-	
-	
-	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/CheckBillSettleBusyTable",  method = RequestMethod.GET)
 	public @ResponseBody JSONObject funCheckBillSettleBusyTable(HttpServletRequest req)
@@ -884,9 +738,9 @@ public class clsPOSDayEndProcess {
 		JSONObject jObj=new JSONObject();
 		try{
 				
-			strPOSCode=req.getSession().getAttribute("loginPOS").toString();
+			String strPOSCode=req.getSession().getAttribute("gPOSCode").toString();
 			String strPOSDate=req.getSession().getAttribute("gPOSDate").toString();
-	
+			 boolean pendingBills,busyTable;
 			pendingBills=objPOSDayEndUtility.funCheckPendingBills(strPOSCode, strPOSDate);
 			busyTable=objPOSDayEndUtility.funCheckTableBusy(strPOSCode);
 			jObj.put("PendingBills", pendingBills);
@@ -902,319 +756,335 @@ public class clsPOSDayEndProcess {
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/EndDayProcess",  method = RequestMethod.GET)
-	public @ResponseBody ModelAndView funDayEndProcess(@RequestParam("emailReport") String EmailReport, HttpServletRequest req)
+	public @ResponseBody JSONObject funDayEndProcess(@RequestParam("emailReport") String EmailReport, HttpServletRequest req)
 	{
 		
-		String userCode=req.getSession().getAttribute("gUserCode").toString();
-		String strClientCode=req.getSession().getAttribute("gClientCode").toString();
-		String strPOSDate=req.getSession().getAttribute("gPOSDate").toString();
-		String ShiftNo="1";
+		 userCode=req.getSession().getAttribute("gUserCode").toString();
+		 strClientCode=req.getSession().getAttribute("gClientCode").toString();
+		 strPOSDate=req.getSession().getAttribute("gPOSDate").toString();
+		String shiftNo="1";
 		
 		String shiftEnd="", DayEnd="", strShiftNo="";
-		this.emailReport=emailReport;
+		emailReport=EmailReport;
 		gTransactionType = "ShiftEnd";// Declared in main menu in spos
-			
-		String gEnableShiftYN = objPOSSetupUtility.funGetParameterValuePOSWise(userCode,strPOSCode, "gEnableShiftYN");
+			try{
+				String gEnableShiftYN = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gEnableShiftYN");
 				
 				 if (gEnableShiftYN.equalsIgnoreCase("Y"))//gEnableShiftYN.equalsIgnoreCase("Y")
 			        {
-				        funDoShiftEnd(strClientCode,strPOSCode,strPOSDate,userCode);//for shift enable
+				        funDoShiftEnd(strClientCode,strPOSCode,strPOSDate,userCode,req);//for shift enable
 			        }
 				 else
 			        {
-			            funShiftEnd(strClientCode,strPOSCode,strPOSDate,userCode);//for shift disable
+			            funShiftEnd(strClientCode,strPOSCode,strPOSDate,userCode,req);//for shift disable
 			        }
-			
-		return new ModelAndView("frmPOSDayEndProcess");
+				
+				 req.getSession().setAttribute("gDayEnd","Y");
+				 jsonDayEndReturn.put("msg", "Succesfully Day End");
+			}catch(Exception e){
+				jsonDayEndReturn.put("msg", "Day End Not Done");
+			}
+				
+		return jsonDayEndReturn;
 	}
 	
-	  private JSONObject funDoShiftEnd(String strClientCode,String strPOSCode,String POSDate,String strUserCode)
-	    {
-		   
-	    	//JSONObject jsonShift=new JSONObject();
-	    	String sql="";
-	        try
-	        {
-	            sql = "delete from tblitemrtemp where strTableNo='null'";
-	            objBaseService.funExecuteUpdate(sql,"sql");
-	            
-	            gDayEndReportForm = "DayEndReport";
-	            
+	private JSONObject funDoShiftEnd(String strClientCode,String strPOSCode,String POSDate,String strUserCode,HttpServletRequest req)
+    {
+	   String sql="";
+        try
+        {
+            sql = "delete from tblitemrtemp where strTableNo='null'";
+            objBaseService.funExecuteUpdate(sql,"sql");
+            
+            gDayEndReportForm = "DayEndReport";
+            
+            boolean doCheckPendingOperations = true;
+            String gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gEnableShiftYN");
+            String gLockDataOnShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gLockDataOnShiftYN");
+    	    if (gEnableShiftYN.equals("Y") && gLockDataOnShiftYN.equals("Y"))
+    	    {
+    		//if shift is enable and  shift live data to q is enable(gLockDataOnShiftYN==true)
+    		// check pending bills and kots
+    		doCheckPendingOperations = true;
+    	    }
+    	    else if (gEnableShiftYN.equals("Y") && !gLockDataOnShiftYN.equals("Y"))
+    	    {
+    		//if shift is enable and don't shift live data to q is enablegLockDataOnShiftYN==false)
+    		//don't check pending bills and kots
+    		doCheckPendingOperations = false;
+    	    }
+            if (objPOSDayEndUtility.funCheckPendingBills(strPOSCode, strPOSDate))
+            {
+                //JOptionPane.showMessageDialog(this, "Please settle pending bills");
+            	//jsonDayEndReturn.put("", "");
+            	jsonDayEndReturn.put("msg","Please settle pending bills");
+                return jsonDayEndReturn;
+            }
+            else if (objPOSDayEndUtility.funCheckTableBusy(strPOSCode))
+            {
+             	jsonDayEndReturn.put("msg","Sorry Tables are Busy Now");
+                return jsonDayEndReturn;
+            }
+            else if (objPOSDayEndUtility.isCheckedInMembers(strPOSCode))
+    	    {
+            	jsonDayEndReturn.put("msg","Please check out the playzone members.");
+            	return jsonDayEndReturn;
+    	    }
+            else
+            {
+                String sqlShift = "select date(max(dtePOSDate)),intShiftCode"
+                        + " from tbldayendprocess where strPOSCode='" + strPOSCode + "' and strDayEnd='N'"
+                        + " and (strShiftEnd='' or strShiftEnd='N')";
+                
+                List listShiftNo=objBaseService.funGetList(new StringBuilder(sqlShift), "sql");
+                if(listShiftNo.size()>0)
+                {
+                	for(int i=0;i<listShiftNo.size();i++)
+                	{
+                		Object[] ob=(Object[])listShiftNo.get(i);
+                		shiftNo = Integer.parseInt(ob[1].toString());		
+                	}
+                	
+                }
+                
+            	String gDayEnd=req.getSession().getAttribute("gDayEnd").toString();
+				if (gEnableShiftYN.equals("N") && gDayEnd.equals("N")) //== if (btnShiftEnd.isEnabled())
+			    {
 
-	            if (pendingBills)
-	            {
-	                //JOptionPane.showMessageDialog(this, "Please settle pending bills");
-	            	//jsonDayEndReturn.put("", "");
-	            	jsonDayEndReturn.put("msg","Please settle pending bills");
-	                return jsonDayEndReturn;
-	            }
-	            else if (busyTable)
-	            {
-	             	jsonDayEndReturn.put("msg","Sorry Tables are Busy Now");
-	                return jsonDayEndReturn;
-	            }
-	            else
-	            {
-	                String sqlShift = "select date(max(dtePOSDate)),intShiftCode"
-	                        + " from tbldayendprocess where strPOSCode='" + strPOSCode + "' and strDayEnd='N'"
-	                        + " and (strShiftEnd='' or strShiftEnd='N')";
-	                
-	                List listShiftNo=objBaseService.funGetList(new StringBuilder(sqlShift), "sql");
-	                if(listShiftNo.size()>0)
+                        //database backup
+                        String backupFilePath = "";
+                        if ("Windows".equalsIgnoreCase("Windows"))//clsPosConfigFile.gPrintOS.equalsIgnoreCase("Windows"))
+                        {
+                            backupFilePath = obBackupDatabase.funTakeBackUpDB(strClientCode);
+                        }                        
+                        sql = "update tbltablemaster set strStatus='Normal' "
+                                + " where strPOSCode='" + strPOSCode + "' ";
+                        objBaseService.funExecuteUpdate(sql,"sql");
+                        
+                        sql = "update tbldayendprocess set strShiftEnd='Y'"
+                                + " where strPOSCode='" + strPOSCode + "' and strDayEnd='N'";
+                        objBaseService.funExecuteUpdate(sql,"sql");
+
+                        //generate MI
+                        String gGenrateMI = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gGenrateMI");
+            			
+                        if (gGenrateMI.equalsIgnoreCase("Y"))
+                        {
+                            //frmGenrateMallInterfaceText objGenrateMallInterfaceText = new frmGenrateMallInterfaceText();
+                          //  objGenrateMallInterfaceText.funWriteToFile(posDate, posDate, "Current", "Y");
+                        }
+                        
+                        objPOSDayEndUtility.funGetNextShiftNoForShiftEnd(strPOSCode, shiftNo,strClientCode,strUserCode,req);
+                        //btnShiftEnd.setEnabled(false);
+                        String filePath = System.getProperty("user.dir");
+                        filePath = filePath + "/Temp/Temp_DayEndReport.txt";
+                       //ption = JOptionPane.showConfirmDialog(this, "Do You Want To Email Reports?");
+                        if (emailReport.equals("Y"))
+                        {
+                            funSendDayEndReports(strClientCode,strPOSCode,POSDate);
+                        }
+                        else
+                        {
+                            //delete old reports
+                            funCreateReportFolder();             
+                        }
+                       //send mail sales amount after shift end
+                        String sqlPOSData="select a.strPOSName ,max(b.dtePOSDate) from tblposmaster a, tbldayendprocess b "
+                        		+ "where b.strPOSCode='"+strPOSCode+"' and a.strPosCode='"+strPOSCode+"';";
+                        
+                        List list=objBaseService.funGetList(new StringBuilder(sqlPOSData), "sql");
+                        String strPOSName="All";// by default
+                        if(list.size()>0)
+                        {
+
+                        	Object ob[]=(Object[])list.get(0);
+                        	strPOSDate= ob[1].toString().split("// ")[0];
+                        	strPOSName= ob[0].toString();
+                        
+                        }
+                        objSendMail.funSendMail(totalSales, totalDiscount, totalPayments, filePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
+                        if ("Windows".equalsIgnoreCase("Windows"))
+                        {
+                            
+                            objUtilityController.funBackupAndMailDB(backupFilePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
+                        }                        
+                    
+                        //System.exit(0);
+                  }
+              }
+        }
+        catch (Exception e)
+        {
+            
+            e.printStackTrace();
+        }
+  
+	   return jsonDayEndReturn;
+	   }
+
+	private JSONObject funShiftEnd(String strClientCode,String strPOSCode,String strPOSDate,String strUserCode,HttpServletRequest req)
+    {
+        try
+        {
+            String sqld = "delete from tblitemrtemp where strTableNo='null'";
+            objBaseService.funExecuteUpdate(sqld,"sql" );
+            
+            gDayEndReportForm = "DayEndReport";
+            jsonDayEndReturn.put("gDayEndReportForm","DayEndReport");
+            if (objPOSDayEndUtility.funCheckPendingBills(strPOSCode,strPOSDate))
+            {
+                //JOptionPane.showMessageDialog(this, "Please settle pending bills");
+            	jsonDayEndReturn.put("msg","Please settle pending bills");
+                return jsonDayEndReturn;
+                
+            }
+            else if (objPOSDayEndUtility.funCheckTableBusy(strPOSCode))
+            {
+                //JOptionPane.showMessageDialog(this, "Sorry Tables are Busy Now");
+            	jsonDayEndReturn.put("msg","Sorry Tables are Busy Now");
+                return jsonDayEndReturn;
+            }
+            else
+            {
+                String sqlShift = "select date(max(dtePOSDate)),intShiftCode"
+                        + " from tbldayendprocess where strPOSCode='" + strPOSCode + "' and strDayEnd='N'"
+                        + " and (strShiftEnd='' or strShiftEnd='N')";
+              List listShiftNo=objBaseService.funGetList(new StringBuilder(sqlShift), "sql");
+              		if(listShiftNo.size()>0)
+		              {	
+		              	for(int i=0;i<listShiftNo.size();i++)
+		              	{
+		              		Object[] ob=(Object[])listShiftNo.get(i);
+		              		shiftNo = Integer.parseInt(ob[1].toString());		
+		              	}
+		              	
+		              }
+              		else
 	                {
-	                	for(int i=0;i<listShiftNo.size();i++)
-	                	{
-	                		Object[] ob=(Object[])listShiftNo.get(i);
-	                		shiftNo = Integer.parseInt(ob[1].toString());		
-	                	}
-	                	
+	                    shiftNo++;
 	                }
-	                
-	                	String gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gEnableShiftYN");
-						String gDayEnd="N";
-						if (gEnableShiftYN.equals("N") && gDayEnd.equals("N")) //== if (btnShiftEnd.isEnabled())
-					    {
-		
-		                        //database backup
-		                        String backupFilePath = "";
-		                        if ("Windows".equalsIgnoreCase("Windows"))//clsPosConfigFile.gPrintOS.equalsIgnoreCase("Windows"))
-		                        {
-		                            backupFilePath = obBackupDatabase.funTakeBackUpDB(strClientCode);
-		                        }                        
-		                        sql = "update tbltablemaster set strStatus='Normal' "
-		                                + " where strPOSCode='" + strPOSCode + "' ";
-		                        objBaseService.funExecuteUpdate(sql,"sql");
-		                        
-		                        sql = "update tbldayendprocess set strShiftEnd='Y'"
-		                                + " where strPOSCode='" + strPOSCode + "' and strDayEnd='N'";
-		                        objBaseService.funExecuteUpdate(sql,"sql");
-		
-		                        //generate MI
-		                        String gGenrateMI = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gGenrateMI");
-		            			
-		                        if (gGenrateMI.equalsIgnoreCase("Y"))
-		                        {
-		                            //frmGenrateMallInterfaceText objGenrateMallInterfaceText = new frmGenrateMallInterfaceText();
-		                          //  objGenrateMallInterfaceText.funWriteToFile(posDate, posDate, "Current", "Y");
-		                        }
-		                        
-		                        objPOSDayEndUtility.funGetNextShiftNoForShiftEnd(strPOSCode, shiftNo,strClientCode,strUserCode);
-		                        //btnShiftEnd.setEnabled(false);
-		                        String filePath = System.getProperty("user.dir");
-		                        filePath = filePath + "/Temp/Temp_DayEndReport.txt";
-		                       //ption = JOptionPane.showConfirmDialog(this, "Do You Want To Email Reports?");
-		                        if (emailReport.equals("Y"))
-		                        {
-		                            funSendDayEndReports(strClientCode,strPOSCode,POSDate);
-		                        }
-		                        else
-		                        {
-		                            //delete old reports
-		                            funCreateReportFolder();             
-		                        }
-		                       //send mail sales amount after shift end
-		                        String sqlPOSData="select a.strPOSName ,max(b.dtePOSDate) from tblposmaster a, tbldayendprocess b "
-		                        		+ "where b.strPOSCode='"+strPOSCode+"' and a.strPosCode='"+strPOSCode+"';";
-		                        
-		                        List list=objBaseService.funGetList(new StringBuilder(sqlPOSData), "sql");
-		                        String strPOSName="All";// by default
-		                        if(list.size()>0)
-		                        {
+              		String gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gEnableShiftYN");
+              		String gDayEnd="N";
+              		if (gEnableShiftYN.equals("N") && gDayEnd.equals("N")) //== if (btnShiftEnd.isEnabled())
+  					{
+	              
+	                   // int option = JOptionPane.showConfirmDialog(this, "Do you want to End Day?");
+	                   
+	                        String backupFilePath = "";
+	                        if ("Windows".equalsIgnoreCase("Windows"))//clsPosConfigFile.gPrintOS.equalsIgnoreCase("Windows"))
+	                        {
+	                            backupFilePath = obBackupDatabase.funTakeBackUpDB(strClientCode);//funBackupDatabase
+	                        }                        
+	                        
+	                       String  sqlEx = "update tbltablemaster set strStatus='Normal' "
+	                                + " where strPOSCode='" + strPOSCode + "' ";
+	                       objBaseService.funExecuteUpdate(sqlEx, "sql");
+	                       
+	                        sqlEx = "update tbldayendprocess set strShiftEnd='Y'"
+	                                + " where strPOSCode='" + strPOSCode + "' and strDayEnd='N'";
+	                        objBaseService.funExecuteUpdate(sqlEx, "sql");
+	                		 
+	                        //clsGlobalVarClass.dbMysql.execute(sql);
+	                         objPOSDayEndUtility.funGetNextShiftNo(strPOSCode, shiftNo,strClientCode,strUserCode,req);
+	                       // btnShiftEnd.setEnabled(false);
+	                        
+	                       // new clsManagersReport().funGenerateManagersReport(posDate, posDate, clsGlobalVarClass.gPOSCode);                        
+	                        
+	                        String filePath = System.getProperty("user.dir");
+	                        filePath = filePath + "/Temp/Temp_DayEndReport.txt";
+	                        //** Need to validate Email report need   	               
+	                        if (emailReport.equals("Y"))
+	                        {
+	                            funSendDayEndReports(strClientCode,strPOSCode,strPOSDate);
+	                        }
+	                        else
+	                        {
+	                            //delete old reports
+	                            funCreateReportFolder();             
+	                        }
 
-		                        	Object ob[]=(Object[])list.get(0);
-		                        	strPOSDate= ob[1].toString().split("// ")[0];
-		                        	strPOSName= ob[0].toString();
-		                        
-		                        }
-		                        objSendMail.funSendMail(totalSales, totalDiscount, totalPayments, filePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
-		                        if ("Windows".equalsIgnoreCase("Windows"))
-		                        {
-		                            
-		                            objUtilityController.funBackupAndMailDB(backupFilePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
-		                        }                        
-		                    
-		                        //System.exit(0);
-		                  }
-	              }
-	        }
-	        catch (Exception e)
-	        {
-	            
-	            e.printStackTrace();
-	        }
-	  
-		   return jsonDayEndReturn;
-		   }
-
+	                        // send client code & pos code for getting global variable
+	                        String sqlPOSData="select a.strPOSName ,max(b.dtePOSDate) from tblposmaster a, tbldayendprocess b "
+	                        		+ "where b.strPOSCode='"+strPOSCode+"' and a.strPosCode='"+strPOSCode+"';";
+	                        List list=objBaseService.funGetList(new StringBuilder(sqlPOSData), "sql");
+	                        String strPOSName="All";// by default
+	                        if(list.size()>0)
+	                        {
+	                        	Object ob[]=(Object[])list.get(0);
+	                        	strPOSDate= ob[1].toString().split("// ")[0];
+	                        	strPOSName= ob[0].toString();
+	                        }
+	                        objSendMail.funSendMail(totalSales, totalDiscount, totalPayments, filePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
 	
+	                        if ("Windows".equalsIgnoreCase("Windows"))// by default it windows
+	                        {
+	                            objUtilityController.funBackupAndMailDB(backupFilePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
+	                        }                       
+	                        //objUtility = null;
+	                      
+	                        //  System.exit(0);
+	                }
+                
+            }
+        }
+        catch (Exception e)
+        {
+         //   objUtility.funWriteErrorLog(e);
+            e.printStackTrace();
+        }
+        return jsonDayEndReturn;
+    }
 
-	    private JSONObject funShiftEnd(String strClientCode,String strPOSCode,String strPOSDate,String strUserCode)
-	    {
-	        try
-	        {
-	            String sqld = "delete from tblitemrtemp where strTableNo='null'";
-	            objBaseService.funExecuteUpdate(sqld,"sql" );
-	            
-	            gDayEndReportForm = "DayEndReport";
-	            jsonDayEndReturn.put("gDayEndReportForm","DayEndReport");
-	            if (objPOSDayEndUtility.funCheckPendingBills(strPOSCode,strPOSDate))
-	            {
-	                //JOptionPane.showMessageDialog(this, "Please settle pending bills");
-	            	jsonDayEndReturn.put("msg","Please settle pending bills");
-	                return jsonDayEndReturn;
-	                
-	            }
-	            else if (objPOSDayEndUtility.funCheckTableBusy(strPOSCode))
-	            {
-	                //JOptionPane.showMessageDialog(this, "Sorry Tables are Busy Now");
-	            	jsonDayEndReturn.put("msg","Sorry Tables are Busy Now");
-	                return jsonDayEndReturn;
-	            }
-	            else
-	            {
-	                String sqlShift = "select date(max(dtePOSDate)),intShiftCode"
-	                        + " from tbldayendprocess where strPOSCode='" + strPOSCode + "' and strDayEnd='N'"
-	                        + " and (strShiftEnd='' or strShiftEnd='N')";
-	              List listShiftNo=objBaseService.funGetList(new StringBuilder(sqlShift), "sql");
-	              		if(listShiftNo.size()>0)
-			              {	
-			              	for(int i=0;i<listShiftNo.size();i++)
-			              	{
-			              		Object[] ob=(Object[])listShiftNo.get(i);
-			              		shiftNo = Integer.parseInt(ob[1].toString());		
-			              	}
-			              	
-			              }
-	              		else
-		                {
-		                    shiftNo++;
-		                }
-	              		String gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gEnableShiftYN");
-	              		String gDayEnd="N";
-	              		if (gEnableShiftYN.equals("N") && gDayEnd.equals("N")) //== if (btnShiftEnd.isEnabled())
-	  					{
-		              
-		                   // int option = JOptionPane.showConfirmDialog(this, "Do you want to End Day?");
-		                   
-		                        String backupFilePath = "";
-		                        if ("Windows".equalsIgnoreCase("Windows"))//clsPosConfigFile.gPrintOS.equalsIgnoreCase("Windows"))
-		                        {
-		                            backupFilePath = obBackupDatabase.funTakeBackUpDB(strClientCode);//funBackupDatabase
-		                        }                        
-		                        
-		                       String  sqlEx = "update tbltablemaster set strStatus='Normal' "
-		                                + " where strPOSCode='" + strPOSCode + "' ";
-		                       objBaseService.funExecuteUpdate(sqlEx, "sql");
-		                       
-		                        sqlEx = "update tbldayendprocess set strShiftEnd='Y'"
-		                                + " where strPOSCode='" + strPOSCode + "' and strDayEnd='N'";
-		                        objBaseService.funExecuteUpdate(sqlEx, "sql");
-		                		 
-		                        //clsGlobalVarClass.dbMysql.execute(sql);
-		                         objPOSDayEndUtility.funGetNextShiftNo(strPOSCode, shiftNo,strClientCode,strUserCode);
-		                       // btnShiftEnd.setEnabled(false);
-		                        
-		                       // new clsManagersReport().funGenerateManagersReport(posDate, posDate, clsGlobalVarClass.gPOSCode);                        
-		                        
-		                        String filePath = System.getProperty("user.dir");
-		                        filePath = filePath + "/Temp/Temp_DayEndReport.txt";
-		                        //** Need to validate Email report need   	               
-		                        if (emailReport.equals("Y"))
-		                        {
-		                            funSendDayEndReports(strClientCode,strPOSCode,strPOSDate);
-		                        }
-		                        else
-		                        {
-		                            //delete old reports
-		                            funCreateReportFolder();             
-		                        }
+	private void funSendDayEndReports(String strClientCode,String strPOSCode,String strPOSDate)
+    {              
+       try
+        {      
+    	   if(strPOSName.equals("")){
+    		   strPOSName=objUtilityController.funGetPOSName(strPOSCode);   
+    	   }
+    	   funCreateReportFolder();                
+    	   //Get selected report from db to send mail
+    	   List list=objBaseService.funGetList(new StringBuilder("select  strPOSCode,strReportName,date(dtePOSDate) "
+                   + "from tbldayendreports "
+                   + "where strPOSCode='" + strPOSCode + "' "
+                   + "and strClientCode='" + strClientCode + "' "),"sql");
+           if(list.size()>0)
+           {
+        	   String rpName="";
+        	   for(int i=0;i<list.size();i++)
+        	   {
+        		   Object[] ob=(Object[]) list.get(i);
+        		   rpName=ob[1].toString();
+        		   funGenerateReport(strPOSCode,strPOSName,strPOSDate,strPOSDate,rpName);
+        	   }
+           }
+          
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }        
 
-		                        // send client code & pos code for getting global variable
-		                        String sqlPOSData="select a.strPOSName ,max(b.dtePOSDate) from tblposmaster a, tbldayendprocess b "
-		                        		+ "where b.strPOSCode='"+strPOSCode+"' and a.strPosCode='"+strPOSCode+"';";
-		                        List list=objBaseService.funGetList(new StringBuilder(sqlPOSData), "sql");
-		                        String strPOSName="All";// by default
-		                        if(list.size()>0)
-		                        {
-		                        	Object ob[]=(Object[])list.get(0);
-		                        	strPOSDate= ob[1].toString().split("// ")[0];
-		                        	strPOSName= ob[0].toString();
-		                        }
-		                        objSendMail.funSendMail(totalSales, totalDiscount, totalPayments, filePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
-		
-		                        if ("Windows".equalsIgnoreCase("Windows"))// by default it windows
-		                        {
-		                            objUtilityController.funBackupAndMailDB(backupFilePath,strClientCode,strPOSCode,strPOSName,strPOSDate);
-		                        }                       
-		                        //objUtility = null;
-		                      
-		                        //  System.exit(0);
-		                }
-	                
-	            }
-	        }
-	        catch (Exception e)
-	        {
-	         //   objUtility.funWriteErrorLog(e);
-	            e.printStackTrace();
-	        }
-	        return jsonDayEndReturn;
-	    }
+        funCreateZipFolder();
+        String filePath = System.getProperty("user.dir");
+        String zipFile = filePath + "/Reports.zip";
+        
+        try
+        {
+        	String gReceiverEmailIds = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gReceiverEmailIds");
+      	
+        	String strPOSName=objUtilityController.funGetPOSName(strPOSCode);
+			objSendMail.funSendMail(gReceiverEmailIds, zipFile,strClientCode,strPOSCode,strPOSName,strPOSDate);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
-	 
-	  
-	   private void funSendDayEndReports(String strClientCode,String strPOSCode,String strPOSDate)
-	    {              
-	       try
-	        {      
-	    	   if(strPOSName.equals("")){
-	    		   strPOSName=objUtilityController.funGetPOSName(strPOSCode);   
-	    	   }
-	    	   
-	    	   //Get selected report from db to send mail
-	    	   List list=objBaseService.funGetList(new StringBuilder("select  strPOSCode,strReportName,date(dtePOSDate) "
-	                   + "from tbldayendreports "
-	                   + "where strPOSCode='" + strPOSCode + "' "
-	                   + "and strClientCode='" + strClientCode + "' "),"sql");
-	           if(list.size()>0)
-	           {
-	        	   String rpName="";
-	        	   for(int i=0;i<list.size();i++)
-	        	   {
-	        		   Object[] ob=(Object[]) list.get(i);
-	        		   rpName=ob[1].toString();
-	        		   funGenerateReport(strPOSCode,strPOSName,strPOSDate,strPOSDate,rpName);
-	        	   }
-	           }
-	          
-	    	    funCreateReportFolder();                    
-	      
-	        }
-	        catch (Exception e)
-	        {
-	            e.printStackTrace();
-	        }        
-
-	        funCreateZipFolder();
-	        String filePath = System.getProperty("user.dir");
-	        String zipFile = filePath + "/Reports.zip";
-	        
-	        try
-	        {
-	        	String gReceiverEmailIds = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,strPOSCode, "gReceiverEmailIds");
-	      	
-	        	String strPOSName=objUtilityController.funGetPOSName(strPOSCode);
-				new clsPOSSendMail().funSendMail(gReceiverEmailIds, zipFile,strClientCode,strPOSCode,strPOSName,strPOSDate);
-	        }
-	        catch (Exception e)
-	        {
-	            e.printStackTrace();
-	        }
-
-	    }	
+    }	
 		
 		
-	    private void funCreateReportFolder()
+	  private void funCreateReportFolder()
 	    {
 	        try
 	        {
@@ -1247,7 +1117,7 @@ public class clsPOSDayEndProcess {
 	        }
 	    }
 		
-	    private void funCreateZipFolder()
+	  private void funCreateZipFolder()
 	    {
 	        try
 	        {
@@ -4307,7 +4177,7 @@ public class clsPOSDayEndProcess {
 	                    + "left outer join tblmenuitempricingdtl d on a.strItemCode = d.strItemCode "
 	                    + " and b.strposcode =d.strposcode ");
 	            
-	            String gAreaWisePricing = objPOSSetupUtility.funGetParameterValuePOSWise(userCode,posCode, "gAreaWisePricing");
+	            String gAreaWisePricing = objPOSSetupUtility.funGetParameterValuePOSWise(strClientCode,posCode, "gAreaWisePricing");
 	            if (gAreaWisePricing.equals("Y"))
 	            {
 	                sbSqlQFile.append("and b.strAreaCode= d.strAreaCode ");
@@ -6372,7 +6242,7 @@ public class clsPOSDayEndProcess {
 	    public void funCreateExcelSheet(List<String> parameterList, List<String> headerList, Map<Integer, List<String>> map, List<String> totalList, String fileName)
 	    {
 	        String filePath = System.getProperty("user.dir");
-	        File file = new File(filePath + "\\Reports\\" + fileName + ".xls");
+	        File file = new File(filePath + File.separator + "Reports" + File.separator + fileName + ".xls");
 	        try
 	        {
 	            WritableWorkbook workbook1 = Workbook.createWorkbook(file);//import jxl jar
@@ -6386,62 +6256,66 @@ public class clsPOSDayEndProcess {
 
 	            for (int j = 0; j <= parameterList.size(); j++)
 	            {
-	            	
-	            	
-	            	/*
-	                Label l0 = new Label(2, 0, parameterList.get(0), cellFormat);
-	                Label l1 = new Label(0, 2, parameterList.get(1), headerCell);
-	                Label l2 = new Label(1, 2, parameterList.get(2), headerCell);
-	                Label l3 = new Label(2, 2, parameterList.get(3), headerCell);
-	                Label l4 = new Label(0, 3, parameterList.get(4), headerCell);
-	                Label l5 = new Label(1, 3, parameterList.get(5), headerCell);
+	            
+	            	Label l0 = new Label(2, 0, parameterList.get(0), cellFormat);
+	        		Label l1 = new Label(0, 2, parameterList.get(1), headerCell);
+	        		Label l2 = new Label(1, 2, parameterList.get(2), headerCell);
+	        		Label l3 = new Label(2, 2, parameterList.get(3), headerCell);
+	        		Label l4 = new Label(0, 3, parameterList.get(4), headerCell);
+	        		Label l5 = new Label(1, 3, parameterList.get(5), headerCell);
 
-	                sheet1.addCell(l0);
-	                sheet1.addCell(l1);
-	                sheet1.addCell(l2);
-	                sheet1.addCell(l3);
-	                sheet1.addCell(l4);
-	                sheet1.addCell(l5);
-	            */}
+	        		sheet1.addCell(l0);
+	        		sheet1.addCell(l1);
+	        		sheet1.addCell(l2);
+	        		sheet1.addCell(l3);
+	        		sheet1.addCell(l4);
+	        		sheet1.addCell(l5);
+	            	
+	            }
 
 	            for (int j = 0; j < headerList.size(); j++)
-	            {/*
-	                Label lblHeader = new Label(j, 5, headerList.get(j), headerCell);
-	                sheet1.addCell(lblHeader);
-	            */}
+	    	    {
+	    		Label lblHeader = new Label(j, 5, headerList.get(j), headerCell);
+	    		sheet1.addCell(lblHeader);
+	    	    }
 
-	            int i = 7;
-	            for (Map.Entry<Integer, List<String>> entry : map.entrySet())
-	            {/*
-	                Label lbl0 = new Label(0, i, entry.getKey().toString());
-	                List<String> nameList = map.get(entry.getKey());
-	                for (int j = 0; j < nameList.size(); j++)
-	                {
-	                    int colIndex = j + 1;
-	                    Label lblData = new Label(colIndex, i, nameList.get(j));
-	                    sheet1.addCell(lblData);
-	                    sheet1.setColumnView(i, 15);
-	                }
-	                sheet1.addCell(lbl0);
-	                i++;
-	            */}
+	    	    int i = 7;
+	    	    for (Map.Entry<Integer, List<String>> entry : map.entrySet())
+	    	    {
+	    		Label lbl0 = new Label(0, i, entry.getKey().toString());
+	    		List<String> nameList = map.get(entry.getKey());
+	    		for (int j = 0; j < nameList.size(); j++)
+	    		{
+	    		    int colIndex = j + 1;
+	    		    Label lblData = new Label(colIndex, i, nameList.get(j));
+	    		    sheet1.addCell(lblData);
+	    		    sheet1.setColumnView(i, 15);
+	    		}
+	    		sheet1.addCell(lbl0);
+	    		i++;
+	    	    }
 
-	            for (int j = 0; j < totalList.size(); j++)
-	            {/*
-	                String[] l0 = new String[10];
-	                for (int c = 0; c < totalList.size(); c++)
-	                {
-	                    l0 = totalList.get(c).split("#");
-	                    int pos = Integer.parseInt(l0[1]);
-	                    Label lable0 = new Label(pos, i + 1, l0[0], headerCell);
-	                    sheet1.addCell(lable0);
-	                }
-	                Label labelTotal = new Label(0, i + 1, "TOTAL:", headerCell);
-	                sheet1.addCell(labelTotal);
-	            */}
-	            workbook1.write();
-	            workbook1.close();
+	    	    for (int j = 0; j < totalList.size(); j++)
+	    	    {
+	    		String[] l0 = new String[10];
+	    		for (int c = 0; c < totalList.size(); c++)
+	    		{
+	    		    l0 = totalList.get(c).split("#");
+	    		    int pos = Integer.parseInt(l0[1]);
+	    		    Label lable0 = new Label(pos, i + 1, l0[0], headerCell);
+	    		    sheet1.addCell(lable0);
+	    		}
+	    		Label labelTotal = new Label(0, i + 1, "TOTAL:", headerCell);
+	    		sheet1.addCell(labelTotal);
+	    	    }
+	    	    workbook1.write();
+	    	    workbook1.close();
 
+	    	    /*if (!dayEnd.equalsIgnoreCase("Yes"))
+	    	    {
+	    		Desktop dt = Desktop.getDesktop();
+	    		dt.open(file);
+	    	    }*/
 //	            Desktop dt = Desktop.getDesktop();
 //	            dt.open(file);
 	        }

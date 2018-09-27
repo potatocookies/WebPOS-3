@@ -344,7 +344,7 @@ public class clsDayEndProcessHdModel extends clsBaseModel implements Serializabl
 		return strShiftEnd;
 	}
 	public void setStrShiftEnd(String strShiftEnd){
-		this. strShiftEnd = (String) setDefaultValue( strShiftEnd, "N");
+		this. strShiftEnd = (String) setDefaultValue( strShiftEnd, "");
 	}
 
 	public long getIntTotalPax(){

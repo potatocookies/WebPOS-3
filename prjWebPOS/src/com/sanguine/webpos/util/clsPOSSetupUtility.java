@@ -243,6 +243,15 @@ public class clsPOSSetupUtility {
 				case "gSlabBasedHDCharges"  : columnName ="strSlabBasedHDCharges";
 				break;
 				
+				case "gDataSendFrequency"  : columnName ="strDataSendFrequency";
+				break;
+				
+				case "gNewBillSeriesForNewDay"  : columnName ="strNewBillSeriesForNewDay";
+				break;
+				
+				case "gNoOfDecimalPlace" : columnName="dblNoOfDecimalPlace";
+				break;
+				
 				
 			}
 			

@@ -435,7 +435,6 @@ public class clsUserController
 			return objMV;
 		}
 	}
-
 	*/
 	
 	
@@ -700,7 +699,7 @@ public class clsUserController
 	@RequestMapping(value = "/frmGetPOSSelection", method = RequestMethod.GET)
 	public ModelAndView funWebPOSPOSSelection(@RequestParam("strPosCode") String POSCode,HttpServletRequest req,Map<String,Object> model) throws Exception
 	{
-		String POSDate="",shiftNo="",shiftEnd="",dayEnd="";
+		String POSDate="",shiftNo="",shiftEnd="",dayEnd="",gShifts="false";
 		List<clsUserDesktopUtil> webPOSDesktop=null;
 		try {
 			
@@ -774,6 +773,7 @@ public class clsUserController
 			shiftNo=hmDayEndDetails.get("ShiftNo").toString();
 			shiftEnd=hmDayEndDetails.get("ShiftEnd").toString();
 			dayEnd=hmDayEndDetails.get("DayEnd").toString();
+			gShifts=hmDayEndDetails.get("gShifts").toString();
 			
 			req.getSession().setAttribute("gPOSCode", POSCode);
 			req.getSession().setAttribute("gPOSName", posName);
@@ -785,7 +785,8 @@ public class clsUserController
 			req.getSession().setAttribute("gPOSDateToDisplay", POSDate.split("-")[2] + "-" + POSDate.split("-")[1] + "-" + POSDate.split("-")[0]);
 			req.getSession().setAttribute("gShiftEnd", shiftEnd);
 			req.getSession().setAttribute("gDayEnd", dayEnd);
-			
+			req.getSession().setAttribute("gShifts", gShifts);
+			req.getSession().setAttribute("gShiftNo", shiftNo);
 			
 			
 			
@@ -1033,6 +1034,8 @@ public class clsUserController
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strEnableDineIn","N");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strAutoAreaSelectionInMakeKOT","N");
 	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("strConsolidatedKOTPrinterPort","");
+	    	clsPOSGlobalFunctionsController.hmPOSSetupValues.put("dblNoOfDecimalPlace",objSetupHdModel.getDblNoOfDecimalPlace());
+	    	
 		}
 		
 		
@@ -1205,4 +1208,3 @@ public class clsUserController
 	}
 	
 }
-

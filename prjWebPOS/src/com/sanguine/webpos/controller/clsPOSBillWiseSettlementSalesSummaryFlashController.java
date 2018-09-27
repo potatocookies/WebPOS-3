@@ -79,7 +79,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 			for(int i =0 ;i<listOfSettlement.size();i++)
 			{
 				clsSettlementMasterModel objModel = (clsSettlementMasterModel) listOfSettlement.get(i);
-				settlementMap.put(objModel.getStrSettelmentDesc(),objModel.getStrSettelmentCode());
+				settlementMap.put(objModel.getStrSettelmentCode(),objModel.getStrSettelmentDesc());
 			}
 		}
 		model.put("settlementList",settlementMap);
@@ -92,7 +92,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 			for(int i =0 ;i<listOfGroup.size();i++)
 			{
 				clsGroupMasterModel objModel = (clsGroupMasterModel) listOfGroup.get(i);
-				groupMap.put(objModel.getStrGroupName(), objModel.getStrGroupCode());
+				groupMap.put(objModel.getStrGroupCode(),objModel.getStrGroupName());
 			}
 		}
 		model.put("groupList",groupMap);
@@ -110,10 +110,10 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/processPOSBillWiseSettlementSalesSummeryFlash", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
 	{
 		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
-	       
+		    String userCode=req.getSession().getAttribute("gUserCode").toString();
 		    String fromDate=objBean.getFromDate();
 		 
 			String toDate=objBean.getToDate();
@@ -125,7 +125,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 			String groupName = objBean.getStrGroupName();
 			Map resMap = new LinkedHashMap();
 			
-			resMap=funGetData(clientCode,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName);
+			resMap=funGetData(clientCode,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName,userCode);
 		
 			List exportList=new ArrayList();	
 		
@@ -199,12 +199,13 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 	  @SuppressWarnings({ "rawtypes", "unchecked" })
 		@RequestMapping(value={"/loadBillwiseSettlementSalesSummary"}, method=RequestMethod.GET)
 	    @ResponseBody
-	    public Map funLoadBillwiseSettlementSalesSummary1(HttpServletRequest req)
+	    public Map funLoadBillwiseSettlementSalesSummary1(HttpServletRequest req) throws Exception
 	    {
 		  LinkedHashMap resMap = new LinkedHashMap();
 		     
 	        
 	        String clientCode=req.getSession().getAttribute("gClientCode").toString();
+	        String userCode=req.getSession().getAttribute("gUserCode").toString();
 	       
 		    String fromDate=req.getParameter("fromDate");
 		    
@@ -216,7 +217,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 			String settlementName=req.getParameter("settlementName");
 			String posName=req.getParameter("posName");
 			String groupName = req.getParameter("groupName");
-			resMap=funGetData(clientCode,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName);
+			resMap=funGetData(clientCode,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName,userCode);
 	        return resMap;
 			
 			
@@ -224,7 +225,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 	    }
 
 
-	  private LinkedHashMap funGetData(String clientCode, String fromDate,String toDate, String operationType,String settlementName,String posName, String viewBy,String groupName)
+	  private LinkedHashMap funGetData(String clientCode, String fromDate,String toDate, String operationType,String settlementName,String posName, String viewBy,String groupName,String userCode) throws Exception
 	  {
 		  
 			  LinkedHashMap resMap = new LinkedHashMap();
@@ -256,9 +257,16 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 			    {
 			   	  groupCode = (String) groupMap.get(groupName);
 			    }
-			      
+			    if(viewBy.equalsIgnoreCase("BILL REGISTER"))
+				{
+			    	resMap = objReportService.funGetBillWiseSettlementBillRegisterSalesSummary(fromDate1,toDate1,viewBy,operationType,settlementCode,posCode,posName,groupName,userCode,clientCode);	
+				}
+			    else
+			    {	
 			    resMap = objReportService.funGetBillWiseSettlementSalesSummary(fromDate1,toDate1,viewBy,operationType,settlementCode,posCode,posName,groupName);
+			    }
 			    
+			    List listTot = new ArrayList();
 				List jColHeaderArr = (List) resMap.get("Col Header");
 				colHeader=jColHeaderArr;
 				int colCount=(int)resMap.get("Col Count");
@@ -276,7 +284,11 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 			     // long columns=colCount-1;
 			      
 			String prevColHeader=""; 
-			if(viewBy.equalsIgnoreCase("ITEM'S GROUP WISE"))
+			if(viewBy.equalsIgnoreCase("BILL REGISTER"))
+			{
+				listTot =  (List) resMap.get("listTotal");
+			}
+			else if(viewBy.equalsIgnoreCase("ITEM'S GROUP WISE"))
 			{    
 				for(int i=3;i<colCount-1;i++)
 				{
@@ -331,29 +343,21 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 						}
 					}
 					listTotal.add(total);
-					
-//					if(total==0)
-//					{
-//						int len=listTotal.indexOf(total);
-//						listTotal.remove(len);
-//						colHeader.remove(i);
-//						
-//						colCount--;
-//						for(int j=0; j<rowCount; j++)
-//						{
-//							List arr=(List)list.get(j);
-//							arr.remove(i);
-//							  resMap.put(""+j,arr);
-//						}
-//						i--;
-//					}
 						
 				}
 	  		}
 				resMap.put("Header", colHeader);
 				resMap.put("ColCount", colCount);
 				resMap.put("RowCount", rowCount);
-				resMap.put("Total", listTotal);
+				if(!viewBy.equalsIgnoreCase("BILL REGISTER"))
+				{
+					resMap.put("Total", listTotal);
+				}
+				else
+				{
+					resMap.put("Total",listTot);
+				}
+				
 			
 		  return resMap;
 

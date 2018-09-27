@@ -1037,7 +1037,34 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmMoveItemsToTable.jsp" />
 	</definition>
 	
+
+	<definition name="frmPOSChangeSettlement" extends="base.definition6">
+		<put-attribute name="title" value="Change Settlement" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSChangeSettlement.jsp" />
+	</definition>
 	
+	<definition name="frmPOSCreditBillReceipt" extends="base.definition6">
+		<put-attribute name="title" value="Credit Receipt" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSTransaction/frmPOSCreditBillReceipt.jsp" />
+	</definition>
+	
+
+	
+	<definition name="frmConsolidatedDiscountReport" extends="base.definition6">
+		<put-attribute name="title" value="Consolidated Discount Report" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmConsolidatedDiscountReport.jsp" />
+	</definition>
+	
+	
+	<definition name="frmBillWiseSettlementWiseGroupWiseBreakup" extends="base.definition6">
+		<put-attribute name="title" value="Bill Wise Settlement Wise Group Wise Breakup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmBillWiseSettlementWiseGroupWiseBreakup.jsp" />
+	</definition>
+	
+	<definition name="frmSettlementWiseGroupWiseBreakup" extends="base.definition6">
+		<put-attribute name="title" value="Settlement Wise Group Wise Breakup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmSettlementWiseGroupWiseBreakup.jsp" />
+	</definition>
 
 	
 <!-- 	End Of WebPOS Tiles Entry -->

@@ -73,8 +73,7 @@ public class clsPOSVoidKotController {
 		}
 		 
 	}
-	
-	
+
 	public Map funLoadTableData(String strPosCode){
 		
 		Map mapTableCombo = new HashMap<String, String>();	

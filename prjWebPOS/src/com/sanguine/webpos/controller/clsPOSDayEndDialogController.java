@@ -1,7 +1,7 @@
 package com.sanguine.webpos.controller;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +9,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -20,14 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
-
 import com.sanguine.webpos.bean.clsPOSDayEndProcessBean;
-import com.sanguine.webpos.bean.clsPOSItemModifierMasterBean;
-import com.sanguine.webpos.bean.clsPOSMenuHeadBean;
-import com.sanguine.webpos.bean.clsPOSSalesFlashReportsBean;
 
 @Controller
 public class clsPOSDayEndDialogController {
@@ -38,6 +31,8 @@ public class clsPOSDayEndDialogController {
 	 @Autowired
 	 private ServletContext servletContext;
 	 
+	 @Autowired
+		intfBaseService objBaseService;
 	
 	@RequestMapping(value = "/frmPOSDayEndDialog", method = RequestMethod.GET)
 	public ModelAndView funOpenPOSTools(Map<String, Object> model,HttpServletRequest req)
@@ -49,8 +44,6 @@ public class clsPOSDayEndDialogController {
 			urlHits="1";
 		}
 		model.put("urlHits",urlHits);
-		
-		//req.getSession().setAttribute("pageload", 1);
 		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSDayEndDialog","command", new clsPOSDayEndProcessBean());
@@ -66,92 +59,105 @@ public class clsPOSDayEndDialogController {
 	public @ResponseBody List<clsPOSDayEndProcessBean> funLoadAllReportsName(HttpServletRequest request)
 	{
 		List<clsPOSDayEndProcessBean> listbean=new ArrayList<clsPOSDayEndProcessBean>();
-		clsPOSDayEndProcessBean obBean;//=new clsDayEndProcessBean();
-		
-		String strClientCode=request.getSession().getAttribute("clientCode").toString();
+		String strClientCode=request.getSession().getAttribute("gClientCode").toString();
 		String strPOSCode=request.getSession().getAttribute("loginPOS").toString();
 		
-		JSONObject jObj = objGlobalFunctions.funGETMethodUrlJosnObjectData("http://localhost:8080/prjSanguineWebService/DayEndProcessTransaction"
-				+ "/funLoadAllReportsName?strPOSCode="+strPOSCode+"&strClientCode="+strClientCode);
-		ArrayList alReportName=new ArrayList<String>();
-		ArrayList alCheckRpt=new ArrayList<Boolean>();
-			
-		Gson gson = new Gson();
-		Type listType = new TypeToken<List<String>>() {}.getType();
-		alReportName= gson.fromJson(jObj.get("ReportName").toString(), listType);
-		alCheckRpt= gson.fromJson(jObj.get("CheckReport").toString(), listType);
-		for(int i=0;i<alReportName.size();i++)
-		{
-			obBean=new clsPOSDayEndProcessBean();
-			obBean.setStrReportName(alReportName.get(i).toString());
-			if(alCheckRpt.size()==alReportName.size())
-			{
-				obBean.setStrReportCheck(Boolean.parseBoolean(alCheckRpt.get(i).toString()));
-			}
-			else
-			{
-				obBean.setStrReportCheck(Boolean.parseBoolean("false"));
-			}
-			
-			listbean.add(obBean);
-		}
-		
-		
-		
+		listbean=funLoadAllReportsName(strPOSCode, strClientCode);
 		return listbean;
 	}
 	
 	@RequestMapping(value = "/DayEndMailReport", method = RequestMethod.POST)
 	public ModelAndView funGetSelectedMailReport(@ModelAttribute("command") @Valid clsPOSDayEndProcessBean objBean,BindingResult result,HttpServletRequest req)
 	{
-		JSONObject jsMailReportData=new JSONObject();
 		String urlHits="2";
-		String userCode=req.getSession().getAttribute("usercode").toString();
-		String strClientCode=req.getSession().getAttribute("clientCode").toString();
-		String strPOSDate=req.getSession().getAttribute("POSDate").toString();
+		String userCode=req.getSession().getAttribute("gUserCode").toString();
+		String strClientCode=req.getSession().getAttribute("gClientCode").toString();
+		String strPOSDate=req.getSession().getAttribute("gPOSDate").toString();
 	 	String strPOSCode=req.getSession().getAttribute("loginPOS").toString();
 
-		clsPOSDayEndProcessBean obDayEndd;
-		ArrayList alReportName=new ArrayList<String>();
-		ArrayList alCheckRpt=new ArrayList<Boolean>();
 		if(!result.hasErrors())
 		{
 			List<clsPOSDayEndProcessBean> listMailReport =objBean.getListMailReport();
-			for(int i=0;i<listMailReport.size();i++)
-			{
-				obDayEndd=listMailReport.get(i);
-				//alReportName.add(obDayEndd.getStrReportName());
-				if(obDayEndd.getStrReportCheck()==null)
-				{
-					alCheckRpt.add(false);
-				}else{
-					alReportName.add(obDayEndd.getStrReportName());
-					alCheckRpt.add(obDayEndd.getStrReportCheck());
-				}
-			}
-			
+			funSendDayEndMailReports(listMailReport, userCode, strClientCode, strPOSDate, strPOSCode);
 		}
-
- 		Gson gson = new Gson();
- 	    Type type = new TypeToken<List<String>>() {}.getType();
-        String ReportName = gson.toJson(alReportName, type);
-        String CheckReport = gson.toJson(alCheckRpt, type);
-        jsMailReportData.put("ReportName", ReportName);
-       // jsMailReportData.put("CheckReport", CheckReport);
-       
-        jsMailReportData.put("strPOSCode", strPOSCode);
-        jsMailReportData.put("userCode", userCode);
-        jsMailReportData.put("strPOSDate", strPOSDate);
-        jsMailReportData.put("strClientCode", strClientCode);
-        String Status="true";
-        JSONObject job=new JSONObject();
-         job = objGlobalFunctions.funPOSTMethodUrlJosnObjectData("http://localhost:8080/prjSanguineWebService/DayEndProcessTransaction/funSendDayEndMailReports",jsMailReportData);
-        /* JSONObject jsOb=(JSONObject)job.get("final");
-         Status=jsOb.get("Status").toString();
-		*/
-		return new ModelAndView("redirect:/frmPOSDayEndDialog.html?saddr="+urlHits);//"redirect:/frmPOSDayEndDialog.html?saddr="+urlHits
-        //return Status;
-		//return null;
+		return new ModelAndView("redirect:/frmPOSDayEndDialog.html?saddr="+urlHits);
 	}
 	
+	public List<clsPOSDayEndProcessBean> funLoadAllReportsName(String strPOSCode,String strClientCode)
+	{
+		List<clsPOSDayEndProcessBean> listReports=new ArrayList<>();
+		try{
+			clsPOSDayEndProcessBean obBean=new clsPOSDayEndProcessBean();
+			StringBuilder sbSql=new StringBuilder("select a.strModuleName,a.strFormName from tblforms a "
+                    + "where a.strModuleType='R' "
+                    + "order by a.intSequence;");
+			 List listRPT=objBaseService.funGetList(sbSql, "sql");
+             if(listRPT.size()>0)
+             {
+             	for(int i=0;i<listRPT.size();i++)
+             	{
+             		obBean=new clsPOSDayEndProcessBean();
+             		Object[] ob=(Object[])listRPT.get(i);
+             		obBean.setStrReportName(ob[0].toString());
+             		listReports.add(obBean);
+             	}
+             }
+             sbSql.setLength(0);
+             sbSql.append("select  strPOSCode,strReportName,date(dtePOSDate) "
+                    + "from tbldayendreports "
+                    + "where strPOSCode='"+strPOSCode+"' "
+                    + "and strClientCode='" + strClientCode + "';");
+             
+             listRPT=objBaseService.funGetList(sbSql, "sql");
+             if(listRPT.size()>0)
+             {
+             	for(int i=0;i<listRPT.size();i++)
+             	{
+             		Object[] ob=(Object[])listRPT.get(i);
+             		 String reportName=ob[1].toString();
+             		 for(int j = 0; j < listReports.size(); j++){
+             			if(listReports.get(j).getStrReportName()!=null && listReports.get(j).getStrReportName().equalsIgnoreCase(reportName))                        
+                        {
+             				listReports.get(j).setStrReportCheck(true);
+                        }
+             		 }
+             	}
+             }
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return listReports;
+	}
+	
+	public void funSendDayEndMailReports(List<clsPOSDayEndProcessBean> listMailReport ,String userCode,String strClientCode,String strPOSDate,String strPOSCode)
+	{
+		try{
+			StringBuilder sbSql=new StringBuilder ();
+			
+			Date dtCurrent = new Date(); 
+		 	String currentTime = dtCurrent.getHours() + ":" + dtCurrent.getMinutes() + ":" + dtCurrent.getSeconds();
+		 	String POSDateforRTransaction=strPOSDate+" "+currentTime;
+		 	
+		 	objBaseService.funExecuteUpdate("truncate table tbldayendreports;", "sql");
+		 	for(int j=0;j<listMailReport.size();j++)
+		 	{
+		 		if(listMailReport.get(j).getStrReportCheck()!=null && listMailReport.get(j).getStrReportCheck()){
+		 			sbSql.setLength(0);
+			 		sbSql.append("INSERT INTO tbldayendreports (strPOSCode, strClientCode, strReportName, dtePOSDate, "
+			 				+ "strUserCreated,strUserEdited, dteDateCreated, dteDateEdited,strDataPostFlag)"
+			 				+ " VALUES ('"+strPOSCode+"', '"+strClientCode+"', '"+listMailReport.get(j).getStrReportName()+"', '"+strPOSDate+"',"
+			 						+ " '"+userCode+"','"+userCode+"', '"+POSDateforRTransaction+"', '"+POSDateforRTransaction+"','N');");
+			 		
+			 		objBaseService.funExecuteUpdate(sbSql.toString(), "sql");
+			 		
+		 		}
+		 	}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

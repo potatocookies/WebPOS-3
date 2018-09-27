@@ -1,6 +1,7 @@
 package com.sanguine.webpos.bean;
 
 import java.util.Comparator;
+import java.util.Map;
 
 public class clsPOSSalesFlashColumns {
     
@@ -43,6 +44,22 @@ public class clsPOSSalesFlashColumns {
     private String strField19;
     
     private String strField20;
+    
+    private String strField21;
+    
+    private String strField22;
+    
+    private String strField23;
+    
+    private String strField24;
+    
+    private String strCustomerName;
+    
+    private String strSettlementType ;
+    
+    
+    private Map<String,clsPOSTaxCalculationDtls> mapOfTaxes;
+
     
     public String getStrField18() {
 		return strField18;
@@ -249,4 +266,75 @@ public class clsPOSSalesFlashColumns {
             }
         }
     };
+
+
+	public String getStrField21()
+	{
+		return strField21;
+	}
+
+	public void setStrField21(String strField21)
+	{
+		this.strField21 = strField21;
+	}
+
+	public String getStrField22()
+	{
+		return strField22;
+	}
+
+	public void setStrField22(String strField22)
+	{
+		this.strField22 = strField22;
+	}
+
+	public String getStrField23()
+	{
+		return strField23;
+	}
+
+	public void setStrField23(String strField23)
+	{
+		this.strField23 = strField23;
+	}
+
+	public String getStrField24()
+	{
+		return strField24;
+	}
+
+	public void setStrField24(String strField24)
+	{
+		this.strField24 = strField24;
+	}
+
+	public String getStrCustomerName()
+	{
+		return strCustomerName;
+	}
+
+	public void setStrCustomerName(String strCustomerName)
+	{
+		this.strCustomerName = strCustomerName;
+	}
+
+	public String getStrSettlementType()
+	{
+		return strSettlementType;
+	}
+
+	public void setStrSettlementType(String strSettlementType)
+	{
+		this.strSettlementType = strSettlementType;
+	}
+
+	public Map<String, clsPOSTaxCalculationDtls> getMapOfTaxes()
+	{
+		return mapOfTaxes;
+	}
+
+	public void setMapOfTaxes(Map<String, clsPOSTaxCalculationDtls> mapOfTaxes)
+	{
+		this.mapOfTaxes = mapOfTaxes;
+	}
 }

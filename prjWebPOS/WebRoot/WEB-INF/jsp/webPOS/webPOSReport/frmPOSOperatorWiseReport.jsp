@@ -30,12 +30,28 @@
 
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(function() 
-    			{		
+    			{
+	 var gEnableShiftYN="${gEnableShiftYN}";
+	 var POSDate="${POSDate}"
+		    var startDate="${POSDate}";
+		  	var Date = startDate.split(" ");
+			var arr = Date[0].split("-");
+			Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
     				$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-    				$("#txtFromDate" ).datepicker('setDate', 'today');
+    				$("#txtFromDate" ).datepicker('setDate', Dat);
     				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-    				$("#txtToDate" ).datepicker('setDate', 'today');
-    				
+    				$("#txtToDate" ).datepicker('setDate', Dat);
+    				if(gEnableShiftYN=='Y')
+    				{
+    					document.getElementById("lblShift").style.visibility = "visible"; 
+    					document.getElementById("txtShiftCode").style.visibility = "visible"; 
+    				}
+    				else
+    				{
+    					document.getElementById("lblShift").style.visibility = "hidden";
+    					document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+    					
+    				}
     			}); 
 
  $("form").submit(function(event){
@@ -119,7 +135,7 @@
 		
 		<div class="title" >
 				
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
@@ -128,7 +144,7 @@
 		    				</div>
 		    		</div>
 		    		
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">From Date</label>
 		    				</div>
@@ -143,7 +159,7 @@
 							</div>
 					 </div>
 					 
-					 <div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					 <div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">Report Type</label>
 		    				</div>
@@ -160,7 +176,7 @@
 		    					<s:select id="cmbUserName" name="cmbUserName" path="strSGName" items="${userList}" />
 		    				</div>
 		    		</div>
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">Settlement Type</label>
 		    				</div>
@@ -168,7 +184,17 @@
 		    					<s:select id="cmbSettlementType" name="cmbSettlementType" path="strReportType" items="${settlementList}" />
 		    				</div>
 		    		</div>
-		    		
+		    		 <div class="row" style="background-color: #fff;display:block;">			
+			 		<div class="element-input col-lg-6" style="width: 17%;"> 
+    					<label id="lblShift" style="display: inline-block; width: 100px">Shift 
+						</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<s:select colspan="3" type="text" items="${shiftList}"
+								id="txtShiftCode" path="strShiftCode" cssClass="BoxW124px" />
+					
+					</div>
+			 </div> 
 		    		
 		    		<br/>
 		    		<br/>
@@ -180,57 +206,7 @@
 							</p>
 			  		  </div>
 		 </div>
-		 
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<table class="masterTable"> -->
 
-<!-- 			<tr> -->
-<!-- 				<td width="140px">POS Name</td> -->
-<%-- 				<td colspan="3"><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" > --%>
-					
-<%-- 				 </s:select></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>From Date</label></td> -->
-<%-- 				<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>To Date</label></td> -->
-<%-- 				<td><s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-			
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			<td><label>Report Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbDocType" path="strDocType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="PDF">PDF</s:option> --%>
-<%-- 				    		<s:option value="XLS">EXCEL</s:option> --%>
-				    		
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			<td><label>User Name</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbUserName" name="cmbUserName" path="strSGName" cssClass="BoxW124px" items="${userList}"> --%>
-<%-- 					</s:select> --%>
-<!-- 					</td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			<td><label>Settlement Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbSettlementType" name="cmbSettlementType" path="strReportType" cssClass="BoxW124px" items="${settlementList}"> --%>
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 			</tr> -->
-<!-- 		</table> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
 
 	</s:form>
 

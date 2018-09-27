@@ -196,8 +196,10 @@
 					
 					
 				}//Else block Of Response
-				
+				if($("#cmbViewBy").val()!="BILL REGISTER")
+				{	
 				funAddTotalHeaderRow(response.Header);
+				}
 				funAddUnderLine(response.Total,"tblTotal");
 			},
 			error : function(jqXHR, exception) {
@@ -272,7 +274,16 @@
 	    for(var i=0;i<rowData.length;i++)
 	    	 {
 	   			if(i>2)
+	   			{
+	   				if(typeof rowData[i] == 'number')   			
+	   				{	
 	   				 item=Math.round(rowData[i]);
+	   				}
+	   				else
+	   				{
+	   				 item=rowData[i];
+	   				}	
+	   			}
 	   			else
 	   			 item=rowData[i];
 	 	   		row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px \" class=\"cell\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+item+"' />";
@@ -295,56 +306,55 @@
 	
 	<s:form name="POSBillWiseSettlementSalesSummeryFlash" method="POST"
 		action="processPOSBillWiseSettlementSalesSummeryFlash.html?saddr=${urlHits}" target="_blank" 
-		class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+		class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 		
 		<div class="title" >
 				
 					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
 								<s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" items="${posList}" >
 				 				</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">From Date</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 12%;"> 
 								<s:input  id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">To Date</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 12%;"> 
 								<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}"  style="width: 100%;"/>	
 							</div>
-					</div>
-					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">View By</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
 								<s:select id="cmbViewBy" path="strViewBy">
 										<s:option value="ITEM'S GROUP WISE">ITEM'S GROUP WISE</s:option>
 										<s:option value="NONE">NONE</s:option>
+										<s:option value="BILL REGISTER">BILL REGISTER</s:option>
 								</s:select>
 							</div>
 					</div>
 					
+					
 					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 12%;"> 
 		    					<label class="title">Settlement Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 10%;"> 
 								<s:select id="cmbSettleName" name="cmbSettleName" path="strSettlementName" items="${settlementList}">
 				 				</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">Operation Type</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 10%;"> 
 								<s:select id="cmbOperationType" path="strOperationType">
 										<s:option value="All">All</s:option>
 										<s:option value="Dine In">Dine In</s:option>
@@ -354,17 +364,27 @@
 
 								</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 9%;"> 
 		    					<label class="title">Group Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 10%;"> 
 								<s:select id="cmbGroupName" path="strGroupName" items="${groupList}"/>	
 							</div>
+							<div class="element-input col-lg-6" style="width: 15%;"> 
+								<input type="button" value="DISPLAY" id="btnSubmit" />
+							</div>
+							<div class="element-input col-lg-6" style="width: 15%;"> 
+								<input type="submit" value="EXPORT" id="submit" />
+							</div>
+							<div class="element-input col-lg-6" style="width: 15%;"> 
+								<input type="reset" value="RESET" id="btnReset" />
+							</div>
+							
 					</div>
 					
 					
 					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
-							<div style="border: 1px solid #ccc; display: block; height: 200px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+							<div style="border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblBillWiseSettlement" style="width: 100%; text-align: center !important;">
 									<tbody style="border-top: none;border-bottom: 1px solid #ccc;">
@@ -385,17 +405,6 @@
 							</div>
 					</div>
 					
-					<br/>
-					
-					<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%; margin-left: 10%;">
-					
-						<p align="center">
-							<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="DISPLAY" id="btnSubmit" /></div>
-							<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="EXPORT" id="submit" /></div>
-							<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="RESET" id="btnReset" /></div>
-						</p>
-						
-				   </div>
 				   
 				   <div id="wait" style="display: none; width: 60px; height: 60px; border: 0px solid black; position: absolute; top: 50%; left: 50%; padding: 2px;">
 						<img src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif" width="60px" height="60px" />
@@ -403,97 +412,6 @@
 				   
 				   
 		</div>
-		
-		
-		
-		
-<!-- 		<div> -->
-<!-- 			<div> -->
-
-<!-- 				<table class="masterTable" style="margin:auto;"> -->
-
-<!-- 					<tr> -->
-<!-- 						<td width="140px">POS Name</td> -->
-<%-- 						<td><s:select id="cmbPOSName" name="cmbPOSName" --%>
-<%-- 								path="strPOSName" cssClass="BoxW124px" items="${posList}"> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 						<td><label>From Date</label></td> -->
-<%-- 						<td><s:input id="txtFromDate" required="required" --%>
-<%-- 								path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" --%>
-<%-- 								cssClass="calenderTextBox" /></td> --%>
-
-<!-- 						<td><label>To Date</label></td> -->
-<%-- 						<td><s:input id="txtToDate" required="required" path="toDate" --%>
-<%-- 								pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox" /></td> --%>
-<!-- 					<td><label>View By</label></td> -->
-<%-- 						<td><s:select id="cmbViewBy" path="strViewBy" --%>
-<%-- 								cssClass="BoxW124px"> --%>
-<%-- 								<s:option value="ITEM'S GROUP WISE">ITEM'S GROUP WISE</s:option> --%>
-<%-- 								<s:option value="NONE">NONE</s:option> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 					</tr> -->
-<!-- 					<tr> -->
-<!-- 						<td width="140px">Settlement Name</td> -->
-<%-- 							<td><s:select id="cmbSettleName" name="cmbSettleName" --%>
-<%-- 								path="strSettlementName" cssClass="BoxW124px" items="${settlementList}"> --%>
-
-<%-- 							</s:select></td> --%>
-						
-
-<!-- 						<td><label>Operation Type</label></td> -->
-<%-- 						<td><s:select id="cmbOperationType" path="strOperationType" --%>
-<%-- 								cssClass="BoxW124px"> --%>
-<%-- 								<s:option value="All">All</s:option> --%>
-<%-- 								<s:option value="Dine In">Dine In</s:option> --%>
-<%-- 								<s:option value="Direct Biller">Direct Biller</s:option> --%>
-<%-- 								<s:option value="Home Delivery">Home Delivery</s:option> --%>
-<%-- 								<s:option value="Take Away">Take Away</s:option> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 						<td><label>Group Name</label></td> -->
-<%-- 						<td><s:select id="cmbGroupName" path="strGroupName" --%>
-<%-- 								cssClass="BoxW124px" items="${groupList}"/></td> --%>
-<!--  						<td> </td> -->
-<!-- 						<td></td> -->
-<!-- 					</tr> -->
-
-<!-- 				</table> -->
-<!-- 			</div> -->
-			
-<!-- 			<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-<!-- 				<table id="tblBillWiseSettlement" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-				
-<!-- 			</div> -->
-<!-- 			<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 100px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-	
-<!-- 				<table id="tblTotal" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="button" value="Display" class="form_button" -->
-<!-- 				id="btnSubmit" /> <input type="submit" value="Export" -->
-<!-- 				class="form_button" id="submit" /> <input type="reset" value="Reset" -->
-<!-- 				class="form_button" id="btnReset" /> -->
-
-<!-- 		</p> -->
-<!-- 		<div id="wait" -->
-<!-- 			style="display: none; width: 60px; height: 60px; border: 0px solid black; position: absolute; top: 50%; left: 50%; padding: 2px;"> -->
-<!-- 			<img -->
-<%-- 				src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif" --%>
-<!-- 				width="60px" height="60px" /> -->
-<!-- 		</div> -->
 
 	</s:form>
 

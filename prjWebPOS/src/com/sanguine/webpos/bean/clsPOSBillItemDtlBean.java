@@ -33,7 +33,7 @@ public class clsPOSBillItemDtlBean
     private String strDiscValue;
     private String strDiscType;
     private String strSerialNo;
-    
+    private double dblNetTotal;
     private String promoCode;
     private String promoType;
     private double freeItemQty;
@@ -905,6 +905,20 @@ public class clsPOSBillItemDtlBean
 	public void setMoveItemQty(double moveItemQty)
 	{
 		this.moveItemQty = moveItemQty;
+	}
+
+
+
+	public double getDblNetTotal()
+	{
+		return dblNetTotal;
+	}
+
+
+
+	public void setDblNetTotal(double dblNetTotal)
+	{
+		this.dblNetTotal = dblNetTotal;
 	}
 
 

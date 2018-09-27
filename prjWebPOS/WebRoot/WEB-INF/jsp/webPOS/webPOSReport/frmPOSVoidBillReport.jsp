@@ -31,7 +31,7 @@
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(function() 
     			{		
-    				
+	 var gEnableShiftYN="${gEnableShiftYN}";	
     				var POSDate="${gPOSDate}"
     					var startDate="${gPOSDate}";
     					var Date = startDate.split(" ");
@@ -41,6 +41,18 @@
     					$("#txtFromDate" ).datepicker('setDate', Dat); 
     					$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
     					$("#txtToDate" ).datepicker('setDate', Dat); 
+    					
+    					if(gEnableShiftYN=='Y')
+    					{
+    						document.getElementById("lblShift").style.visibility = "visible"; 
+    						document.getElementById("txtShiftCode").style.visibility = "visible"; 
+    					}
+    					else
+    					{
+    						document.getElementById("lblShift").style.visibility = "hidden";
+    						document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+    						
+    					}
     		    	
     			}); 
 
@@ -79,7 +91,7 @@
 		<br />
 		<div class="title" style="margin-left: 190px;">
 		
-			<div class="row" style="background-color: #fff;display: -webkit-box;">
+			<div class="row" style="background-color: #fff;display: block;">
 				<div class="element-input col-lg-6" style="width: 18%;" > 
     				<label class="title">POS Name</label>
     			</div>
@@ -88,7 +100,7 @@
 				 	</s:select>
 				</div>
 			</div>
-			<div class="row" style="background-color: #fff;display: -webkit-box;">
+			<div class="row" style="background-color: #fff;display: block;">
 			 		<div class="element-input col-lg-6" style="width: 18%;"> 
     					<label class="title">From Date</label>
 	    			</div>
@@ -96,7 +108,7 @@
 						<s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;" />
 					</div>
 		     </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">			
+			 <div class="row" style="background-color: #fff;display: block;">			
 			 		<div class="element-input col-lg-6" style="width: 18%;"> 
     					<label class="title">To Date</label>
 	    			</div>
@@ -104,7 +116,7 @@
 						<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
 					</div>
 			 </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">				
+			 <div class="row" style="background-color: #fff;display: block;">				
 				<div class="element-input col-lg-6" style="width: 18%;" > 
     				<label class="title">Report Type</label>
     			</div>
@@ -115,7 +127,7 @@
 				    </s:select>
 				</div>
 			 </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">				
+			 <div class="row" style="background-color: #fff;display: block;">				
 				<div class="element-input col-lg-6" style="width: 18%;" > 
     				<label class="title">Report Mode</label>
     			</div>
@@ -127,7 +139,7 @@
 				    	</s:select>
 				</div>
 			 </div>
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">				
+			 <div class="row" style="background-color: #fff;display: block;">				
 				<div class="element-input col-lg-6" style="width: 18%;" > 
     				<label class="title">Reason Name</label>
     			</div>
@@ -136,6 +148,18 @@
 					</s:select>
 				</div>
 			 </div>
+			 
+			 <div class="row" style="background-color: #fff;display:block;">			
+			 		<div class="element-input col-lg-6" style="width: 17%;"> 
+    					<label id="lblShift" style="display: inline-block; width: 100px">Shift 
+						</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<s:select colspan="3" type="text" items="${shiftList}"
+								id="txtShiftCode" path="strShiftCode" cssClass="BoxW124px" />
+					
+					</div>
+			 </div> 
 		</div>	
 		
 		<br />

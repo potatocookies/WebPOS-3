@@ -29,7 +29,7 @@ public class clsPOSMainMenuService {
 	    				+ " FROM tblforms a WHERE (a.strModuleType='T' OR a.strModuleType='U' OR strModuleName='Customer Master') "
 	    				+ " AND a.strModuleName!='NCKOT' AND a.strModuleName!='Complimentry Settlement'  "
 	    				+ " AND a.strModuleName!='Discount On Bill' AND a.strModuleName!='NCKOT' "
-	    				+ " AND a.strModuleName!='Take Away' AND a.strModuleName LIKE '%"+searchFrom+"%';  ");
+	    				+ " AND a.strModuleName!='Take Away' AND a.strModuleName LIKE '%"+searchFrom+"%';");
 	    	}
 	    	else if (moduleType.equals("M"))
 	    	{
@@ -50,28 +50,26 @@ public class clsPOSMainMenuService {
 	    	{
 	    		sbSql.append("select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName "
 	          	    + "from tblforms a,tblsuperuserdtl b  "
-	           		+ " where b.strUserCode='"+userCode+"'  "
-	           	    +  "and a.strModuleName=b.strFormName "
-	           		+  "and  (a.strModuleType='T' or a.strModuleType='U'  or strModuleName='Customer Master')   "
+	           		+ " where b.strUserCode='"+userCode+"' and a.strModuleName=b.strFormName "
+	           		+ " and  (a.strModuleType='T' or a.strModuleType='U'  or strModuleName='Customer Master') "
+	           		+ " AND a.strModuleName LIKE '%"+searchFrom+"%' "
 	           	    + "order by b.intSequence ");
 	    	}
 	    	else if (moduleType.equals("M"))
 	    	{
 	    		sbSql.append("select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName "
-	          	    + "from tblforms a,tblsuperuserdtl b  "
-	           		+ " where b.strUserCode='"+userCode+"'  "
-	           	    +  "and a.strModuleName=b.strFormName "
-	           		+  "and  (a.strModuleType='M' or a.strModuleType='U')   "
-	           	    + "order by b.intSequence ");
+	          	    + " from tblforms a,tblsuperuserdtl b "
+	           		+ " where b.strUserCode='"+userCode+"' and a.strModuleName=b.strFormName "
+	           		+ " and (a.strModuleType='M' or a.strModuleType='U') AND a.strModuleName LIKE '%"+searchFrom+"%' "
+	           	    + " order by b.intSequence ");
 	    	}
 	    	else if (moduleType.equals("R"))
 	    	{
 	    		sbSql.append("select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName "
-	        	    + "from tblforms a,tblsuperuserdtl b  "
-	        		+ " where b.strUserCode='"+userCode+"' "
-	        	    +  "and a.strModuleName=b.strFormName "
-	        		+  "and  (a.strModuleType='R' or a.strModuleType='U')   "
-	        	    + "order by b.intSequence ");
+	        	    + " from tblforms a,tblsuperuserdtl b  "
+	        		+ " where b.strUserCode='"+userCode+"' and a.strModuleName=b.strFormName "
+	        		+ " and (a.strModuleType='R' or a.strModuleType='U') AND a.strModuleName LIKE '%"+searchFrom+"%' "
+	        	    + " order by b.intSequence ");
 	    	}
 	    	else
 	    	{
@@ -86,44 +84,45 @@ public class clsPOSMainMenuService {
 	    			+ "or a.strModuleName='TableStatusReport' or a.strModuleName='NCKOT' "
 	    	        + "or a.strModuleName='Take Away' or a.strModuleName='Table Reservation' "
 	    			+ "or a.strModuleName='POS Wise Sales' or a.strModuleName='Customer Order' "
-	    			//+ "or a.strModuleName='Non Available Items' or a.strModuleName='Mini Make KOT' "
 	    			+ "or a.strModuleName='Day End' or a.strModuleName='KDSForKOTBookAndProcess' "
-	    			+ "or a.strModuleName='Kitchen Process System' ) ");																		  
+	    			+ "or a.strModuleName='Kitchen Process System' ) "
+	    			+ "AND a.strModuleName LIKE '%"+searchFrom+"%' ");																		  
 	    	}
 	    }
 	    else
 	    {
 	    	if(moduleType.equals("T"))
 	    	{
-	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,b.intSequence,a.strFormName,a.strRequestMapping, a.strShortName  "
-	    			+  "from tblforms a,tbluserdtl b  "
-	    	        +  "where (a.strModuleType='T' or a.strModuleType='U' or strModuleName='Customer Master')  "
-	    	        +  "and b.strUserCode='"+userCode+"'  "
-	    	        +   "and a.strModuleName=b.strFormName  "
-	    	        +   "and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
-	    	        +    "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true')  "
-	    	        +  "order by b.intSequence ");
+	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
+	    			+ " from tblforms a,tbluserdtl b  "
+	    	        + " where (a.strModuleType='T' or a.strModuleType='U' or strModuleName='Customer Master')  "
+	    	        + " and b.strUserCode='"+userCode+"'  "
+	    	        + " and a.strModuleName=b.strFormName  "
+	    	        + " and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
+	    	        + " or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true') "
+	    	        + " AND a.strModuleName LIKE '%"+searchFrom+"%' "
+	    	        + " order by b.intSequence ");
 	    	}
 	    	else if(moduleType.equals("M"))
 	    	{
-	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,b.intSequence,a.strFormName,a.strRequestMapping, a.strShortName  "
+	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
 	          	      +  "from tblforms a,tbluserdtl b  "
 	          	      +  "where (a.strModuleType='M' or a.strModuleType='U')  "
 	          	      +  "and b.strUserCode='"+userCode+"'  "
 	          	      +  "and a.strModuleName=b.strFormName  "
 	          	      +  "and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
-	          	      +  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true')  "
+	          	      +  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true') AND a.strModuleName LIKE '%"+searchFrom+"%' "
 	          	      +  "order by b.intSequence ");
 	    	}
 	    	else if (moduleType.equals("R"))
 	    	{
-	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,b.intSequence,a.strFormName,a.strRequestMapping, a.strShortName  "
+	    		sbSql.append(" select DISTINCT a.strModuleName,a.strImageName,a.strFormName,a.strRequestMapping, a.strShortName  "
 	    			+  "from tblforms a,tbluserdtl b  "
 	            	+  "where (a.strModuleType='R' or a.strModuleType='U' )  "
 	            	+  "and b.strUserCode='"+userCode+"'  "
 	            	+  "and a.strModuleName=b.strFormName  "
 	            	+  "and (b.strAdd='true' or b.strEdit='true' or b.strDelete = 'true' or b.strView='true' "
-	            	+  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true')  "
+	            	+  "or b.strPrint = 'true' or b.strSave = 'true' or b.strGrant = 'true') AND a.strModuleName LIKE '%"+searchFrom+"%' "
 	            	+  "order by b.intSequence ");
 	    	}
 	    	else 
@@ -140,8 +139,8 @@ public class clsPOSMainMenuService {
 					+ ",'NCKOT','Take Away','Table Reservation','POS Wise Sales','Customer Order'"
 					//+ ",'Non Available Items','Mini Make KOT','Day End','KDSForKOTBookAndProcess','Kitchen Process System') "
 					+ ",'Day End','KDSForKOTBookAndProcess','Kitchen Process System') "
+					+ "AND a.strModuleName LIKE '%"+searchFrom+"%' "
 					+ " order by b.intSequence");
-	    		
 	    	}
 	    }
 		
@@ -226,93 +225,96 @@ public class clsPOSMainMenuService {
 					 	 							                    
 				            	}
 			                }
-			                else
-			                {			                	
-			                	int h, m, sec, d, min, y, lblCount, cntNavigate;
-			                    String dteCreated, time, date;
-			                	Date endDt = new Date();
-			                    String todayDate = (endDt.getYear() + 1900) + "-" + (endDt.getMonth() + 1) + "-" + endDt.getDate();
-			                    java.util.Date curDt = new java.util.Date();
-			                    d = curDt.getDate();
-			                    m = curDt.getMonth() + 1;
-			                    y = curDt.getYear() + 1900;
-			                    h = curDt.getHours();
-			                    min = curDt.getMinutes();
-			                    sec = curDt.getSeconds();
-			                    time = h + ":" + min + ":" + sec;
-			                    date = y + "-" + m + "-" + d;
-			                    dteCreated = date + " " + time;
-			                      
-			                    hmDayEndDetails.put("startDate", todayDate);
-			                    
-			                    SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
-			                    Date bDate = dFormat.parse(todayDate);
-			                    long posTime = bDate.getTime();
-			                    Date currDate = new Date();
-			                    long currTime = currDate.getTime();
-			                    long diffTime = currTime - posTime;
-			                    long diffDays = diffTime / (24 * 60 * 60 * 1000);
-			                    
-			                    clsDayEndProcessHdModel objDayEndProcessHdModel = new clsDayEndProcessHdModel();
-			                    objDayEndProcessHdModel.setStrPOSCode(POSCode);
-			                    objDayEndProcessHdModel.setDtePOSDate(todayDate);
-			                    objDayEndProcessHdModel.setStrDayEnd("N");
-			                    objDayEndProcessHdModel.setDblTotalSale(0.00);
-			                    objDayEndProcessHdModel.setDblNoOfBill(0);
-			                    objDayEndProcessHdModel.setDblNoOfVoidedBill(0);
-			                    objDayEndProcessHdModel.setDblNoOfModifyBill(0);
-			                    objDayEndProcessHdModel.setDblHDAmt(0);
-			                    objDayEndProcessHdModel.setDblDiningAmt(0);
-			                    objDayEndProcessHdModel.setDblTakeAway(0);
-			                    objDayEndProcessHdModel.setDblFloat(0);
-			                    objDayEndProcessHdModel.setDblCash(0);
-			                    objDayEndProcessHdModel.setDblAdvance(0);
-			                    objDayEndProcessHdModel.setDblTransferIn(0);
-			                    objDayEndProcessHdModel.setDblTransferOut(0);
-			                    objDayEndProcessHdModel.setDblPayments(0);
-			                    objDayEndProcessHdModel.setDblWithdrawal(0);
-			                    objDayEndProcessHdModel.setDblTransferOut(0);
-			                    objDayEndProcessHdModel.setDblTotalPay(0);
-			                    objDayEndProcessHdModel.setDblCashInHand(0);
-			                    objDayEndProcessHdModel.setDblRefund(0);
-			                    objDayEndProcessHdModel.setDblTotalDiscount(0);
-			                    objDayEndProcessHdModel.setDblNoOfDiscountedBill(0);
-			                    objDayEndProcessHdModel.setIntShiftCode(0);
-			                    objDayEndProcessHdModel.setStrShiftEnd("");
-			                    objDayEndProcessHdModel.setIntTotalPax(0);
-			                    objDayEndProcessHdModel.setIntNoOfTakeAway(0);
-			                    objDayEndProcessHdModel.setIntNoOfHomeDelivery(0);
-			                    objDayEndProcessHdModel.setStrUserCreated(userCode);
-			                    objDayEndProcessHdModel.setStrUserEdited(userCode);
-			                    objDayEndProcessHdModel.setDteDateCreated(dteCreated);
-			                    objDayEndProcessHdModel.setDteDayEndDateTime(dteCreated);
-			                    objDayEndProcessHdModel.setStrClientCode(clientCode);
-			                    objDayEndProcessHdModel.setStrDataPostFlag("N");
-			                    objDayEndProcessHdModel.setIntNoOfNCKOT(0);
-			                    objDayEndProcessHdModel.setIntNoOfComplimentaryKOT(0);
-			                    objDayEndProcessHdModel.setIntNoOfVoidKOT(0);
-			                    objDayEndProcessHdModel.setDblUsedDebitCardBalance(0.00);
-			                    objDayEndProcessHdModel.setDblUnusedDebitCardBalance(0.00);
-			                    objDayEndProcessHdModel.setStrWSStockAdjustmentNo("");
-			                    objDayEndProcessHdModel.setDblTipAmt(0.00);
-			                    objDayEndProcessHdModel.setStrExciseBillGeneration("");
-			                    objDayEndProcessHdModel.setDblNetSale(0.00);
-			                    objDayEndProcessHdModel.setDblGrossSale(0.00);
-			                    objDayEndProcessHdModel.setDblAPC(0.00);
-			                    
-			                    objBaseService.funSave(objDayEndProcessHdModel);
-			                   
-			 					hmDayEndDetails.put("ShiftEnd", "");
-			 					hmDayEndDetails.put("DayEnd", "N");
-			 					hmDayEndDetails.put("ShiftNo","0");
-			                }
+			                
 			            }
+			 			
 					}
 					else
-					{
-						 //new frmOkPopUp(null, "Settlement Type is not Present", "Warning", 1).setVisible(true);
-					}
+	                {			                	
+	                	int h, m, sec, d, min, y, lblCount, cntNavigate;
+	                    String dteCreated, time, date;
+	                	Date endDt = new Date();
+	                    String todayDate = (endDt.getYear() + 1900) + "-" + (endDt.getMonth() + 1) + "-" + endDt.getDate();
+	                    java.util.Date curDt = new java.util.Date();
+	                    d = curDt.getDate();
+	                    m = curDt.getMonth() + 1;
+	                    y = curDt.getYear() + 1900;
+	                    h = curDt.getHours();
+	                    min = curDt.getMinutes();
+	                    sec = curDt.getSeconds();
+	                    time = h + ":" + min + ":" + sec;
+	                    date = y + "-" + m + "-" + d;
+	                    dteCreated = date + " " + time;
+	                      
+	                    hmDayEndDetails.put("startDate", todayDate);
+	                    
+	                    SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
+	                    Date bDate = dFormat.parse(todayDate);
+	                    long posTime = bDate.getTime();
+	                    Date currDate = new Date();
+	                    long currTime = currDate.getTime();
+	                    long diffTime = currTime - posTime;
+	                    long diffDays = diffTime / (24 * 60 * 60 * 1000);
+	                    
+	                    clsDayEndProcessHdModel objDayEndProcessHdModel = new clsDayEndProcessHdModel();
+	                    objDayEndProcessHdModel.setStrPOSCode(POSCode);
+	                    objDayEndProcessHdModel.setDtePOSDate(todayDate);
+	                    objDayEndProcessHdModel.setStrDayEnd("N");
+	                    objDayEndProcessHdModel.setDblTotalSale(0.00);
+	                    objDayEndProcessHdModel.setDblNoOfBill(0);
+	                    objDayEndProcessHdModel.setDblNoOfVoidedBill(0);
+	                    objDayEndProcessHdModel.setDblNoOfModifyBill(0);
+	                    objDayEndProcessHdModel.setDblHDAmt(0);
+	                    objDayEndProcessHdModel.setDblDiningAmt(0);
+	                    objDayEndProcessHdModel.setDblTakeAway(0);
+	                    objDayEndProcessHdModel.setDblFloat(0);
+	                    objDayEndProcessHdModel.setDblCash(0);
+	                    objDayEndProcessHdModel.setDblAdvance(0);
+	                    objDayEndProcessHdModel.setDblTransferIn(0);
+	                    objDayEndProcessHdModel.setDblTransferOut(0);
+	                    objDayEndProcessHdModel.setDblPayments(0);
+	                    objDayEndProcessHdModel.setDblWithdrawal(0);
+	                    objDayEndProcessHdModel.setDblTransferOut(0);
+	                    objDayEndProcessHdModel.setDblTotalPay(0);
+	                    objDayEndProcessHdModel.setDblCashInHand(0);
+	                    objDayEndProcessHdModel.setDblRefund(0);
+	                    objDayEndProcessHdModel.setDblTotalDiscount(0);
+	                    objDayEndProcessHdModel.setDblNoOfDiscountedBill(0);
+	                    objDayEndProcessHdModel.setIntShiftCode(0);
+	                    objDayEndProcessHdModel.setStrShiftEnd("");
+	                    objDayEndProcessHdModel.setIntTotalPax(0);
+	                    objDayEndProcessHdModel.setIntNoOfTakeAway(0);
+	                    objDayEndProcessHdModel.setIntNoOfHomeDelivery(0);
+	                    objDayEndProcessHdModel.setStrUserCreated(userCode);
+	                    objDayEndProcessHdModel.setStrUserEdited(userCode);
+	                    objDayEndProcessHdModel.setDteDateCreated(dteCreated);
+	                    objDayEndProcessHdModel.setDteDayEndDateTime(dteCreated);
+	                    objDayEndProcessHdModel.setStrClientCode(clientCode);
+	                    objDayEndProcessHdModel.setStrDataPostFlag("N");
+	                    objDayEndProcessHdModel.setIntNoOfNCKOT(0);
+	                    objDayEndProcessHdModel.setIntNoOfComplimentaryKOT(0);
+	                    objDayEndProcessHdModel.setIntNoOfVoidKOT(0);
+	                    objDayEndProcessHdModel.setDblUsedDebitCardBalance(0.00);
+	                    objDayEndProcessHdModel.setDblUnusedDebitCardBalance(0.00);
+	                    objDayEndProcessHdModel.setStrWSStockAdjustmentNo("");
+	                    objDayEndProcessHdModel.setDblTipAmt(0.00);
+	                    objDayEndProcessHdModel.setStrExciseBillGeneration("");
+	                    objDayEndProcessHdModel.setDblNetSale(0.00);
+	                    objDayEndProcessHdModel.setDblGrossSale(0.00);
+	                    objDayEndProcessHdModel.setDblAPC(0.00);
+	                    
+	                    objBaseService.funSave(objDayEndProcessHdModel);
+	                   
+	 					hmDayEndDetails.put("ShiftEnd", "");
+	 					hmDayEndDetails.put("DayEnd", "N");
+	 					hmDayEndDetails.put("ShiftNo","0");
+	                }
+					
 				}
+			}
+			else
+			{
+				 //new frmOkPopUp(null, "Settlement Type is not Present", "Warning", 1).setVisible(true);
 			}
 		}
 		catch(Exception e)

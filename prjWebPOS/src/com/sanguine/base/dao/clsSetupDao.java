@@ -248,8 +248,8 @@ public class clsSetupDao
 				case "gSMSApi"  : columnName ="strSMSApi";
 				break;
 				
-			
-				
+				case "gNoOfDecimalPlace" : columnName="dblNoOfDecimalPlace";
+				break;
 				
 				
 				

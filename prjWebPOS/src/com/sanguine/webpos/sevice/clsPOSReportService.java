@@ -1,5 +1,6 @@
 package com.sanguine.webpos.sevice;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,8 +19,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.Set;
-import java.lang.reflect.Array;
+import java.util.Vector;
 
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.HashPrintServiceAttributeSet;
@@ -31,7 +35,12 @@ import javax.print.attribute.standard.PrinterName;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.POSGlobal.controller.clsReprintDocs;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sanguine.base.service.clsSetupService;
@@ -49,6 +58,8 @@ import com.sanguine.webpos.bean.clsPOSGroupWaiseSalesBean;
 import com.sanguine.webpos.bean.clsPOSItemWiseConsumption;
 import com.sanguine.webpos.bean.clsPOSKOTAnalysisBean;
 import com.sanguine.webpos.bean.clsPOSOperatorDtl;
+import com.sanguine.webpos.bean.clsPOSReprintDocumentsBean;
+import com.sanguine.webpos.bean.clsPOSSalesFlashColumns;
 import com.sanguine.webpos.bean.clsPOSSalesFlashReportsBean;
 import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
 import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
@@ -60,9 +71,12 @@ import com.sanguine.webpos.comparator.clsPOSGroupSubGroupComparator;
 import com.sanguine.webpos.comparator.clsPOSGroupSubGroupWiseSalesComparator;
 import com.sanguine.webpos.comparator.clsPOSItemConsumptionComparator;
 import com.sanguine.webpos.comparator.clsPOSSalesFlashComparator;
+import com.sanguine.webpos.comparator.clsSalesFlashComparator;
 import com.sanguine.webpos.comparator.clsVoidBillComparator;
 import com.sanguine.webpos.comparator.clsWaiterWiseSalesComparator;
+import com.sanguine.webpos.model.clsShiftMasterModel;
 import com.sanguine.webpos.util.clsPOSGroupWiseComparator;
+import com.sanguine.webpos.util.clsPOSSetupUtility;
 import com.sanguine.webpos.util.clsPOSUtilityController;
 
 @Service
@@ -91,6 +105,8 @@ public class clsPOSReportService {
 	
 	@Autowired
 	private clsPOSUtilityController objUtilityController;
+	@Autowired
+	clsPOSSetupUtility objPOSSetupUtility;
 
 	double TotSale = 0;
 
@@ -1736,13 +1752,12 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSGroupSubGroupItemBean> funProcessSubGroupWiseReport(String posCode, String fromDate,
-			String toDate, String strUserCode, String strShiftNo) {
+			String toDate, String strUserCode, String strShiftNo,String enableShiftYN) {
 		StringBuilder sbSqlLive = new StringBuilder();
 		StringBuilder sbSqlQFile = new StringBuilder();
 		StringBuilder sbSqlFilters = new StringBuilder();
 		StringBuilder sqlModLive = new StringBuilder();
 		StringBuilder sqlModQFile = new StringBuilder();
-		String enableShiftYN="N";
 		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
 		sbSqlLive.setLength(0);
 		sbSqlQFile.setLength(0);
@@ -1969,17 +1984,17 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSVoidBillDtl> funProcessVoidBillSummaryReport(String posCode, String fromDate, String toDate,
-			String strShiftNo, String reasonCode) {
+			String strShiftNo, String reasonCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
-		String enableShiftYN="N";
+		
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
 			sqlBuilder.append(
 					"select a.strBillNo,Date(a.dteBillDate) as BillDate,Date(a.dteModifyVoidBill) as VoidedDate, "
 							+ " Time(a.dteBillDate) As EntryTime,Time(a.dteModifyVoidBill) VoidedTime, "
-							+ " a.dblModifiedAmount as BillAmount,a.strReasonName as Reason,a.strUserEdited AS VoidedUser,a.strUserCreated CreatedUser,a.strRemark,a.strVoidBillType "
+							+ " SUM(b.dblAmount) AS BillAmount,a.strReasonName as Reason,a.strUserEdited AS VoidedUser,a.strUserCreated CreatedUser,a.strRemark,a.strVoidBillType "
 							+ " from tblvoidbillhd a,tblvoidbilldtl b " + " where a.strBillNo=b.strBillNo "
 							+ " and date(a.dteBillDate)=date(b.dteBillDate) " + " and b.strTransType='VB' "
 							+ " and a.strTransType='VB' " + " and (a.dblModifiedAmount)>0 "
@@ -2112,10 +2127,10 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSVoidBillDtl> funProcessVoidBillDetailReport(String posCode, String fromDate, String toDate,
-			String strShiftNo, String reasonCode) {
+			String strShiftNo, String reasonCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSVoidBillDtl> listOfVoidBillData = new ArrayList<clsPOSVoidBillDtl>();
-		String enableShiftYN="N";
+		
 		try {
 			// Bill detail data
 			sqlBuilder.setLength(0);
@@ -2245,12 +2260,12 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSBillDtl> funProcessWaiterWiseIncentivesSummaryReport(String posCode, String fromDate,
-			String toDate, String strShiftNo) {
+			String toDate, String strShiftNo,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		StringBuilder sqlQBuilder = new StringBuilder();
 		sqlBuilder.setLength(0);
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-		String enableShiftYN="N";
+		
 		try {
 			// Q Data
 			sqlQBuilder.setLength(0);
@@ -2344,12 +2359,12 @@ public class clsPOSReportService {
 	}
 
 	public List<clsPOSBillDtl> funProcessWaiterWiseIncentivesDetailReport(String posCode, String fromDate,
-			String toDate, String strShiftNo) {
+			String toDate, String strShiftNo,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		StringBuilder sqlQBuilder = new StringBuilder();
 		sqlBuilder.setLength(0);
 		List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-		String enableShiftYN="N";
+		
 		try {
 			// Q Data
 			sqlQBuilder.setLength(0);
@@ -3620,11 +3635,11 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessDailySalesReport(String posCode, String fromDate, String toDate, String strShiftNo,
-			String userCode) {
+			String userCode,String enableShiftYN) {
 		List<clsPOSBillItemDtlBean> listOfDailySaleData = new ArrayList<clsPOSBillItemDtlBean>();
 		StringBuilder sbSqlBillWise = new StringBuilder();
 		StringBuilder sbSqlBillWiseQFile = new StringBuilder();
-		String enableShiftYN="N";
+		
 		try {
 			sbSqlBillWise.setLength(0);
 			sbSqlBillWise
@@ -3668,7 +3683,7 @@ public class clsPOSReportService {
 							+ "left outer join tblcustomermaster e on a.strCustomerCode=e.strCustomerCode "
 							+ "where date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'");
 
-			if (!posCode.equals("All")) {
+			if (!posCode.equalsIgnoreCase("All")) {
 				sbSqlBillWiseQFile.append(" and a.strPOSCode='" + posCode + "' ");
 			}
 			
@@ -3728,9 +3743,11 @@ public class clsPOSReportService {
 		}
 		return listOfDailySaleData;
 	}
+	
+	
 
 	public List funProcessSubGroupWiseSummaryReport(String posCode, String fromDate, String toDate, String strShiftNo,
-			String strUserCode) {
+			String strUserCode,String enableShiftYN) {
 		List listRet = new ArrayList();
 		List<clsPOSGroupSubGroupWiseSales> listOfData = new ArrayList<clsPOSGroupSubGroupWiseSales>();
 		try {
@@ -3783,8 +3800,11 @@ public class clsPOSReportService {
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 			}
-			// sbSqlFilters.append(" AND a.intShiftCode = '" + strShiftNo+ "' ");
-
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+			    sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+		    
 			sbSqlFilters.append(" group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode");
 
 			sbSqlLive.append(sbSqlFilters);
@@ -3933,7 +3953,7 @@ public class clsPOSReportService {
 		return listOfSettlementData;
 	}
 
-	public List funProcessLiveBlindSettlementWiseReport(String posCode, String fromDate, String toDate, String qType) {
+	public List funProcessLiveBlindSettlementWiseReport(String posCode, String fromDate, String toDate, String qType,String enableShiftYN,String strShiftNo) {
 		StringBuilder sbSqlLive = new StringBuilder();
 
 		StringBuilder sqlFilter = new StringBuilder();
@@ -3954,9 +3974,10 @@ public class clsPOSReportService {
 				if (!"All".equalsIgnoreCase(posCode)) {
 					sqlFilter.append("and  a.strPosCode='" + posCode + "' ");
 				}
-
-				// sqlFilter.append(" and a.intShiftCode = '" + shiftNo + "' ");
-
+				if(enableShiftYN.equalsIgnoreCase("Y"))
+				{	
+				 sqlFilter.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+				}	
 				sqlFilter.append("GROUP BY c.strSettelmentDesc, a.strPosCode");
 
 				sbSqlLive.append(sqlFilter);
@@ -3977,7 +3998,10 @@ public class clsPOSReportService {
 					sqlFilter.append("and  a.strPosCode='" + posCode + "' ");
 				}
 
-				// sqlFilter.append(" and a.intShiftCode = '" + shiftNo + "' ");
+				if(enableShiftYN.equalsIgnoreCase("Y"))
+				{	
+				 sqlFilter.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+				}	
 
 				sqlFilter.append("GROUP BY c.strSettelmentDesc, a.strPosCode");
 
@@ -3992,7 +4016,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessLiveDataForOperatorWiseReport(String posCode, String fromDate, String toDate, String userCode,
-			String strShiftNo, String settleCode) {
+			String strShiftNo, String settleCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List listSettlementWiseBills = new ArrayList();
 
@@ -4015,7 +4039,11 @@ public class clsPOSReportService {
 			if (!userCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and e.strUserCode='" + userCode + "'");
 			}
-			sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			
 			if (!settleCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and d.strSettelmentCode='" + settleCode + "'");
 			}
@@ -4030,7 +4058,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessQFileDataForOperatorWiseReport(String posCode, String fromDate, String toDate,
-			String userCode, String strShiftNo, String settleCode) {
+			String userCode, String strShiftNo, String settleCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List listSettlementWiseBills = new ArrayList();
 
@@ -4053,7 +4081,11 @@ public class clsPOSReportService {
 			if (!userCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and e.strUserCode='" + userCode + "'");
 			}
-			sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+			
 			if (!settleCode.equalsIgnoreCase("All")) {
 				sqlBuilder.append("  and d.strSettelmentCode='" + settleCode + "'");
 			}
@@ -4264,34 +4296,34 @@ public class clsPOSReportService {
 									+ " a.strUserEdited as UserEdited,ifnull(b.strReasonName,'') as ReasonName,ifnull(a.strRemark,'')"
 									+ " ,(a.dblActualAmount-a.dblModifiedAmount) as DiscAmt "
 									+ " from tblvoidbillhd a left outer join tblreasonmaster b on a.strReasonCode=b.strReasonCode ");
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strUserCreated='" + userCode + "'"
 								+ " and a.strPOSCode='" + strPOSCode + "'  and a.strreasonCode='" + reasonCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strPOSCode='" + strPOSCode + "'  and  "
 								+ "a.strreasonCode='" + reasonCode + "' group by a.strBillNo,a.dteModifyVoidBill");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strUserCreated='" + userCode + "'  "
 								+ "and a.strreasonCode='" + reasonCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strUserCreated='" + userCode + "' "
 								+ "group by a.strBillNo,a.dteModifyVoidBill");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 
 						sbSql.append(" where a.strTransType='MB' and Date(a.dteModifyVoidBill) between '" + fromDate
 								+ "' and '" + toDate + "' and a.strPOSCode='" + strPOSCode + "' "
@@ -4307,7 +4339,7 @@ public class clsPOSReportService {
 					} else {
 						sbSql.append(" and (a.strVoidBillType = 'Bill Void' or a.strVoidBillType = 'ITEM VOID' ) ");
 					}
-					if (strSorting.equals("BILL")) {
+					if (strSorting.equalsIgnoreCase("BILL")) {
 						sbSql.append(" order by a.strBillNo");
 					} else {
 						sbSql.append(" order by a.dblActualAmount");
@@ -4356,38 +4388,38 @@ public class clsPOSReportService {
 									+ "b.strUserCreated as Usercreated,b.strUserEdited as UserEdited,ifnull(b.strRemark,'') "
 									+ " from tblvoidbilldtl a, tblvoidbillhd b ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(
 								"where a.strBillNo=b.strBillNo and a.strTransType='MB' and Date(a.dteModifyVoidBill) between '"
 										+ fromDate + "' and '" + toDate + "' " + "and a.strPOSCode='" + strPOSCode
 										+ "' and " + "a.strUserCreated='" + userCode + "' and a.strreasonCode='"
 										+ reasonCode + "' " + "group by a.strItemName,a.strBillNo ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(
 								"where a.strBillNo=b.strBillNo and a.strTransType='MB' and Date(a.dteModifyVoidBill) between '"
 										+ fromDate + "' and '" + toDate + "' and  a.strUserCreated='" + userCode
 										+ "' and a.strreasonCode='" + reasonCode + "' "
 										+ "group by a.strItemName,a.strBillNo ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(
 								"where a.strBillNo=b.strBillNo and a.strTransType='MB' and Date(a.dteModifyVoidBill) between '"
 										+ fromDate + "' and '" + toDate + "'" + " and a.strPOSCode='" + strPOSCode
 										+ "' and a.strreasonCode='" + reasonCode + "' "
 										+ "group by a.strItemName,a.strBillNo ");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strPOSCode='" + strPOSCode + "' and a.strUserCreated='" + userCode + "' "
 								+ "group by a.strItemName,a.strBillNo ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strPOSCode='" + strPOSCode + "'  " + "group by a.strItemName,a.strBillNo ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and  a.strUserCreated='" + userCode + "' " + "group by a.strItemName,a.strBillNo ");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("where a.strBillNo=b.strBillNo and a.strTransType='MB' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and  a.strreasonCode='" + reasonCode + "' " + "group by a.strItemName,a.strBillNo ");
@@ -4403,7 +4435,7 @@ public class clsPOSReportService {
 					} else {
 						sbSql.append("and (b.strVoidBillType = 'Bill Void' or b.strVoidBillType = 'ITEM VOID') ");
 					}
-					if (strSorting.equals("BILL")) {
+					if (strSorting.equalsIgnoreCase("BILL")) {
 						sbSql.append(" order by a.strBillNo asc");
 					} else {
 						sbSql.append(" order by sum(a.dblAmount) asc");
@@ -4452,28 +4484,28 @@ public class clsPOSReportService {
 									+ "a.strUserEdited as UserEdited, a.strReasonName as Reason,ifnull(a.strRemark,'')"
 									+ ",b.strPosCode,b.strPosName " + " from tblvoidbillhd a,tblposmaster b "
 									+ " where a.strTransType='VB'  " + " and a.strPosCode=b.strPosCode ");
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and " + "strUserCreated='" + userCode
 								+ "' and strreasonCode='" + reasonCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strPOSCode='" + strPOSCode + "' and " + "strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strUserCreated='" + userCode + "' " + "and strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) " + "between '" + fromDate + "' and '" + toDate
 								+ "' ");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strPOSCode='" + strPOSCode + "' " + "and strUserCreated='" + userCode
 								+ "'  and Date(a.dteModifyVoidBill) " + "between '" + fromDate + "' and '" + toDate
 								+ "' ");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and strreasonCode='" + reasonCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and a.strPOSCode='" + strPOSCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append("  and strUserCreated='" + userCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "' ");
 					} else {
@@ -4629,28 +4661,28 @@ public class clsPOSReportService {
 									+ "where a.strBillNo=b.strBillNo " + "and date(a.dteBillDate)=date(b.dteBillDate) "
 									+ "and a.strPosCode=c.strPosCode ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and a.strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strreasonCode='" + reasonCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and Date(a.dteModifyVoidBill) " + "between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill) "
 								+ "between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and b.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill)"
 								+ " between '" + fromDate + "' and '" + toDate + "'");
@@ -4678,28 +4710,28 @@ public class clsPOSReportService {
 									+ "where a.strBillNo=b.strBillNo " + "and date(a.dteBillDate)=date(b.dteBillDate) "
 									+ "and a.strPosCode=c.strPosCode ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and a.strreasonCode='" + reasonCode
 								+ "' and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' and "
 								+ "Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strreasonCode='" + reasonCode + "' "
 								+ "and Date(a.dteModifyVoidBill) between '" + fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && !"All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strUserCreated='" + userCode + "' and Date(a.dteModifyVoidBill) " + "between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strPOSCode='" + strPOSCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill) "
 								+ "between '" + fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSqlMod.append(" and a.strTransType='VB' and a.strUserCreated='" + userCode + "' "
 								+ "and a.strreasonCode='" + reasonCode + "' and Date(a.dteModifyVoidBill)"
 								+ " between '" + fromDate + "' and '" + toDate + "'");
@@ -4716,7 +4748,7 @@ public class clsPOSReportService {
 					}
 
 					sbSqlMod.append(" group by a.strBillNo,b.strModifierCode)");
-					if (strSorting.equals("BILL")) {
+					if (strSorting.equalsIgnoreCase("BILL")) {
 						sbSqlMod.append(" order by strBillNo");
 					} else {
 						sbSqlMod.append(" order by BillAmount");
@@ -5462,10 +5494,10 @@ public class clsPOSReportService {
 					sbSqlQFile.setLength(0);
 					sbFilters.setLength(0);
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5521,10 +5553,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Line Void";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode= '" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 
@@ -5563,10 +5595,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Void KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5617,10 +5649,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "NC KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5697,10 +5729,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Billed KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5792,10 +5824,10 @@ public class clsPOSReportService {
 					sbSqlQFile.setLength(0);
 					sbFilters.setLength(0);
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5855,10 +5887,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Line Void";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 
@@ -5901,10 +5933,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "Void KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -5952,10 +5984,10 @@ public class clsPOSReportService {
 					sbFilters.setLength(0);
 					operation = "NC KOT";
 
-					if (!"All".equals(posName)) {
+					if (!"All".equalsIgnoreCase(posName)) {
 						sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 					}
-					if (!"All".equals(userName)) {
+					if (!"All".equalsIgnoreCase(userName)) {
 						sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 					}
 					if (!reasonName.equalsIgnoreCase("All")) {
@@ -6049,23 +6081,23 @@ public class clsPOSReportService {
 							+ " and a.strPOSCode=d.strPOSCode and a.strTableNo=e.strTableNo "
 							+ " and a.strType='MVKot' ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteDateCreated) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strreasonCode='" + reasonCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
 					} else {
@@ -6118,23 +6150,23 @@ public class clsPOSReportService {
 							+ " where a.strreasonCode=c.strreasonCode and a.strPOSCode=d.strPOSCode "
 							+ " and a.strTableNo=e.strTableNo and a.strType='MVKot' ");
 
-					if (!"All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					if (!"All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and a.strUserCreated='" + userCode + "' "
 								+ "and Date(a.dteDateCreated) between '" + fromDate + "' and '" + toDate + "' "
 								+ "and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if (!"All".equals(posName) && "All".equals(userName) && "All".equals(reasonName)) {
+					} else if (!"All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && "All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strPOSCode='" + strPOSCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
-					} else if ("All".equals(posName) && !"All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && !"All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strUserCreated='" + userCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "' and a.strreasonCode='" + reasonCode + "'");
-					} else if ("All".equals(posName) && "All".equals(userName) && !"All".equals(reasonName)) {
+					} else if ("All".equalsIgnoreCase(posName) && "All".equalsIgnoreCase(userName) && !"All".equalsIgnoreCase(reasonName)) {
 						sbSql.append(" and a.strreasonCode='" + reasonCode + "' and Date(a.dteDateCreated) between '"
 								+ fromDate + "' and '" + toDate + "'");
 					} else {
@@ -6184,10 +6216,10 @@ public class clsPOSReportService {
 				sbFilters.setLength(0);
 				operation = "Billed KOT";
 
-				if (!"All".equals(posName)) {
+				if (!"All".equalsIgnoreCase(posName)) {
 					sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 				}
-				if (!"All".equals(userName)) {
+				if (!"All".equalsIgnoreCase(userName)) {
 					sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 				}
 				if (!reasonCode.equalsIgnoreCase("All")) {
@@ -6275,10 +6307,10 @@ public class clsPOSReportService {
 				sbFilters.setLength(0);
 				operation = "Void KOT";
 
-				if (!"All".equals(posName)) {
+				if (!"All".equalsIgnoreCase(posName)) {
 					sbFilters.append("and a.strPOSCode='" + strPOSCode + "' ");
 				}
-				if (!"All".equals(userName)) {
+				if (!"All".equalsIgnoreCase(userName)) {
 					sbFilters.append(" and a.strUserCreated='" + userCode + "' ");
 				}
 				if (!reasonName.equalsIgnoreCase("All")) {
@@ -6866,8 +6898,8 @@ public class clsPOSReportService {
 		return listRet;
 	}
 
-	public List funProcessGroupSubGroupWiseReport(String posCode, String fromDate, String toDate, String shiftNo,
-			String subGroupCode, String groupCode, String userCode) {
+	public List funProcessGroupSubGroupWiseDetailReport(String posCode, String fromDate, String toDate, String shiftNo,
+			String subGroupCode, String groupCode, String userCode,String enableShiftYN) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
 		try {
@@ -6887,8 +6919,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
+							+ "') ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
 							+ "order By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName");
 			List listOfData = objBaseService.funGetList(sqlBuilder, "sql");
 			if (listOfData.size() > 0) {
@@ -6934,8 +6970,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append( "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
 							+ "Group By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName "
 							+ "order By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName");
 			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -6979,8 +7019,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
+							+ "') "); 
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}				
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName "
 							+ "order By e.strGroupName ,d.strSubGroupName,b.strItemCode,b.strItemName");
 			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
 			if (listOfData.size() > 0) {
@@ -7025,8 +7069,12 @@ public class clsPOSReportService {
 							+ "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
 							+ "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
 							+ "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode
-							+ "') " + "and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "') "
-							+ "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
 							+ "Group By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName "
 							+ "order By e.strGroupName ,d.strSubGroupName,f.strItemCode,f.strModifierName");
 			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
@@ -7093,8 +7141,191 @@ public class clsPOSReportService {
 		return listOfGroupSubGroupWiseSales;
 	}
 
+	public List funProcessGroupSubGroupWiseSummaryReport(String posCode, String fromDate, String toDate, String shiftNo,
+			String subGroupCode, String groupCode, String userCode,String enableShiftYN) {
+		StringBuilder sqlBuilder = new StringBuilder();
+		List<clsPOSGroupSubGroupItemBean> listOfGroupSubGroupWiseSales = new ArrayList<clsPOSGroupSubGroupItemBean>();
+		try {
+			clsPOSGroupSubGroupItemBean objGroupSubGroupItemBean = null;
+
+			// QFile
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select b.strItemName,d.strSubGroupName,e.strGroupName ,ifnull(sum(b.dblQuantity),0) as Quantity "
+						    + ",IFNULL(SUM(b.dblAmount)- SUM(b.dblDiscountAmt),0)  as Amount "
+						    + "from tblqbillhd a "
+						    + "left outer join tblqbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+						    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+						    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+						    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+						    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+						    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+						    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') ");
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			List listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) 
+			{
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+					objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+					objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+					objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+					objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+					objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+					listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+					}
+			}
+			
+
+			// QFile modifiers
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select f.strModifierName,d.strSubGroupName,e.strGroupName ,ifnull(sum(f.dblQuantity),0) as Quantity "
+						    + ", IFNULL(SUM(f.dblAmount)-SUM(f.dblDiscAmt),0)  as Amount "
+						    + "from tblqbillhd a "
+						    + "left outer join tblqbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + "left outer join tblqbillmodifierdtl f on b.strBillNo=f.strBillNo  and date(a.dteBillDate)=date(f.dteBillDate) "
+						    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+						    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+						    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+						    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+						    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+						    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+						    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append( "and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) {
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					
+						objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+						objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+						objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+						objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+						objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+						objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+						listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+					
+				}
+			}
+
+			// Live
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select b.strItemName,d.strSubGroupName,e.strGroupName ,ifnull(sum(b.dblQuantity),0) as Quantity "
+				    + ",IFNULL(SUM(b.dblAmount)- SUM(b.dblDiscountAmt),0)  as Amount "
+				    + "from tblbillhd a "
+				    + "left outer join tblbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+				    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+				    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+				    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+				    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+				    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+				    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+				    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') "); 
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}				
+			sqlBuilder.append("Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) {
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					
+					objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+					objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+					objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+					objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+					objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+					objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+					listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+				
+				}
+			}
+
+			// Live modifiers
+			sqlBuilder.setLength(0);
+			sqlBuilder.append(
+					"select f.strModifierName,d.strSubGroupName,e.strGroupName ,ifnull(sum(f.dblQuantity),0) as Quantity "
+						    + ", IFNULL(SUM(f.dblAmount)-SUM(f.dblDiscAmt),0)  as Amount "
+						    + "from tblbillhd a "
+						    + "left outer join tblbilldtl b on a.strBillNo=b.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + "left outer join tblbillmodifierdtl f on b.strBillNo=f.strBillNo  and date(a.dteBillDate)=date(f.dteBillDate) "
+						    + "left outer join tblitemmaster c on b.strItemCode=c.strItemCode "
+						    + "left outer join tblsubgrouphd d on c.strSubGroupCode=d.strSubGroupCode "
+						    + "left outer join tblgrouphd e on d.strGroupCode=e.strGroupCode "
+						    + "where  date(a.dteBillDate)  between '" + fromDate + "' and '" + toDate + "' "
+						    + "and a.strPoscode=if('" + posCode + "'='All', a.strPoscode,'" + posCode + "') "
+						    + "and e.strGroupCode=if('" + groupCode + "'='All',e.strGroupCode,'" + groupCode + "') "
+						    + "and d.strSubGroupCode=if('" + subGroupCode + "'='All',d.strSubGroupCode,'" + subGroupCode + "') " );
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!shiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode=if('" + shiftNo + "'='All',a.intShiftCode,'" + shiftNo + "')");
+			}
+			sqlBuilder.append("and b.strItemCode=left(f.strItemCode,7) " + "and f.dblAmount>0 "
+							+ "Group By e.strGroupName ,d.strSubGroupName "
+							+ "order By e.strGroupName ,d.strSubGroupName");
+			listOfData = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listOfData.size() > 0) {
+				for (int i = 0; i < listOfData.size(); i++) {
+					Object[] obj = (Object[]) listOfData.get(i);
+					
+						objGroupSubGroupItemBean = new clsPOSGroupSubGroupItemBean();
+						objGroupSubGroupItemBean.setStrItemName(obj[0].toString());
+						objGroupSubGroupItemBean.setStrSubGroupName(obj[1].toString());
+						objGroupSubGroupItemBean.setStrGroupName(obj[2].toString());
+						objGroupSubGroupItemBean.setDblQuantity(Double.parseDouble(obj[3].toString()));
+						objGroupSubGroupItemBean.setDblAmount(Double.parseDouble(obj[4].toString()));
+						listOfGroupSubGroupWiseSales.add(objGroupSubGroupItemBean);
+					
+				}
+			}
+			Comparator<clsPOSGroupSubGroupItemBean> groupComparator = new Comparator<clsPOSGroupSubGroupItemBean>()
+		    {
+
+			@Override
+			public int compare(clsPOSGroupSubGroupItemBean o1, clsPOSGroupSubGroupItemBean o2)
+			{
+			    return o1.getStrGroupName().compareToIgnoreCase(o2.getStrGroupName());
+			}
+		    };
+
+		    Comparator<clsPOSGroupSubGroupItemBean> subGroupComparator = new Comparator<clsPOSGroupSubGroupItemBean>()
+		    {
+
+			@Override
+			public int compare(clsPOSGroupSubGroupItemBean o1, clsPOSGroupSubGroupItemBean o2)
+			{
+			    return o1.getStrSubGroupName().compareToIgnoreCase(o2.getStrSubGroupName());
+			}
+		    };
+
+		    Collections.sort(listOfGroupSubGroupWiseSales, new clsPOSGroupSubGroupComparator(groupComparator, subGroupComparator));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return listOfGroupSubGroupWiseSales;
+	}
+
+	
 	public List funProcessGroupWiseReport(String strPOSCode, String fromDate, String toDate, String strUserCode,
-			String strShiftNo, String strSGCode) {
+			String strShiftNo, String strSGCode,String enableShiftYN) {
 		StringBuilder sbSqlLive = new StringBuilder();
 		StringBuilder sbSqlQFile = new StringBuilder();
 		StringBuilder sbSqlFilters = new StringBuilder();
@@ -7151,9 +7382,12 @@ public class clsPOSReportService {
 			if (!strPOSCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append(" AND a.strPOSCode = '" + strPOSCode + "' ");
 			}
-
-			sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
-
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+			    sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+			}
+		    
+			
 			if (!strSGCode.equalsIgnoreCase("All")) {
 				sbSqlFilters.append("AND d.strSubGroupCode='" + strSGCode + "' ");
 			}
@@ -7178,7 +7412,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[3].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7187,8 +7421,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7198,8 +7432,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7220,7 +7454,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[10].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7229,8 +7463,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7240,8 +7474,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7261,7 +7495,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[10].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7270,8 +7504,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7281,8 +7515,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7301,7 +7535,7 @@ public class clsPOSReportService {
 					String posName = obj[4].toString();
 					double subTotal = Double.parseDouble(obj[7].toString());
 					double discAmt = Double.parseDouble(obj[8].toString());
-					double salesAmt = Double.parseDouble(obj[10].toString());
+//					double salesAmt = Double.parseDouble(obj[10].toString());
 
 					if (mapGroup.containsKey(groupCode)) {
 						clsPOSGroupWaiseSalesBean objClsGroupWaiseSalesBean = mapGroup.get(groupCode);
@@ -7310,8 +7544,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(objClsGroupWaiseSalesBean.getQty() + qty);
 						objClsGroupWaiseSalesBean.setSubTotal(objClsGroupWaiseSalesBean.getSubTotal() + subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(objClsGroupWaiseSalesBean.getDiscAmt() + discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + salesAmt);
+						//objClsGroupWaiseSalesBean.setNetTotal(objClsGroupWaiseSalesBean.getNetTotal() + netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(objClsGroupWaiseSalesBean.getSalesAmt() + netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					} else {
@@ -7321,8 +7555,8 @@ public class clsPOSReportService {
 						objClsGroupWaiseSalesBean.setQty(qty);
 						objClsGroupWaiseSalesBean.setSubTotal(subTotal);
 						objClsGroupWaiseSalesBean.setDiscAmt(discAmt);
-						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
-						objClsGroupWaiseSalesBean.setSalesAmt(salesAmt);
+//						objClsGroupWaiseSalesBean.setNetTotal(netTotal);
+						objClsGroupWaiseSalesBean.setSalesAmt(netTotal);
 
 						mapGroup.put(groupCode, objClsGroupWaiseSalesBean);
 					}
@@ -7931,7 +8165,7 @@ public class clsPOSReportService {
 						+ "WHERE a.strTableNo=b.strTableNo AND a.strWaiterNo=c.strWaiterNo "
 						+ " AND a.strReasonCode=d.strReasonCode \n" + "AND LENGTH(a.strKOTNo)>2 "
 						+ " and LEFT(a.strItemName,3)!='-->' " + " AND DATE(a.dteDateCreated) BETWEEN '" + fromDate
-						+ "' and '" + toDate + "'\n");
+						+ "' and '" + toDate + "' and a.strType!='MVKot';\n");
 				list = objBaseService.funGetList(sqlBuilder, "sql");
 			} else if (qType.equalsIgnoreCase("ncKots")) {
 				sqlBuilder.setLength(0);
@@ -8095,7 +8329,7 @@ public class clsPOSReportService {
 	}
 
 	public List funProcessDiscountWiseReport(String posCode, String fromDate, String toDate, String type,
-			String querySubType, String strUserCode, String strShiftNo) {
+			String querySubType, String strUserCode, String strShiftNo,String enableShiftYN) {
 		List<clsPOSBillItemDtlBean> listOfBillItemDtl = new ArrayList<>();
 		StringBuilder sbSqlLiveDisc = new StringBuilder();
 		StringBuilder sbSqlQFileDisc = new StringBuilder();
@@ -8397,13 +8631,17 @@ public class clsPOSReportService {
 				sqlModQFile.setLength(0);
 
 				sbSqlFilters.append(" and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
-				if (!posCode.equals("All")) {
+				if (!posCode.equalsIgnoreCase("All")) {
 					sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}
+				if(enableShiftYN.equalsIgnoreCase("Y"))
+				{	
 				sbSqlFilters.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+				}
 				sbSqlFilters.append(" Group BY c.strGroupCode ");
 
 				if (querySubType.equalsIgnoreCase("live")) {
+					sbSqlQFile.setLength(0);
 					sbSqlQFile.append("SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity)"
 							+ ",sum( b.dblAmount)-sum(b.dblDiscountAmt) " + ",f.strPosName, '" + strUserCode
 							+ "',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode,"
@@ -8413,10 +8651,11 @@ public class clsPOSReportService {
 							+ " and date(a.dteBillDate)=date(b.dteBillDate) " + " and a.strPOSCode=f.strPOSCode  "
 							+ " and a.strClientCode=b.strClientCode " + "and b.strItemCode=e.strItemCode "
 							+ "and c.strGroupCode=d.strGroupCode and d.strSubGroupCode=e.strSubGroupCode ");
-					sbSqlLive.append(sbSqlFilters);
-					listOfBillItemDtl = objBaseService.funGetList(sbSqlLive, "sql");
+					sbSqlQFile.append(sbSqlFilters);
+					listOfBillItemDtl = objBaseService.funGetList(sbSqlQFile, "sql");
 				} else if (querySubType.equalsIgnoreCase("qFile")) {
-					sbSqlLive.append("SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity)"
+					sbSqlQFile.setLength(0);
+					sbSqlQFile.append("SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity)"
 							+ ",sum( b.dblAmount)-sum(b.dblDiscountAmt) " + ",f.strPosName, '" + strUserCode
 							+ "',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode,"
 							+ " sum( b.dblAmount)-sum(b.dblDiscountAmt)+sum(b.dblTaxAmount)  "
@@ -8462,7 +8701,6 @@ public class clsPOSReportService {
 		return listOfBillItemDtl;
 
 	}
-
 	public LinkedHashMap funProcessItemGroupWiseDayWiseSalesSummary(String withDiscount, String fromDate, String toDate,
 			String strOperationType, String strSettlementCode, String strPOSCode, String strPOSName, String groupCode,
 			String groupName) {
@@ -8480,7 +8718,7 @@ public class clsPOSReportService {
 
 		listColHeaderArr.add("DATE");
 		listColHeaderArr.add("POS");
-		int colCount = 3;
+		int colCount = 2;
 		try {
 			// Q Date and POS
 			sbSql.setLength(0);
@@ -8728,7 +8966,7 @@ public class clsPOSReportService {
 				sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
 			}
 			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(sqlGrandTotal + " and a.strPOSCode='" + strPOSCode + "' ");
+				sqlGrandTotal.append(" and a.strPOSCode='" + strPOSCode + "' ");
 			}
 			if (!strSettlementCode.equalsIgnoreCase("All")) {
 				sqlGrandTotal.append(" and c.strSettelmentCode='" + strSettlementCode + "' ");
@@ -8743,7 +8981,7 @@ public class clsPOSReportService {
 
 				jRowArr.add(listDateArr.get(tblRow));
 				jRowArr.add(strPOSName);
-				for (int i = 2; i < colCount; i++) {
+				for (int i = 2; i <= colCount; i++) {
 					jRowArr.add(i, 0.00);
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
@@ -8784,7 +9022,7 @@ public class clsPOSReportService {
 
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <= colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("GRAND Total")
@@ -9253,35 +9491,35 @@ public class clsPOSReportService {
 
 			colCount++;
 			listColHeaderArr.add("Discount".toUpperCase());
-			listColHeaderArr.add("Round Off".toUpperCase());
-			listColHeaderArr.add("Net Total".toUpperCase());
+//			colCount++;
+			
+			
+			sbSql.setLength(0);
 			sbSql.setLength(0);
 			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
-					+ "FROM tblqbillhd a ,tblqbillsettlementdtl b " + "WHERE date(a.dteBillDate) between '" + fromDate
-					+ "' and '" + toDate + "' " + "AND a.strBillNo=b.strBillNo "
-					+ "and date(a.dteBillDate)=date(b.dteBillDate) ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sbSql.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and b.strSettlementCode='" + strSettlementCode + "' ");
-			}
-			sbSql.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			    + "FROM tblqbillhd a  "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");	  
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+		
 			listSql = objBaseService.funGetList(sbSql, "sql");
 			Map mapOfDiscount = new HashMap();
-			Map mapOfRoundOff = new HashMap();
+			
 			String discount = "Discount";
 			size = listSql.size();
 			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
 
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
+							
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Discount")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
 							mapOfDiscount.put(discount, discount);
@@ -9289,8 +9527,91 @@ public class clsPOSReportService {
 							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							colCount++;
+//							colCount++;
 						}
+						
+						
+
+					}
+
+				}
+				map.put(tblRow, jRowArr);
+
+			}
+
+			
+			sbSql.setLength(0);
+			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
+			    + "FROM tblbillhd a "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  ");	 
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
+			
+			listSql = objBaseService.funGetList(sbSql, "sql");
+			size = listSql.size();
+			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
+
+				List jRowArr = new ArrayList();
+				jRowArr = (List) map.get(tblRow);
+				for (int i = 3; i <= colCount; i++) {
+					for (int j = 0; j < size; j++) {
+						Object[] obj = (Object[]) listSql.get(j);
+							
+						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Discount")
+								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
+							jRowArr.add(i, 0.00);
+							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
+							jRowArr.remove(i);
+							jRowArr.add(i, value);
+//							if (mapOfDiscount.containsKey(discount)) {
+//
+//							} else {
+//								colCount++;
+//							}
+						}
+						
+						
+
+					}
+
+				}
+				map.put(tblRow, jRowArr);
+
+			}
+			
+			
+			listColHeaderArr.add("Round Off".toUpperCase());
+			colCount++;
+			sbSql.setLength(0);
+			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
+			    + "FROM tblqbillhd a "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  ");	 
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
+			listSql = objBaseService.funGetList(sbSql, "sql");
+			
+			Map mapOfRoundOff = new HashMap();
+			size = listSql.size();
+			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
+
+				List jRowArr = new ArrayList();
+				jRowArr = (List) map.get(tblRow);
+				for (int i = 3; i <= colCount; i++) {
+					for (int j = 0; j < size; j++) {
+						Object[] obj = (Object[]) listSql.get(j);
+						
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Round Off")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
 							jRowArr.add(i, 0.00);
@@ -9298,8 +9619,9 @@ public class clsPOSReportService {
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
 							mapOfRoundOff.put("Round Off", "Round Off");
-							colCount++;
+//							colCount++;
 						}
+						
 
 					}
 
@@ -9310,52 +9632,40 @@ public class clsPOSReportService {
 
 			sbSql.setLength(0);
 			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblDiscountAmt),sum(a.dblRoundOff) "
-					+ "FROM tblbillhd a ,tblbillsettlementdtl b " + "WHERE date(a.dteBillDate) between '" + fromDate
-					+ "' and '" + toDate + "' " + "AND a.strBillNo=b.strBillNo "
-					+ "and date(a.dteBillDate)=date(b.dteBillDate) ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sbSql.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and b.strSettlementCode='" + strSettlementCode + "' ");
-			}
-			sbSql.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			    + "FROM tblbillhd a "
+			    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "'  ");	 
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+		   
+		    sbSql.append("GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
 			listSql = objBaseService.funGetList(sbSql, "sql");
 			size = listSql.size();
 			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
 
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <= colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
-						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Discount")
-								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
-							jRowArr.add(i, 0.00);
-							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
-							jRowArr.remove(i);
-							jRowArr.add(i, value);
-							if (mapOfDiscount.containsKey(discount)) {
-
-							} else {
-								colCount++;
-							}
-						}
+							
+					
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Round Off")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
 							jRowArr.add(i, 0.00);
 							Double value = Double.parseDouble(obj[2].toString()) + (double) jRowArr.get(i);
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							if (mapOfRoundOff.containsKey("Round Off")) {
-
-							} else {
-								colCount++;
-							}
+//							if (mapOfRoundOff.containsKey("Round Off")) {
+//
+//							} else {
+//								colCount++;
+//							}
 						}
+						
 
 					}
 
@@ -9365,34 +9675,32 @@ public class clsPOSReportService {
 			}
 
 			// fill Q data group
-
+			listColHeaderArr.add("Net Total".toUpperCase());
+			colCount++;
 			Double totNetTotal = 0.0;
 			sbSql.setLength(0);
-			sbSql.append("select DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),g.strGroupName," + columnForSalesAmount
-					+ ",sum(b.dblDiscountAmt),sum(b.dblAmount)-sum(b.dblDiscountAmt) "
-					+ "from tblqbillhd a,tblqbilldtl b,tblitemmaster e " + ",tblsubgrouphd f ,tblgrouphd g  "
-					+ "where a.strBillNo=b.strBillNo " + "and date(a.dteBillDate)=date(b.dteBillDate) "
-					+ "and b.strItemCode=e.strItemCode " + "and e.strSubGroupCode=f.strSubGroupCode "
-					+ "and f.strGroupCode=g.strGroupCode " + "AND b.dblAmount>0  " + "AND DATE(a.dteBillDate) BETWEEN '"
-					+ fromDate + "' and '" + toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sbSql.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!groupName.equalsIgnoreCase("All")) {
-				sbSql.append(" and g.strGroupCode='" + groupName + "' ");
-			}
-			sbSql.append("GROUP BY DATE(a.dteBillDate),g.strGroupCode,g.strGroupName; ");
+			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblGrandTotal),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
+				    + "FROM tblqbillhd a "
+				    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+			    if (!strOperationType.equalsIgnoreCase("All"))
+			    {
+			    	sbSql.append( "and a.strOperationType='" + strOperationType + "' ");
+			    }
+			    if (!strPOSCode.equalsIgnoreCase("All"))
+			    {
+			    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+			    }
 
+			    sbSql.append( "GROUP BY DATE(a.dteBillDate) "
+				    + "ORDER BY DATE(a.dteBillDate); ");
+		
 			listSql = objBaseService.funGetList(sbSql, "sql");
 			size = listSql.size();
 			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
 				Double netTotal = 0.0;
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
@@ -9400,7 +9708,7 @@ public class clsPOSReportService {
 							if (netTotal == 0.0) {
 								jRowArr.add(i, 0.00);
 							}
-							Double value = Double.parseDouble(obj[4].toString()) + (double) jRowArr.get(i);
+							Double value = Double.parseDouble(obj[2].toString()) + (double) jRowArr.get(i);
 							netTotal = value;
 							totNetTotal = netTotal;
 							jRowArr.remove(i);
@@ -9415,34 +9723,30 @@ public class clsPOSReportService {
 
 			}
 
-			// fill Q data group
+			// fill Live data 
 			sbSql.setLength(0);
-			sbSql.append("select DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),g.strGroupName," + columnForSalesAmount
-					+ ",sum(b.dblDiscountAmt),sum(b.dblAmount)-sum(b.dblDiscountAmt) "
-					+ "from tblbillhd a,tblbilldtl b,tblitemmaster e " + ",tblsubgrouphd f ,tblgrouphd g  "
-					+ "where a.strBillNo=b.strBillNo " + "and date(a.dteBillDate)=date(b.dteBillDate) "
-					+ "and b.strItemCode=e.strItemCode " + "and e.strSubGroupCode=f.strSubGroupCode "
-					+ "and f.strGroupCode=g.strGroupCode " + "AND b.dblAmount>0  " + "AND DATE(a.dteBillDate) BETWEEN '"
-					+ fromDate + "' and '" + toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sbSql.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!groupName.equalsIgnoreCase("All")) {
-				sbSql.append(" and g.strGroupCode='" + groupName + "' ");
-			}
-			sbSql.append("GROUP BY DATE(a.dteBillDate),g.strGroupCode,g.strGroupName; ");
+			sbSql.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblGrandTotal),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
+				    + "FROM tblbillhd a "
+				    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+			    if (!strOperationType.equalsIgnoreCase("All"))
+			    {
+			    	sbSql.append( "and a.strOperationType='" + strOperationType + "' ");
+			    }
+			    if (!strPOSCode.equalsIgnoreCase("All"))
+			    {
+			    	sbSql.append(" and a.strPOSCode='" + strPOSCode + "' ");
+			    }
 
+			    sbSql.append( "GROUP BY DATE(a.dteBillDate) "
+				    + "ORDER BY DATE(a.dteBillDate); ");
+		
 			listSql = objBaseService.funGetList(sbSql, "sql");
 			size = listSql.size();
 			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
 				Double netTotal = 0.0;
 				List jRowArr = new ArrayList();
 				jRowArr = (List) map.get(tblRow);
-
-				for (int i = 3; i < colCount; i++) {
+				for (int i = 3; i <=colCount; i++) {
 					for (int j = 0; j < size; j++) {
 						Object[] obj = (Object[]) listSql.get(j);
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
@@ -9450,60 +9754,12 @@ public class clsPOSReportService {
 							if (netTotal == 0.0) {
 								jRowArr.add(i, 0.00);
 							}
-							Double value = Double.parseDouble(obj[4].toString()) + (double) jRowArr.get(i);
+							Double value = Double.parseDouble(obj[2].toString()) + (double) jRowArr.get(i);
 							netTotal = value;
-							jRowArr.remove(i);
-							jRowArr.add(i, value);
 							totNetTotal = netTotal;
-						}
-
-					}
-
-				}
-				map.put(tblRow, jRowArr);
-
-			}
-
-			// Live Modifier Group Data
-			sqlGroups.setLength(0);
-			sqlGroups.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),g.strGroupName,"
-					+ columnForModiSalesAmount + ",sum(h.dblDiscAmt),sum(h.dblAmount)-sum(h.dblDiscAmt) "
-					+ "FROM tblbillhd a,tblitemmaster e,tblsubgrouphd f,tblgrouphd g,tblbillmodifierdtl h "
-					+ "WHERE a.strBillNo=h.strBillNo  " + "and date(a.dteBillDate)=date(h.dteBillDate) "
-					+ "AND e.strSubGroupCode=f.strSubGroupCode  " + "AND f.strGroupCode=g.strGroupCode  "
-					+ "and h.dblAmount>0 " + "AND a.strBillNo=h.strBillNo  "
-					+ "AND e.strItemCode=LEFT(h.strItemCode,7) " + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate
-					+ "' and '" + toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sqlGroups.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGroups.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			sqlGroups.append("GROUP BY DATE(a.dteBillDate),g.strGroupCode,g.strGroupName ");
-			listSql = objBaseService.funGetList(sqlGroups, "sql");
-			size = listSql.size();
-			for (int tblRow = 0; tblRow < listDateArr.size(); tblRow++) {
-				Double netTotal = 0.0;
-				List jRowArr = new ArrayList();
-				jRowArr = (List) map.get(tblRow);
-
-				for (int i = 3; i < colCount; i++) {
-					for (int j = 0; j < size; j++) {
-						Object[] obj = (Object[]) listSql.get(j);
-						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
-								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
-							if (totNetTotal == 0.0) {
-								jRowArr.add(i, 0.00);
-							}
-							Double value = Double.parseDouble(obj[4].toString()) + (double) jRowArr.get(i);
-							netTotal = value;
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							// if(!mapOfNetTotal.containsKey(netTot))
-							// {
-							// colCount++;
-							// }
+
 						}
 
 					}
@@ -9710,26 +9966,25 @@ public class clsPOSReportService {
 
 			// Grand Total
 			listColHeaderArr.add("GRAND Total");
+			colCount++;
 			listColHeaderArr.add("Net Total");
 			StringBuilder sqlGrandTotal = new StringBuilder();
 			sqlGrandTotal.setLength(0);
-			sqlGrandTotal.append(
-					"SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(b.dblSettlementAmt),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
-							+ "FROM tblqbillhd a,tblqbillsettlementdtl b,tblsettelmenthd c "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND b.strSettlementCode=c.strSettelmentCode  "
-							+ "and b.dblSettlementAmt>0 " + "and date(a.dteBillDate) between '" + fromDate + "' and '"
-							+ toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(sqlGrandTotal + " and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(" and c.strSettelmentCode='" + strSettlementCode + "' ");
-			}
-			sqlGrandTotal.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			sqlGrandTotal.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblGrandTotal),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
+					    + "FROM tblqbillhd a "
+					    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    if (!strOperationType.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
+		    }
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append( " and a.strPOSCode='" + strPOSCode + "' ");
+		    }
 
+		    sqlGrandTotal.append( "GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
 			listSql = objBaseService.funGetList(sqlGrandTotal, "sql");
 			int size = listSql.size();
 			Map mapOfGrandTotal = new HashMap();
@@ -9749,7 +10004,7 @@ public class clsPOSReportService {
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
 							mapOfGrandTotal.put("GRAND Total", "GRAND Total");
-							colCount++;
+							
 						}
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
@@ -9768,22 +10023,21 @@ public class clsPOSReportService {
 
 			// Live
 			sqlGrandTotal.setLength(0);
-			sqlGrandTotal.append(
-					"SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(b.dblSettlementAmt),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
-							+ "FROM tblbillhd a,tblbillsettlementdtl b,tblsettelmenthd c "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND b.strSettlementCode=c.strSettelmentCode  "
-							+ "and b.dblSettlementAmt>0 " + "and date(a.dteBillDate) between '" + fromDate + "' and '"
-							+ toDate + "' ");
-			if (!strOperationType.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
-			}
-			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(" and a.strPOSCode='" + strPOSCode + "' ");
-			}
-			if (!strSettlementCode.equalsIgnoreCase("All")) {
-				sbSql.append(" and c.strSettelmentCode='" + strSettlementCode + "' ");
-			}
-			sqlGrandTotal.append("GROUP BY DATE(a.dteBillDate) " + "ORDER BY DATE(a.dteBillDate); ");
+			sqlGrandTotal.append("SELECT DATE_FORMAT(DATE(a.dteBillDate),'%d-%m-%Y'),sum(a.dblGrandTotal),sum(a.dblSubTotal)-sum(a.dblDiscountAmt)"
+					    + "FROM tblbillhd a "
+					    + "WHERE date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    if (!strOperationType.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
+		    }
+		    if (!strPOSCode.equalsIgnoreCase("All"))
+		    {
+		    	sqlGrandTotal.append( " and a.strPOSCode='" + strPOSCode + "' ");
+		    }
+
+		    sqlGrandTotal.append( "GROUP BY DATE(a.dteBillDate) "
+			    + "ORDER BY DATE(a.dteBillDate); ");
+			
 			listSql = objBaseService.funGetList(sqlGrandTotal, "sql");
 			size = listSql.size();
 
@@ -9801,11 +10055,11 @@ public class clsPOSReportService {
 							Double value = Double.parseDouble(obj[1].toString()) + (double) jRowArr.get(i);
 							jRowArr.remove(i);
 							jRowArr.add(i, value);
-							if (mapOfGrandTotal.containsKey("GRAND Total")) {
-
-							} else {
-								colCount++;
-							}
+//							if (mapOfGrandTotal.containsKey("GRAND Total")) {
+//
+//							} else {
+//								colCount++;
+//							}
 						}
 						if (listColHeaderArr.get(i).toString().equalsIgnoreCase("Net Total")
 								&& jRowArr.get(0).toString().equalsIgnoreCase(obj[0].toString())) {
@@ -9892,6 +10146,10 @@ public class clsPOSReportService {
 			if (!strPOSCode.equalsIgnoreCase("All")) {
 				sqlTax.append(" and a.strPOSCode='" + strPOSCode + "' ");
 			}
+			if (!strSettlementCode.equalsIgnoreCase("All"))
+		    {
+				sqlTax.append(" and e.strSettelmentCode='" + strSettlementCode + "' ");
+		    }
 			sqlTax.append("group by date(a.dteBillDate),b.strTaxCode " + "order by date(a.dteBillDate),b.strTaxCode; ");
 
 			listSql = objBaseService.funGetList(sqlTax, "sql");
@@ -9995,6 +10253,10 @@ public class clsPOSReportService {
 			if (!strPOSCode.equalsIgnoreCase("All")) {
 				sqlTax.append(" and a.strPOSCode='" + strPOSCode + "' ");
 			}
+			if (!strSettlementCode.equalsIgnoreCase("All"))
+		    {
+				sqlTax.append(" and e.strSettelmentCode='" + strSettlementCode + "' ");
+		    }
 			sqlTax.append("group by date(a.dteBillDate),b.strTaxCode " + "order by date(a.dteBillDate),b.strTaxCode; ");
 
 			listSql = objBaseService.funGetList(sqlTax, "sql");
@@ -10499,7 +10761,7 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
@@ -10554,13 +10816,13 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
 										} else {
 											Double value = Double.parseDouble(obj[2].toString())
-													+ (double) jRowArr.get(tblCol);
+													+ Double.valueOf(jRowArr.get(tblCol).toString());
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, value);
 											map.put(tblRow, jRowArr);
@@ -10606,7 +10868,7 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
@@ -10657,13 +10919,13 @@ public class clsPOSReportService {
 									if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 									{
-										if (0.00 == (double) jRowArr.get(tblCol)) {
+										if (0.00 == Double.valueOf( jRowArr.get(tblCol).toString())) {
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, obj[2].toString());
 											map.put(tblRow, jRowArr);
 										} else {
 											Double value = Double.parseDouble(obj[2].toString())
-													+ (double) jRowArr.get(tblCol);
+													+ Double.valueOf(jRowArr.get(tblCol).toString());
 											jRowArr.remove(tblCol);
 											jRowArr.add(tblCol, value);
 											map.put(tblRow, jRowArr);
@@ -10711,13 +10973,13 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
 									} else {
 										Double value = Double.parseDouble(obj[2].toString())
-												+ (double) jRowArr.get(tblCol);
+												+ Double.valueOf(jRowArr.get(tblCol).toString());
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, value);
 										map.put(tblRow, jRowArr);
@@ -10782,13 +11044,13 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf( jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
 									} else {
 										Double value = Double.parseDouble(obj[2].toString())
-												+ (double) jRowArr.get(tblCol);
+												+ Double.valueOf(jRowArr.get(tblCol).toString());
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, value);
 										map.put(tblRow, jRowArr);
@@ -10835,13 +11097,13 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
 									} else {
 										Double value = Double.parseDouble(obj[2].toString())
-												+ (double) jRowArr.get(tblCol);
+												+ Double.valueOf( jRowArr.get(tblCol).toString());
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, value);
 										map.put(tblRow, jRowArr);
@@ -10904,13 +11166,13 @@ public class clsPOSReportService {
 								if (listColHeaderArr.get(tblCol).toString().equalsIgnoreCase(obj[1].toString()))
 
 								{
-									if (0.00 == (double) jRowArr.get(tblCol)) {
+									if (0.00 == Double.valueOf(jRowArr.get(tblCol).toString())) {
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, obj[2].toString());
 										map.put(tblRow, jRowArr);
 									} else {
 										Double value = Double.parseDouble(obj[2].toString())
-												+ (double) jRowArr.get(tblCol);
+												+ Double.valueOf(jRowArr.get(tblCol).toString());
 										jRowArr.remove(tblCol);
 										jRowArr.add(tblCol, value);
 										map.put(tblRow, jRowArr);
@@ -16005,5 +16267,1767 @@ public class clsPOSReportService {
 
 	
 	
+	public LinkedHashMap funGetBillWiseSettlementBillRegisterSalesSummary(String fromDate, String toDate, String viewBy,
+			String strOperationType, String strSettlementCode, String strPOSCode, String strPOSName, String groupName,String userCode,String clientCode) throws Exception 
+	{
+		List listData = new ArrayList();
+		DecimalFormat decFormat = new DecimalFormat("0");
+	    StringBuilder sbSqlBillWise = new StringBuilder();
+	    StringBuilder sbSqlBillWiseQFile = new StringBuilder();
+	    List<clsPOSSalesFlashColumns> arrListBillWiseSales = new ArrayList<clsPOSSalesFlashColumns>();
+	    List listColHeaderArr = new ArrayList();
+	    Map<String, String> mapAllTaxes=new HashMap<String,String>();
+	    LinkedHashMap mapRet = new LinkedHashMap();
+	    sbSqlBillWise.setLength(0);
+	    sbSqlBillWise.append("select a.strBillNo,left(a.dteBillDate,10),left(right(a.dteDateCreated,8),5) as BillTime "
+		    + " ,ifnull(b.strTableName,'') as TableName,f.strPOSName, ifnull(d.strSettelmentDesc,'') as payMode "
+		    + " ,ifnull(a.dblSubTotal,0.00),IFNULL(a.dblDiscountPer,0), IFNULL(a.dblDiscountAmt,0.00),a.dblTaxAmt "
+		    + " ,ifnull(c.dblSettlementAmt,0.00),a.strUserCreated "
+		    + " ,a.strUserEdited,a.dteDateCreated,a.dteDateEdited,a.strClientCode,a.strWaiterNo "
+		    + " ,a.strCustomerCode,a.dblDeliveryCharges,ifnull(c.strRemark,''),ifnull(e.strCustomerName ,'NA') "
+		    + " ,a.dblTipAmount,'" + userCode + "',a.strDiscountRemark,ifnull(h.strReasonName ,'NA')"
+		    + ",a.intShiftCode,a.dblRoundOff,a.intBillSeriesPaxNo,ifnull(i.dblAdvDeposite,0),ifnull(k.strAdvOrderTypeName,'') "
+		    + ",ifnull(l.strBillSeries,''),d.strSettelmentType "
+		    + " from tblbillhd  a "
+		    + " left outer join  tbltablemaster b on a.strTableNo=b.strTableNo "
+		    + " left outer join tblposmaster f on a.strPOSCode=f.strPOSCode "
+		    + " left outer join tblbillsettlementdtl c on a.strBillNo=c.strBillNo and a.strClientCode=c.strClientCode  and date(a.dteBillDate)=date(c.dteBillDate)  "
+		    + " left outer join tblsettelmenthd d on c.strSettlementCode=d.strSettelmentCode "
+		    + " left outer join tblcustomermaster e on a.strCustomerCode=e.strCustomerCode "
+		    + " left outer join tblreasonmaster h on a.strReasonCode=h.strReasonCode "
+		    + " left outer join tbladvancereceipthd i on a.strAdvBookingNo=i.strAdvBookingNo "
+		    + " LEFT OUTER JOIN tbladvbookbillhd j ON a.strAdvBookingNo=j.strAdvBookingNo "
+		    + " left outer join tbladvanceordertypemaster k on j.strOrderType=k.strAdvOrderTypeCode "
+		    + " left outer join tblbillseriesbilldtl l on a.strBillNo=l.strHdBillNo "
+		    + " where date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+		    + "  ");
+	    if (!strOperationType.equalsIgnoreCase("All"))
+	    {
+		sbSqlBillWise.append("and a.strOperationType='" + strOperationType + "' ");
+	    }
+	    if (!strPOSCode.equalsIgnoreCase("All"))
+	    {
+		sbSqlBillWise.append(" and a.strPOSCode='" + strPOSCode + "' ");
+	    }
+	    if (!strSettlementCode.equalsIgnoreCase("All"))
+	    {
+		sbSqlBillWise.append(" and c.strSettlementCode='" + strSettlementCode + "' ");
+	    }
+	    sbSqlBillWise.append("  ");
+	    sbSqlBillWise.append(" order by date(a.dteBillDate),a.strBillNo  ");
 
+	    sbSqlBillWiseQFile.setLength(0);
+	    sbSqlBillWiseQFile.append("select a.strBillNo,left(a.dteBillDate,10),left(right(a.dteDateCreated,8),5) as BillTime "
+		    + " ,ifnull(b.strTableName,'') as TableName,f.strPOSName, ifnull(d.strSettelmentDesc,'') as payMode "
+		    + " ,ifnull(a.dblSubTotal,0.00),IFNULL(a.dblDiscountPer,0), IFNULL(a.dblDiscountAmt,0.00),a.dblTaxAmt "
+		    + " ,ifnull(c.dblSettlementAmt,0.00),a.strUserCreated "
+		    + " ,a.strUserEdited,a.dteDateCreated,a.dteDateEdited,a.strClientCode,a.strWaiterNo "
+		    + " ,a.strCustomerCode,a.dblDeliveryCharges,ifnull(c.strRemark,''),ifnull(e.strCustomerName ,'NA') "
+		    + " ,a.dblTipAmount,'" + userCode + "',a.strDiscountRemark,ifnull(h.strReasonName ,'NA')"
+		    + ",a.intShiftCode,a.dblRoundOff,a.intBillSeriesPaxNo,ifnull(i.dblAdvDeposite,0),ifnull(k.strAdvOrderTypeName,'') "
+		    + ",ifnull(l.strBillSeries,''),d.strSettelmentType "
+		    + " from tblqbillhd  a "
+		    + " left outer join  tbltablemaster b on a.strTableNo=b.strTableNo "
+		    + " left outer join tblposmaster f on a.strPOSCode=f.strPOSCode "
+		    + " left outer join tblqbillsettlementdtl c on a.strBillNo=c.strBillNo and a.strClientCode=c.strClientCode  and date(a.dteBillDate)=date(c.dteBillDate)  "
+		    + " left outer join tblsettelmenthd d on c.strSettlementCode=d.strSettelmentCode "
+		    + " left outer join tblcustomermaster e on a.strCustomerCode=e.strCustomerCode "
+		    + " left outer join tblreasonmaster h on a.strReasonCode=h.strReasonCode "
+		    + " left outer join tblqadvancereceipthd i on a.strAdvBookingNo=i.strAdvBookingNo "
+		    + " LEFT OUTER JOIN tblqadvbookbillhd j ON a.strAdvBookingNo=j.strAdvBookingNo "
+		    + " left outer join tbladvanceordertypemaster k on j.strOrderType=k.strAdvOrderTypeCode "
+		    + " left outer join tblbillseriesbilldtl l on a.strBillNo=l.strHdBillNo "
+		    + " where date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+		    + "  ");
+	    if (!strOperationType.equalsIgnoreCase("All"))
+	    {
+		sbSqlBillWiseQFile.append("and a.strOperationType='" + strOperationType + "' ");
+	    }
+	    if (!strPOSCode.equalsIgnoreCase("All"))
+	    {
+		sbSqlBillWiseQFile.append(" and a.strPOSCode='" + strPOSCode + "' ");
+	    }
+	    if (!strSettlementCode.equalsIgnoreCase("All"))
+	    {
+		sbSqlBillWiseQFile.append(" and c.strSettlementCode='" + strSettlementCode + "' ");
+	    }
+	    sbSqlBillWiseQFile.append("   ");
+	    sbSqlBillWiseQFile.append(" order by date(a.dteBillDate),a.strBillNo  ");
+	    double totalDiscAmt = 0, totalSubTotal = 0, totalTaxAmt = 0, totalAdvAmt = 0, totalSettleAmt = 0, totalTipAmt = 0, totalRoundOffAmt = 0;
+	    boolean flgRecords = false;
+	    int totalPAX = 0;
+	    String gCMSIntegrationY = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, strPOSCode, "gCMSIntegrationYN");
+	    Map<String, List<clsPOSSalesFlashColumns>> hmBillWiseSales = new HashMap<String, List<clsPOSSalesFlashColumns>>();
+	    int seqNo = 1;
+	    //for live data
+	    List listBillWiseSales =objBaseService.funGetList(sbSqlBillWise,"sql");
+	   if(listBillWiseSales.size()>0)
+	    {
+		   for(int i=0;i<listBillWiseSales.size();i++)
+		   {	
+			 Object[] obj = (Object[])listBillWiseSales.get(i);  
+			 arrListBillWiseSales = new ArrayList<clsPOSSalesFlashColumns>();
+		flgRecords = true;
+		String[] spDate = obj[1].toString().split("-");
+		String billDate = spDate[2] + "-" + spDate[1] + "-" + spDate[0];//billDate
+
+		clsPOSSalesFlashColumns objSalesFlashColumns = new clsPOSSalesFlashColumns();
+		objSalesFlashColumns.setStrField1(obj[0].toString());
+		objSalesFlashColumns.setStrField2(billDate);
+		objSalesFlashColumns.setStrField3(obj[2].toString());
+		objSalesFlashColumns.setStrField4(obj[3].toString());
+		
+		if (gCMSIntegrationY.equalsIgnoreCase("Y"))
+		{
+			objSalesFlashColumns.setStrField5(obj[17].toString());//Member Code
+		}
+		else
+		{
+		    objSalesFlashColumns.setStrField5(obj[20].toString());//Cust Name
+		}
+		objSalesFlashColumns.setStrField6(obj[4].toString());
+		objSalesFlashColumns.setStrField7(obj[5].toString());
+		objSalesFlashColumns.setStrField8(obj[18].toString());
+		objSalesFlashColumns.setStrField9(obj[6].toString());
+		objSalesFlashColumns.setStrField10(obj[7].toString());
+		objSalesFlashColumns.setStrField11(obj[8].toString());
+		objSalesFlashColumns.setStrField12(obj[9].toString());
+		objSalesFlashColumns.setStrField13(obj[10].toString());
+		objSalesFlashColumns.setStrField14(obj[19].toString());
+
+		objSalesFlashColumns.setStrField15(obj[21].toString());
+		objSalesFlashColumns.setStrField16(obj[23].toString());
+		objSalesFlashColumns.setStrField17(obj[24].toString());
+		objSalesFlashColumns.setStrField18(obj[25].toString());//shift
+		objSalesFlashColumns.setStrField19(obj[26].toString());//roundOff
+		objSalesFlashColumns.setStrField20(obj[27].toString());//intBillSeriesPaxNo
+		objSalesFlashColumns.setStrField21(obj[28].toString());//dblAdvDeposite
+		objSalesFlashColumns.setStrField22(obj[29].toString());//strAdvOrderTypeName
+		objSalesFlashColumns.setStrField23(obj[30].toString());//bill series
+
+		objSalesFlashColumns.setStrCustomerName(obj[20].toString());
+		objSalesFlashColumns.setStrSettlementType(obj[31].toString());//settlement type
+
+		objSalesFlashColumns.setSeqNo(seqNo++);
+
+		if (null != hmBillWiseSales.get(obj[0].toString() + "!" + billDate))
+		{
+		    arrListBillWiseSales = hmBillWiseSales.get(obj[0].toString() + "!" + billDate);
+		    objSalesFlashColumns.setStrField9("0");
+		    objSalesFlashColumns.setStrField10("0");
+		    objSalesFlashColumns.setStrField11("0");
+		    objSalesFlashColumns.setStrField12("0");
+		    objSalesFlashColumns.setStrField15("0");
+		    objSalesFlashColumns.setStrField19("0");//roundoff
+		    objSalesFlashColumns.setStrField20("0");//intBillSeriesPaxNo
+		    objSalesFlashColumns.setStrField21("0");//dblAdvDeposite
+
+		    objSalesFlashColumns.setStrField24("MultiSettle");//MultiSettle
+		}
+		arrListBillWiseSales.add(objSalesFlashColumns);
+		hmBillWiseSales.put(obj[0].toString() + "!" + billDate, arrListBillWiseSales);
+
+		totalDiscAmt += Double.parseDouble(objSalesFlashColumns.getStrField11());
+		totalSubTotal += Double.parseDouble(objSalesFlashColumns.getStrField9());
+		totalTaxAmt += Double.parseDouble(objSalesFlashColumns.getStrField12());
+		totalAdvAmt += Double.parseDouble(objSalesFlashColumns.getStrField21());
+		totalSettleAmt += Double.parseDouble(objSalesFlashColumns.getStrField13());// Grand Total                
+		totalTipAmt += Double.parseDouble(objSalesFlashColumns.getStrField15());// tip Amt  
+		totalRoundOffAmt += Double.parseDouble(objSalesFlashColumns.getStrField19());// roundoff Amt  
+		totalPAX += Integer.parseInt(objSalesFlashColumns.getStrField20());//intBillSeriesPaxNo
+
+	    }
+	}
+	   
+	 //for qfile data
+	 listBillWiseSales =objBaseService.funGetList(sbSqlBillWiseQFile,"sql");
+	 if(listBillWiseSales.size()>0)
+	 {
+		 for(int i=0;i<listBillWiseSales.size();i++)
+		 {	
+		Object[] obj = (Object[])listBillWiseSales.get(i);  
+		arrListBillWiseSales = new ArrayList<clsPOSSalesFlashColumns>();	
+		flgRecords = true;
+
+		String[] spDate = obj[1].toString().split("-");
+		String billDate = spDate[2] + "-" + spDate[1] + "-" + spDate[0];//billDate
+
+		clsPOSSalesFlashColumns objSalesFlashColumns = new clsPOSSalesFlashColumns();
+		objSalesFlashColumns.setStrField1(obj[0].toString());
+		objSalesFlashColumns.setStrField2(billDate);
+		objSalesFlashColumns.setStrField3(obj[2].toString());
+		objSalesFlashColumns.setStrField4(obj[3].toString());
+		if (gCMSIntegrationY.equalsIgnoreCase("Y"))
+		{
+		    objSalesFlashColumns.setStrField5(obj[17].toString());//Member Code
+		}
+		else
+		{
+		    objSalesFlashColumns.setStrField5(obj[20].toString());//Cust Name
+		}
+		objSalesFlashColumns.setStrField6(obj[4].toString());
+		objSalesFlashColumns.setStrField7(obj[5].toString());
+		objSalesFlashColumns.setStrField8(obj[18].toString());
+		objSalesFlashColumns.setStrField9(obj[6].toString());
+		objSalesFlashColumns.setStrField10(obj[7].toString());
+		objSalesFlashColumns.setStrField11(obj[8].toString());
+		objSalesFlashColumns.setStrField12(obj[9].toString());
+		objSalesFlashColumns.setStrField13(obj[10].toString());
+		objSalesFlashColumns.setStrField14(obj[19].toString());
+		objSalesFlashColumns.setStrField15(obj[21].toString());
+		objSalesFlashColumns.setStrField16(obj[23].toString());
+		objSalesFlashColumns.setStrField17(obj[24].toString());
+		objSalesFlashColumns.setStrField18(obj[25].toString());//shift
+		objSalesFlashColumns.setStrField19(obj[26].toString());//roundOff
+		objSalesFlashColumns.setStrField20(obj[27].toString());//intBillSeriesPaxNo
+		objSalesFlashColumns.setStrField21(obj[28].toString());//dblAdvDeposite
+		objSalesFlashColumns.setStrField22(obj[29].toString());//strAdvOrderTypeName
+		objSalesFlashColumns.setStrField23(obj[30].toString());//bill series
+
+		objSalesFlashColumns.setStrCustomerName(obj[20].toString());//customerName
+		objSalesFlashColumns.setStrSettlementType(obj[31].toString());//settlement type
+
+//               objSalesFlashColumns.setSeqNo(Integer.parseInt(billNo.split("-")[0]));
+		objSalesFlashColumns.setSeqNo(seqNo++);
+
+		if (null != hmBillWiseSales.get(obj[0].toString() + "!" + billDate))
+		{
+		    arrListBillWiseSales = hmBillWiseSales.get(obj[0].toString() + "!" + billDate);
+		    objSalesFlashColumns.setStrField9("0");
+		    objSalesFlashColumns.setStrField10("0");
+		    objSalesFlashColumns.setStrField11("0");
+		    objSalesFlashColumns.setStrField12("0");
+		    objSalesFlashColumns.setStrField15("0");
+		    objSalesFlashColumns.setStrField19("0");//roundoff
+		    objSalesFlashColumns.setStrField20("0");//intBillSeriesPaxNo
+		    objSalesFlashColumns.setStrField21("0");//dblAdvDeposite
+
+		    objSalesFlashColumns.setStrField24("MultiSettle");//MultiSettle
+		}
+		arrListBillWiseSales.add(objSalesFlashColumns);
+		hmBillWiseSales.put(obj[0].toString() + "!" + billDate, arrListBillWiseSales);
+
+		totalDiscAmt += Double.parseDouble(objSalesFlashColumns.getStrField11());
+		totalSubTotal += Double.parseDouble(objSalesFlashColumns.getStrField9());
+		totalTaxAmt += Double.parseDouble(objSalesFlashColumns.getStrField12());
+		totalAdvAmt += Double.parseDouble(objSalesFlashColumns.getStrField21());
+		totalSettleAmt += Double.parseDouble(objSalesFlashColumns.getStrField13());// Grand Total 
+		totalTipAmt += Double.parseDouble(objSalesFlashColumns.getStrField15());// tip Amt  
+		totalRoundOffAmt += Double.parseDouble(objSalesFlashColumns.getStrField19());// roundoff Amt  
+		totalPAX += Integer.parseInt(objSalesFlashColumns.getStrField20());//intBillSeriesPaxNo
+	    }
+	}
+	
+	 List listTotal=new ArrayList();
+	 listTotal.add("");
+	 listTotal.add("");
+	 listTotal.add(totalSubTotal);
+	 listTotal.add(totalDiscAmt);
+	 listTotal.add(totalTaxAmt);
+	 listTotal.add(totalAdvAmt);
+	 listTotal.add(totalTipAmt);
+	 listTotal.add(totalSettleAmt);
+	 listTotal.add("");
+	 
+		listColHeaderArr.add("Tbl No");
+		listColHeaderArr.add("Bill No");
+		listColHeaderArr.add("Aomunt");
+		listColHeaderArr.add("Disc");
+
+		int cntArrLen = 0;
+
+	    cntArrLen = cntArrLen + 4;
+	    
+		 mapAllTaxes = new HashMap<>();
+		    String taxCalType = "";
+		    ///live
+		    StringBuilder sb = new StringBuilder();
+		    sb.setLength(0);
+		    sb.append("select distinct(a.strTaxCode),a.strTaxDesc,a.strTaxCalculation  "
+			    + "from tbltaxhd a,tblbilltaxdtl b "
+			    + "where a.strTaxCode=b.strTaxCode "
+			    + "and date(b.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    List listAllTaxes =objBaseService.funGetList(sb,"sql");
+		    if(listAllTaxes.size()>0)
+		    {
+			    for(int i=0;i<listAllTaxes.size();i++)
+			    {
+			    	Object[] obj = (Object[])listAllTaxes.get(i);
+					taxCalType = obj[2].toString();
+					mapAllTaxes.put( obj[0].toString(), obj[1].toString());
+			    }
+		    }
+		    ///Qfile
+		    sb.setLength(0);
+		    sb.append("select distinct(a.strTaxCode),a.strTaxDesc,a.strTaxCalculation  "
+			    + "from tbltaxhd a,tblqbilltaxdtl b "
+			    + "where a.strTaxCode=b.strTaxCode "
+			    + "and date(b.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    listAllTaxes =objBaseService.funGetList(sb,"sql");
+		    if(listAllTaxes.size()>0)
+		    {
+			    for(int i=0;i<listAllTaxes.size();i++)
+			    {
+			    	Object[] obj = (Object[])listAllTaxes.get(i);
+					taxCalType = obj[2].toString();
+					mapAllTaxes.put(obj[0].toString(), obj[1].toString());
+			    }
+		    }
+		    for (Map.Entry<String, String> taxEntry : mapAllTaxes.entrySet())
+		    {
+
+			String taxCode = taxEntry.getKey();
+			String taxName = taxEntry.getValue();
+
+			listColHeaderArr.add(taxName.toUpperCase());
+		
+			cntArrLen++;
+
+		    }
+		    listColHeaderArr.add("Tip");
+		    listColHeaderArr.add("Adv.");
+		    listColHeaderArr.add("Total");
+		    listColHeaderArr.add("Settle");
+
+		    cntArrLen = cntArrLen + 4;
+
+
+		    for (String key : hmBillWiseSales.keySet())
+		    {
+			List<clsPOSSalesFlashColumns> listOfBills = hmBillWiseSales.get(key);
+
+			for (clsPOSSalesFlashColumns objSalesFlashColumns : listOfBills)
+			{
+			    Map<String, clsPOSTaxCalculationDtls> mapOfTaxes = new HashMap<>();
+			    for (Map.Entry<String, String> taxEntry : mapAllTaxes.entrySet())
+			    {
+				String taxCode = taxEntry.getKey();
+				String taxName = taxEntry.getValue();
+
+				clsPOSTaxCalculationDtls objTax = new clsPOSTaxCalculationDtls();
+				objTax.setTaxCode(taxCode);
+				objTax.setTaxName(taxName);
+				objTax.setTaxAmount(0.00);
+
+				mapOfTaxes.put(taxName, objTax);
+			    }
+
+			    objSalesFlashColumns.setMapOfTaxes(mapOfTaxes);
+			}
+		    }
+		    StringBuilder sqlBuilderTax = new StringBuilder();
+		    sqlBuilderTax.append("select a.strBillNo,c.strTaxDesc,b.dblTaxAmount,date(a.dteBillDate) "
+				    + "from "
+				    + "tblqbillhd a,tblqbilltaxdtl b,tbltaxhd c,tblqbillsettlementdtl d,tblsettelmenthd e "
+				    + "where a.strBillNo=b.strBillNo "
+				    + "and b.strTaxCode=c.strTaxCode "
+				    + "and a.strBillNo=d.strBillNo "
+				    + "and d.strSettlementCode=e.strSettelmentCode "
+				    + "and date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+			    if (!strOperationType.equalsIgnoreCase("All"))
+			    {
+			    	sqlBuilderTax.append("and a.strOperationType='" + strOperationType + "' ");
+			    }
+			    if (!strPOSCode.equalsIgnoreCase("All"))
+			    {
+			    	sqlBuilderTax.append(" and a.strPOSCode='" + strPOSCode + "' ");
+			    }
+			    if (!strSettlementCode.equalsIgnoreCase("All"))
+			    {
+			    	sqlBuilderTax.append( " and e.strSettelmentCode='" + strSettlementCode + "' ");
+			    }
+			    sqlBuilderTax.append("group by a.strBillNo,b.strTaxCode "
+				    + "order by a.strBillNo,b.strTaxCode;  ");
+			   List listSales = objBaseService.funGetList(sqlBuilderTax,"sql");
+			    if(listSales.size()>0)
+			    {
+			    for(int i=0;i<listSales.size();i++)
+			    {
+			    Object[] obj = (Object[])listSales.get(i);	
+				String[] spDate = obj[3].toString().split("-");
+				String billNo = obj[0].toString();
+				String billDate = spDate[2] + "-" + spDate[1] + "-" + spDate[0];//billDate
+				String billKey = billNo + "!" + billDate;
+
+				List<clsPOSSalesFlashColumns> listOfBills = hmBillWiseSales.get(billKey);
+				clsPOSSalesFlashColumns objSalesFlashColumns = listOfBills.get(0);
+				Map<String, clsPOSTaxCalculationDtls> mapOfTaxesLocal = objSalesFlashColumns.getMapOfTaxes();
+				if (mapOfTaxesLocal.containsKey(obj[1].toString()))
+				{
+					clsPOSTaxCalculationDtls objTax = mapOfTaxesLocal.get(obj[1].toString());
+				    objTax.setTaxAmount(Double.parseDouble(obj[2].toString()));
+				}
+			    }
+			    }
+
+			    sqlBuilderTax.setLength(0);
+			    sqlBuilderTax.append("select a.strBillNo,c.strTaxDesc,b.dblTaxAmount,date(a.dteBillDate) "
+					    + "from "
+					    + "tblbillhd a,tblbilltaxdtl b,tbltaxhd c,tblbillsettlementdtl d,tblsettelmenthd e "
+					    + "where a.strBillNo=b.strBillNo "
+					    + "and b.strTaxCode=c.strTaxCode "
+					    + "and a.strBillNo=d.strBillNo "
+					    + "and d.strSettlementCode=e.strSettelmentCode "
+					    + "and date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+				    if (!strOperationType.equalsIgnoreCase("All"))
+				    {
+				    	sqlBuilderTax.append("and a.strOperationType='" + strOperationType + "' ");
+				    }
+				    if (!strPOSCode.equalsIgnoreCase("All"))
+				    {
+				    	sqlBuilderTax.append(" and a.strPOSCode='" + strPOSCode + "' ");
+				    }
+				    if (!strSettlementCode.equalsIgnoreCase("All"))
+				    {
+				    	sqlBuilderTax.append(" and e.strSettelmentCode='" + strSettlementCode + "' ");
+				    }
+				    sqlBuilderTax.append("group by a.strBillNo,b.strTaxCode "
+					    + "order by a.strBillNo,b.strTaxCode;  ");
+				    listSales = objBaseService.funGetList(sqlBuilderTax,"sql");
+				    if(listSales.size()>0)
+				    {
+				    for(int i=0;i<listSales.size();i++)
+				    {
+				    Object[] obj = (Object[])listSales.get(i);	
+					String[] spDate = obj[3].toString().split("-");
+					String billNo = obj[0].toString();
+					String billDate = spDate[2] + "-" + spDate[1] + "-" + spDate[0];//billDate
+					String billKey = billNo + "!" + billDate;
+
+					List<clsPOSSalesFlashColumns> listOfBills = hmBillWiseSales.get(billKey);
+					clsPOSSalesFlashColumns objSalesFlashColumns = listOfBills.get(0);
+					Map<String, clsPOSTaxCalculationDtls> mapOfTaxesLocal = objSalesFlashColumns.getMapOfTaxes();
+					if (mapOfTaxesLocal.containsKey(obj[1].toString()))
+					{
+						clsPOSTaxCalculationDtls objTax = mapOfTaxesLocal.get(obj[1].toString());
+					    objTax.setTaxAmount(Double.parseDouble(obj[2].toString()));
+					}
+				    }
+				    }
+				    final String BILLSERIESSORTING = "FL";
+				    Comparator<clsPOSSalesFlashColumns> BILLSERIES = new Comparator<clsPOSSalesFlashColumns>()
+				    {
+					// This is where the sorting happens.
+					public int compare(clsPOSSalesFlashColumns o1, clsPOSSalesFlashColumns o2)
+					{
+					    return BILLSERIESSORTING.indexOf(o1.getStrField23()) - BILLSERIESSORTING.indexOf(o2.getStrField23());
+					}
+				    };
+
+				    Comparator<clsPOSSalesFlashColumns> BILLNO = new Comparator<clsPOSSalesFlashColumns>()
+				    {
+					// This is where the sorting happens.
+					public int compare(clsPOSSalesFlashColumns o1, clsPOSSalesFlashColumns o2)
+					{
+					    return o1.getStrField1().compareTo(o2.getStrField1());
+					}
+				    };
+				    ArrayList<clsPOSSalesFlashColumns> arrTempListBillWiseSales;
+				    arrTempListBillWiseSales = new ArrayList<clsPOSSalesFlashColumns>();
+				    for (List<clsPOSSalesFlashColumns> listOfFlashColumns : hmBillWiseSales.values())
+				    {
+					arrTempListBillWiseSales.addAll(listOfFlashColumns);
+				    }
+
+				    //sort arrTempListBillWiseSales 
+				    String gEnableBillSeries = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, strPOSCode, "gEnableBillSeries");
+				    
+				    if (gEnableBillSeries.equalsIgnoreCase("Y"))
+				    {
+					Collections.sort(arrTempListBillWiseSales, new clsSalesFlashComparator(BILLSERIES, BILLNO));
+				    }
+
+				    Vector billsRow = new Vector();
+				    billsRow.add("Bills");
+				    billsRow.add("");
+				    billsRow.add("");
+				    billsRow.add("");
+				    for (String tax : mapAllTaxes.values())
+				    {
+					billsRow.add("");
+				    }
+				    billsRow.add("");
+				    billsRow.add("");
+				    billsRow.add("");
+				    billsRow.add("");
+
+				    listData.add(billsRow);
+
+				    Vector foodBills = new Vector();
+				    foodBills.add("Food Bills");
+				    foodBills.add("");
+				    foodBills.add("");
+				    foodBills.add("");
+				    for (String tax : mapAllTaxes.values())
+				    {
+					foodBills.add("");
+				    }
+				    foodBills.add("");
+				    foodBills.add("");
+				    foodBills.add("");
+				    foodBills.add("");
+
+				    listData.add(foodBills);
+				    
+				    boolean liquorBillsPrint = true;
+				    for (clsPOSSalesFlashColumns objSalesFlashColumns : arrTempListBillWiseSales)
+				    {
+
+					if (objSalesFlashColumns.getStrField24() != null && objSalesFlashColumns.getStrField24().equalsIgnoreCase("MultiSettle"))
+					{
+					    Vector multiSettleRow = new Vector();
+					    multiSettleRow.add("Part Settlement");
+					    multiSettleRow.add("");
+					    multiSettleRow.add("0.00");
+					    multiSettleRow.add("0.00");
+					    for (String tax : mapAllTaxes.values())
+					    {
+						multiSettleRow.add("0.00");
+					    }
+					    multiSettleRow.add("0.00");
+					    multiSettleRow.add("0.00");
+					    multiSettleRow.add(Double.parseDouble(objSalesFlashColumns.getStrField13()));
+					    multiSettleRow.add(objSalesFlashColumns.getStrField7());
+
+					    listData.add(multiSettleRow);
+
+					    continue;
+					}
+
+					if (objSalesFlashColumns.getStrField23().equalsIgnoreCase("L") && liquorBillsPrint)
+					{
+					    Vector liquorBillLabelRow = new Vector();
+					    liquorBillLabelRow.add("Liquor Bills");
+					    liquorBillLabelRow.add("");
+					    liquorBillLabelRow.add("");
+					    liquorBillLabelRow.add("");
+					    for (String tax : mapAllTaxes.values())
+					    {
+						liquorBillLabelRow.add("");
+					    }
+					    liquorBillLabelRow.add("");
+					    liquorBillLabelRow.add("");
+					    liquorBillLabelRow.add("");
+					    liquorBillLabelRow.add("");
+
+					    listData.add(liquorBillLabelRow);
+
+					    liquorBillsPrint = false;
+					}
+
+					Vector row = new Vector();
+					row.add(objSalesFlashColumns.getStrField4());
+					row.add(objSalesFlashColumns.getStrField1());
+					row.add(Double.parseDouble(objSalesFlashColumns.getStrField9()));
+					row.add(Double.parseDouble(objSalesFlashColumns.getStrField11()));
+
+					Map<String, clsPOSTaxCalculationDtls> mapOfTaxesLocal = objSalesFlashColumns.getMapOfTaxes();
+					for (clsPOSTaxCalculationDtls objTaxCalculationDtls : mapOfTaxesLocal.values())
+					{
+					    row.add(objTaxCalculationDtls.getTaxAmount());
+					}
+
+					row.add(Double.parseDouble(objSalesFlashColumns.getStrField15()));
+					row.add(Double.parseDouble(objSalesFlashColumns.getStrField21()));
+					row.add(Double.parseDouble(objSalesFlashColumns.getStrField13()));
+					row.add(objSalesFlashColumns.getStrField7());
+
+					listData.add(row);
+
+					if (Double.parseDouble(objSalesFlashColumns.getStrField11()) > 0)
+					{
+					    Vector discountRemark = new Vector();
+					    discountRemark.add(objSalesFlashColumns.getStrField16());
+					    discountRemark.add("");
+					    discountRemark.add("");
+					    discountRemark.add("");
+					    for (String tax : mapAllTaxes.values())
+					    {
+						discountRemark.add("");
+					    }
+					    discountRemark.add("");
+					    discountRemark.add("");
+					    discountRemark.add("");
+					    discountRemark.add("");
+
+					    listData.add(discountRemark);
+					}
+				    }
+
+				    int detailRowCount = listColHeaderArr.size();
+
+				    Vector blankLine = new Vector();
+				    blankLine.add("");
+				    blankLine.add("");
+				    blankLine.add("");
+				    blankLine.add("");
+				    for (Map.Entry<String, String> taxEntry : mapAllTaxes.entrySet())
+				    {
+					blankLine.add("");
+				    }
+				    blankLine.add("");
+				    blankLine.add("");
+				    blankLine.add("");
+				    blankLine.add("");
+
+				    listData.add(blankLine);
+
+				    Vector totalRow = new Vector();
+				    totalRow.add("Total");
+				    totalRow.add("");
+				    totalRow.add(0.00);
+				    totalRow.add(0.00);
+				    for (Map.Entry<String, String> taxEntry : mapAllTaxes.entrySet())
+				    {
+					totalRow.add(0.00);
+				    }
+				    totalRow.add(0.00);
+				    totalRow.add(0.00);
+				    totalRow.add(0.00);
+				    totalRow.add("");
+
+				    listData.add(totalRow);
+				    
+				    int totalRowNo = listData.size()-2;
+					mapRet.put("Col Header", listColHeaderArr);
+					mapRet.put("Col Count", cntArrLen);
+					mapRet.put("Row Count", totalRowNo);
+					mapRet.put("listData", listData);
+					mapRet.put("listTotal",listTotal);
+					return mapRet;
+					
+	}
+	
+	public List<clsShiftMasterModel> funGetPOSWiseShiftList(@RequestParam("POSCode") String posCode,HttpServletRequest req)throws Exception
+	{
+		String clientCode=req.getSession().getAttribute("gClientCode").toString();
+		List<clsShiftMasterModel> listShiftModel =new ArrayList();
+		String posName = null;
+		
+		StringBuilder sqlShift = new StringBuilder();
+		if (posCode.equalsIgnoreCase("All"))
+		{
+		    sqlShift.append("select max(a.intShiftCode) from tblshiftmaster a group by a.intShiftCode ");
+		}
+		else
+		{
+		    sqlShift.append("select a.intShiftCode from tblshiftmaster a where a.strPOSCode='" + posCode + "' ");
+		}
+
+		List listSql = objBaseService.funGetList(sqlShift, "sql");
+		if(listSql.size()>0)
+		{
+			for(int i=0 ;i<listSql.size();i++ )
+		      {
+				   Object[] obj= (Object[]) listSql.get(i);
+				   clsShiftMasterModel objModel=new clsShiftMasterModel();
+				   objModel.setIntShiftCode(obj[0].toString());
+				   listShiftModel.add(objModel);
+		      } 	
+		}
+		return listShiftModel;
+	}
+	
+	public Map funConsolisdatedDiscountWiseReport(String posCode,String fromDate,String toDate,String enableShiftYN,String strShiftNo,String reportType,Map hm) throws Exception
+	{
+//		HashMap hm = new HashMap();
+		Map<Integer, List<String>> mapExcelItemDtl = new HashMap<Integer, List<String>>();
+		    List<String> arrListTotal = new ArrayList<String>();
+		    List<String> arrHeaderList = new ArrayList<String>();
+		    double totalDis = 0, totalDiscValue = 0;
+		    double totalAmount = 0, totalSalesNetTotal = 0.0;
+		    double totalDisOnAmount = 0;
+		    double totalConsolidatedDiscAmt = 0.0;
+		    if (reportType.equalsIgnoreCase("Consolidated Discount"))
+		    {
+		    	List<clsPOSBillItemDtlBean> listOfBillItemDtl = new ArrayList<>();
+				StringBuilder sbSqlLiveDisc = new StringBuilder();
+				StringBuilder sbSqlQFileDisc = new StringBuilder();
+				StringBuilder sqlBuilder = new StringBuilder();
+				Map<String, clsPOSBillItemDtlBean> mapReasonDtl = new HashMap<>();
+
+				
+				sqlBuilder.setLength(0);
+				sqlBuilder.append("SELECT sum(b.dblDiscountAmt)DiscAmt,g.strReasonCode,g.strReasonName "
+					+ ",sum(b.dblAmount)-sum(b.dblDiscountAmt)NetRevenue,sum(a.intBillSeriesPaxNo) "
+					+ "FROM tblqbillhd a,tblqbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f,tblreasonmaster g\n"
+					+ "WHERE a.strBillNo=b.strBillNo \n"
+					+ "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+					+ "AND a.strPOSCode=f.strPOSCode \n"
+					+ "AND a.strClientCode=b.strClientCode \n"
+					+ "AND b.strItemCode=e.strItemCode \n"
+					+ "AND d.strSubGroupCode=e.strSubGroupCode \n"
+					+ "AND c.strGroupCode=d.strGroupCode\n"
+					+ "and a.strReasonCode=g.strReasonCode\n"
+					+ "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' \n");
+				if (!posCode.equalsIgnoreCase("All"))
+				{
+				    sqlBuilder.append(" and a.strPOSCode='" + posCode + "' ");
+				}
+				sqlBuilder.append("GROUP BY g.strReasonName;");
+				List listLiveDisc = objBaseService.funGetList(sqlBuilder, "sql");
+				if(listLiveDisc.size()>0)
+				{
+					for(int i=0;i<listLiveDisc.size();i++)
+					{
+						Object[] obj = (Object[]) listLiveDisc.get(i);
+						clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+		
+					    String reasonCode = obj[1].toString();
+					    if (reasonCode != null)
+					    {
+						if (mapReasonDtl.containsKey(reasonCode))
+						{
+						    objBean = mapReasonDtl.get(reasonCode);
+						    objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() +Integer.parseInt(obj[4].toString()));
+		
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+						else
+						{
+						    objBean = new clsPOSBillItemDtlBean();
+						    objBean.setStrReasonName(obj[2].toString());
+						    objBean.setDblDiscountAmt(Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+		
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+					    }
+					}
+				}
+
+				sqlBuilder.setLength(0);
+				sqlBuilder.append("SELECT sum(b.dblDiscAmt)DiscAmt,g.strReasonCode,g.strReasonName "
+					+ ",sum(b.dblAmount)-sum(b.dblDiscAmt)NetRevenue,0 "
+					+ "FROM tblqbillhd a,tblqbillmodifierdtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f,tblreasonmaster g\n"
+					+ "WHERE a.strBillNo=b.strBillNo \n"
+					+ "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+					+ "AND a.strPOSCode=f.strPOSCode \n"
+					+ "AND a.strClientCode=b.strClientCode \n"
+					+ "AND left(b.strItemCode,7)=e.strItemCode \n"
+					+ "AND d.strSubGroupCode=e.strSubGroupCode \n"
+					+ "AND c.strGroupCode=d.strGroupCode\n"
+					+ "and a.strReasonCode=g.strReasonCode\n"
+					+ "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' \n");
+				if (!posCode.equalsIgnoreCase("All"))
+				{
+				    sqlBuilder.append(" and a.strPOSCode='" + posCode + "' ");
+				}
+				sqlBuilder.append("GROUP BY g.strReasonName;");
+
+				List listQfileDisc = objBaseService.funGetList(sqlBuilder, "sql");
+				if(listQfileDisc.size()>0)
+				{
+					for(int i=0;i<listQfileDisc.size();i++)
+					{
+						Object[] obj = (Object[]) listQfileDisc.get(i);
+						clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+		
+					    String reasonCode = obj[1].toString();
+					    if (reasonCode != null)
+					    {
+						if (mapReasonDtl.containsKey(reasonCode))
+						{
+						    objBean = mapReasonDtl.get(reasonCode);
+						    objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() +Integer.parseInt(obj[4].toString()));
+		
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+						else
+						{
+						    objBean = new clsPOSBillItemDtlBean();
+						    objBean.setStrReasonName(obj[2].toString());
+						    objBean.setDblDiscountAmt(Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+		
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+					    }
+					}
+				}
+
+				sqlBuilder.setLength(0);
+				sqlBuilder.append("SELECT sum(b.dblDiscountAmt)DiscAmt,g.strReasonCode,g.strReasonName "
+					+ ",sum(b.dblAmount)-sum(b.dblDiscountAmt)NetRevenue,sum(a.intBillSeriesPaxNo) "
+					+ "FROM tblbillhd a,tblbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f,tblreasonmaster g\n"
+					+ "WHERE a.strBillNo=b.strBillNo \n"
+					+ "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+					+ "AND a.strPOSCode=f.strPOSCode \n"
+					+ "AND a.strClientCode=b.strClientCode \n"
+					+ "AND b.strItemCode=e.strItemCode \n"
+					+ "AND d.strSubGroupCode=e.strSubGroupCode \n"
+					+ "AND c.strGroupCode=d.strGroupCode\n"
+					+ "and a.strReasonCode=g.strReasonCode\n"
+					+ "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' \n");
+				if (!posCode.equalsIgnoreCase("All"))
+				{
+				    sqlBuilder.append(" and a.strPOSCode='" + posCode + "' ");
+				}
+				sqlBuilder.append("GROUP BY g.strReasonName;");
+
+				listLiveDisc = objBaseService.funGetList(sqlBuilder, "sql");
+				if(listLiveDisc.size()>0)
+				{
+					for(int i=0;i<listLiveDisc.size();i++)
+					{	
+						Object[] obj = (Object[]) listLiveDisc.get(i);
+						clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+					    String reasonCode = obj[1].toString();
+					    if (reasonCode != null)
+					    {
+						if (mapReasonDtl.containsKey(reasonCode))
+						{
+						    objBean = mapReasonDtl.get(reasonCode);
+						    objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+						else
+						{
+						    objBean = new clsPOSBillItemDtlBean();
+						    objBean.setStrReasonName(obj[2].toString());
+						    objBean.setDblDiscountAmt(Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+					    }
+					}
+
+				}
+			
+				sqlBuilder.setLength(0);
+				sqlBuilder.append("SELECT sum(b.dblDiscAmt)DiscAmt,g.strReasonCode,g.strReasonName "
+					+ ",sum(b.dblAmount)-sum(b.dblDiscAmt)NetRevenue,0 "
+					+ "FROM tblbillhd a,tblbillmodifierdtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f,tblreasonmaster g\n"
+					+ "WHERE a.strBillNo=b.strBillNo \n"
+					+ "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+					+ "AND a.strPOSCode=f.strPOSCode \n"
+					+ "AND a.strClientCode=b.strClientCode \n"
+					+ "AND left(b.strItemCode,7)=e.strItemCode \n"
+					+ "AND d.strSubGroupCode=e.strSubGroupCode \n"
+					+ "AND c.strGroupCode=d.strGroupCode\n"
+					+ "and a.strReasonCode=g.strReasonCode\n"
+					+ "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' \n");
+				if (!posCode.equalsIgnoreCase("All"))
+				{
+				    sqlBuilder.append(" and a.strPOSCode='" + posCode + "' ");
+				}
+				sqlBuilder.append("GROUP BY g.strReasonName;");
+
+				listQfileDisc = objBaseService.funGetList(sqlBuilder, "sql");
+				if(listQfileDisc.size()>0)
+				{
+					for(int i=0;i<listQfileDisc.size();i++)
+					{	
+						Object[] obj = (Object[]) listQfileDisc.get(i);
+						clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+					    String reasonCode = obj[1].toString();
+					    if (reasonCode != null)
+					    {
+						if (mapReasonDtl.containsKey(reasonCode))
+						{
+						    objBean = mapReasonDtl.get(reasonCode);
+						    objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble( obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+						else
+						{
+						    objBean = new clsPOSBillItemDtlBean();
+						    objBean.setStrReasonName(obj[2].toString());
+						    objBean.setDblDiscountAmt( Double.parseDouble(obj[0].toString()));
+						    objBean.setDblNetTotal(Double.parseDouble( obj[3].toString()));
+						    objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+						    mapReasonDtl.put(reasonCode, objBean);
+						}
+					    }
+					}
+				}
+				
+
+				List<clsPOSBillItemDtlBean> listOfDiscount = new ArrayList<clsPOSBillItemDtlBean>();
+				listOfDiscount.addAll(mapReasonDtl.values());
+			  
+			  
+				//for complimentary 
+					mapReasonDtl = new HashMap<>();
+					StringBuilder sbSqlLive = new StringBuilder();
+					StringBuilder sbSqlQBill = new StringBuilder();
+					StringBuilder sqlLiveModifierBuilder = new StringBuilder();
+					StringBuilder sqlQModifierBuilder = new StringBuilder();
+					sbSqlLive.setLength(0);
+					sbSqlQBill.setLength(0);
+					sqlLiveModifierBuilder.setLength(0);
+					sqlQModifierBuilder.setLength(0);
+
+					//live data
+					sbSqlLive.append("select sum(b.dblRate* b.dblQuantity) AS Disc,a.strReasonCode,i.strReasonName "
+						+ ",SUM(b.dblRate* b.dblQuantity) AS NetRevenue,sum(a.intBillSeriesPaxNo)Pax "
+						+ " FROM tblbillhd a,tblbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblreasonmaster i "
+						+ " WHERE a.strBillNo = b.strBillNo  "
+						+ " AND DATE(a.dteBillDate) =date(b.dteBillDate)  "
+						+ " AND a.strPOSCode=e.strPosCode  "
+						+ " AND b.strItemCode=f.strItemCode  "
+						+ " AND f.strSubGroupCode=g.strSubGroupCode and i.strReasonCode=a.strReasonCode "
+						+ " AND g.strGroupCode=h.strGroupCode  "
+					);
+
+					//Q data
+					sbSqlQBill.append("select sum(b.dblRate* b.dblQuantity) AS Disc,a.strReasonCode,i.strReasonName "
+						+ ",SUM(b.dblRate* b.dblQuantity) AS NetRevenue,sum(a.intBillSeriesPaxNo)Pax "
+						+ " FROM tblqbillhd a,tblqbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblreasonmaster i "
+						+ " WHERE a.strBillNo = b.strBillNo  "
+						+ " AND DATE(a.dteBillDate) =date(b.dteBillDate)  "
+						+ " AND a.strPOSCode=e.strPosCode  "
+						+ " AND b.strItemCode=f.strItemCode  "
+						+ " AND f.strSubGroupCode=g.strSubGroupCode and i.strReasonCode=a.strReasonCode "
+						+ " AND g.strGroupCode=h.strGroupCode  ");
+
+					if (!posCode.equalsIgnoreCase("All"))
+					{
+					    sbSqlLive.append(" AND a.strPOSCode = '" + posCode + "' ");
+					    sbSqlQBill.append(" AND a.strPOSCode = '" + posCode + "' ");
+					    sqlLiveModifierBuilder.append(" AND a.strPOSCode = '" + posCode + "' ");
+					    sqlQModifierBuilder.append(" AND a.strPOSCode = '" + posCode + "' ");
+					}
+
+					if (enableShiftYN.equalsIgnoreCase("Y"))
+					{
+					    if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					    {
+						sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sqlLiveModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sqlQModifierBuilder.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+					    }
+					}
+					sbSqlLive.append(" and date(a.dteBillDate) Between '" + fromDate + "' and '" + toDate + "' "
+						+ " group by a.strReasonCode"
+						+ " order by a.strReasonCode;");
+					sbSqlQBill.append(" and date(a.dteBillDate) Between '" + fromDate + "' and '" + toDate + "' "
+						+ " group by a.strReasonCode"
+						+ " order by a.strReasonCode;");
+					sqlLiveModifierBuilder.append(" and date(a.dteBillDate) Between '" + fromDate + "' and '" + toDate + "' "
+						+ " group by a.strReasonCode"
+						+ " order by a.strReasonCode;");
+					sqlQModifierBuilder.append(" and date(a.dteBillDate) Between '" + fromDate + "' and '" + toDate + "' "
+						+ " group by a.strReasonCode"
+						+ " order by a.strReasonCode;");
+
+					List listLiveCompl = objBaseService.funGetList(sbSqlLive, "sql");
+					if(listLiveCompl.size()>0)
+					{
+						for(int i=0;i<listLiveCompl.size();i++)
+						{	
+						    Object[] obj = (Object[]) listLiveCompl.get(i);
+							clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String reasonCode = obj[1].toString();
+	
+						    if (mapReasonDtl.containsKey(reasonCode))
+						    {
+							objBean = mapReasonDtl.get(reasonCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[2].toString());
+							objBean.setDblDiscountAmt(Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						}
+					}
+					
+
+					List listQfileCompl = objBaseService.funGetList(sbSqlQBill,"sql");
+					if(listQfileCompl.size()>0)
+					{
+						for(int i=0;i<listQfileCompl.size();i++)
+						{	
+						    Object[] obj = (Object[]) listQfileCompl.get(i);
+							clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String reasonCode = obj[1].toString();
+	
+						    if (mapReasonDtl.containsKey(reasonCode))
+						    {
+							objBean = mapReasonDtl.get(reasonCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[2].toString());
+							objBean.setDblDiscountAmt(Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						}
+					}
+					
+
+					List<clsPOSBillItemDtlBean> listOfComplimentaryDiscount = new ArrayList<clsPOSBillItemDtlBean>();
+					listOfComplimentaryDiscount.addAll(mapReasonDtl.values());
+
+			 
+				//for promotion
+					mapReasonDtl = new HashMap<>();
+					StringBuilder sqlLiveData = new StringBuilder();
+					StringBuilder sqlQData = new StringBuilder();
+
+					sqlLiveData.append("SELECT sum(a.dblQuantity*a.dblRate) AS Disc,a.strPromotionCode,c.strPromoName "
+						+ ",sum(a.dblQuantity*a.dblRate) AS NetRevenue,sum(b.intBillSeriesPaxNo)Pax "
+						+ "FROM tblbillpromotiondtl a,tblbillhd b,tblpromotionmaster c\n"
+						+ "WHERE a.strBillNo=b.strBillNo and a.strPromotionCode=c.strPromoCode \n"
+						+ "AND DATE(b.dteBillDate) BETWEEN '" + fromDate + "' and '" + toDate + "' ");
+
+					sqlQData.append("SELECT sum(a.dblQuantity*a.dblRate) AS Disc,a.strPromotionCode,c.strPromoName "
+						+ ",sum(a.dblQuantity*a.dblRate) AS NetRevenue,sum(b.intBillSeriesPaxNo)Pax "
+						+ "FROM tblqbillpromotiondtl a,tblqbillhd b,tblpromotionmaster c\n"
+						+ "WHERE a.strBillNo=b.strBillNo and a.strPromotionCode=c.strPromoCode \n"
+						+ "AND DATE(b.dteBillDate) BETWEEN '" + fromDate + "' and '" + toDate + "' ");
+					if (!posCode.equalsIgnoreCase("All"))
+					{
+					    sqlLiveData.append(" and b.strPOSCode='" + posCode + "' ");
+					    sqlQData.append(" and b.strPOSCode='" + posCode + "' ");
+					}
+
+					if (enableShiftYN.equalsIgnoreCase("Y"))
+					{
+					    if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					    {
+						sqlLiveData.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sqlQData.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+					    }
+					}
+					sqlLiveData.append(" group by a.strPromotionCode ");
+					sqlQData.append(" group by a.strPromotionCode ");
+
+					List listLivePromotion = objBaseService.funGetList(sqlLiveData, "sql");
+					if(listLivePromotion.size()>0)
+					{
+						for(int i=0;i<listLivePromotion.size();i++)
+						{	
+						    Object[] obj = (Object[]) listLivePromotion.get(i);
+							clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String reasonCode = obj[1].toString();
+	
+						    if (mapReasonDtl.containsKey(reasonCode))
+						    {
+							objBean = mapReasonDtl.get(reasonCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() +  Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[2].toString());
+							objBean.setDblDiscountAmt( Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal( Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						}
+					}
+			
+
+					List listQFilePromotion = objBaseService.funGetList(sqlQData, "sql");
+					if(listQFilePromotion.size()>0)
+					{
+						for(int i=0;i<listQFilePromotion.size();i++)
+						{	
+						    Object[] obj = (Object[]) listQFilePromotion.get(i);
+							clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String reasonCode = obj[1].toString();
+	
+						    if (mapReasonDtl.containsKey(reasonCode))
+						    {
+							objBean = mapReasonDtl.get(reasonCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() +  Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[2].toString());
+							objBean.setDblDiscountAmt( Double.parseDouble(obj[0].toString()));
+							objBean.setDblNetTotal( Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(reasonCode, objBean);
+						    }
+						}
+					}
+					List<clsPOSBillItemDtlBean> listOfPromotionDiscount = new ArrayList<clsPOSBillItemDtlBean>();
+					listOfPromotionDiscount.addAll(mapReasonDtl.values());
+
+				//group wise sales complimentary
+					sbSqlLive.setLength(0);
+					sbSqlQBill.setLength(0);
+
+					//live data
+					sbSqlLive.append("SELECT h.strGroupCode,h.strGroupName, SUM(b.dblRate* b.dblQuantity) AS Disc\n"
+						+ ", SUM(b.dblRate* b.dblQuantity) AS NetRevenue,sum(a.intBillSeriesPaxNo)Pax "
+						+ " FROM tblbillhd a,tblbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h\n"
+						+ " WHERE a.strBillNo = b.strBillNo AND DATE(a.dteBillDate) = DATE(b.dteBillDate) AND a.strPOSCode=e.strPosCode "
+						+ " AND b.strItemCode=f.strItemCode AND f.strSubGroupCode=g.strSubGroupCode "
+						+ " AND g.strGroupCode=h.strGroupCode ");
+
+					//Q data
+					sbSqlQBill.append("SELECT h.strGroupCode,h.strGroupName, SUM(b.dblRate* b.dblQuantity) AS Disc\n"
+						+ ", SUM(b.dblRate* b.dblQuantity) AS NetRevenue,sum(a.intBillSeriesPaxNo)Pax "
+						+ " FROM tblqbillhd a,tblqbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h\n"
+						+ " WHERE a.strBillNo = b.strBillNo AND DATE(a.dteBillDate) = DATE(b.dteBillDate) AND a.strPOSCode=e.strPosCode "
+						+ " AND b.strItemCode=f.strItemCode AND f.strSubGroupCode=g.strSubGroupCode "
+						+ " AND g.strGroupCode=h.strGroupCode ");
+					if (!posCode.equalsIgnoreCase("All"))
+					{
+					    sbSqlLive.append(" AND a.strPOSCode = '" + posCode + "' ");
+					    sbSqlQBill.append(" AND a.strPOSCode = '" + posCode + "' ");
+
+					}
+
+					if (enableShiftYN.equalsIgnoreCase("Y"))
+					{
+					    if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					    {
+						sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+
+					    }
+					}
+					sbSqlLive.append(" and date(a.dteBillDate) Between '" + fromDate + "' and '" + toDate + "' "
+						+ " group by h.strGroupCode"
+						+ " order by h.strGroupCode;");
+					sbSqlQBill.append(" and date(a.dteBillDate) Between '" + fromDate + "' and '" + toDate + "' "
+						+ " group by h.strGroupCode"
+						+ " order by h.strGroupCode;");
+
+					mapReasonDtl = new HashMap<>();
+					List listLiveGroup =objBaseService.funGetList(sbSqlLive, "sql");
+					if(listLiveGroup.size()>0)
+					{
+					    for(int i=0;i<listLiveGroup.size();i++)
+					    {	
+						    Object[] obj = (Object[]) listLiveGroup.get(i);
+					    	totalConsolidatedDiscAmt+=Double.parseDouble(obj[2].toString());
+						      
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt(Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+					    } 
+					}
+				
+
+					List listQFileGroup = objBaseService.funGetList(sbSqlQBill, "sql");
+					if(listQFileGroup.size()>0)
+					{
+					    for(int i=0;i<listQFileGroup.size();i++)
+					    {	
+						    Object[] obj = (Object[]) listQFileGroup.get(i);
+					    	totalConsolidatedDiscAmt+=Double.parseDouble(obj[2].toString());
+						      
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt(Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+					    } 
+					}
+					
+
+					//group wise sales promotions
+					sbSqlLive.setLength(0);
+					sbSqlQBill.setLength(0);
+					sqlLiveModifierBuilder.setLength(0);
+					sqlQModifierBuilder.setLength(0);
+					sbSqlLive.append("SELECT e.strGroupCode,e.strGroupName,sum(a.dblQuantity*a.dblRate) AS Disc\n"
+						+ ",sum(a.dblQuantity*a.dblRate) AS NetRevenue,sum(b.intBillSeriesPaxNo)Pax "
+						+ " FROM tblbillpromotiondtl a,tblbillhd b,tblpromotionmaster c,tblitemmaster d,tblgrouphd e,tblsubgrouphd f\n"
+						+ " WHERE a.strBillNo=b.strBillNo and a.strPromotionCode=c.strPromoCode \n"
+						+ " and a.strItemCode=d.strItemCode and d.strSubGroupCode=f.strSubGroupCode and f.strGroupCode=e.strGroupCode\n"
+						+ " AND DATE(b.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n");
+
+					sbSqlQBill.append("SELECT e.strGroupCode,e.strGroupName,sum(a.dblQuantity*a.dblRate) AS Disc\n"
+						+ ",sum(a.dblQuantity*a.dblRate) AS NetRevenue,sum(b.intBillSeriesPaxNo)Pax "
+						+ " FROM tblqbillpromotiondtl a,tblqbillhd b,tblpromotionmaster c,tblitemmaster d,tblgrouphd e,tblsubgrouphd f\n"
+						+ " WHERE a.strBillNo=b.strBillNo and a.strPromotionCode=c.strPromoCode \n"
+						+ " and a.strItemCode=d.strItemCode and d.strSubGroupCode=f.strSubGroupCode and f.strGroupCode=e.strGroupCode\n"
+						+ " AND DATE(b.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n");
+
+					if (!posCode.equalsIgnoreCase("All"))
+					{
+					    sbSqlLive.append(" and b.strPOSCode='" + posCode + "' ");
+					    sbSqlQBill.append(" and b.strPOSCode='" + posCode + "' ");
+
+					}
+
+					if (enableShiftYN.equalsIgnoreCase("Y"))
+					{
+					    if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					    {
+						sbSqlLive.append(" and b.intShiftCode = '" + strShiftNo + "' ");
+						sbSqlQBill.append(" and b.intShiftCode = '" + strShiftNo + "' ");
+
+					    }
+					}
+					sbSqlLive.append(" GROUP BY e.strGroupCode, e.strGroupName");
+					sbSqlQBill.append(" GROUP BY e.strGroupCode, e.strGroupName");
+
+					listLiveGroup = objBaseService.funGetList(sbSqlLive, "sql");
+					if(listLiveGroup.size()>0)
+					{
+						for(int i=0;i<listLiveGroup.size();i++)
+						{	
+						    Object[] obj = (Object[]) listLiveGroup.get(i);
+							totalConsolidatedDiscAmt+=Double.parseDouble(obj[2].toString());
+						    
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() +  Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt( Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal( Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						}
+					}
+					
+					listQFileGroup = objBaseService.funGetList(sbSqlQBill, "sql");
+					if(listQFileGroup.size()>0)
+					{
+						for(int i=0;i<listQFileGroup.size();i++)
+						{	
+						    Object[] obj = (Object[]) listQFileGroup.get(i);
+							totalConsolidatedDiscAmt+=Double.parseDouble(obj[2].toString());
+						    
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() +  Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt( Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal( Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						}
+					}
+					//group wise sales data
+					sbSqlLive.setLength(0);
+					sbSqlQBill.setLength(0);
+					sqlLiveModifierBuilder.setLength(0);
+					sqlQModifierBuilder.setLength(0);
+					sbSqlLive.append("SELECT c.strGroupCode,c.strGroupName,SUM(b.dblDiscountAmt)Disc\n"
+						+ ",sum(b.dblAmount)-sum(b.dblDiscountAmt)NetRevenue,sum(a.intBillSeriesPaxNo)Pax "
+						+ " FROM tblbillhd a,tblbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f\n"
+						+ " WHERE a.strBillNo=b.strBillNo AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+						+ " AND a.strPOSCode=f.strPOSCode AND a.strClientCode=b.strClientCode \n"
+						+ " AND b.strItemCode=e.strItemCode AND d.strSubGroupCode=e.strSubGroupCode AND c.strGroupCode=d.strGroupCode\n"
+						+ " AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n");
+					sbSqlQBill.append("SELECT c.strGroupCode,c.strGroupName,SUM(b.dblDiscountAmt)Disc\n"
+						+ ",sum(b.dblAmount)-sum(b.dblDiscountAmt)NetRevenue,sum(a.intBillSeriesPaxNo)Pax "
+						+ " FROM tblqbillhd a,tblqbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f\n"
+						+ " WHERE a.strBillNo=b.strBillNo AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+						+ " AND a.strPOSCode=f.strPOSCode AND a.strClientCode=b.strClientCode \n"
+						+ " AND b.strItemCode=e.strItemCode AND d.strSubGroupCode=e.strSubGroupCode AND c.strGroupCode=d.strGroupCode\n"
+						+ " AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'");
+
+					if (!posCode.equalsIgnoreCase("All"))
+					{
+					    sbSqlLive.append(" and a.strPOSCode='" + posCode + "' ");
+					    sbSqlQBill.append(" and a.strPOSCode='" + posCode + "' ");
+
+					}
+
+					if (enableShiftYN.equalsIgnoreCase("Y"))
+					{
+					    if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					    {
+						sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+
+					    }
+					}
+					sbSqlLive.append(" GROUP BY c.strGroupCode, c.strGroupName");
+					sbSqlQBill.append(" GROUP BY c.strGroupCode, c.strGroupName");
+
+					listLiveGroup = objBaseService.funGetList(sbSqlLive, "sql");
+					if(listLiveGroup.size()>0)
+					{
+						for(int i=0;i<listLiveGroup.size();i++)
+						{	
+						    Object[] obj = (Object[]) listLiveGroup.get(i);
+							totalSalesNetTotal += Double.parseDouble(obj[3].toString());
+						    totalConsolidatedDiscAmt+=Double.parseDouble(obj[2].toString());
+	
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt(Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						}  
+					}
+				
+					listQFileGroup = objBaseService.funGetList(sbSqlQBill, "sql");
+					if(listQFileGroup.size()>0)
+					{
+						for(int i=0;i<listQFileGroup.size();i++)
+						{	
+						    Object[] obj = (Object[]) listQFileGroup.get(i);
+							totalSalesNetTotal += Double.parseDouble(obj[3].toString());
+						    totalConsolidatedDiscAmt+=Double.parseDouble(obj[2].toString());
+	
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() + Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() + Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt(Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						}  
+					}
+					//group wise sales modifiers
+					sbSqlLive.setLength(0);
+					sbSqlQBill.setLength(0);
+					sqlLiveModifierBuilder.setLength(0);
+					sqlQModifierBuilder.setLength(0);
+					sbSqlLive.append("SELECT c.strGroupCode,c.strGroupName,SUM(b.dblDiscAmt)Disc\n"
+						+ ",sum(b.dblAmount)-sum(b.dblDiscAmt)NetRevenue,0 Pax\n"
+						+ " FROM tblbillhd a,tblbillmodifierdtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f\n"
+						+ " WHERE a.strBillNo=b.strBillNo \n"
+						+ " AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+						+ " AND a.strPOSCode=f.strPOSCode \n"
+						+ " AND a.strClientCode=b.strClientCode \n"
+						+ " AND left(b.strItemCode,7)=e.strItemCode \n"
+						+ " AND d.strSubGroupCode=e.strSubGroupCode \n"
+						+ " AND c.strGroupCode=d.strGroupCode "
+						+ " AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n");
+					sbSqlQBill.append("SELECT c.strGroupCode,c.strGroupName,SUM(b.dblDiscAmt)Disc\n"
+						+ ",sum(b.dblAmount)-sum(b.dblDiscAmt)NetRevenue,0 Pax\n"
+						+ " FROM tblqbillhd a,tblqbillmodifierdtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f\n"
+						+ " WHERE a.strBillNo=b.strBillNo \n"
+						+ " AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+						+ " AND a.strPOSCode=f.strPOSCode \n"
+						+ " AND a.strClientCode=b.strClientCode \n"
+						+ " AND left(b.strItemCode,7)=e.strItemCode \n"
+						+ " AND d.strSubGroupCode=e.strSubGroupCode \n"
+						+ " AND c.strGroupCode=d.strGroupCode "
+						+ " AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n");
+
+					if (!posCode.equalsIgnoreCase("All"))
+					{
+					    sbSqlLive.append(" and a.strPOSCode='" + posCode + "' ");
+					    sbSqlQBill.append(" and a.strPOSCode='" + posCode + "' ");
+
+					}
+
+					if (enableShiftYN.equalsIgnoreCase("Y"))
+					{
+					    if (enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+					    {
+						sbSqlLive.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+						sbSqlQBill.append(" and a.intShiftCode = '" + strShiftNo + "' ");
+
+					    }
+					}
+					sbSqlLive.append(" GROUP BY c.strGroupCode, c.strGroupName");
+					sbSqlQBill.append(" GROUP BY c.strGroupCode, c.strGroupName");
+
+					listLiveGroup = objBaseService.funGetList(sbSqlLive, "sql");
+					if(listLiveGroup.size()>0)
+					{
+						for(int i=0;i<listLiveGroup.size();i++)
+						{	
+						    Object[] obj = (Object[]) listLiveGroup.get(i);
+							totalSalesNetTotal += Double.parseDouble(obj[3].toString());
+						     totalConsolidatedDiscAmt+= Double.parseDouble(obj[2].toString());
+	
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() +  Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() +  Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt( Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal( Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						}
+					}
+			
+
+					listQFileGroup = objBaseService.funGetList(sbSqlQBill,"sql");
+					if(listQFileGroup.size()>0)
+					{
+						for(int i=0;i<listQFileGroup.size();i++)
+						{	
+						    Object[] obj = (Object[]) listQFileGroup.get(i);
+							totalSalesNetTotal += Double.parseDouble(obj[3].toString());
+						     totalConsolidatedDiscAmt+= Double.parseDouble(obj[2].toString());
+	
+						    clsPOSBillItemDtlBean objBean = new clsPOSBillItemDtlBean();
+	
+						    String groupCode = obj[0].toString();
+	
+						    if (mapReasonDtl.containsKey(groupCode))
+						    {
+							objBean = mapReasonDtl.get(groupCode);
+	
+							objBean.setDblDiscountAmt(objBean.getDblDiscountAmt() +  Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal(objBean.getDblNetTotal() +  Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(objBean.getIntBillSeriesPaxNo() + Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						    else
+						    {
+							objBean = new clsPOSBillItemDtlBean();
+							objBean.setStrReasonName(obj[1].toString());
+							objBean.setDblDiscountAmt( Double.parseDouble(obj[2].toString()));
+							objBean.setDblNetTotal( Double.parseDouble(obj[3].toString()));
+							objBean.setIntBillSeriesPaxNo(Integer.parseInt(obj[4].toString()));
+	
+							mapReasonDtl.put(groupCode, objBean);
+						    }
+						}
+					}
+			
+					
+					double groupTotal = 0.0;
+					List<clsPOSBillItemDtlBean> listOfGroup = new ArrayList<clsPOSBillItemDtlBean>();
+					listOfGroup.addAll(mapReasonDtl.values());
+
+					double netRevenuePer = 0.0;
+					netRevenuePer = totalConsolidatedDiscAmt / totalSalesNetTotal * 100;
+					
+					hm.put("listOfComplimentaryDiscount", listOfComplimentaryDiscount);
+					hm.put("listOfPromotionDiscount", listOfPromotionDiscount);
+					hm.put("listOfDiscount", listOfDiscount);
+					hm.put("consolidateDisc", Math.rint(totalConsolidatedDiscAmt));
+					hm.put("netRevenue", Math.rint(totalSalesNetTotal));
+					hm.put("groupTotal", Math.rint(groupTotal));
+					hm.put("listOfGroupWiseDiscount", listOfGroup);
+			 
+				  
+				
+					
+				
+		    }
+		
+		return hm;
+		
+	}
+	
+	public List funReprintDocsDtailReport(String fromDate,String toDate,String strType,String userName,String documentNo,String type) throws Exception
+	{
+		List<clsReprintDocs> listOfReprintTextData = new ArrayList<>();
+		if(type.equalsIgnoreCase("Detail"))
+		{
+			StringBuilder sqlQData = new StringBuilder();
+			sqlQData.setLength(0);
+			sqlQData.append("select a.strBillNo,DATE_FORMAT(b.dtePOSDate,'%m-%d-%Y'),b.strUserCreated,ifnull(c.strReasonName,''),\n"
+				+ " b.strRemarks,a.dblGrandTotal,\n"
+				+ "time(b.dtePOSDate)  from tblbillhd a,tblaudit b left outer join tblreasonmaster c  \n"
+				+ "on b.strReasonCode=c.strReasonCode  "
+				+ " where a.strBillNo=b.strDocNo  "
+				+ " and date(b.dtePOSDate) between '" + fromDate + "' and '" + toDate + "' ");
+
+			if (!userName.equals("All"))
+			{
+			    sqlQData.append(" and b.strUserCreated='" + userName + "'");
+			}
+			if (!documentNo.equals("All"))
+			{
+			    sqlQData.append(" and b.strDocNo='" + documentNo + "'");
+			}
+			List listSettlementWiseQData = objBaseService.funGetList(sqlQData, "sql");
+
+			if(listSettlementWiseQData.size()>0)
+			{
+				for(int i=0;i<listSettlementWiseQData.size();i++)
+				{	
+				Object[] obj = (Object[]) listSettlementWiseQData.get(i);	
+				clsReprintDocs objReprint = new clsReprintDocs();
+			    objReprint.setBillNo(obj[0].toString());
+			    objReprint.setDate(obj[1].toString());
+			    objReprint.setUser(obj[2].toString());
+			    objReprint.setReason(obj[3].toString());
+			    objReprint.setRemark(obj[4].toString());
+			    objReprint.setTotal(Double.parseDouble(obj[5].toString()));
+			    objReprint.setTime(obj[6].toString());
+			    listOfReprintTextData.add(objReprint);
+				}
+			}
+			
+			
+			sqlQData.setLength(0);
+			sqlQData.append("select a.strBillNo,DATE_FORMAT(b.dtePOSDate,'%m-%d-%Y'),b.strUserCreated,ifnull(c.strReasonName,''),\n"
+				+ " b.strRemarks,a.dblGrandTotal,\n"
+				+ "time(b.dtePOSDate)  from tblqbillhd a,tblaudit b left outer join tblreasonmaster c  \n"
+				+ "on b.strReasonCode=c.strReasonCode  "
+				+ " where a.strBillNo=b.strDocNo  "
+				+ " and date(b.dtePOSDate) between '" + fromDate + "' and '" + toDate + "' ");
+
+			if (!userName.equals("All"))
+			{
+			    sqlQData.append(" and b.strUserCreated='" + userName + "'");
+			}
+			if (!documentNo.equals("All"))
+			{
+			    sqlQData.append(" and b.strDocNo='" + documentNo + "'");
+			}
+			listSettlementWiseQData = objBaseService.funGetList(sqlQData, "sql");
+
+			if(listSettlementWiseQData.size()>0)
+			{
+				for(int i=0;i<listSettlementWiseQData.size();i++)
+				{	
+				Object[] obj = (Object[]) listSettlementWiseQData.get(i);	
+				clsReprintDocs objReprint = new clsReprintDocs();
+			    objReprint.setBillNo(obj[0].toString());
+			    objReprint.setDate(obj[1].toString());
+			    objReprint.setUser(obj[2].toString());
+			    objReprint.setReason(obj[3].toString());
+			    objReprint.setRemark(obj[4].toString());
+			    objReprint.setTotal(Double.parseDouble(obj[5].toString()));
+			    objReprint.setTime(obj[6].toString());
+			    listOfReprintTextData.add(objReprint);
+				}
+			}
+
+		}
+		else
+		{
+			StringBuilder sqlQData = new StringBuilder();
+
+			sqlQData.setLength(0);
+			sqlQData.append("select  a.strBillNo,DATE_FORMAT(b.dtePOSDate,'%m-%d-%Y'),b.strUserCreated,a.dblGrandTotal,count(*)as count \n"
+				+ "from tblbillhd a,tblaudit b left outer join tblreasonmaster c on b.strReasonCode=c.strReasonCode  where a.strBillNo=b.strDocNo  "
+				+ " and date(b.dtePOSDate) between '" + fromDate + "' and '" + toDate + "'");
+			if (!userName.equals("All"))
+			{
+			    sqlQData.append(" and b.strUserCreated='" + userName + "'");
+			}
+			if (!documentNo.equals("All"))
+			{
+			    sqlQData.append(" and b.strDocNo='" + documentNo + "'");
+			}
+			sqlQData.append(" group by a.strBillNo,b.strUserCreated ");
+
+			List listSettlementWiseQData = objBaseService.funGetList(sqlQData, "sql");
+
+			if(listSettlementWiseQData.size()>0)
+			{
+				for(int i=0;i<listSettlementWiseQData.size();i++)
+				{	
+				Object[] obj = (Object[]) listSettlementWiseQData.get(i);	
+			    clsReprintDocs objReprint = new clsReprintDocs();
+			    objReprint.setBillNo(obj[0].toString());
+			    objReprint.setDate(obj[1].toString());
+			    objReprint.setUser(obj[2].toString());
+			    objReprint.setTotal(Double.parseDouble(obj[3].toString()));
+			    objReprint.setCount(Integer.parseInt(obj[4].toString()));
+			    listOfReprintTextData.add(objReprint);
+				}
+			}
+			sqlQData.setLength(0);
+			sqlQData.append("select  a.strBillNo,DATE_FORMAT(b.dtePOSDate,'%m-%d-%Y'),b.strUserCreated,a.dblGrandTotal,count(*)as count \n"
+				+ "from tblqbillhd a,tblaudit b left outer join tblreasonmaster c on b.strReasonCode=c.strReasonCode where a.strBillNo=b.strDocNo  "
+				+ " and date(b.dtePOSDate) between '" + fromDate + "' and '" + toDate + "'");
+			if (!userName.equals("All"))
+			{
+			    sqlQData.append(" and b.strUserCreated='" + userName + "'");
+			}
+			if (!documentNo.equals("All"))
+			{
+			    sqlQData.append(" and b.strDocNo='" + documentNo + "'");
+			}
+			sqlQData.append(" group by a.strBillNo,b.strUserCreated ");
+			listSettlementWiseQData = objBaseService.funGetList(sqlQData, "sql");
+
+			if(listSettlementWiseQData.size()>0)
+			{
+				for(int i=0;i<listSettlementWiseQData.size();i++)
+				{	
+				Object[] obj = (Object[]) listSettlementWiseQData.get(i);	
+			    clsReprintDocs objReprint = new clsReprintDocs();
+			    objReprint.setBillNo(obj[0].toString());
+			    objReprint.setDate(obj[1].toString());
+			    objReprint.setUser(obj[2].toString());
+			    objReprint.setTotal(Double.parseDouble(obj[3].toString()));
+			    objReprint.setCount(Integer.parseInt(obj[4].toString()));
+			    listOfReprintTextData.add(objReprint);
+				}
+			}
+
+		}
+		
+		return listOfReprintTextData;
+		
+	}
+	
+	
 }

@@ -34,8 +34,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsSetupService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
+import com.sanguine.webpos.model.clsShiftMasterModel;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
@@ -43,7 +45,6 @@ import com.sanguine.webpos.sevice.clsPOSReportService;
 @Controller
 public class clsPOSVoidKOTReportController {
 
-	
 	@Autowired
 	private clsGlobalFunctions objGlobalFunctions;
 	
@@ -59,12 +60,16 @@ public class clsPOSVoidKOTReportController {
 	@Autowired
 	private clsPOSReportService objReportService;
 	
+	@Autowired
+	private clsSetupService objSetupService;
+	
 	private Map<String,String> map = new HashMap<String,String>();
 	
 	@RequestMapping(value = "/frmPOSVoidKOTReport", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
 	{
 		String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+		String POSCode=request.getSession().getAttribute("loginPOS").toString();	
 		String urlHits="1";
 		try{
 			urlHits=request.getParameter("saddr").toString();
@@ -92,6 +97,22 @@ public class clsPOSVoidKOTReportController {
 		listReportSubType.add("Move KOT");
 		model.put("listReportSubType",listReportSubType);
 		
+		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+		model.put("gEnableShiftYN",objSetupParameter.get("gEnableShiftYN").toString());
+		
+		List shiftList = new ArrayList();
+		shiftList.add("All");
+		List listShiftData = objReportService.funGetPOSWiseShiftList(POSCode,request);
+		if(listShiftData!=null)
+		{
+			for(int cnt=0;cnt<listShiftData.size();cnt++)
+			{
+				clsShiftMasterModel objShiftModel= (clsShiftMasterModel) listShiftData.get(cnt);
+				listReportSubType.add(objShiftModel.getIntShiftCode());
+			}
+		}
+		model.put("shiftList",listReportSubType);
+		
 		String posDate=request.getSession().getAttribute("gPOSDate").toString();
 		request.setAttribute("POSDate", posDate);
 	
@@ -115,10 +136,12 @@ public class clsPOSVoidKOTReportController {
 		
 		try
 		{
-		
+		String strClientCode = req.getSession().getAttribute("gClientCode").toString();
+		String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 		String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptVoidKOTReport.jrxml");
 		InputStream subReportName = this.getClass().getClassLoader().getResourceAsStream("/WEB-INF/reports/webpos/rptVoidKOTSubReportForWaiterWiseVoidedKOT.jrxml");
 		
+
 		Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 		String reportSubType = objBean.getStrReportType();
 		String strPOSName = objBean.getStrPOSName();
@@ -134,6 +157,11 @@ public class clsPOSVoidKOTReportController {
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
 		String strShiftNo = "1";
+		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, POSCode, "gEnableShiftYN");
+		if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+		{
+			strShiftNo=objBean.getStrShiftCode();
+		}
 		hm.put("rptVoidKOTSubReportForWaiterWiseVoidedKOT", subReportName);
 		
 		DecimalFormat decimalFormat2Decimal = new DecimalFormat("0.00");

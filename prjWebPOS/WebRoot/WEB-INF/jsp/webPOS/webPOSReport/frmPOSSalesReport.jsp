@@ -25,7 +25,7 @@
 }
 </style>
 <script type="text/javascript">
-var gEnableShiftYN="${gEnableShiftYN}";
+    var gEnableShiftYN="${gEnableShiftYN}";
 	$(document).ready(function() {
 		document.all["divBillWise"].style.display = 'block';
 		$(".tab_content").hide();
@@ -49,7 +49,6 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		{
 			document.getElementById("lblShift").style.visibility = "hidden";
 			document.getElementById("txtShiftCode").style.visibility = "hidden"; 
-			
 		}
 
 	});
@@ -57,8 +56,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 	$(function() {
 
 		//	funSetDate();
-		var POSDate = "${POSDate}"
-		//2016-11-05
+		var POSDate = "${POSDate}";
 		var startDate = "${POSDate}";
 		var Date = startDate.split(" ");
 		var arr = Date[0].split("-");
@@ -306,7 +304,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadSettlementWiseSalesReport.html?POSName=" + POSName
@@ -404,7 +402,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadBillWiseSalesReport.html?POSName=" + POSName
@@ -587,7 +585,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadItemWiseSalesReport.html?POSName=" + POSName
@@ -709,7 +707,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadMenuHeadWiseSalesReport.html?POSName=" + POSName
@@ -835,7 +833,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadGroupWiseSalesReport.html?POSName=" + POSName
@@ -961,7 +959,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadSubGroupWiseSalesReport.html?POSName=" + POSName
@@ -1087,7 +1085,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadCustWiseSalesReport.html?POSName=" + POSName
@@ -1187,7 +1185,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadWaiterWiseSalesReport.html?POSName=" + POSName
@@ -1286,7 +1284,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadDeliveryBoyWiseSalesReport.html?POSName=" + POSName
@@ -1384,7 +1382,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadCostCenterWiseSalesReport.html?POSName=" + POSName
@@ -1512,7 +1510,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadHomeDelWiseSalesReport.html?POSName=" + POSName
@@ -1654,7 +1652,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadTableWiseSalesReport.html?POSName=" + POSName
@@ -1746,7 +1744,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadHourlyWiseSalesReport.html?POSName=" + POSName
@@ -1843,7 +1841,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadAreaWiseSalesReport.html?POSName=" + POSName
@@ -1935,7 +1933,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadDayWiseSalesReport.html?POSName=" + POSName
@@ -2062,7 +2060,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadTaxWiseSalesReport.html?POSName=" + POSName
@@ -2178,7 +2176,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadTipWiseSalesReport.html?POSName=" + POSName
@@ -2331,7 +2329,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadItemModifierWiseSalesReport.html?POSName=" + POSName
@@ -2427,7 +2425,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 				});
 	}
 
-	/*fill MenuHead Wise With Modifier SalesReport wise data */
+	/*fill MenuHead Wise With Modifier SalesReport wise data *///
 	function funLoadMenuHeadWiseWithModifierSalesReport(divID, POSName,
 			FromDate, ToDate, Operator, PayMode, txtFromBillNo, txtToBillNo,
 			txtReportType, txtType, txtCustomer, chkConsolidatePOS,
@@ -2435,7 +2433,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadMenuHeadWiseWithModSalesReport.html?POSName=" + POSName
@@ -2537,7 +2535,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadItemHourlyWiseSalesReport.html?POSName=" + POSName
@@ -2644,7 +2642,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadOperstorWiseSalesReport.html?POSName=" + POSName
@@ -2756,7 +2754,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
 		var searchurl = getContextPath()
 				+ "/loadMonthlyWiseSalesReport.html?POSName=" + POSName
@@ -2875,12 +2873,12 @@ var gEnableShiftYN="${gEnableShiftYN}";
 		var txtCustomer = document.getElementById("txtCustomer").value;
 		var chkConsolidatePOS = document.getElementById("chkConsolidatePOS").checked;
 		var txtOperationType = document.getElementById("txtOperationType").value;
-		var txtAreaCode = document.getElementById("txtAreaCode").value;
+		var shiftCode=document.getElementById("txtShiftCode").value;
 		
 		var shiftCode='1';
 		if(gEnableShiftYN=='Y')
 		{
-			shiftCode=document.getElementById("txtAreaCode").value;
+			shiftCode=document.getElementById("txtShiftCode").value;
 		}
  	}
 	*/
@@ -4322,6 +4320,7 @@ var gEnableShiftYN="${gEnableShiftYN}";
 
 				</table>
 			</div>
+			
 		</div>
 
 	</s:form>

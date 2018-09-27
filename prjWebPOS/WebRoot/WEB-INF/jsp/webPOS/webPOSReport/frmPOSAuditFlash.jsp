@@ -52,7 +52,7 @@
 <script type="text/javascript">
 
 
-	
+var gEnableShiftYN="${gEnableShiftYN}";
 	$(document).ready(function() {
 		var message='';
 		<%if (session.getAttribute("success") != null) {
@@ -77,20 +77,22 @@
 		});
 
 		 $(function() 
-	    			{		
-		 var POSDate="${POSDate}"
-			    var startDate="${POSDate}";
-			  	var Date = startDate.split(" ");
-				var arr = Date[0].split("-");
-				Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
-				$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
-				$("#txtFromDate" ).datepicker('setDate', Dat); 
-				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-				$("#txtToDate" ).datepicker('setDate', Dat); 
- 				
-	    			
-				funLoadTableData();
-	    			}); 
+	    {		
+	    var POSDate="${POSDate}"
+	    var startDate="${POSDate}";
+	  	var Date = startDate.split(" ");
+		var arr = Date[0].split("-");
+		Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
+		$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
+		$("#txtFromDate" ).datepicker('setDate', Dat); 
+		$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+		$("#txtToDate" ).datepicker('setDate', Dat); 
+			
+   			
+		funLoadTableData();
+		
+		
+	    }); 
 		
 		$("[type='reset']").click(function(){
 			location.reload(true);
@@ -300,6 +302,17 @@
 		}
 	});
 
+	if(gEnableShiftYN=='Y')
+	{
+		document.getElementById("lblShift").style.visibility = "visible"; 
+		document.getElementById("txtShiftCode").style.visibility = "visible"; 
+	}
+	else
+	{
+		document.getElementById("lblShift").style.visibility = "hidden";
+		document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+		
+	}
 
 });
 
@@ -391,7 +404,7 @@
 					 
 				$.each(response.listArr,function(i,item){
 		            	
-						funFillTableWith10Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10]);
+						funFillTableWith11Col(item[0],item[1],item[2],item[3],item[4].toFixed(2),item[5].toFixed(2),item[6].toFixed(2),item[7],item[8],item[9],item[10]);
 	            	});
 			   }	
 				   else
@@ -412,14 +425,14 @@
 					 
 				$.each(response.listArr,function(i,item){
 		            	
-						funFillTableWith8Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10]);
+						funFillTableWith11Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7].toFixed(2),item[8],item[9],item[10]);
 	            	});
 			   }
 				   else
 				   {	
 						$.each(response.listArr,function(i,item){
 				            	
-								funFillTableWith10Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10],item[11],item[12]);
+								funFillTableWith12Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10],item[11],item[12]);
 			            	});
 							
 					   }
@@ -452,7 +465,7 @@
 							 
 						$.each(response.listArr,function(i,item){
 				            	
-								funFillTableWith8Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7]);
+								funFillTableWith8Col(item[0],item[1],item[2],item[3],item[4],item[5].toFixed(2),item[6],item[7]);
 			            	});
 							
 						funFillTotalData(response.totalList);   
@@ -465,7 +478,7 @@
 							 
 						$.each(response.listArr,function(i,item){
 				            	
-								funFillTableWith10Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]);
+								funFillTableWith10Col(item[0],item[1],item[2],item[3],item[4],item[5].toFixed(2),item[6],item[7],item[8],item[9]);
 			            	});
 							}
 						   else
@@ -496,7 +509,7 @@
 						{	 
 						$.each(response.listArr,function(i,item){
 				            	
-								funFillTableWith9Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],itemp[8]);
+								funFillTableWith9Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8]);
 			            	});
 						}
 						else
@@ -516,7 +529,7 @@
 							 
 						$.each(response.listArr,function(i,item){
 				            	
-								funFillTableWith9Col(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8]);
+								funFillTableWith9Col(item[0],item[1],item[2],item[3],item[4],item[5].toFixed(2),item[6],item[7],item[8]);
 			            	});
 							}
 						   else
@@ -533,8 +546,9 @@
 					{
 						$.each(response.listArr,function(i,item){
 			            	
-							funFillTableWith6Col(item[0],item[1],item[2],item[3],item[4],item[5]);
+							funFillTableWith6Col(item[0],item[1],item[2],item[3].toFixed(2),item[4],item[5].toFixed(2));
 		            	});	
+						funFillTotalData(response.totalList);
 					}	
 		
 			 }	
@@ -573,7 +587,14 @@
 	    for(var i=0;i<rowData.length;i++)
 	    	 {
 	   		
-	 	   			row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" class=\"cell\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
+	    	if(typeof rowData[i] == 'number')
+	    	{
+	    		row.insertCell(i).innerHTML = "<input readonly=\"readonly\" class=\"cell\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i].toFixed(2)+"' />";
+	    	}	
+	    	else
+	    	{
+	    		row.insertCell(i).innerHTML = "<input readonly=\"readonly\" class=\"cell\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
+	    	}
 	   		
 	   		 }
 		
@@ -732,74 +753,72 @@
 	
 	<s:form name="POSAuditFlash" method="POST"
 		action="processAuditFlash.html?saddr=${urlHits}"
-		target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+		target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 		
 		<div class="title" >
 				
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
 								<s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" items="${posList}" >
 				 				</s:select>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
+		    					<label class="title">User</label>
+		    				</div>
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
+								<s:select id="cmbUserName" name="cmbUserName" path="strSGName" items="${userList}" />
+							</div>
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">From Date</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
 								<s:input  id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">To Date</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 17%;"> 
 								<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}"  style="width: 100%;"/>	
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
-		    					<label class="title">User</label>
-		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
-								<s:select id="cmbUserName" name="cmbUserName" path="strSGName" items="${userList}" />
-							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
+							
+							<div class="element-input col-lg-6" style="width: 8%;"> 
 		    					<label class="title">Type</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
 								<s:select id="cmbType" path="strType" >
 				    				<s:option value="All">All</s:option>
 				    				<s:option value="Full Void">Full Void</s:option>
 				    				<s:option value="Item Void">Item Void</s:option>
 				    			</s:select>
 							</div>
+							<div class="element-input col-lg-6" style="width: 8%;"> 
+		    					<label class="title">Reason</label>
+		    				</div>
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
+								<s:select id="cmbReason" name="cmbReason" path="strReasonMaster" items="${ReasonMasterList}" />
+							</div>
 							<div class="element-input col-lg-6" style="width: 15%;"> 
+								<s:select id="cmbReportType" name="cmbReportType" path="strReportType" items="${listType}"/>
+							</div>
+							<div class="element-input col-lg-6" style="width: 5.5%;"> 
 		    					<label class="title">Sort</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
+		    				<div class="element-input col-lg-6" style="width: 17%;"> 
 								<s:select id="cmbSorting" name="cmbSorting" path="strSort" items="${listSorting}"/>
+							</div>
+							<div class="element-input col-lg-6" style="width: 15%;"> 
+								<input type="submit" value="EXPORT" id="submit" />
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
-		    					<label class="title">Reason</label>
-		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 20%;"> 
-								<s:select id="cmbReason" name="cmbReason" path="strReasonMaster" items="${ReasonMasterList}" />
-							</div>
-							<div class="element-input col-lg-6" style="width: 20%;"> 
-								<s:select id="cmbReportType" name="cmbReportType" path="strReportType" items="${listType}"/>
-							</div>
-							<div class="element-input col-lg-6" style="width: 20%;"> 
-								<input type="submit" value="EXPORT" id="submit" />
-							</div>
-		    		</div>
-		    		
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
-							<div style="border: 1px solid #ccc; display: block; height: 200px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
+							<div style="border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblAuditFlash" style="width: 100%; text-align: center !important;">
 								
@@ -811,10 +830,10 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
-							<div style="border: 1px solid #ccc; display: block; height: 100px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
+							<div style="border: 1px solid #ccc; display: block; height: 60px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
-								<table id="tblTotal" style="width: 100%; text-align: center !important;">
+								<table id="tblTotal" style="width: 100%; text-align: center !important;margin-top: 3px;">
 								
 									<tbody style="border-top: none;">
 									</tbody>
@@ -824,33 +843,25 @@
 							</div>
 					</div>
 		    		
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
 		    			
 		    				<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%;">
 					  		
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Modified Bill" id="btnSubmit1" /> </div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Voided Bill" id="btnSubmit2" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Voided Advanced Order" id="btnSubmit3" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Line Void" id="btnSubmit4" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Voided KOT" id="btnSubmit5" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Modified Bill" id="btnSubmit1" /> </div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Voided Bill" id="btnSubmit2" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Voided Advanced Order" id="btnSubmit3" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Line Void" id="btnSubmit4" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Voided KOT" id="btnSubmit5" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Time Audit" id="btnSubmit6" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="KOT Analysis" id="btnSubmit7" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Moved KOT" id="btnSubmit8" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Waiter Audit" id="btnSubmit9" /></div>
 								
 			  		  		</div>
 			  		  </div>
-			  		  	
-			  		  <div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+
 			  		  
-			  		  		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%;">
-					  			
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Time Audit" id="btnSubmit6" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="KOT Analysis" id="btnSubmit7" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Moved KOT" id="btnSubmit8" /></div>
-								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 18%;"><input type="button" value="Waiter Audit" id="btnSubmit9" /></div>
-								
-					  		</div>
-			  		 
-			  		  </div>
-			  		  
-			  		  <div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px;">
+			  		  <div class="row" style="background-color: #fff; display:block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 			  		  			<s:input type="hidden" id="txtAuditType" name="txtAuditType" path="strPSPCode" />
 							</div>
@@ -862,108 +873,7 @@
 					
 		</div>
 		
-		
-<!-- 		<div> -->
-<!-- 			<div> -->
 
-<!-- 				<table class="masterTable" style="margin:auto;"> -->
-
-<!-- 					<tr> -->
-<!-- 						<td width="140px">POS Name</td> -->
-<%-- 						<td><s:select id="cmbPOSName" name="cmbPOSName" --%>
-<%-- 								path="strPOSName" cssClass="BoxW124px" items="${posList}"> --%>
-
-<%-- 							</s:select></td> --%>
-<!-- 							<td><label>User</label></td> -->
-<!-- 							<td > -->
-<%-- 						<s:select id="cmbUserName" name="cmbUserName" path="strSGName" cssClass="BoxW124px" items="${userList}"> --%>
-<%-- 					</s:select> --%>
-<!-- 					</td> -->
- 						
-<!-- 						<td><label>From Date</label></td> -->
-<%-- 						<td><s:input id="txtFromDate" required="required" --%>
-<%-- 								path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" --%>
-<%-- 								cssClass="calenderTextBox" /></td> --%>
-
-<!-- 						<td><label>To Date</label></td> -->
-<%-- 						<td><s:input id="txtToDate" required="required" path="toDate" --%>
-<%-- 								pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox" /></td> --%>
- 		
- 						
-<!-- 					</tr> -->
-<!-- 					<tr> -->
-<!-- 						<td><label>Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbType" path="strType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="All">All</s:option> --%>
-<%-- 				    		<s:option value="Full Void">Full Void</s:option> --%>
-<%-- 				    		<s:option value="Item Void">Item Void</s:option> --%>
-				    		
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 						<td><label>Reason</label></td> -->
-<!-- 					<td> -->
-<%-- 						<s:select id="cmbReason" name="cmbReason" path="strReasonMaster" cssClass="BoxW124px" items="${ReasonMasterList}"> --%>
-<%-- 						</s:select>  --%>
-<%-- 						<s:select id="cmbReportType" name="cmbReportType" path="strReportType" cssClass="BoxW124px" items="${listType}"/> --%>
-<!-- 					</td> -->
-<!-- 					<td><label>Sort</label></td> -->
-<%-- 					<td><s:select id="cmbSorting" name="cmbSorting" path="strSort" cssClass="BoxW124px" items="${listSorting}"/></td> --%>
-<!-- 					<td></td> -->
-<!-- 					<td><input type="submit" value="Export" -->
-<!-- 				class="form_button" id="submit" /></td> -->
-						
-<!-- 					</tr> -->
-
-<!-- 				</table> -->
-<!-- 			</div> -->
-			
-<!-- 			<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-<!-- 				<table id="tblAuditFlash" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-				
-<!-- 			</div> -->
-<!-- 			<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 50px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-	
-<!-- 				<table id="tblTotal" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="button" value="Modified Bill" class="form_button" -->
-<!-- 				id="btnSubmit1" />   -->
-<!-- 				<input type="button" value="Voided Bill" class="form_button" -->
-<!-- 				id="btnSubmit2" />   -->
-<!-- 				<input type="button" value="Voided Advanced Order" class="form_button" -->
-<!-- 				id="btnSubmit3" />   -->
-<!-- 				<input type="button" value="Line Void" class="form_button" -->
-<!-- 				id="btnSubmit4" />   -->
-<!-- 				<input type="button" value="Voided KOT" class="form_button" -->
-<!-- 				id="btnSubmit5" />   -->
-<!-- 				<input type="button" value="Time Audit" class="form_button" -->
-<!-- 				id="btnSubmit6" />   -->
-<!-- 				<input type="button" value="KOT Analysis" class="form_button" -->
-<!-- 				id="btnSubmit7" />   -->
-<!-- 				<input type="button" value="Moved KOT" class="form_button" -->
-<!-- 				id="btnSubmit8" />   -->
-<!-- 				<input type="button" value="Waiter Audit" class="form_button" -->
-<!-- 				id="btnSubmit9" />   -->
-<!-- 		</p> -->
-<%-- 		<s:input type="hidden" id="txtAuditType" name="txtAuditType" path="strPSPCode" /> --%>
-<!-- 		<div id="wait" -->
-<!-- 			style="display: none; width: 60px; height: 60px; border: 0px solid black; position: absolute; top: 50%; left: 50%; padding: 2px;"> -->
-<!-- 			<img -->
-<%-- 				src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif" --%>
-<!-- 				width="60px" height="60px" /> -->
-<!-- 		</div> -->
 
 	</s:form>
 

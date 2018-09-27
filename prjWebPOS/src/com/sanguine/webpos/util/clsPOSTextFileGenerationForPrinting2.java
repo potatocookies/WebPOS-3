@@ -109,7 +109,7 @@ public class clsPOSTextFileGenerationForPrinting2
                 billTaxDtl = "tblqbilltaxdtl";
             }
             
-           
+            gEnableShiftYN= objPOSSetupUtility.funGetParameterValuePOSWise(clientCode,posCode, "gEnableShiftYN");
             if (gEnableShiftYN.equals("Y"))
             {
                 funPrintBlankSpace("SHIFT END REPORT", bufferedWriter);

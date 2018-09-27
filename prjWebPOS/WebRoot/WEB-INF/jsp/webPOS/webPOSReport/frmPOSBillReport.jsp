@@ -61,7 +61,7 @@
 	<br/>
 	  <div class="title" style="margin-left: 190px;">
 		
-			<div class="row" style="background-color: #fff;display: -webkit-box;">
+			<div class="row" style="background-color: #fff;display: block;">
 				<div class="element-input col-lg-6" style="width: 15%;" > 
     				<label class="title">POS Name</label>
     			</div>
@@ -80,7 +80,7 @@
 				</div>
 			 </div>
 			 
-			 <div class="row" style="background-color: #fff;display: -webkit-box;">
+			 <div class="row" style="background-color: #fff;display: block;">
 			 		<div class="element-input col-lg-6" style="width: 15%;"> 
     					<label class="title">From Date</label>
 	    			</div>
@@ -107,50 +107,7 @@
 			 </p>
 		</div>
 		
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<table class="masterTable"> -->
 
-<!-- 			<tr> -->
-<!-- 				<td width="140px">POS Name</td> -->
-<%-- 				<td ><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" > --%>
-					
-<%-- 				 </s:select></td> --%>
-				 
-<!-- 				 <td><label>Report Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbDocType" path="strDocType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="PDF">PDF</s:option> --%>
-<%-- 				    		<s:option value="XLS">EXCEL</s:option> --%>
-				    		
-<%-- 				    	</s:select> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>From Date</label></td> -->
-<%-- 				<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-<!-- 				<td><label>To Date</label></td> -->
-<%-- 				<td><s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-			
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-				
-					
-<!-- 					</td> -->
-<!-- 				</tr> -->
-			
-<!-- 			<tr> -->
-			
-				
-<!-- 			</tr> -->
-			
-			
-<!-- 		</table> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
 	</s:form>
 
 </body>

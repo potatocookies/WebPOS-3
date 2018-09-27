@@ -64,7 +64,7 @@
 		
 		<div class="title" >
 				
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
@@ -75,7 +75,7 @@
 					</div>
 					
 					 	
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">From Date</label>
 		    				</div>
@@ -90,7 +90,7 @@
 							</div>
 					 </div>
 					 
-					 <div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					 <div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">Report View Type</label>
 		    				</div>
@@ -102,7 +102,7 @@
 							</div>
 					 </div>
 					 
-					  <div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					  <div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">Report Type</label>
 		    				</div>
@@ -125,60 +125,6 @@
 					
 			</div>
 			
-			
-		
-<!-- 		<table class="masterTable"> -->
-
-<!-- 			<tr> -->
-<!-- 				<td width="140px">POS Name</td> -->
-<%-- 				<td colspan="3"><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" > --%>
-					
-<%-- 				 </s:select></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>From Date</label></td> -->
-<%-- 				<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-<!-- 				</tr> -->
-<!-- 				<tr> -->
-<!-- 				<td><label>To Date</label></td> -->
-<%-- 				<td><s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-			
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>Report View Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbViewType" path="strViewType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="Summary">Summary</s:option> --%>
-<%-- 				    		<s:option value="Detail">Detail</s:option> --%>
-				    		
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 				</tr> -->
-<!-- 				<tr> -->
-<!-- 					<td><label>Report Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbDocType" path="strDocType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="PDF">PDF</s:option> --%>
-<%-- 				    		<s:option value="XLS">EXCEL</s:option> --%>
-				    		
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 				</tr> -->
-			
-<!-- 			<tr> -->
-			
-				
-<!-- 			</tr> -->
-			
-			
-<!-- 		</table> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
-
 
 	</s:form>
 

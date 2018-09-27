@@ -28,7 +28,8 @@
 
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(function() 
-    			{	
+{	
+	 var gEnableShiftYN="${gEnableShiftYN}";
 	 var POSDate="${gPOSDate}"
 		    var startDate="${gPOSDate}";
 		  	var Date = startDate.split(" ");
@@ -37,9 +38,21 @@
 			$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
 			$("#txtFromDate" ).datepicker('setDate', Dat); 
 			$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-			$("#txtToDate" ).datepicker('setDate', Dat);  
+			$("#txtToDate" ).datepicker('setDate', Dat); 
+			
+			if(gEnableShiftYN=='Y')
+			{
+				document.getElementById("lblShift").style.visibility = "visible"; 
+				document.getElementById("txtShiftCode").style.visibility = "visible"; 
+			}
+			else
+			{
+				document.getElementById("lblShift").style.visibility = "hidden";
+				document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+				
+			}
 	
-    			}); 
+}); 
 
 
 	/**
@@ -64,7 +77,7 @@
 		
 		<div class="title" >
 				
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">POS Name</label>
 		    				</div>
@@ -74,14 +87,18 @@
 							</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">From Date</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="width: 20%;">
 		    					<s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="width: 16%;"> 
+		    				
+		    		</div>
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 10%;">
+							
+		    				<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">To Date</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="width: 20%;">
@@ -89,7 +106,7 @@
 		    				</div>
 		    		</div>
 		    		
-		    		<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 10%;">
+		    		<div class="row" style="background-color: #fff; display:block; margin-bottom: 10px; margin-left: 10%;">
 							<div class="element-input col-lg-6" style="width: 20%;"> 
 		    					<label class="title">Report Type</label>
 		    				</div>
@@ -100,6 +117,18 @@
 				    			</s:select>
 							</div>
 					</div>
+					
+					<div class="row" style="background-color: #fff;display:block;">			
+			 		<div class="element-input col-lg-6" style="width: 17%;"> 
+    					<label id="lblShift" style="display: inline-block; width: 100px">Shift 
+						</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<s:select colspan="3" type="text" items="${shiftList}"
+								id="txtShiftCode" path="strShiftCode" cssClass="BoxW124px" />
+					
+					</div>
+			 </div> 
 					
 					 <br/>
 					 
@@ -112,48 +141,6 @@
 		    		
 			</div>
 		
-<!-- 		<table class="masterTable"> -->
-
-<!-- 			<tr> -->
-<!-- 				<td width="30%">&emsp;&ensp;&emsp;&ensp; -->
-<!-- 				<label>POS Name</label></td> -->
-<%-- 				<td><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" > --%>
-<%-- 				</s:select></td> --%>
-<!-- 				<td></td> -->
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td>&emsp;&ensp;&emsp;&ensp; -->
-<!-- 				<label>From Date</label></td> -->
-<%-- 				<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/> --%>
-<!-- 				</td><td><label>To Date</label>&emsp;&ensp; -->
-<%-- 				<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-			
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 					<td>&emsp;&ensp;&emsp;&ensp; -->
-<!-- 					<label>Report Type</label></td> -->
-<!-- 					<td > -->
-<%-- 						<s:select id="cmbDocType" path="strDocType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="PDF">PDF</s:option> --%>
-<%-- 				    		<s:option value="XLS">EXCEL</s:option> --%>
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 					<td></td> -->
-<!-- 					<td></td> -->
-<!-- 				</tr> -->
-<!-- 			<tr> -->
-<!-- 			</tr> -->
-			
-			
-<!-- 		</table> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
-
 
 	</s:form>
 

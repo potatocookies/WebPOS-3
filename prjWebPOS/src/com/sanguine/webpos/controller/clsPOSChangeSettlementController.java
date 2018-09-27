@@ -33,7 +33,7 @@ import com.sanguine.webpos.bean.clsPOSBillSettlementDtl;
 import com.sanguine.webpos.bean.clsPOSBillTaxDtl;
 import com.sanguine.webpos.bean.clsPOSChangeSettlementBean;
 import com.sanguine.webpos.bean.clsPOSKOTItemDtl;
-import com.sanguine.webpos.bean.clsPOSSMSSender;
+import com.sanguine.webpos.util.clsPOSSMSSender;
 import com.sanguine.webpos.bean.clsPOSSettelementOptions;
 import com.sanguine.webpos.bean.clsPOSVoidBillDtl;
 import com.sanguine.webpos.bean.clsPOSVoidBillHd;

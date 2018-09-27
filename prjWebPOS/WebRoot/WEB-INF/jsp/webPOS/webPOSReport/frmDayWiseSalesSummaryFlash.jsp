@@ -347,10 +347,10 @@
 		    				<div class="element-input col-lg-6" style="width: 13%;"> 
 								<s:select id="cmbOperationType" path="strOperationType">
 										<s:option value="All">All</s:option>
-										<s:option value="Dine In">Dine In</s:option>
-										<s:option value="Direct Biller">Direct Biller</s:option>
-										<s:option value="Home Delivery">Home Delivery</s:option>
-										<s:option value="Take Away">Take Away</s:option>
+										<s:option value="DineIn">DineIn</s:option>
+										<s:option value="DirectBiller">DirectBiller</s:option>
+										<s:option value="HomeDelivery">HomeDelivery</s:option>
+										<s:option value="TakeAway">TakeAway</s:option>
 
 								</s:select>
 							</div>
@@ -372,7 +372,7 @@
 					
 					
 					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
-							<div style="border: 1px solid #ccc; display: block; height: 600px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+							<div style="border: 1px solid #ccc; display: block; height: 550px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
 								<table id="tblDayWiseSales" style="width: 100%; text-align: center !important;">
 								

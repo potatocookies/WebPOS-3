@@ -87,7 +87,7 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 			for(int i =0 ;i<listOfGroup.size();i++)
 			{
 				clsGroupMasterModel objModel = (clsGroupMasterModel) listOfGroup.get(i);
-				groupMap.put(objModel.getStrGroupName(), objModel.getStrGroupCode());
+				groupMap.put(objModel.getStrGroupCode(),objModel.getStrGroupName());
 			}
 		}
 		model.put("groupList",groupMap);
@@ -266,11 +266,8 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 //		      }
 		      
 		      String groupCode = "ALL";
-		      if(groupMap.containsKey(groupName))
-		      {
-		    	  groupCode = (String) groupMap.get(groupName);
-		      }
-
+		      groupCode=groupName;
+		      
 		      if(viewBy.equalsIgnoreCase("ITEM'S GROUP WISE"))
 		      {
 			

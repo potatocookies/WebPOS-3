@@ -1049,6 +1049,15 @@
 	</definition>
 	
 	
+	<definition name="frmBillWiseSettlementWiseGroupWiseBreakup" extends="base.definition6">
+		<put-attribute name="title" value="Bill Wise Settlement Wise Group Wise Breakup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmBillWiseSettlementWiseGroupWiseBreakup.jsp" />
+	</definition>
+	
+	<definition name="frmSettlementWiseGroupWiseBreakup" extends="base.definition6">
+		<put-attribute name="title" value="Settlement Wise Group Wise Breakup" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmSettlementWiseGroupWiseBreakup.jsp" />
+	</definition>
 	
 <!-- 	End Of WebPOS Tiles Entry -->
 

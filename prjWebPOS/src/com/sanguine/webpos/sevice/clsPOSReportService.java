@@ -8693,7 +8693,6 @@ public class clsPOSReportService {
 		return listOfBillItemDtl;
 
 	}
-
 	public LinkedHashMap funProcessItemGroupWiseDayWiseSalesSummary(String withDiscount, String fromDate, String toDate,
 			String strOperationType, String strSettlementCode, String strPOSCode, String strPOSName, String groupCode,
 			String groupName) {
@@ -8959,7 +8958,7 @@ public class clsPOSReportService {
 				sqlGrandTotal.append("and a.strOperationType='" + strOperationType + "' ");
 			}
 			if (!strPOSCode.equalsIgnoreCase("All")) {
-				sqlGrandTotal.append(sqlGrandTotal + " and a.strPOSCode='" + strPOSCode + "' ");
+				sqlGrandTotal.append(" and a.strPOSCode='" + strPOSCode + "' ");
 			}
 			if (!strSettlementCode.equalsIgnoreCase("All")) {
 				sqlGrandTotal.append(" and c.strSettelmentCode='" + strSettlementCode + "' ");

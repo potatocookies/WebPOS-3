@@ -1197,7 +1197,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		        	 
 		        	
 		        	/* Disable while in development */ 
-		        	funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
+		        	//funGetCostCenterListForKOT(gTableNo,$('#txtKOTNo').text());
 		        	
 		        	 if(gMultiWaiterSelOnMakeKOT=="")
 		    		{

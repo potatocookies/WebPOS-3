@@ -349,6 +349,67 @@ public class clsPOSPropertySetupBean {
 	
 	private String chkAutoAreaSelectionInMakeKOT;
 	
+	private String chkAreaWiseCostCenterKOTPrinting;
+	
+	private String strDineInAreaForDirectBiller;
+	
+	private String strHomeDeliAreaForDirectBiller;
+	
+	private String strTakeAwayAreaForDirectBiller;
+	
+	private String chkRoundOffBillAmount;
+	
+	private String chkPrintItemsOnMoveKOTMoveTable;
+	
+	private int intNoOfDecimalPlaces;
+	
+	private String chkPrintMoveTableMoveKOT;
+	
+	private String chkSendDBBackupOnMail;
+	
+	private String chkPrintQtyTotal;
+	
+	private String chkPrintOrderNoOnBill;
+	
+	private String chkAutoAddKOTToBill;
+	
+	private String chkPrintDeviceUserDtlOnKOT;
+	
+	private String chkFireCommunication;
+	
+	private String strRemoveServiceChargeTaxCode;
+	
+	private String chkLockTableForWaiter;
+	
+	private double dblUSDCrrencyConverionRate;
+	
+	private String strShowReportsInCurrency;
+	
+	private String strPOSToMMSPostingCurrency;
+	
+	private String strPOSToWebBooksPostingCurrency;
+	
+	private String strBenowPOSIntegrationYN;
+	
+	private String strXEmail;
+	
+	private String strSuperMerchantCode;
+	
+	private String strMerchantCode;
+	
+	private String strAuthenticationKey;
+	
+	private String strSalt;
+	
+	private String strWeraIntegrationYN;
+	
+	private String strWeraAuthenticationAPIKey;
+	
+	private String strWeraMerchantOutletId;
+	
+	private String strPostMMSSalesEffectCostOrLoc;
+	
+	
 	private List<clsPOSBillSeriesDtlBean> listBillSeriesDtl;
 	
 	private List<clsPOSPrinterSetupBean> listPrinterDtl;
@@ -1773,6 +1834,308 @@ public class clsPOSPropertySetupBean {
 		this.chkAutoAreaSelectionInMakeKOT = chkAutoAreaSelectionInMakeKOT;
 	}
 
+	public String getChkAreaWiseCostCenterKOTPrinting()
+	{
+		return chkAreaWiseCostCenterKOTPrinting;
+	}
+
+	public void setChkAreaWiseCostCenterKOTPrinting(String chkAreaWiseCostCenterKOTPrinting)
+	{
+		this.chkAreaWiseCostCenterKOTPrinting = chkAreaWiseCostCenterKOTPrinting;
+	}
+
+	public String getStrDineInAreaForDirectBiller()
+	{
+		return strDineInAreaForDirectBiller;
+	}
+
+	public void setStrDineInAreaForDirectBiller(String strDineInAreaForDirectBiller)
+	{
+		this.strDineInAreaForDirectBiller = strDineInAreaForDirectBiller;
+	}
+
+	public String getStrHomeDeliAreaForDirectBiller()
+	{
+		return strHomeDeliAreaForDirectBiller;
+	}
+
+	public void setStrHomeDeliAreaForDirectBiller(String strHomeDeliAreaForDirectBiller)
+	{
+		this.strHomeDeliAreaForDirectBiller = strHomeDeliAreaForDirectBiller;
+	}
+
+	public String getStrTakeAwayAreaForDirectBiller()
+	{
+		return strTakeAwayAreaForDirectBiller;
+	}
+
+	public void setStrTakeAwayAreaForDirectBiller(String strTakeAwayAreaForDirectBiller)
+	{
+		this.strTakeAwayAreaForDirectBiller = strTakeAwayAreaForDirectBiller;
+	}
+
+	public String getChkRoundOffBillAmount()
+	{
+		return chkRoundOffBillAmount;
+	}
+
+	public void setChkRoundOffBillAmount(String chkRoundOffBillAmount)
+	{
+		this.chkRoundOffBillAmount = chkRoundOffBillAmount;
+	}
+
+	public String getChkPrintItemsOnMoveKOTMoveTable()
+	{
+		return chkPrintItemsOnMoveKOTMoveTable;
+	}
+
+	public void setChkPrintItemsOnMoveKOTMoveTable(String chkPrintItemsOnMoveKOTMoveTable)
+	{
+		this.chkPrintItemsOnMoveKOTMoveTable = chkPrintItemsOnMoveKOTMoveTable;
+	}
+
+	public int getIntNoOfDecimalPlaces()
+	{
+		return intNoOfDecimalPlaces;
+	}
+
+	public void setIntNoOfDecimalPlaces(int intNoOfDecimalPlaces)
+	{
+		this.intNoOfDecimalPlaces = intNoOfDecimalPlaces;
+	}
+
+	public String getChkPrintMoveTableMoveKOT()
+	{
+		return chkPrintMoveTableMoveKOT;
+	}
+
+	public void setChkPrintMoveTableMoveKOT(String chkPrintMoveTableMoveKOT)
+	{
+		this.chkPrintMoveTableMoveKOT = chkPrintMoveTableMoveKOT;
+	}
+
+	public String getChkSendDBBackupOnMail()
+	{
+		return chkSendDBBackupOnMail;
+	}
+
+	public void setChkSendDBBackupOnMail(String chkSendDBBackupOnMail)
+	{
+		this.chkSendDBBackupOnMail = chkSendDBBackupOnMail;
+	}
+
+	public String getChkPrintQtyTotal()
+	{
+		return chkPrintQtyTotal;
+	}
+
+	public void setChkPrintQtyTotal(String chkPrintQtyTotal)
+	{
+		this.chkPrintQtyTotal = chkPrintQtyTotal;
+	}
+
+	public String getChkPrintOrderNoOnBill()
+	{
+		return chkPrintOrderNoOnBill;
+	}
+
+	public void setChkPrintOrderNoOnBill(String chkPrintOrderNoOnBill)
+	{
+		this.chkPrintOrderNoOnBill = chkPrintOrderNoOnBill;
+	}
+
+	public String getChkAutoAddKOTToBill()
+	{
+		return chkAutoAddKOTToBill;
+	}
+
+	public void setChkAutoAddKOTToBill(String chkAutoAddKOTToBill)
+	{
+		this.chkAutoAddKOTToBill = chkAutoAddKOTToBill;
+	}
+
+	public String getChkPrintDeviceUserDtlOnKOT()
+	{
+		return chkPrintDeviceUserDtlOnKOT;
+	}
+
+	public void setChkPrintDeviceUserDtlOnKOT(String chkPrintDeviceUserDtlOnKOT)
+	{
+		this.chkPrintDeviceUserDtlOnKOT = chkPrintDeviceUserDtlOnKOT;
+	}
+
+	public String getChkFireCommunication()
+	{
+		return chkFireCommunication;
+	}
+
+	public void setChkFireCommunication(String chkFireCommunication)
+	{
+		this.chkFireCommunication = chkFireCommunication;
+	}
+
+	public String getStrRemoveServiceChargeTaxCode()
+	{
+		return strRemoveServiceChargeTaxCode;
+	}
+
+	public void setStrRemoveServiceChargeTaxCode(String strRemoveServiceChargeTaxCode)
+	{
+		this.strRemoveServiceChargeTaxCode = strRemoveServiceChargeTaxCode;
+	}
+
+	public String getChkLockTableForWaiter()
+	{
+		return chkLockTableForWaiter;
+	}
+
+	public void setChkLockTableForWaiter(String chkLockTableForWaiter)
+	{
+		this.chkLockTableForWaiter = chkLockTableForWaiter;
+	}
+
+	public double getDblUSDCrrencyConverionRate()
+	{
+		return dblUSDCrrencyConverionRate;
+	}
+
+	public void setDblUSDCrrencyConverionRate(double dblUSDCrrencyConverionRate)
+	{
+		this.dblUSDCrrencyConverionRate = dblUSDCrrencyConverionRate;
+	}
+
+	public String getStrShowReportsInCurrency()
+	{
+		return strShowReportsInCurrency;
+	}
+
+	public void setStrShowReportsInCurrency(String strShowReportsInCurrency)
+	{
+		this.strShowReportsInCurrency = strShowReportsInCurrency;
+	}
+
+	public String getStrPOSToMMSPostingCurrency()
+	{
+		return strPOSToMMSPostingCurrency;
+	}
+
+	public void setStrPOSToMMSPostingCurrency(String strPOSToMMSPostingCurrency)
+	{
+		this.strPOSToMMSPostingCurrency = strPOSToMMSPostingCurrency;
+	}
+
+	public String getStrPOSToWebBooksPostingCurrency()
+	{
+		return strPOSToWebBooksPostingCurrency;
+	}
+
+	public void setStrPOSToWebBooksPostingCurrency(String strPOSToWebBooksPostingCurrency)
+	{
+		this.strPOSToWebBooksPostingCurrency = strPOSToWebBooksPostingCurrency;
+	}
+
+	public String getStrBenowPOSIntegrationYN()
+	{
+		return strBenowPOSIntegrationYN;
+	}
+
+	public void setStrBenowPOSIntegrationYN(String strBenowPOSIntegrationYN)
+	{
+		this.strBenowPOSIntegrationYN = strBenowPOSIntegrationYN;
+	}
+
+	public String getStrXEmail()
+	{
+		return strXEmail;
+	}
+
+	public void setStrXEmail(String strXEmail)
+	{
+		this.strXEmail = strXEmail;
+	}
+
+	public String getStrSuperMerchantCode()
+	{
+		return strSuperMerchantCode;
+	}
+
+	public void setStrSuperMerchantCode(String strSuperMerchantCode)
+	{
+		this.strSuperMerchantCode = strSuperMerchantCode;
+	}
+
+	public String getStrMerchantCode()
+	{
+		return strMerchantCode;
+	}
+
+	public void setStrMerchantCode(String strMerchantCode)
+	{
+		this.strMerchantCode = strMerchantCode;
+	}
+
+	public String getStrAuthenticationKey()
+	{
+		return strAuthenticationKey;
+	}
+
+	public void setStrAuthenticationKey(String strAuthenticationKey)
+	{
+		this.strAuthenticationKey = strAuthenticationKey;
+	}
+
+	public String getStrSalt()
+	{
+		return strSalt;
+	}
+
+	public void setStrSalt(String strSalt)
+	{
+		this.strSalt = strSalt;
+	}
+
+	public String getStrWeraIntegrationYN()
+	{
+		return strWeraIntegrationYN;
+	}
+
+	public void setStrWeraIntegrationYN(String strWeraIntegrationYN)
+	{
+		this.strWeraIntegrationYN = strWeraIntegrationYN;
+	}
+
+	public String getStrWeraAuthenticationAPIKey()
+	{
+		return strWeraAuthenticationAPIKey;
+	}
+
+	public void setStrWeraAuthenticationAPIKey(String strWeraAuthenticationAPIKey)
+	{
+		this.strWeraAuthenticationAPIKey = strWeraAuthenticationAPIKey;
+	}
+
+	public String getStrWeraMerchantOutletId()
+	{
+		return strWeraMerchantOutletId;
+	}
+
+	public void setStrWeraMerchantOutletId(String strWeraMerchantOutletId)
+	{
+		this.strWeraMerchantOutletId = strWeraMerchantOutletId;
+	}
+
+	public String getStrPostMMSSalesEffectCostOrLoc()
+	{
+		return strPostMMSSalesEffectCostOrLoc;
+	}
+
+	public void setStrPostMMSSalesEffectCostOrLoc(String strPostMMSSalesEffectCostOrLoc)
+	{
+		this.strPostMMSSalesEffectCostOrLoc = strPostMMSSalesEffectCostOrLoc;
+	}
+
+	
+	
 	
 
 }

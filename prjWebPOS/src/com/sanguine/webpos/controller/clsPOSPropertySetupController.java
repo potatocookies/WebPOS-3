@@ -17,15 +17,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.TreeMap;
+import javax.persistence.Column;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import org.hibernate.Hibernate;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -36,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillSeriesDtlBean;
@@ -90,6 +86,7 @@ public class clsPOSPropertySetupController {
 		Map mapPOS=new HashMap();
 		Map mapPOSForDayEnd=new HashMap();
 		Map mapArea=new HashMap();
+		Map mapTax=new HashMap();
 		String clientCode=request.getSession().getAttribute("gClientCode").toString();
 		String posCode=request.getSession().getAttribute("loginPOS").toString();
 	
@@ -104,18 +101,11 @@ public class clsPOSPropertySetupController {
 		model.put("posList",mapPOS);
 	    model.put("posListForDayEnd",mapPOSForDayEnd);
 		 
-		 
-		list = objMasterService.funGetAllAreaForMaster(clientCode);
-		Map mapAreaName = new HashMap<>();
-		if(list!=null)
-		{
-			for(int cnt=0;cnt<list.size();cnt++)
-			{
-				clsAreaMasterModel objAreaModel= (clsAreaMasterModel) list.get(cnt);
-				mapArea.put(objAreaModel.getStrAreaCode(), objAreaModel.getStrAreaName());
-			}
-		}
+		mapArea=funLoadAreaList(posCode);
 		model.put("areaList",mapArea);
+		mapTax=funLoadTaxList();
+		model.put("taxList",mapTax);
+		
 		   
      return new ModelAndView("frmPOSPropertySetup");
 	 
@@ -138,7 +128,11 @@ public class clsPOSPropertySetupController {
 			for (int cnt = 0; cnt < list.size(); cnt++)
 			{
 				objSetupHdModel = (clsSetupHdModel) list.get(cnt);
-				if(objSetupHdModel.getBlobReportImage()!=null){
+				if(objSetupHdModel.getStrPOSCode().equals(posCode))
+				{
+					
+					if(objSetupHdModel.getBlobReportImage()!=null)
+					{
 					 	Blob blob = objSetupHdModel.getBlobReportImage(); 
 					 	byte[] byteContent = blob.toString().getBytes();
 					    String imagePath=servletContext.getRealPath("/resources/images");
@@ -146,185 +140,214 @@ public class clsPOSPropertySetupController {
 						fileOuputStream = new FileOutputStream(imagePath+"/imgClientImage.jpg");
 						fileOuputStream.write(byteContent);
 						fileOuputStream.close();
+				    }
+					
+					objBean.setStrPosCode(objSetupHdModel.getStrPOSCode());
+					objBean.setStrPrintingType(objSetupHdModel.getStrPrintType());
+					objBean.setIntColumnSize(objSetupHdModel.getIntColumnSize());
+				    objBean.setDblMaxDiscount((long)(objSetupHdModel.getDblMaxDiscount()));
+					objBean.setChkAreaWisePricing(objSetupHdModel.getStrAreaWisePricing());
+					objBean.setStrChangeTheme(objSetupHdModel.getStrChangeTheme());
+					objBean.setStrClientCode(objSetupHdModel.getStrClientCode());
+					objBean.setStrClientName(objSetupHdModel.getStrClientName());
+					objBean.setStrAddrLine1(objSetupHdModel.getStrAddressLine1());
+					objBean.setStrAddrLine2(objSetupHdModel.getStrAddressLine2());
+					objBean.setStrAddrLine3(objSetupHdModel.getStrAddressLine3());
+					objBean.setStrEmail(objSetupHdModel.getStrEmail());
+					objBean.setStrBillFooter(objSetupHdModel.getStrBillFooter());
+					objBean.setIntBiilPaperSize((long)objSetupHdModel.getIntBillPaperSize());
+					objBean.setChkNegBilling(objSetupHdModel.getStrNegativeBilling());
+					objBean.setChkDayEnd(objSetupHdModel.getStrDayEnd());
+					objBean.setStrBillPrintMode(objSetupHdModel.getStrPrintMode());
+					objBean.setStrCity(objSetupHdModel.getStrCityName());
+					objBean.setStrState(objSetupHdModel.getStrState());
+					objBean.setStrCountry(objSetupHdModel.getStrCountry());
+					objBean.setStrTelephone((long)objSetupHdModel.getIntTelephoneNo());
+					objBean.setStrNatureOfBussness(objSetupHdModel.getStrNatureOfBusinnes());
+					objBean.setChkMultiBillPrint(objSetupHdModel.getStrMultipleBillPrinting());
+					objBean.setChkEnableKOT(objSetupHdModel.getStrEnableKOT());
+					objBean.setChkEffectOnPSP(objSetupHdModel.getStrEffectOnPSP());
+					objBean.setChkPrintVatNo(objSetupHdModel.getStrPrintVatNo());
+					objBean.setStrVatNo(objSetupHdModel.getStrVatNo());
+					objBean.setChkShowBills(objSetupHdModel.getStrShowBill());
+					objBean.setChkServiceTaxNo(objSetupHdModel.getStrPrintServiceTaxNo());
+					objBean.setStrServiceTaxNo(objSetupHdModel.getStrServiceTaxNo());
+					objBean.setChkManualBillNo(objSetupHdModel.getStrManualBillNo());
+					objBean.setStrMenuItemDisSeq(objSetupHdModel.getStrMenuItemDispSeq());
+					objBean.setStrSenderEmailId(objSetupHdModel.getStrSenderEmailId());
+					objBean.setStrEmailPassword(objSetupHdModel.getStrEmailPassword());
+					objBean.setStrBodyPart(objSetupHdModel.getStrBody());
+					objBean.setStrEmailServerName(objSetupHdModel.getStrEmailServerName());
+					objBean.setStrAreaSMSApi(objSetupHdModel.getStrSMSApi());
+					objBean.setStrPOSType(objSetupHdModel.getStrPOSType());
+					objBean.setStrWebServiceLink(objSetupHdModel.getStrWebServiceLink());
+					objBean.setStrDataSendFrequency(objSetupHdModel.getStrDataSendFrequency());
+					objBean.setStrRFIDSetup(objSetupHdModel.getStrRFID());
+					objBean.setStrRFIDServerName(objSetupHdModel.getStrServerName());
+					objBean.setStrRFIDUserName(objSetupHdModel.getStrDBUserName());
+					objBean.setStrRFIDPassword(objSetupHdModel.getStrDBPassword());
+					objBean.setStrRFIDDatabaseName(objSetupHdModel.getStrDatabaseName());
+					objBean.setChkPrintKotForDirectBiller(objSetupHdModel.getStrEnableKOTForDirectBiller());
+					objBean.setStrPinCode((long)objSetupHdModel.getIntPinCode());
+					objBean.setStrMenuItemSortingOn(objSetupHdModel.getStrMenuItemSortingOn());
+					objBean.setChkEditHomeDelivery(objSetupHdModel.getStrEditHomeDelivery());
+					objBean.setChkSlabBasedHomeDelCharges(objSetupHdModel.getStrSlabBasedHDCharges());
+					objBean.setChkSkipWaiterSelection(objSetupHdModel.getStrSkipWaiter());
+					objBean.setChkDirectKOTPrintMakeKOT(objSetupHdModel.getStrDirectKOTPrintMakeKOT());
+					objBean.setChkSkipPaxSelection(objSetupHdModel.getStrSkipPax());
+					objBean.setStrCRM(objSetupHdModel.getStrCRMInterface());
+					objBean.setStrGetWebservice(objSetupHdModel.getStrGetWebserviceURL());
+					objBean.setStrPostWebservice(objSetupHdModel.getStrPostWebserviceURL());
+					objBean.setStrOutletUID(objSetupHdModel.getStrOutletUID());
+					objBean.setStrPOSID(objSetupHdModel.getStrPOSID());
+					objBean.setStrStockInOption(objSetupHdModel.getStrStockInOption());
+					objBean.setStrCustSeries(objSetupHdModel.getStrCustSeries());
+					objBean.setStrAdvRecPrintCount((long)objSetupHdModel.getIntAdvReceiptPrintCount());
+					objBean.setStrAreaSendHomeDeliverySMS(objSetupHdModel.getStrHomeDeliverySMS());
+					objBean.setStrAreaBillSettlementSMS(objSetupHdModel.getStrBillStettlementSMS());
+					objBean.setStrBillFormat(objSetupHdModel.getStrBillFormatType());
+					objBean.setChkActivePromotions(objSetupHdModel.getStrActivePromotions());
+					objBean.setChkHomeDelSMS(objSetupHdModel.getStrSendHomeDelSMS());
+					objBean.setChkBillSettlementSMS(objSetupHdModel.getStrSendBillSettlementSMS());
+					objBean.setStrSMSType(objSetupHdModel.getStrSMSType());
+					objBean.setChkPrintShortNameOnKOT(objSetupHdModel.getStrPrintShortNameOnKOT());
+					objBean.setChkPrintForVoidBill(objSetupHdModel.getStrPrintOnVoidBill());
+					objBean.setChkPostSalesDataToMMS(objSetupHdModel.getStrPostSalesDataToMMS());
+					objBean.setChkAreaMasterCompulsory(objSetupHdModel.getStrCustAreaMasterCompulsory());
+					objBean.setStrPriceFrom(objSetupHdModel.getStrPriceFrom());
+					objBean.setChkPrinterErrorMessage(objSetupHdModel.getStrShowPrinterErrorMessage());
+					objBean.setChkChangeQtyForExternalCode(objSetupHdModel.getStrChangeQtyForExternalCode());
+					objBean.setChkPointsOnBillPrint(objSetupHdModel.getStrPointsOnBillPrint());
+					objBean.setStrCardIntfType(objSetupHdModel.getStrCardInterfaceType());
+					objBean.setStrCMSIntegrationYN(objSetupHdModel.getStrCMSIntegrationYN());
+					objBean.setStrCMSWesServiceURL(objSetupHdModel.getStrCMSWebServiceURL());
+					objBean.setChkManualAdvOrderCompulsory(objSetupHdModel.getStrPrintManualAdvOrderNoOnBill());
+					objBean.setChkPrintManualAdvOrderOnBill(objSetupHdModel.getStrManualAdvOrderNoCompulsory());
+					objBean.setChkPrintModifierQtyOnKOT(objSetupHdModel.getStrPrintModifierQtyOnKOT());
+					objBean.setIntNoOfLinesInKOTPrint((long)objSetupHdModel.getStrNoOfLinesInKOTPrint());
+					objBean.setChkMultiKOTPrint(objSetupHdModel.getStrMultipleKOTPrintYN());
+					objBean.setChkItemQtyNumpad(objSetupHdModel.getStrItemQtyNumpad());
+					objBean.setChkMemberAsTable(objSetupHdModel.getStrTreatMemberAsTable());
+					objBean.setChkPrintKOTToLocalPrinter(objSetupHdModel.getStrKOTToLocalPrinter());
+					objBean.setChkEnableSettleBtnForDirectBillerBill(objSetupHdModel.getStrSettleBtnForDirectBillerBill());
+					objBean.setChkDelBoyCompulsoryOnDirectBiller(objSetupHdModel.getStrDelBoySelCompulsoryOnDirectBiller());
+					objBean.setChkMemberCodeForKOTJPOS(objSetupHdModel.getStrCMSMemberForKOTJPOS());
+					objBean.setChkMemberCodeForKOTMPOS(objSetupHdModel.getStrCMSMemberForKOTMPOS());
+					objBean.setChkDontShowAdvOrderInOtherPOS(objSetupHdModel.getStrDontShowAdvOrderInOtherPOS());
+					objBean.setChkPrintZeroAmtModifierInBill(objSetupHdModel.getStrPrintZeroAmtModifierInBill());
+					objBean.setChkPrintKOTYN(objSetupHdModel.getStrPrintKOTYN());
+					objBean.setChkSlipNoForCreditCardBillYN(objSetupHdModel.getStrCreditCardSlipNoCompulsoryYN());
+					objBean.setChkExpDateForCreditCardBillYN(objSetupHdModel.getStrCreditCardExpiryDateCompulsoryYN());
+					objBean.setChkSelectWaiterFromCardSwipe(objSetupHdModel.getStrSelectWaiterFromCardSwipe());
+					objBean.setChkMultipleWaiterSelectionOnMakeKOT(objSetupHdModel.getStrMultiWaiterSelectionOnMakeKOT());
+					objBean.setChkMoveTableToOtherPOS(objSetupHdModel.getStrMoveTableToOtherPOS());
+					objBean.setChkMoveKOTToOtherPOS(objSetupHdModel.getStrMoveKOTToOtherPOS());
+					objBean.setChkCalculateTaxOnMakeKOT(objSetupHdModel.getStrCalculateTaxOnMakeKOT());
+					objBean.setStrReceiverEmailId(objSetupHdModel.getStrReceiverEmailId());
+					objBean.setChkCalculateDiscItemWise(objSetupHdModel.getStrCalculateDiscItemWise());
+					objBean.setChkTakewayCustomerSelection(objSetupHdModel.getStrTakewayCustomerSelection());
+					objBean.setChkShowItemStkColumnInDB(objSetupHdModel.getStrShowItemStkColumnInDB());
+					objBean.setStrItemType(objSetupHdModel.getStrItemType());
+					objBean.setChkBoxAllowNewAreaMasterFromCustMaster(objSetupHdModel.getStrAllowNewAreaMasterFromCustMaster());
+					objBean.setChkSelectCustAddressForBill(objSetupHdModel.getStrCustAddressSelectionForBill());
+					objBean.setChkGenrateMI(objSetupHdModel.getStrGenrateMI());
+					objBean.setStrFTPAddress(objSetupHdModel.getStrFTPAddress());
+					objBean.setStrFTPServerUserName(objSetupHdModel.getStrFTPServerUserName());
+					objBean.setStrFTPServerPass(objSetupHdModel.getStrFTPServerPass());
+					objBean.setChkAllowToCalculateItemWeight(objSetupHdModel.getStrAllowToCalculateItemWeight());
+					objBean.setStrShowBillsDtlType(objSetupHdModel.getStrShowBillsDtlType());
+					objBean.setChkPrintInvoiceOnBill(objSetupHdModel.getStrPrintTaxInvoiceOnBill());
+					objBean.setChkPrintInclusiveOfAllTaxesOnBill(objSetupHdModel.getStrPrintInclusiveOfAllTaxesOnBill());
+					objBean.setStrApplyDiscountOn(objSetupHdModel.getStrApplyDiscountOn());
+					objBean.setChkMemberCodeForKotInMposByCardSwipe(objSetupHdModel.getStrMemberCodeForKotInMposByCardSwipe());
+					objBean.setChkPrintBill(objSetupHdModel.getStrPrintBillYN());
+					objBean.setChkUseVatAndServiceNoFromPos(objSetupHdModel.getStrVatAndServiceTaxFromPos());
+					objBean.setChkMemberCodeForMakeBillInMPOS(objSetupHdModel.getStrMemberCodeForMakeBillInMPOS());
+					objBean.setChkItemWiseKOTPrintYN(objSetupHdModel.getStrItemWiseKOTYN());
+					objBean.setStrPOSForDayEnd(objSetupHdModel.getStrLastPOSForDayEnd());
+					objBean.setStrCMSPostingType(objSetupHdModel.getStrCMSPostingType());
+					objBean.setChkPopUpToApplyPromotionsOnBill(objSetupHdModel.getStrPopUpToApplyPromotionsOnBill());
+					objBean.setChkSelectCustomerCodeFromCardSwipe(objSetupHdModel.getStrSelectCustomerCodeFromCardSwipe());
+					objBean.setChkCheckDebitCardBalOnTrans(objSetupHdModel.getStrCheckDebitCardBalOnTransactions());
+					objBean.setChkSettlementsFromPOSMaster(objSetupHdModel.getStrSettlementsFromPOSMaster());
+					objBean.setChkShiftWiseDayEnd(objSetupHdModel.getStrShiftWiseDayEndYN());
+					objBean.setChkProductionLinkup(objSetupHdModel.getStrProductionLinkup());
+					objBean.setChkLockDataOnShift(objSetupHdModel.getStrLockDataOnShift());
+					objBean.setStrWSClientCode(objSetupHdModel.getStrWSClientCode());
+					objBean.setChkEnableBillSeries(objSetupHdModel.getStrEnableBillSeries());
+					objBean.setChkEnablePMSIntegration(objSetupHdModel.getStrEnablePMSIntegrationYN());
+					objBean.setChkPrintTimeOnBill(objSetupHdModel.getStrPrintTimeOnBill());
+					objBean.setChkPrintTDHItemsInBill(objSetupHdModel.getStrPrintTDHItemsInBill());
+					objBean.setChkPrintRemarkAndReasonForReprint(objSetupHdModel.getStrPrintRemarkAndReasonForReprint());
+					objBean.setIntDaysBeforeOrderToCancel((long)objSetupHdModel.getIntDaysBeforeOrderToCancel());
+					objBean.setIntNoOfDelDaysForAdvOrder((long)objSetupHdModel.getIntNoOfDelDaysForAdvOrder());
+					objBean.setIntNoOfDelDaysForUrgentOrder((long)objSetupHdModel.getIntNoOfDelDaysForUrgentOrder());
+					objBean.setChkSetUpToTimeForAdvOrder(objSetupHdModel.getStrSetUpToTimeForAdvOrder());
+					objBean.setChkSetUpToTimeForUrgentOrder(objSetupHdModel.getStrSetUpToTimeForUrgentOrder());	
+				    String upToTimeForAdvOrder = (objSetupHdModel.getStrUpToTimeForAdvOrder()).split(" ")[0];
+				    objBean.setStrHours(upToTimeForAdvOrder.split(":")[0].trim());
+				    objBean.setStrMinutes(upToTimeForAdvOrder.split(":")[1].trim());
+				    objBean.setStrAMPM((objSetupHdModel.getStrUpToTimeForAdvOrder()).split(" ")[1]);
+				    String upToTimeForUrgentOrder = (objSetupHdModel.getStrUpToTimeForUrgentOrder()).split(" ")[0];
+				    objBean.setStrHoursUrgentOrder(upToTimeForUrgentOrder.split(":")[0].trim());
+				    objBean.setStrMinutesUrgentOrder(upToTimeForUrgentOrder.split(":")[1].trim());
+				    objBean.setStrAMPMUrgent((objSetupHdModel.getStrUpToTimeForUrgentOrder()).split(" ")[1]);
+					objBean.setChkEnableBothPrintAndSettleBtnForDB(objSetupHdModel.getStrEnableBothPrintAndSettleBtnForDB());
+					objBean.setStrInrestoPOSIntegrationYN(objSetupHdModel.getStrInrestoPOSIntegrationYN());
+					objBean.setStrInrestoPOSWesServiceURL(objSetupHdModel.getStrInrestoPOSWebServiceURL());
+					objBean.setStrInrestoPOSId(objSetupHdModel.getStrInrestoPOSId());
+					objBean.setStrInrestoPOSKey(objSetupHdModel.getStrInrestoPOSKey());
+					objBean.setChkCarryForwardFloatAmtToNextDay(objSetupHdModel.getStrCarryForwardFloatAmtToNextDay());
+					objBean.setChkOpenCashDrawerAfterBillPrint(objSetupHdModel.getStrOpenCashDrawerAfterBillPrintYN());
+					objBean.setChkPropertyWiseSalesOrder(objSetupHdModel.getStrPropertyWiseSalesOrderYN());		
+					objBean.setChkShowItemDtlsForChangeCustomerOnBill(objSetupHdModel.getStrShowItemDetailsGrid());
+					objBean.setChkShowPopUpForNextItemQuantity(objSetupHdModel.getStrShowPopUpForNextItemQuantity());
+					objBean.setStrJioPOSIntegrationYN(objSetupHdModel.getStrJioMoneyIntegration());
+					objBean.setStrJioPOSWesServiceURL(objSetupHdModel.getStrJioWebServiceUrl());
+					objBean.setStrJioMID(objSetupHdModel.getStrJioMID());
+					objBean.setStrJioTID(objSetupHdModel.getStrJioTID());
+					objBean.setStrJioActivationCode(objSetupHdModel.getStrJioActivationCode());
+					objBean.setStrJioDeviceID(objSetupHdModel.getStrJioDeviceID());
+					if(!objSetupHdModel.getStrJioDeviceID().toString().isEmpty())
+						{
+						JioDeviceIDFound=true;
+						JioDeviceIDFromDB=objSetupHdModel.getStrJioDeviceID().toString();
+						}
+					objBean.setChkNewBillSeriesForNewDay(objSetupHdModel.getStrNewBillSeriesForNewDay());
+					objBean.setChkShowReportsPOSWise(objSetupHdModel.getStrShowReportsPOSWise());
+					objBean.setChkEnableDineIn(objSetupHdModel.getStrEnableDineIn());
+					objBean.setChkAutoAreaSelectionInMakeKOT(objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
+					objBean.setChkAreaWiseCostCenterKOTPrinting(objSetupHdModel.getStrAreaWiseCostCenterKOTPrintingYN());
+					objBean.setStrHomeDeliAreaForDirectBiller(objSetupHdModel.getStrHomeDeliveryAreaForDirectBiller());
+					objBean.setStrTakeAwayAreaForDirectBiller(objSetupHdModel.getStrTakeAwayAreaForDirectBiller());
+					objBean.setChkRoundOffBillAmount(objSetupHdModel.getStrRoundOffBillFinalAmt());
+					objBean.setChkPrintItemsOnMoveKOTMoveTable(objSetupHdModel.getStrPrintItemsOnMoveKOTMoveTable());
+					objBean.setIntNoOfDecimalPlaces(objSetupHdModel.getDblNoOfDecimalPlace());
+				    objBean.setChkPrintMoveTableMoveKOT(objSetupHdModel.getStrPrintMoveTableMoveKOTYN());
+				    objBean.setChkSendDBBackupOnMail(objSetupHdModel.getStrSendDBBackupOnClientMail());
+				    objBean.setChkPrintQtyTotal(objSetupHdModel.getStrPrintQtyTotal());
+				    objBean.setChkPrintOrderNoOnBill(objSetupHdModel.getStrPrintOrderNoOnBillYN());
+				    objBean.setChkAutoAddKOTToBill(objSetupHdModel.getStrAutoAddKOTToBill());
+				    objBean.setChkPrintDeviceUserDtlOnKOT(objSetupHdModel.getStrPrintDeviceAndUserDtlOnKOTYN());
+				    objBean.setChkFireCommunication(objSetupHdModel.getStrFireCommunication());
+				    objBean.setStrRemoveServiceChargeTaxCode (objSetupHdModel.getStrRemoveSCTaxCode());
+				    objBean.setChkLockTableForWaiter (objSetupHdModel.getStrLockTableForWaiter());
+				    objBean.setDblUSDCrrencyConverionRate (objSetupHdModel.getDblUSDConverionRate());
+				    objBean.setStrShowReportsInCurrency (objSetupHdModel.getStrShowReportsInCurrency());
+					objBean.setStrPOSToMMSPostingCurrency (objSetupHdModel.getStrPOSToMMSPostingCurrency());
+					objBean.setStrPOSToWebBooksPostingCurrency (objSetupHdModel.getStrPOSToWebBooksPostingCurrency());
+					objBean.setStrBenowPOSIntegrationYN (objSetupHdModel.getStrBenowIntegrationYN());
+					objBean.setStrEmail(objSetupHdModel.getStrXEmail());
+					objBean.setStrMerchantCode (objSetupHdModel.getStrMerchantCode());
+					objBean.setStrAuthenticationKey (objSetupHdModel.getStrAuthenticationKey());
+					objBean.setStrSalt (objSetupHdModel.getStrSalt());
+					objBean.setStrWeraIntegrationYN (objSetupHdModel.getStrWERAOnlineOrderIntegration());
+					objBean.setStrWeraMerchantOutletId (objSetupHdModel.getStrWERAMerchantOutletId());
+					objBean.setStrWeraAuthenticationAPIKey (objSetupHdModel.getStrWERAAuthenticationAPIKey());
+					objBean.setStrPostMMSSalesEffectCostOrLoc(objSetupHdModel.getStrPostSalesCostOrLoc());
+					dteEndDate=objSetupHdModel.getDteEndDate();
 				}
-	
-				objBean.setStrPosCode(objSetupHdModel.getStrPOSCode());
-				objBean.setStrPrintingType(objSetupHdModel.getStrPrintType());
-				objBean.setIntColumnSize(objSetupHdModel.getIntColumnSize());
-			    objBean.setDblMaxDiscount((long)(objSetupHdModel.getDblMaxDiscount()));
-				objBean.setChkAreaWisePricing(objSetupHdModel.getStrAreaWisePricing());
-				objBean.setStrChangeTheme(objSetupHdModel.getStrChangeTheme());
-				objBean.setStrClientCode(objSetupHdModel.getStrClientCode());
-				objBean.setStrClientName(objSetupHdModel.getStrClientName());
-				objBean.setStrAddrLine1(objSetupHdModel.getStrAddressLine1());
-				objBean.setStrAddrLine2(objSetupHdModel.getStrAddressLine2());
-				objBean.setStrAddrLine3(objSetupHdModel.getStrAddressLine3());
-				objBean.setStrEmail(objSetupHdModel.getStrEmail());
-				objBean.setStrBillFooter(objSetupHdModel.getStrBillFooter());
-				objBean.setIntBiilPaperSize((long)objSetupHdModel.getIntBillPaperSize());
-				objBean.setChkNegBilling(objSetupHdModel.getStrNegativeBilling());
-				objBean.setChkDayEnd(objSetupHdModel.getStrDayEnd());
-				objBean.setStrBillPrintMode(objSetupHdModel.getStrPrintMode());
-				objBean.setStrCity(objSetupHdModel.getStrCityName());
-				objBean.setStrState(objSetupHdModel.getStrState());
-				objBean.setStrCountry(objSetupHdModel.getStrCountry());
-				objBean.setStrTelephone((long)objSetupHdModel.getIntTelephoneNo());
-				objBean.setStrNatureOfBussness(objSetupHdModel.getStrNatureOfBusinnes());
-				objBean.setChkMultiBillPrint(objSetupHdModel.getStrMultipleBillPrinting());
-				objBean.setChkEnableKOT(objSetupHdModel.getStrEnableKOT());
-				objBean.setChkEffectOnPSP(objSetupHdModel.getStrEffectOnPSP());
-				objBean.setChkPrintVatNo(objSetupHdModel.getStrPrintVatNo());
-				objBean.setStrVatNo(objSetupHdModel.getStrVatNo());
-				objBean.setChkShowBills(objSetupHdModel.getStrShowBill());
-				objBean.setChkServiceTaxNo(objSetupHdModel.getStrPrintServiceTaxNo());
-				objBean.setStrServiceTaxNo(objSetupHdModel.getStrServiceTaxNo());
-				objBean.setChkManualBillNo(objSetupHdModel.getStrManualBillNo());
-				objBean.setStrMenuItemDisSeq(objSetupHdModel.getStrMenuItemDispSeq());
-				objBean.setStrSenderEmailId(objSetupHdModel.getStrSenderEmailId());
-				objBean.setStrEmailPassword(objSetupHdModel.getStrEmailPassword());
-				objBean.setStrBodyPart(objSetupHdModel.getStrBody());
-				objBean.setStrEmailServerName(objSetupHdModel.getStrEmailServerName());
-				objBean.setStrAreaSMSApi(objSetupHdModel.getStrSMSApi());
-				objBean.setStrPOSType(objSetupHdModel.getStrPOSType());
-				objBean.setStrWebServiceLink(objSetupHdModel.getStrWebServiceLink());
-				objBean.setStrDataSendFrequency(objSetupHdModel.getStrDataSendFrequency());
-				objBean.setStrRFIDSetup(objSetupHdModel.getStrRFID());
-				objBean.setStrRFIDServerName(objSetupHdModel.getStrServerName());
-				objBean.setStrRFIDUserName(objSetupHdModel.getStrDBUserName());
-				objBean.setStrRFIDPassword(objSetupHdModel.getStrDBPassword());
-				objBean.setStrRFIDDatabaseName(objSetupHdModel.getStrDatabaseName());
-				objBean.setChkPrintKotForDirectBiller(objSetupHdModel.getStrEnableKOTForDirectBiller());
-				objBean.setStrPinCode((long)objSetupHdModel.getIntPinCode());
-				objBean.setStrMenuItemSortingOn(objSetupHdModel.getStrMenuItemSortingOn());
-				objBean.setChkEditHomeDelivery(objSetupHdModel.getStrEditHomeDelivery());
-				objBean.setChkSlabBasedHomeDelCharges(objSetupHdModel.getStrSlabBasedHDCharges());
-				objBean.setChkSkipWaiterSelection(objSetupHdModel.getStrSkipWaiter());
-				objBean.setChkDirectKOTPrintMakeKOT(objSetupHdModel.getStrDirectKOTPrintMakeKOT());
-				objBean.setChkSkipPaxSelection(objSetupHdModel.getStrSkipPax());
-				objBean.setStrCRM(objSetupHdModel.getStrCRMInterface());
-				objBean.setStrGetWebservice(objSetupHdModel.getStrGetWebserviceURL());
-				objBean.setStrPostWebservice(objSetupHdModel.getStrPostWebserviceURL());
-				objBean.setStrOutletUID(objSetupHdModel.getStrOutletUID());
-				objBean.setStrPOSID(objSetupHdModel.getStrPOSID());
-				objBean.setStrStockInOption(objSetupHdModel.getStrStockInOption());
-				objBean.setStrCustSeries(objSetupHdModel.getStrCustSeries());
-				objBean.setStrAdvRecPrintCount((long)objSetupHdModel.getIntAdvReceiptPrintCount());
-				objBean.setStrAreaSendHomeDeliverySMS(objSetupHdModel.getStrHomeDeliverySMS());
-				objBean.setStrAreaBillSettlementSMS(objSetupHdModel.getStrBillStettlementSMS());
-				objBean.setStrBillFormat(objSetupHdModel.getStrBillFormatType());
-				objBean.setChkActivePromotions(objSetupHdModel.getStrActivePromotions());
-				objBean.setChkHomeDelSMS(objSetupHdModel.getStrSendHomeDelSMS());
-				objBean.setChkBillSettlementSMS(objSetupHdModel.getStrSendBillSettlementSMS());
-				objBean.setStrSMSType(objSetupHdModel.getStrSMSType());
-				objBean.setChkPrintShortNameOnKOT(objSetupHdModel.getStrPrintShortNameOnKOT());
-				objBean.setChkPrintForVoidBill(objSetupHdModel.getStrPrintOnVoidBill());
-				objBean.setChkPostSalesDataToMMS(objSetupHdModel.getStrPostSalesDataToMMS());
-				objBean.setChkAreaMasterCompulsory(objSetupHdModel.getStrCustAreaMasterCompulsory());
-				objBean.setStrPriceFrom(objSetupHdModel.getStrPriceFrom());
-				objBean.setChkPrinterErrorMessage(objSetupHdModel.getStrShowPrinterErrorMessage());
-				objBean.setChkChangeQtyForExternalCode(objSetupHdModel.getStrChangeQtyForExternalCode());
-				objBean.setChkPointsOnBillPrint(objSetupHdModel.getStrPointsOnBillPrint());
-				objBean.setStrCardIntfType(objSetupHdModel.getStrCardInterfaceType());
-				objBean.setStrCMSIntegrationYN(objSetupHdModel.getStrCMSIntegrationYN());
-				objBean.setStrCMSWesServiceURL(objSetupHdModel.getStrCMSWebServiceURL());
-				objBean.setChkManualAdvOrderCompulsory(objSetupHdModel.getStrPrintManualAdvOrderNoOnBill());
-				objBean.setChkPrintManualAdvOrderOnBill(objSetupHdModel.getStrManualAdvOrderNoCompulsory());
-				objBean.setChkPrintModifierQtyOnKOT(objSetupHdModel.getStrPrintModifierQtyOnKOT());
-				objBean.setIntNoOfLinesInKOTPrint((long)objSetupHdModel.getStrNoOfLinesInKOTPrint());
-				objBean.setChkMultiKOTPrint(objSetupHdModel.getStrMultipleKOTPrintYN());
-				objBean.setChkItemQtyNumpad(objSetupHdModel.getStrItemQtyNumpad());
-				objBean.setChkMemberAsTable(objSetupHdModel.getStrTreatMemberAsTable());
-				objBean.setChkPrintKOTToLocalPrinter(objSetupHdModel.getStrKOTToLocalPrinter());
-				objBean.setChkEnableSettleBtnForDirectBillerBill(objSetupHdModel.getStrSettleBtnForDirectBillerBill());
-				objBean.setChkDelBoyCompulsoryOnDirectBiller(objSetupHdModel.getStrDelBoySelCompulsoryOnDirectBiller());
-				objBean.setChkMemberCodeForKOTJPOS(objSetupHdModel.getStrCMSMemberForKOTJPOS());
-				objBean.setChkMemberCodeForKOTMPOS(objSetupHdModel.getStrCMSMemberForKOTMPOS());
-				objBean.setChkDontShowAdvOrderInOtherPOS(objSetupHdModel.getStrDontShowAdvOrderInOtherPOS());
-				objBean.setChkPrintZeroAmtModifierInBill(objSetupHdModel.getStrPrintZeroAmtModifierInBill());
-				objBean.setChkPrintKOTYN(objSetupHdModel.getStrPrintKOTYN());
-				objBean.setChkSlipNoForCreditCardBillYN(objSetupHdModel.getStrCreditCardSlipNoCompulsoryYN());
-				objBean.setChkExpDateForCreditCardBillYN(objSetupHdModel.getStrCreditCardExpiryDateCompulsoryYN());
-				objBean.setChkSelectWaiterFromCardSwipe(objSetupHdModel.getStrSelectWaiterFromCardSwipe());
-				objBean.setChkMultipleWaiterSelectionOnMakeKOT(objSetupHdModel.getStrMultiWaiterSelectionOnMakeKOT());
-				objBean.setChkMoveTableToOtherPOS(objSetupHdModel.getStrMoveTableToOtherPOS());
-				objBean.setChkMoveKOTToOtherPOS(objSetupHdModel.getStrMoveKOTToOtherPOS());
-				objBean.setChkCalculateTaxOnMakeKOT(objSetupHdModel.getStrCalculateTaxOnMakeKOT());
-				objBean.setStrReceiverEmailId(objSetupHdModel.getStrReceiverEmailId());
-				objBean.setChkCalculateDiscItemWise(objSetupHdModel.getStrCalculateDiscItemWise());
-				objBean.setChkTakewayCustomerSelection(objSetupHdModel.getStrTakewayCustomerSelection());
-				objBean.setChkShowItemStkColumnInDB(objSetupHdModel.getStrShowItemStkColumnInDB());
-				objBean.setStrItemType(objSetupHdModel.getStrItemType());
-				objBean.setChkBoxAllowNewAreaMasterFromCustMaster(objSetupHdModel.getStrAllowNewAreaMasterFromCustMaster());
-				objBean.setChkSelectCustAddressForBill(objSetupHdModel.getStrCustAddressSelectionForBill());
-				objBean.setChkGenrateMI(objSetupHdModel.getStrGenrateMI());
-				objBean.setStrFTPAddress(objSetupHdModel.getStrFTPAddress());
-				objBean.setStrFTPServerUserName(objSetupHdModel.getStrFTPServerUserName());
-				objBean.setStrFTPServerPass(objSetupHdModel.getStrFTPServerPass());
-				objBean.setChkAllowToCalculateItemWeight(objSetupHdModel.getStrAllowToCalculateItemWeight());
-				objBean.setStrShowBillsDtlType(objSetupHdModel.getStrShowBillsDtlType());
-				objBean.setChkPrintInvoiceOnBill(objSetupHdModel.getStrPrintTaxInvoiceOnBill());
-				objBean.setChkPrintInclusiveOfAllTaxesOnBill(objSetupHdModel.getStrPrintInclusiveOfAllTaxesOnBill());
-				objBean.setStrApplyDiscountOn(objSetupHdModel.getStrApplyDiscountOn());
-				objBean.setChkMemberCodeForKotInMposByCardSwipe(objSetupHdModel.getStrMemberCodeForKotInMposByCardSwipe());
-				objBean.setChkPrintBill(objSetupHdModel.getStrPrintBillYN());
-				objBean.setChkUseVatAndServiceNoFromPos(objSetupHdModel.getStrVatAndServiceTaxFromPos());
-				objBean.setChkMemberCodeForMakeBillInMPOS(objSetupHdModel.getStrMemberCodeForMakeBillInMPOS());
-				objBean.setChkItemWiseKOTPrintYN(objSetupHdModel.getStrItemWiseKOTYN());
-				objBean.setStrPOSForDayEnd(objSetupHdModel.getStrLastPOSForDayEnd());
-				objBean.setStrCMSPostingType(objSetupHdModel.getStrCMSPostingType());
-				objBean.setChkPopUpToApplyPromotionsOnBill(objSetupHdModel.getStrPopUpToApplyPromotionsOnBill());
-				objBean.setChkSelectCustomerCodeFromCardSwipe(objSetupHdModel.getStrSelectCustomerCodeFromCardSwipe());
-				objBean.setChkCheckDebitCardBalOnTrans(objSetupHdModel.getStrCheckDebitCardBalOnTransactions());
-				objBean.setChkSettlementsFromPOSMaster(objSetupHdModel.getStrSettlementsFromPOSMaster());
-				objBean.setChkShiftWiseDayEnd(objSetupHdModel.getStrShiftWiseDayEndYN());
-				objBean.setChkProductionLinkup(objSetupHdModel.getStrProductionLinkup());
-				objBean.setChkLockDataOnShift(objSetupHdModel.getStrLockDataOnShift());
-				objBean.setStrWSClientCode(objSetupHdModel.getStrWSClientCode());
-				objBean.setChkEnableBillSeries(objSetupHdModel.getStrEnableBillSeries());
-				objBean.setChkEnablePMSIntegration(objSetupHdModel.getStrEnablePMSIntegrationYN());
-				objBean.setChkPrintTimeOnBill(objSetupHdModel.getStrPrintTimeOnBill());
-				objBean.setChkPrintTDHItemsInBill(objSetupHdModel.getStrPrintTDHItemsInBill());
-				objBean.setChkPrintRemarkAndReasonForReprint(objSetupHdModel.getStrPrintRemarkAndReasonForReprint());
-				objBean.setIntDaysBeforeOrderToCancel((long)objSetupHdModel.getIntDaysBeforeOrderToCancel());
-				objBean.setIntNoOfDelDaysForAdvOrder((long)objSetupHdModel.getIntNoOfDelDaysForAdvOrder());
-				objBean.setIntNoOfDelDaysForUrgentOrder((long)objSetupHdModel.getIntNoOfDelDaysForUrgentOrder());
-				objBean.setChkSetUpToTimeForAdvOrder(objSetupHdModel.getStrSetUpToTimeForAdvOrder());
-				objBean.setChkSetUpToTimeForUrgentOrder(objSetupHdModel.getStrSetUpToTimeForUrgentOrder());	
-			    String upToTimeForAdvOrder = (objSetupHdModel.getStrUpToTimeForAdvOrder()).split(" ")[0];
-			    objBean.setStrHours(upToTimeForAdvOrder.split(":")[0].trim());
-			    objBean.setStrMinutes(upToTimeForAdvOrder.split(":")[1].trim());
-			    objBean.setStrAMPM((objSetupHdModel.getStrUpToTimeForAdvOrder()).split(" ")[1]);
-			    String upToTimeForUrgentOrder = (objSetupHdModel.getStrUpToTimeForUrgentOrder()).split(" ")[0];
-			    objBean.setStrHoursUrgentOrder(upToTimeForUrgentOrder.split(":")[0].trim());
-			    objBean.setStrMinutesUrgentOrder(upToTimeForUrgentOrder.split(":")[1].trim());
-			    objBean.setStrAMPMUrgent((objSetupHdModel.getStrUpToTimeForUrgentOrder()).split(" ")[1]);
-				objBean.setChkEnableBothPrintAndSettleBtnForDB(objSetupHdModel.getStrEnableBothPrintAndSettleBtnForDB());
-				objBean.setStrInrestoPOSIntegrationYN(objSetupHdModel.getStrInrestoPOSIntegrationYN());
-				objBean.setStrInrestoPOSWesServiceURL(objSetupHdModel.getStrInrestoPOSWebServiceURL());
-				objBean.setStrInrestoPOSId(objSetupHdModel.getStrInrestoPOSId());
-				objBean.setStrInrestoPOSKey(objSetupHdModel.getStrInrestoPOSKey());
-				objBean.setChkCarryForwardFloatAmtToNextDay(objSetupHdModel.getStrCarryForwardFloatAmtToNextDay());
-				objBean.setChkOpenCashDrawerAfterBillPrint(objSetupHdModel.getStrOpenCashDrawerAfterBillPrintYN());
-				objBean.setChkPropertyWiseSalesOrder(objSetupHdModel.getStrPropertyWiseSalesOrderYN());		
-				objBean.setChkShowItemDtlsForChangeCustomerOnBill(objSetupHdModel.getStrShowItemDetailsGrid());
-				objBean.setChkShowPopUpForNextItemQuantity(objSetupHdModel.getStrShowPopUpForNextItemQuantity());
-				objBean.setStrJioPOSIntegrationYN(objSetupHdModel.getStrJioMoneyIntegration());
-				objBean.setStrJioPOSWesServiceURL(objSetupHdModel.getStrJioWebServiceUrl());
-				objBean.setStrJioMID(objSetupHdModel.getStrJioMID());
-				objBean.setStrJioTID(objSetupHdModel.getStrJioTID());
-				objBean.setStrJioActivationCode(objSetupHdModel.getStrJioActivationCode());
-				objBean.setStrJioDeviceID(objSetupHdModel.getStrJioDeviceID());
-				if(!objSetupHdModel.getStrJioDeviceID().toString().isEmpty())
-					{
-					JioDeviceIDFound=true;
-					JioDeviceIDFromDB=objSetupHdModel.getStrJioDeviceID().toString();
-					}
-				objBean.setChkNewBillSeriesForNewDay(objSetupHdModel.getStrNewBillSeriesForNewDay());
-				objBean.setChkShowReportsPOSWise(objSetupHdModel.getStrShowReportsPOSWise());
-				objBean.setChkEnableDineIn(objSetupHdModel.getStrEnableDineIn());
-				objBean.setChkAutoAreaSelectionInMakeKOT(objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
-				dteEndDate=objSetupHdModel.getDteEndDate();
-	
+				
 			}
 			
 		}catch(Exception e){
@@ -369,18 +392,20 @@ public class clsPOSPropertySetupController {
 			for (int cnt = 0; cnt < list.size(); cnt++)
 			{
 				objSetupHdModel = (clsSetupHdModel) list.get(cnt);
-				if(objSetupHdModel.getBlobReportImage()!=null)
+				if(objSetupHdModel.getStrPOSCode().equals(posCode))
 				{
-				 	Blob blob = objSetupHdModel.getBlobReportImage(); 
-				 	byte[] byteContent = blob.toString().getBytes();
-				    String imagePath=servletContext.getRealPath("/resources/images");
-					int blobLength = (int) blob.length();  
+					if(objSetupHdModel.getBlobReportImage()!=null)
+					{
+					 	Blob blob = objSetupHdModel.getBlobReportImage(); 
+					 	byte[] byteContent = blob.toString().getBytes();
+					    String imagePath=servletContext.getRealPath("/resources/images");
+						int blobLength = (int) blob.length();  
 
-					fileOuputStream = new FileOutputStream(imagePath+"/imgClientImage.jpg");
-					fileOuputStream.write(byteContent);
-					fileOuputStream.close();
+						fileOuputStream = new FileOutputStream(imagePath+"/imgClientImage.jpg");
+						fileOuputStream.write(byteContent);
+						fileOuputStream.close();
+					}
 				}
-				
 			}
 			objBean.setStrPosCode(objSetupHdModel.getStrPOSCode());
 			objBean.setStrPrintingType(objSetupHdModel.getStrPrintType());
@@ -557,7 +582,35 @@ public class clsPOSPropertySetupController {
 			objBean.setChkShowReportsPOSWise(objSetupHdModel.getStrShowReportsPOSWise());
 			objBean.setChkEnableDineIn(objSetupHdModel.getStrEnableDineIn());
 			objBean.setChkAutoAreaSelectionInMakeKOT(objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
-		
+			objBean.setChkAreaWiseCostCenterKOTPrinting(objSetupHdModel.getStrAreaWiseCostCenterKOTPrintingYN());
+			objBean.setStrHomeDeliAreaForDirectBiller(objSetupHdModel.getStrHomeDeliveryAreaForDirectBiller());
+			objBean.setStrTakeAwayAreaForDirectBiller(objSetupHdModel.getStrTakeAwayAreaForDirectBiller());
+			objBean.setChkRoundOffBillAmount(objSetupHdModel.getStrRoundOffBillFinalAmt());
+			objBean.setChkPrintItemsOnMoveKOTMoveTable(objSetupHdModel.getStrPrintItemsOnMoveKOTMoveTable());
+			objBean.setIntNoOfDecimalPlaces(objSetupHdModel.getDblNoOfDecimalPlace());
+		    objBean.setChkPrintMoveTableMoveKOT(objSetupHdModel.getStrPrintMoveTableMoveKOTYN());
+		    objBean.setChkSendDBBackupOnMail(objSetupHdModel.getStrSendDBBackupOnClientMail());
+		    objBean.setChkPrintQtyTotal(objSetupHdModel.getStrPrintQtyTotal());
+		    objBean.setChkPrintOrderNoOnBill(objSetupHdModel.getStrPrintOrderNoOnBillYN());
+		    objBean.setChkAutoAddKOTToBill(objSetupHdModel.getStrAutoAddKOTToBill());
+		    objBean.setChkPrintDeviceUserDtlOnKOT(objSetupHdModel.getStrPrintDeviceAndUserDtlOnKOTYN());
+		    objBean.setChkFireCommunication(objSetupHdModel.getStrFireCommunication());
+		    objBean.setStrRemoveServiceChargeTaxCode (objSetupHdModel.getStrRemoveSCTaxCode());
+		    objBean.setChkLockTableForWaiter (objSetupHdModel.getStrLockTableForWaiter());
+		    objBean.setDblUSDCrrencyConverionRate (objSetupHdModel.getDblUSDConverionRate());
+		    objBean.setStrShowReportsInCurrency (objSetupHdModel.getStrShowReportsInCurrency());
+			objBean.setStrPOSToMMSPostingCurrency (objSetupHdModel.getStrPOSToMMSPostingCurrency());
+			objBean.setStrPOSToWebBooksPostingCurrency (objSetupHdModel.getStrPOSToWebBooksPostingCurrency());
+			objBean.setStrBenowPOSIntegrationYN (objSetupHdModel.getStrBenowIntegrationYN());
+			objBean.setStrEmail(objSetupHdModel.getStrXEmail());
+			objBean.setStrMerchantCode (objSetupHdModel.getStrMerchantCode());
+			objBean.setStrAuthenticationKey (objSetupHdModel.getStrAuthenticationKey());
+			objBean.setStrSalt (objSetupHdModel.getStrSalt());
+			objBean.setStrWeraIntegrationYN (objSetupHdModel.getStrWERAOnlineOrderIntegration());
+			objBean.setStrWeraMerchantOutletId (objSetupHdModel.getStrWERAMerchantOutletId());
+			objBean.setStrWeraAuthenticationAPIKey (objSetupHdModel.getStrWERAAuthenticationAPIKey());
+			objBean.setStrPostMMSSalesEffectCostOrLoc(objSetupHdModel.getStrPostSalesCostOrLoc());
+			
 			dteEndDate=objSetupHdModel.getDteEndDate();
 
 		}catch(Exception e){
@@ -570,8 +623,7 @@ public class clsPOSPropertySetupController {
 	@RequestMapping(value = "/loadPrinterDtl", method = RequestMethod.GET)
 	public @ResponseBody clsPOSPropertySetupBean funSetPrinterDtl(HttpServletRequest request)
 	{
-		 List<clsPOSPrinterSetupBean> listBillSeriesDtl= new ArrayList<clsPOSPrinterSetupBean>();
-		JSONArray jArr= new JSONArray();
+		List<clsPOSPrinterSetupBean> listBillSeriesDtl= new ArrayList<clsPOSPrinterSetupBean>();
 		clsPOSPropertySetupBean objBean = new clsPOSPropertySetupBean();
 		StringBuilder sqlStringBuilder = new StringBuilder();
 		try{
@@ -583,23 +635,18 @@ public class clsPOSPropertySetupController {
          	
 			
 			List list = objBaseService.funGetList(sqlStringBuilder, "sql");
-			JSONArray jArrData=new JSONArray();
 			if (list!=null)
 				{
 					clsPOSPrinterSetupBean objPrinterBean;
 					for(int i=0; i<list.size(); i++)
 					{
 						Object[] obj=(Object[])list.get(i);
-					
-						JSONObject objSettle=new JSONObject();
 						objPrinterBean = new clsPOSPrinterSetupBean();
-						
 						objPrinterBean.setStrCostCenterCode(obj[0].toString());
 						objPrinterBean.setStrCostCenterName(obj[1].toString());
 						objPrinterBean.setStrPrimaryPrinterPort(obj[2].toString());
 						objPrinterBean.setStrSecondaryPrinterPort(obj[3].toString());
 						objPrinterBean.setStrPrintOnBothPrintersYN(obj[4].toString());
-				
 						listBillSeriesDtl.add(objPrinterBean);
 						
 					}
@@ -633,7 +680,6 @@ public class clsPOSPropertySetupController {
 	public @ResponseBody clsPOSPropertySetupBean funSetSelectedBillSeries(@RequestParam("posCode") String posCode,HttpServletRequest request)
 	{
 		List<clsPOSBillSeriesDtlBean> listBillSeriesDtl= new ArrayList<clsPOSBillSeriesDtlBean>();
-		JSONArray jArr= new JSONArray();
 		clsPOSPropertySetupBean objBean = new clsPOSPropertySetupBean();
 		try{
 			
@@ -670,7 +716,6 @@ public class clsPOSPropertySetupController {
 	public @ResponseBody List funLoadSelectedTypeDtlTable(@RequestParam("strType") String strType,HttpServletRequest req)throws Exception
 	{
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
-		JSONArray jArrList=null;
 		List listTypeData=new ArrayList();
 		switch(strType)
 		{
@@ -756,7 +801,7 @@ public class clsPOSPropertySetupController {
 						e.printStackTrace();
 					}
 				}
-				objModel.setStrActivePromotions(objBean.getChkActivePromotions());
+				objModel.setStrActivePromotions(objGlobal.funIfNull(objBean.getChkActivePromotions(),"N","Y"));
 			    objModel.setDblMaxDiscount( objBean.getDblMaxDiscount());
 			    objModel.setDteEndDate(dteEndDate);
 			    objModel.setDteHOServerDate(objBean.getDteHOServerDate());
@@ -933,8 +978,36 @@ public class clsPOSPropertySetupController {
 			    objModel.setStrWebServiceLink(objBean.getStrWebServiceLink());
 			    objModel.setStrWSClientCode(objBean.getStrWSClientCode());
 			    objModel.setStrEnableDineIn(objGlobal.funIfNull( objBean.getChkEnableDineIn(),"N","Y"));
-			    objModel.setStrAutoAreaSelectionInMakeKOT(objGlobal.funIfNull( objBean.getChkAutoAreaSelectionInMakeKOT(),"N","Y"));		
-			    objModel.setDteDateCreated(dateTime);
+			    objModel.setStrAutoAreaSelectionInMakeKOT(objGlobal.funIfNull( objBean.getChkAutoAreaSelectionInMakeKOT(),"N","Y"));
+			    objModel.setStrAreaWiseCostCenterKOTPrintingYN(objGlobal.funIfNull( objBean.getChkAreaWiseCostCenterKOTPrinting(),"N","Y"));
+			    objModel.setStrHomeDeliveryAreaForDirectBiller(objBean.getStrHomeDeliAreaForDirectBiller());
+			    objModel.setStrTakeAwayAreaForDirectBiller(objBean.getStrTakeAwayAreaForDirectBiller());
+			    objModel.setStrRoundOffBillFinalAmt(objGlobal.funIfNull( objBean.getChkRoundOffBillAmount(),"N","Y"));
+			    objModel.setStrPrintItemsOnMoveKOTMoveTable(objGlobal.funIfNull( objBean.getChkPrintItemsOnMoveKOTMoveTable(),"N","Y"));
+			    objModel.setDblNoOfDecimalPlace(objBean.getIntNoOfDecimalPlaces());
+			    objModel.setStrPrintMoveTableMoveKOTYN(objGlobal.funIfNull( objBean.getChkPrintMoveTableMoveKOT(),"N","Y"));
+			    objModel.setStrSendDBBackupOnClientMail(objGlobal.funIfNull( objBean.getChkSendDBBackupOnMail(),"N","Y"));
+			    objModel.setStrPrintQtyTotal(objGlobal.funIfNull( objBean.getChkPrintQtyTotal(),"N","Y"));
+			    objModel.setStrPrintOrderNoOnBillYN(objGlobal.funIfNull( objBean.getChkPrintOrderNoOnBill(),"N","Y"));
+			    objModel.setStrAutoAddKOTToBill(objGlobal.funIfNull( objBean.getChkAutoAddKOTToBill(),"N","Y"));
+			    objModel.setStrPrintDeviceAndUserDtlOnKOTYN(objGlobal.funIfNull( objBean.getChkPrintDeviceUserDtlOnKOT(),"N","Y"));
+			    objModel.setStrFireCommunication(objGlobal.funIfNull( objBean.getChkFireCommunication(),"N","Y"));
+			    objModel.setStrRemoveSCTaxCode(objBean.getStrRemoveServiceChargeTaxCode());
+			    objModel.setStrLockTableForWaiter(objGlobal.funIfNull( objBean.getChkLockTableForWaiter(),"N","Y"));
+			    objModel.setDblUSDConverionRate(objBean.getDblUSDCrrencyConverionRate());
+				objModel.setStrShowReportsInCurrency(objBean.getStrShowReportsInCurrency());
+				objModel.setStrPOSToMMSPostingCurrency(objBean.getStrPOSToMMSPostingCurrency());
+				objModel.setStrPOSToWebBooksPostingCurrency(objBean.getStrPOSToWebBooksPostingCurrency());
+				objModel.setStrBenowIntegrationYN(objBean.getStrBenowPOSIntegrationYN());
+				objModel.setStrXEmail(objBean.getStrEmail());
+				objModel.setStrMerchantCode(objBean.getStrMerchantCode());
+				objModel.setStrAuthenticationKey(objBean.getStrAuthenticationKey());
+				objModel.setStrSalt(objBean.getStrSalt());
+				objModel.setStrWERAOnlineOrderIntegration(objBean.getStrWeraIntegrationYN());
+				objModel.setStrWERAMerchantOutletId(objBean.getStrWeraMerchantOutletId());
+				objModel.setStrWERAAuthenticationAPIKey(objBean.getStrWeraAuthenticationAPIKey());
+				objModel.setStrPostSalesCostOrLoc(objBean.getStrPostMMSSalesEffectCostOrLoc());
+		        objModel.setDteDateCreated(dateTime);
 			    objModel.setDteDateEdited(dateTime);		 
 			    objModel.setStrUserCreated(webStockUserCode);
 			    objModel.setStrUserEdited(webStockUserCode);
@@ -1026,7 +1099,8 @@ public class clsPOSPropertySetupController {
 				    }
 			    }
 			    
-									
+			req.getSession().setAttribute("success", true);
+			req.getSession().setAttribute("successMessage","Updated Successfully");						
 			return new ModelAndView("redirect:/frmPOSPropertySetup.html");
 		}
 		catch(Exception ex)
@@ -1083,8 +1157,8 @@ public class clsPOSPropertySetupController {
 	        StringBuilder sql = new StringBuilder();
 	    	clsSetupHdModel objSetupHdModel = new clsSetupHdModel();
     	try{
-			 JSONObject rootObject = new JSONObject();
-	         JSONArray dataObjectArray = new JSONArray();
+			 Map hmMainMap = new HashMap();
+	         List listData = new ArrayList<>();
 	         boolean flgAllPOS = false;
 	         sql.append("select strClientCode from tblsetup where strPOSCode='All' ");
 	         List list = objBaseService.funGetList(sql, "sql");
@@ -1110,403 +1184,403 @@ public class clsPOSPropertySetupController {
 		         			 List poslist =objBaseService.funGetList(sql, "sql");
 		         			 for(int j=0; j<poslist.size();j++)
 		         	         {
-		                         JSONObject objJsonObject = new JSONObject();
+		                        Map hmData = new HashMap<>();
 		                      
-		                        objJsonObject.put("strClientCode", objSetupHdModel.getStrClientCode());//clientCode
-		         				objJsonObject.put("strClientName",objSetupHdModel.getStrClientName());//clientName
-		         				objJsonObject.put("strAddressLine1", objSetupHdModel.getStrAddressLine1());
-		         				objJsonObject.put("strAddressLine2", objSetupHdModel.getStrAddressLine2());
-		         				objJsonObject.put("strAddressLine3", objSetupHdModel.getStrAddressLine3());
-		         				objJsonObject.put("strEmail", objSetupHdModel.getStrEmail());
-		         				objJsonObject.put("strBillFooter", objSetupHdModel.getStrBillFooter());
-		         				objJsonObject.put("strBillFooterStatus", objSetupHdModel.getStrBillFooterStatus());
-		             			objJsonObject.put("intBillPaperSize", objSetupHdModel.getIntBillPaperSize());
-		             			objJsonObject.put("strNegativeBilling", objSetupHdModel.getStrNegativeBilling());
-		         				objJsonObject.put("strDayEnd", objSetupHdModel.getStrDayEnd());
-		         				objJsonObject.put("strPrintMode", objSetupHdModel.getStrPrintMode());
-		         				objJsonObject.put("strDiscountNote", objSetupHdModel.getStrDiscountNote());
-		         				objJsonObject.put("strCityName", objSetupHdModel.getStrCityName());
-		         				objJsonObject.put("strState",objSetupHdModel.getStrState());
-		         				objJsonObject.put("strCountry",objSetupHdModel.getStrCountry());
-		         				objJsonObject.put("intTelephoneNo",objSetupHdModel.getIntTelephoneNo());
-		         				objJsonObject.put("gMobileNoForSMS",objSetupHdModel.getIntTelephoneNo());
-		         				objJsonObject.put("dteStartDate",objSetupHdModel.getDteStartDate());
-		         				objJsonObject.put("dteEndDate", objSetupHdModel.getDteEndDate());
-		         				objJsonObject.put("gEndTime",objSetupHdModel.getDteEndDate());
-		         				objJsonObject.put("strNatureOfBusinnes", objSetupHdModel.getStrNatureOfBusinnes());
-		         				objJsonObject.put("strMultipleBillPrinting",objSetupHdModel.getStrMultipleBillPrinting());
-		         				objJsonObject.put("strEnableKOT",objSetupHdModel.getStrEnableKOT());
-		         				objJsonObject.put("strEffectOnPSP",objSetupHdModel.getStrEffectOnPSP());
-		         				objJsonObject.put("strPrintVatNo", objSetupHdModel.getStrPrintVatNo());
-		         				objJsonObject.put("strVatNo",objSetupHdModel.getStrVatNo());
-		         				objJsonObject.put("strShowBill", objSetupHdModel.getStrShowBill());
-		         				objJsonObject.put("strPrintServiceTaxNo", objSetupHdModel.getStrPrintServiceTaxNo());
-		         				objJsonObject.put("strServiceTaxNo", objSetupHdModel.getStrServiceTaxNo());
-		         				objJsonObject.put("strManualBillNo", objSetupHdModel.getStrManualBillNo());
-		         				objJsonObject.put("strMenuItemDispSeq",objSetupHdModel.getStrMenuItemDispSeq());
-		         				objJsonObject.put("strSenderEmailId", objSetupHdModel.getStrSenderEmailId());
-		         				objJsonObject.put("strEmailPassword",objSetupHdModel.getStrEmailPassword());
-		         				objJsonObject.put("strConfirmEmailPassword",objSetupHdModel.getStrConfirmEmailPassword());
-		         				objJsonObject.put("strBody", objSetupHdModel.getStrBody());
-		         				objJsonObject.put("strEmailServerName",objSetupHdModel.getStrEmailServerName());
-		         				objJsonObject.put("strSMSApi", objSetupHdModel.getStrSMSApi());
-		         				objJsonObject.put("strUserCreated", objSetupHdModel.getStrUserCreated());
-		         				objJsonObject.put("strUserEdited", objSetupHdModel.getStrUserEdited());
-		         				objJsonObject.put("dteDateCreated", objSetupHdModel.getDteDateCreated());
-		         				objJsonObject.put("dteDateEdited", objSetupHdModel.getDteDateEdited());
-		         				objJsonObject.put("strPOSType", objSetupHdModel.getStrPOSType());
-		         				objJsonObject.put("strWebServiceLink",objSetupHdModel.getStrWebServiceLink());
-		         				objJsonObject.put("strDataSendFrequency",objSetupHdModel.getStrDataSendFrequency());
-		         				objJsonObject.put("dteHOServerDate",objSetupHdModel.getDteHOServerDate());
-		         				objJsonObject.put("strRFID",objSetupHdModel.getStrRFID());
-		         				objJsonObject.put("strServerName",objSetupHdModel.getStrServerName());
-		         				objJsonObject.put("strDBUserName", objSetupHdModel.getStrDBUserName());
-		         				objJsonObject.put("strDBPassword",objSetupHdModel.getStrDBPassword());
-		         				objJsonObject.put("strDatabaseName",objSetupHdModel.getStrDatabaseName());
-		         				objJsonObject.put("strEnableKOTForDirectBiller", objSetupHdModel.getStrEnableKOTForDirectBiller());
-		         				objJsonObject.put("intPinCode",objSetupHdModel.getIntPinCode());
-		         				objJsonObject.put("strChangeTheme", objSetupHdModel.getStrChangeTheme());
-		         				objJsonObject.put("dblMaxDiscount",objSetupHdModel.getDblMaxDiscount());
-		         				objJsonObject.put("strAreaWisePricing",objSetupHdModel.getStrAreaWisePricing());
-		         				objJsonObject.put("strMenuItemSortingOn",objSetupHdModel.getStrMenuItemSortingOn());
-		         				objJsonObject.put("strDirectAreaCode", objSetupHdModel.getStrDirectAreaCode());
-		         				objJsonObject.put("intColumnSize", objSetupHdModel.getIntColumnSize());
-		         				objJsonObject.put("strPrintType", objSetupHdModel.getStrPrintType());
-		         				objJsonObject.put("strEditHomeDelivery", objSetupHdModel.getStrEditHomeDelivery());
-		         				objJsonObject.put("strSlabBasedHDCharges", objSetupHdModel.getStrSlabBasedHDCharges());
-		         				objJsonObject.put("strSkipWaiterAndPax", objSetupHdModel.getStrSkipWaiterAndPax());
-		         				objJsonObject.put("strSkipWaiter",objSetupHdModel.getStrSkipWaiter());
-		         				objJsonObject.put("strDirectKOTPrintMakeKOT", objSetupHdModel.getStrDirectKOTPrintMakeKOT());
-		         				objJsonObject.put("strSkipPax",objSetupHdModel.getStrSkipPax());
-		         				objJsonObject.put("strCRMInterface",objSetupHdModel.getStrCRMInterface());
-		         				objJsonObject.put("strGetWebserviceURL",objSetupHdModel.getStrGetWebserviceURL());
-		         				objJsonObject.put("strPostWebserviceURL", objSetupHdModel.getStrPostWebserviceURL());
-		         			//	objJsonObject.put("gOutletUID",objSetupHdModel.getStrOutletUID());
-		         				objJsonObject.put("strPOSID",objSetupHdModel.getStrPOSID());
-		         				objJsonObject.put("strStockInOption",objSetupHdModel.getStrStockInOption());
-		         				objJsonObject.put("longCustSeries", objSetupHdModel.getStrCustSeries());
-		         				objJsonObject.put("intAdvReceiptPrintCount",objSetupHdModel.getIntAdvReceiptPrintCount());
-		         				objJsonObject.put("strHomeDeliverySMS",objSetupHdModel.getStrHomeDeliverySMS());
-		         				objJsonObject.put("strBillStettlementSMS", objSetupHdModel.getStrBillStettlementSMS());
-		           				objJsonObject.put("strBillFormatType",objSetupHdModel.getStrBillFormatType());
-		         				objJsonObject.put("strActivePromotions",objSetupHdModel.getStrActivePromotions());
-		         				objJsonObject.put("strSendHomeDelSMS",objSetupHdModel.getStrSendHomeDelSMS());
-		         				objJsonObject.put("strSendBillSettlementSMS", objSetupHdModel.getStrSendBillSettlementSMS());
-		         				objJsonObject.put("strSMSType", objSetupHdModel.getStrSMSType());
-		         				objJsonObject.put("strPrintShortNameOnKOT",objSetupHdModel.getStrPrintShortNameOnKOT());
-		         				objJsonObject.put("strShowCustHelp",objSetupHdModel.getStrShowCustHelp());
-		         				objJsonObject.put("strPrintOnVoidBill", objSetupHdModel.getStrPrintOnVoidBill());
-		         				objJsonObject.put("strPostSalesDataToMMS", objSetupHdModel.getStrPostSalesDataToMMS());
-		         				objJsonObject.put("strCustAreaMasterCompulsory",objSetupHdModel.getStrCustAreaMasterCompulsory());
-		         				objJsonObject.put("strPriceFrom",objSetupHdModel.getStrPriceFrom());
-		         				objJsonObject.put("strShowPrinterErrorMessage", objSetupHdModel.getStrShowPrinterErrorMessage());
-		         				objJsonObject.put("strTouchScreenMode", objSetupHdModel.getStrTouchScreenMode());
-		         				objJsonObject.put("strCardInterfaceType", objSetupHdModel.getStrCardInterfaceType());
-		         				objJsonObject.put("strCMSIntegrationYN",objSetupHdModel.getStrCMSIntegrationYN());
-		         				objJsonObject.put("strCMSWebServiceURL",objSetupHdModel.getStrCMSWebServiceURL());
-		         				objJsonObject.put("strChangeQtyForExternalCode", objSetupHdModel.getStrChangeQtyForExternalCode());
-		         				objJsonObject.put("strPointsOnBillPrint",objSetupHdModel.getStrPointsOnBillPrint());
-		         				objJsonObject.put("strCMSPOSCode",objSetupHdModel.getStrCMSPOSCode());
-		         				objJsonObject.put("strManualAdvOrderNoCompulsory",objSetupHdModel.getStrManualAdvOrderNoCompulsory());
-		         				objJsonObject.put("strPrintManualAdvOrderNoOnBill", objSetupHdModel.getStrPrintManualAdvOrderNoOnBill());
-		         				objJsonObject.put("strPrintModifierQtyOnKOT",objSetupHdModel.getStrPrintModifierQtyOnKOT());
-		         				objJsonObject.put("strNoOfLinesInKOTPrint",objSetupHdModel.getStrNoOfLinesInKOTPrint());
-		         				objJsonObject.put("strMultipleKOTPrintYN",objSetupHdModel.getStrMultipleKOTPrintYN());
-		         				objJsonObject.put("strItemQtyNumpad", objSetupHdModel.getStrItemQtyNumpad());
-		         				objJsonObject.put("strTreatMemberAsTable", objSetupHdModel.getStrTreatMemberAsTable());
-		         				objJsonObject.put("strKOTToLocalPrinter",objSetupHdModel.getStrKOTToLocalPrinter());
-		         				objJsonObject.put("strSettleBtnForDirectBillerBill",objSetupHdModel.getStrSettleBtnForDirectBillerBill());
-		         				objJsonObject.put("strDelBoySelCompulsoryOnDirectBiller", objSetupHdModel.getStrDelBoySelCompulsoryOnDirectBiller());
-		         				objJsonObject.put("strCMSMemberForKOTJPOS",objSetupHdModel.getStrCMSMemberForKOTJPOS());
-		         				objJsonObject.put("strCMSMemberForKOTMPOS", objSetupHdModel.getStrCMSMemberForKOTMPOS());
-		         				objJsonObject.put("strDontShowAdvOrderInOtherPOS",objSetupHdModel.getStrDontShowAdvOrderInOtherPOS());
-		         				objJsonObject.put("strPrintZeroAmtModifierInBill",objSetupHdModel.getStrPrintZeroAmtModifierInBill());
-		         				objJsonObject.put("strPrintKOTYN",objSetupHdModel.getStrPrintKOTYN());
-		         				objJsonObject.put("strCreditCardSlipNoCompulsoryYN",objSetupHdModel.getStrCreditCardSlipNoCompulsoryYN());
-		         				objJsonObject.put("strCreditCardExpiryDateCompulsoryYN", objSetupHdModel.getStrCreditCardExpiryDateCompulsoryYN());
-		         				objJsonObject.put("strSelectWaiterFromCardSwipe",objSetupHdModel.getStrSelectWaiterFromCardSwipe());
-		         				objJsonObject.put("strMultiWaiterSelectionOnMakeKOT",objSetupHdModel.getStrMultiWaiterSelectionOnMakeKOT());
-		         				objJsonObject.put("strMoveTableToOtherPOS",objSetupHdModel.getStrMoveTableToOtherPOS());
-		         				objJsonObject.put("strMoveKOTToOtherPOS",objSetupHdModel.getStrMoveKOTToOtherPOS());
-		         				objJsonObject.put("strCalculateTaxOnMakeKOT",objSetupHdModel.getStrCalculateTaxOnMakeKOT());
-		         				objJsonObject.put("strReceiverEmailId", objSetupHdModel.getStrReceiverEmailId());
-		         				objJsonObject.put("strCalculateDiscItemWise",objSetupHdModel.getStrCalculateDiscItemWise());
-		         				objJsonObject.put("strTakewayCustomerSelection",objSetupHdModel.getStrTakewayCustomerSelection());
-		         				objJsonObject.put("StrShowItemStkColumnInDB",objSetupHdModel.getStrShowItemStkColumnInDB());
-		         				objJsonObject.put("strItemType",objSetupHdModel.getStrItemType());
-		         				objJsonObject.put("strAllowNewAreaMasterFromCustMaster", objSetupHdModel.getStrAllowNewAreaMasterFromCustMaster());
-		         				objJsonObject.put("strCustAddressSelectionForBill", objSetupHdModel.getStrCustAddressSelectionForBill());
-		         				objJsonObject.put("strGenrateMI",objSetupHdModel.getStrGenrateMI());
-		         				objJsonObject.put("strFTPAddress", objSetupHdModel.getStrFTPAddress());
-		         				objJsonObject.put("strFTPServerUserName", objSetupHdModel.getStrFTPServerUserName());
-		         				objJsonObject.put("strFTPServerPass",objSetupHdModel.getStrFTPServerPass());
-		         				objJsonObject.put("strAllowToCalculateItemWeight", objSetupHdModel.getStrAllowToCalculateItemWeight());
-		         				objJsonObject.put("strShowBillsDtlType", objSetupHdModel.getStrShowBillsDtlType());
-		         				objJsonObject.put("strPrintTaxInvoiceOnBill", objSetupHdModel.getStrPrintTaxInvoiceOnBill());
-		         				objJsonObject.put("strPrintInclusiveOfAllTaxesOnBill",objSetupHdModel.getStrPrintInclusiveOfAllTaxesOnBill());
-		         				objJsonObject.put("strApplyDiscountOn",objSetupHdModel.getStrApplyDiscountOn());
-		         				objJsonObject.put("strMemberCodeForKotInMposByCardSwipe",objSetupHdModel.getStrMemberCodeForKotInMposByCardSwipe());
-		         				objJsonObject.put("strPrintBillYN", objSetupHdModel.getStrPrintBillYN());
-		         				objJsonObject.put("strVatAndServiceTaxFromPos",objSetupHdModel.getStrVatAndServiceTaxFromPos());
-		         				objJsonObject.put("strMemberCodeForMakeBillInMPOS",objSetupHdModel.getStrMemberCodeForMakeBillInMPOS());
-		         				objJsonObject.put("strItemWiseKOTYN", objSetupHdModel.getStrItemWiseKOTYN());
-		         				objJsonObject.put("strLastPOSForDayEnd", objSetupHdModel.getStrLastPOSForDayEnd());
-		         				objJsonObject.put("strCMSPostingType", objSetupHdModel.getStrCMSPostingType());
-		         				objJsonObject.put("strPopUpToApplyPromotionsOnBill",objSetupHdModel.getStrPopUpToApplyPromotionsOnBill());
-		         				objJsonObject.put("strSelectCustomerCodeFromCardSwipe", objSetupHdModel.getStrSelectCustomerCodeFromCardSwipe());
-		         				objJsonObject.put("strCheckDebitCardBalOnTransactions", objSetupHdModel.getStrCheckDebitCardBalOnTransactions());
-		         				objJsonObject.put("strSettlementsFromPOSMaster", objSetupHdModel.getStrSettlementsFromPOSMaster());
-		         				objJsonObject.put("strShiftWiseDayEndYN", objSetupHdModel.getStrShiftWiseDayEndYN());
-		         				objJsonObject.put("strProductionLinkup", objSetupHdModel.getStrProductionLinkup());
-		         				objJsonObject.put("strLockDataOnShift",objSetupHdModel.getStrLockDataOnShift());
-		         				objJsonObject.put("strWSClientCode", objSetupHdModel.getStrWSClientCode());
-		         				objJsonObject.put("strPOSCode", objSetupHdModel.getStrPOSCode());
-		         				objJsonObject.put("strEnableBillSeries",objSetupHdModel.getStrEnableBillSeries());
-		         				objJsonObject.put("strEnablePMSIntegrationYN",objSetupHdModel.getStrEnablePMSIntegrationYN());
-		         				objJsonObject.put("strPrintTimeOnBill", objSetupHdModel.getStrPrintTimeOnBill());
-		         				objJsonObject.put("strPrintTDHItemsInBill", objSetupHdModel.getStrPrintTDHItemsInBill());
-		         				objJsonObject.put("strPrintRemarkAndReasonForReprint",objSetupHdModel.getStrPrintRemarkAndReasonForReprint());
+		                        hmData.put("strClientCode", objSetupHdModel.getStrClientCode());//clientCode
+		         				hmData.put("strClientName",objSetupHdModel.getStrClientName());//clientName
+		         				hmData.put("strAddressLine1", objSetupHdModel.getStrAddressLine1());
+		         				hmData.put("strAddressLine2", objSetupHdModel.getStrAddressLine2());
+		         				hmData.put("strAddressLine3", objSetupHdModel.getStrAddressLine3());
+		         				hmData.put("strEmail", objSetupHdModel.getStrEmail());
+		         				hmData.put("strBillFooter", objSetupHdModel.getStrBillFooter());
+		         				hmData.put("strBillFooterStatus", objSetupHdModel.getStrBillFooterStatus());
+		             			hmData.put("intBillPaperSize", objSetupHdModel.getIntBillPaperSize());
+		             			hmData.put("strNegativeBilling", objSetupHdModel.getStrNegativeBilling());
+		         				hmData.put("strDayEnd", objSetupHdModel.getStrDayEnd());
+		         				hmData.put("strPrintMode", objSetupHdModel.getStrPrintMode());
+		         				hmData.put("strDiscountNote", objSetupHdModel.getStrDiscountNote());
+		         				hmData.put("strCityName", objSetupHdModel.getStrCityName());
+		         				hmData.put("strState",objSetupHdModel.getStrState());
+		         				hmData.put("strCountry",objSetupHdModel.getStrCountry());
+		         				hmData.put("intTelephoneNo",objSetupHdModel.getIntTelephoneNo());
+		         				hmData.put("gMobileNoForSMS",objSetupHdModel.getIntTelephoneNo());
+		         				hmData.put("dteStartDate",objSetupHdModel.getDteStartDate());
+		         				hmData.put("dteEndDate", objSetupHdModel.getDteEndDate());
+		         				hmData.put("gEndTime",objSetupHdModel.getDteEndDate());
+		         				hmData.put("strNatureOfBusinnes", objSetupHdModel.getStrNatureOfBusinnes());
+		         				hmData.put("strMultipleBillPrinting",objSetupHdModel.getStrMultipleBillPrinting());
+		         				hmData.put("strEnableKOT",objSetupHdModel.getStrEnableKOT());
+		         				hmData.put("strEffectOnPSP",objSetupHdModel.getStrEffectOnPSP());
+		         				hmData.put("strPrintVatNo", objSetupHdModel.getStrPrintVatNo());
+		         				hmData.put("strVatNo",objSetupHdModel.getStrVatNo());
+		         				hmData.put("strShowBill", objSetupHdModel.getStrShowBill());
+		         				hmData.put("strPrintServiceTaxNo", objSetupHdModel.getStrPrintServiceTaxNo());
+		         				hmData.put("strServiceTaxNo", objSetupHdModel.getStrServiceTaxNo());
+		         				hmData.put("strManualBillNo", objSetupHdModel.getStrManualBillNo());
+		         				hmData.put("strMenuItemDispSeq",objSetupHdModel.getStrMenuItemDispSeq());
+		         				hmData.put("strSenderEmailId", objSetupHdModel.getStrSenderEmailId());
+		         				hmData.put("strEmailPassword",objSetupHdModel.getStrEmailPassword());
+		         				hmData.put("strConfirmEmailPassword",objSetupHdModel.getStrConfirmEmailPassword());
+		         				hmData.put("strBody", objSetupHdModel.getStrBody());
+		         				hmData.put("strEmailServerName",objSetupHdModel.getStrEmailServerName());
+		         				hmData.put("strSMSApi", objSetupHdModel.getStrSMSApi());
+		         				hmData.put("strUserCreated", objSetupHdModel.getStrUserCreated());
+		         				hmData.put("strUserEdited", objSetupHdModel.getStrUserEdited());
+		         				hmData.put("dteDateCreated", objSetupHdModel.getDteDateCreated());
+		         				hmData.put("dteDateEdited", objSetupHdModel.getDteDateEdited());
+		         				hmData.put("strPOSType", objSetupHdModel.getStrPOSType());
+		         				hmData.put("strWebServiceLink",objSetupHdModel.getStrWebServiceLink());
+		         				hmData.put("strDataSendFrequency",objSetupHdModel.getStrDataSendFrequency());
+		         				hmData.put("dteHOServerDate",objSetupHdModel.getDteHOServerDate());
+		         				hmData.put("strRFID",objSetupHdModel.getStrRFID());
+		         				hmData.put("strServerName",objSetupHdModel.getStrServerName());
+		         				hmData.put("strDBUserName", objSetupHdModel.getStrDBUserName());
+		         				hmData.put("strDBPassword",objSetupHdModel.getStrDBPassword());
+		         				hmData.put("strDatabaseName",objSetupHdModel.getStrDatabaseName());
+		         				hmData.put("strEnableKOTForDirectBiller", objSetupHdModel.getStrEnableKOTForDirectBiller());
+		         				hmData.put("intPinCode",objSetupHdModel.getIntPinCode());
+		         				hmData.put("strChangeTheme", objSetupHdModel.getStrChangeTheme());
+		         				hmData.put("dblMaxDiscount",objSetupHdModel.getDblMaxDiscount());
+		         				hmData.put("strAreaWisePricing",objSetupHdModel.getStrAreaWisePricing());
+		         				hmData.put("strMenuItemSortingOn",objSetupHdModel.getStrMenuItemSortingOn());
+		         				hmData.put("strDirectAreaCode", objSetupHdModel.getStrDirectAreaCode());
+		         				hmData.put("intColumnSize", objSetupHdModel.getIntColumnSize());
+		         				hmData.put("strPrintType", objSetupHdModel.getStrPrintType());
+		         				hmData.put("strEditHomeDelivery", objSetupHdModel.getStrEditHomeDelivery());
+		         				hmData.put("strSlabBasedHDCharges", objSetupHdModel.getStrSlabBasedHDCharges());
+		         				hmData.put("strSkipWaiterAndPax", objSetupHdModel.getStrSkipWaiterAndPax());
+		         				hmData.put("strSkipWaiter",objSetupHdModel.getStrSkipWaiter());
+		         				hmData.put("strDirectKOTPrintMakeKOT", objSetupHdModel.getStrDirectKOTPrintMakeKOT());
+		         				hmData.put("strSkipPax",objSetupHdModel.getStrSkipPax());
+		         				hmData.put("strCRMInterface",objSetupHdModel.getStrCRMInterface());
+		         				hmData.put("strGetWebserviceURL",objSetupHdModel.getStrGetWebserviceURL());
+		         				hmData.put("strPostWebserviceURL", objSetupHdModel.getStrPostWebserviceURL());
+		         			//	hmData.put("gOutletUID",objSetupHdModel.getStrOutletUID());
+		         				hmData.put("strPOSID",objSetupHdModel.getStrPOSID());
+		         				hmData.put("strStockInOption",objSetupHdModel.getStrStockInOption());
+		         				hmData.put("longCustSeries", objSetupHdModel.getStrCustSeries());
+		         				hmData.put("intAdvReceiptPrintCount",objSetupHdModel.getIntAdvReceiptPrintCount());
+		         				hmData.put("strHomeDeliverySMS",objSetupHdModel.getStrHomeDeliverySMS());
+		         				hmData.put("strBillStettlementSMS", objSetupHdModel.getStrBillStettlementSMS());
+		           				hmData.put("strBillFormatType",objSetupHdModel.getStrBillFormatType());
+		         				hmData.put("strActivePromotions",objSetupHdModel.getStrActivePromotions());
+		         				hmData.put("strSendHomeDelSMS",objSetupHdModel.getStrSendHomeDelSMS());
+		         				hmData.put("strSendBillSettlementSMS", objSetupHdModel.getStrSendBillSettlementSMS());
+		         				hmData.put("strSMSType", objSetupHdModel.getStrSMSType());
+		         				hmData.put("strPrintShortNameOnKOT",objSetupHdModel.getStrPrintShortNameOnKOT());
+		         				hmData.put("strShowCustHelp",objSetupHdModel.getStrShowCustHelp());
+		         				hmData.put("strPrintOnVoidBill", objSetupHdModel.getStrPrintOnVoidBill());
+		         				hmData.put("strPostSalesDataToMMS", objSetupHdModel.getStrPostSalesDataToMMS());
+		         				hmData.put("strCustAreaMasterCompulsory",objSetupHdModel.getStrCustAreaMasterCompulsory());
+		         				hmData.put("strPriceFrom",objSetupHdModel.getStrPriceFrom());
+		         				hmData.put("strShowPrinterErrorMessage", objSetupHdModel.getStrShowPrinterErrorMessage());
+		         				hmData.put("strTouchScreenMode", objSetupHdModel.getStrTouchScreenMode());
+		         				hmData.put("strCardInterfaceType", objSetupHdModel.getStrCardInterfaceType());
+		         				hmData.put("strCMSIntegrationYN",objSetupHdModel.getStrCMSIntegrationYN());
+		         				hmData.put("strCMSWebServiceURL",objSetupHdModel.getStrCMSWebServiceURL());
+		         				hmData.put("strChangeQtyForExternalCode", objSetupHdModel.getStrChangeQtyForExternalCode());
+		         				hmData.put("strPointsOnBillPrint",objSetupHdModel.getStrPointsOnBillPrint());
+		         				hmData.put("strCMSPOSCode",objSetupHdModel.getStrCMSPOSCode());
+		         				hmData.put("strManualAdvOrderNoCompulsory",objSetupHdModel.getStrManualAdvOrderNoCompulsory());
+		         				hmData.put("strPrintManualAdvOrderNoOnBill", objSetupHdModel.getStrPrintManualAdvOrderNoOnBill());
+		         				hmData.put("strPrintModifierQtyOnKOT",objSetupHdModel.getStrPrintModifierQtyOnKOT());
+		         				hmData.put("strNoOfLinesInKOTPrint",objSetupHdModel.getStrNoOfLinesInKOTPrint());
+		         				hmData.put("strMultipleKOTPrintYN",objSetupHdModel.getStrMultipleKOTPrintYN());
+		         				hmData.put("strItemQtyNumpad", objSetupHdModel.getStrItemQtyNumpad());
+		         				hmData.put("strTreatMemberAsTable", objSetupHdModel.getStrTreatMemberAsTable());
+		         				hmData.put("strKOTToLocalPrinter",objSetupHdModel.getStrKOTToLocalPrinter());
+		         				hmData.put("strSettleBtnForDirectBillerBill",objSetupHdModel.getStrSettleBtnForDirectBillerBill());
+		         				hmData.put("strDelBoySelCompulsoryOnDirectBiller", objSetupHdModel.getStrDelBoySelCompulsoryOnDirectBiller());
+		         				hmData.put("strCMSMemberForKOTJPOS",objSetupHdModel.getStrCMSMemberForKOTJPOS());
+		         				hmData.put("strCMSMemberForKOTMPOS", objSetupHdModel.getStrCMSMemberForKOTMPOS());
+		         				hmData.put("strDontShowAdvOrderInOtherPOS",objSetupHdModel.getStrDontShowAdvOrderInOtherPOS());
+		         				hmData.put("strPrintZeroAmtModifierInBill",objSetupHdModel.getStrPrintZeroAmtModifierInBill());
+		         				hmData.put("strPrintKOTYN",objSetupHdModel.getStrPrintKOTYN());
+		         				hmData.put("strCreditCardSlipNoCompulsoryYN",objSetupHdModel.getStrCreditCardSlipNoCompulsoryYN());
+		         				hmData.put("strCreditCardExpiryDateCompulsoryYN", objSetupHdModel.getStrCreditCardExpiryDateCompulsoryYN());
+		         				hmData.put("strSelectWaiterFromCardSwipe",objSetupHdModel.getStrSelectWaiterFromCardSwipe());
+		         				hmData.put("strMultiWaiterSelectionOnMakeKOT",objSetupHdModel.getStrMultiWaiterSelectionOnMakeKOT());
+		         				hmData.put("strMoveTableToOtherPOS",objSetupHdModel.getStrMoveTableToOtherPOS());
+		         				hmData.put("strMoveKOTToOtherPOS",objSetupHdModel.getStrMoveKOTToOtherPOS());
+		         				hmData.put("strCalculateTaxOnMakeKOT",objSetupHdModel.getStrCalculateTaxOnMakeKOT());
+		         				hmData.put("strReceiverEmailId", objSetupHdModel.getStrReceiverEmailId());
+		         				hmData.put("strCalculateDiscItemWise",objSetupHdModel.getStrCalculateDiscItemWise());
+		         				hmData.put("strTakewayCustomerSelection",objSetupHdModel.getStrTakewayCustomerSelection());
+		         				hmData.put("StrShowItemStkColumnInDB",objSetupHdModel.getStrShowItemStkColumnInDB());
+		         				hmData.put("strItemType",objSetupHdModel.getStrItemType());
+		         				hmData.put("strAllowNewAreaMasterFromCustMaster", objSetupHdModel.getStrAllowNewAreaMasterFromCustMaster());
+		         				hmData.put("strCustAddressSelectionForBill", objSetupHdModel.getStrCustAddressSelectionForBill());
+		         				hmData.put("strGenrateMI",objSetupHdModel.getStrGenrateMI());
+		         				hmData.put("strFTPAddress", objSetupHdModel.getStrFTPAddress());
+		         				hmData.put("strFTPServerUserName", objSetupHdModel.getStrFTPServerUserName());
+		         				hmData.put("strFTPServerPass",objSetupHdModel.getStrFTPServerPass());
+		         				hmData.put("strAllowToCalculateItemWeight", objSetupHdModel.getStrAllowToCalculateItemWeight());
+		         				hmData.put("strShowBillsDtlType", objSetupHdModel.getStrShowBillsDtlType());
+		         				hmData.put("strPrintTaxInvoiceOnBill", objSetupHdModel.getStrPrintTaxInvoiceOnBill());
+		         				hmData.put("strPrintInclusiveOfAllTaxesOnBill",objSetupHdModel.getStrPrintInclusiveOfAllTaxesOnBill());
+		         				hmData.put("strApplyDiscountOn",objSetupHdModel.getStrApplyDiscountOn());
+		         				hmData.put("strMemberCodeForKotInMposByCardSwipe",objSetupHdModel.getStrMemberCodeForKotInMposByCardSwipe());
+		         				hmData.put("strPrintBillYN", objSetupHdModel.getStrPrintBillYN());
+		         				hmData.put("strVatAndServiceTaxFromPos",objSetupHdModel.getStrVatAndServiceTaxFromPos());
+		         				hmData.put("strMemberCodeForMakeBillInMPOS",objSetupHdModel.getStrMemberCodeForMakeBillInMPOS());
+		         				hmData.put("strItemWiseKOTYN", objSetupHdModel.getStrItemWiseKOTYN());
+		         				hmData.put("strLastPOSForDayEnd", objSetupHdModel.getStrLastPOSForDayEnd());
+		         				hmData.put("strCMSPostingType", objSetupHdModel.getStrCMSPostingType());
+		         				hmData.put("strPopUpToApplyPromotionsOnBill",objSetupHdModel.getStrPopUpToApplyPromotionsOnBill());
+		         				hmData.put("strSelectCustomerCodeFromCardSwipe", objSetupHdModel.getStrSelectCustomerCodeFromCardSwipe());
+		         				hmData.put("strCheckDebitCardBalOnTransactions", objSetupHdModel.getStrCheckDebitCardBalOnTransactions());
+		         				hmData.put("strSettlementsFromPOSMaster", objSetupHdModel.getStrSettlementsFromPOSMaster());
+		         				hmData.put("strShiftWiseDayEndYN", objSetupHdModel.getStrShiftWiseDayEndYN());
+		         				hmData.put("strProductionLinkup", objSetupHdModel.getStrProductionLinkup());
+		         				hmData.put("strLockDataOnShift",objSetupHdModel.getStrLockDataOnShift());
+		         				hmData.put("strWSClientCode", objSetupHdModel.getStrWSClientCode());
+		         				hmData.put("strPOSCode", objSetupHdModel.getStrPOSCode());
+		         				hmData.put("strEnableBillSeries",objSetupHdModel.getStrEnableBillSeries());
+		         				hmData.put("strEnablePMSIntegrationYN",objSetupHdModel.getStrEnablePMSIntegrationYN());
+		         				hmData.put("strPrintTimeOnBill", objSetupHdModel.getStrPrintTimeOnBill());
+		         				hmData.put("strPrintTDHItemsInBill", objSetupHdModel.getStrPrintTDHItemsInBill());
+		         				hmData.put("strPrintRemarkAndReasonForReprint",objSetupHdModel.getStrPrintRemarkAndReasonForReprint());
 		         			 
-		         				objJsonObject.put("intDaysBeforeOrderToCancel", objSetupHdModel.getIntDaysBeforeOrderToCancel());
-		         				objJsonObject.put("intNoOfDelDaysForAdvOrder", objSetupHdModel.getIntNoOfDelDaysForAdvOrder());
-		         				objJsonObject.put("intNoOfDelDaysForUrgentOrder", objSetupHdModel.getIntNoOfDelDaysForUrgentOrder());
-		         				objJsonObject.put("strSetUpToTimeForAdvOrder",objSetupHdModel.getStrSetUpToTimeForAdvOrder());
-		         				objJsonObject.put("strSetUpToTimeForUrgentOrder", objSetupHdModel.getStrSetUpToTimeForUrgentOrder());
-		         				objJsonObject.put("strUpToTimeForAdvOrder",objSetupHdModel.getStrUpToTimeForAdvOrder());
-		         				objJsonObject.put("strUpToTimeForUrgentOrder", objSetupHdModel.getStrUpToTimeForUrgentOrder());
-		         				objJsonObject.put("strEnableBothPrintAndSettleBtnForDB",objSetupHdModel.getStrEnableBothPrintAndSettleBtnForDB());
-		         				objJsonObject.put("strInrestoPOSIntegrationYN", objSetupHdModel.getStrInrestoPOSIntegrationYN());
-		         				objJsonObject.put("strInrestoPOSWebServiceURL", objSetupHdModel.getStrInrestoPOSWebServiceURL());
-		         				objJsonObject.put("strInrestoPOSId", objSetupHdModel.getStrInrestoPOSId());
-		         				objJsonObject.put("strInrestoPOSKey",objSetupHdModel.getStrInrestoPOSKey());
-		         				objJsonObject.put("strCarryForwardFloatAmtToNextDay", objSetupHdModel.getStrCarryForwardFloatAmtToNextDay());
-		         				objJsonObject.put("strOpenCashDrawerAfterBillPrintYN",objSetupHdModel.getStrOpenCashDrawerAfterBillPrintYN());
-		         				objJsonObject.put("strPropertyWiseSalesOrderYN",objSetupHdModel.getStrPropertyWiseSalesOrderYN());
-		         				objJsonObject.put("strDataPostFlag",objSetupHdModel.getStrDataPostFlag());
-		             			objJsonObject.put("strShowItemDetailsGrid", objSetupHdModel.getStrShowItemDetailsGrid());
+		         				hmData.put("intDaysBeforeOrderToCancel", objSetupHdModel.getIntDaysBeforeOrderToCancel());
+		         				hmData.put("intNoOfDelDaysForAdvOrder", objSetupHdModel.getIntNoOfDelDaysForAdvOrder());
+		         				hmData.put("intNoOfDelDaysForUrgentOrder", objSetupHdModel.getIntNoOfDelDaysForUrgentOrder());
+		         				hmData.put("strSetUpToTimeForAdvOrder",objSetupHdModel.getStrSetUpToTimeForAdvOrder());
+		         				hmData.put("strSetUpToTimeForUrgentOrder", objSetupHdModel.getStrSetUpToTimeForUrgentOrder());
+		         				hmData.put("strUpToTimeForAdvOrder",objSetupHdModel.getStrUpToTimeForAdvOrder());
+		         				hmData.put("strUpToTimeForUrgentOrder", objSetupHdModel.getStrUpToTimeForUrgentOrder());
+		         				hmData.put("strEnableBothPrintAndSettleBtnForDB",objSetupHdModel.getStrEnableBothPrintAndSettleBtnForDB());
+		         				hmData.put("strInrestoPOSIntegrationYN", objSetupHdModel.getStrInrestoPOSIntegrationYN());
+		         				hmData.put("strInrestoPOSWebServiceURL", objSetupHdModel.getStrInrestoPOSWebServiceURL());
+		         				hmData.put("strInrestoPOSId", objSetupHdModel.getStrInrestoPOSId());
+		         				hmData.put("strInrestoPOSKey",objSetupHdModel.getStrInrestoPOSKey());
+		         				hmData.put("strCarryForwardFloatAmtToNextDay", objSetupHdModel.getStrCarryForwardFloatAmtToNextDay());
+		         				hmData.put("strOpenCashDrawerAfterBillPrintYN",objSetupHdModel.getStrOpenCashDrawerAfterBillPrintYN());
+		         				hmData.put("strPropertyWiseSalesOrderYN",objSetupHdModel.getStrPropertyWiseSalesOrderYN());
+		         				hmData.put("strDataPostFlag",objSetupHdModel.getStrDataPostFlag());
+		             			hmData.put("strShowItemDetailsGrid", objSetupHdModel.getStrShowItemDetailsGrid());
 		         				
-		         				objJsonObject.put("strShowPopUpForNextItemQuantity", objSetupHdModel.getStrShowPopUpForNextItemQuantity());
+		         				hmData.put("strShowPopUpForNextItemQuantity", objSetupHdModel.getStrShowPopUpForNextItemQuantity());
 		         				
-		         				objJsonObject.put("strJioMoneyIntegration", objSetupHdModel.getStrJioMoneyIntegration());
-		         				objJsonObject.put("strJioWebServiceUrl",objSetupHdModel.getStrJioWebServiceUrl());
+		         				hmData.put("strJioMoneyIntegration", objSetupHdModel.getStrJioMoneyIntegration());
+		         				hmData.put("strJioWebServiceUrl",objSetupHdModel.getStrJioWebServiceUrl());
 		         				
-		         				objJsonObject.put("strJioMID", objSetupHdModel.getStrJioMID());
+		         				hmData.put("strJioMID", objSetupHdModel.getStrJioMID());
 		         				
-		         				objJsonObject.put("strJioTID", objSetupHdModel.getStrJioTID());
+		         				hmData.put("strJioTID", objSetupHdModel.getStrJioTID());
 		         				
-		         				objJsonObject.put("strJioActivationCode", objSetupHdModel.getStrJioActivationCode());
-		         				objJsonObject.put("strJioDeviceID",objSetupHdModel.getStrJioDeviceID());
-		         				objJsonObject.put("strNewBillSeriesForNewDay", objSetupHdModel.getStrNewBillSeriesForNewDay());
-		         				objJsonObject.put("strShowReportsPOSWise",objSetupHdModel.getStrShowReportsPOSWise());
+		         				hmData.put("strJioActivationCode", objSetupHdModel.getStrJioActivationCode());
+		         				hmData.put("strJioDeviceID",objSetupHdModel.getStrJioDeviceID());
+		         				hmData.put("strNewBillSeriesForNewDay", objSetupHdModel.getStrNewBillSeriesForNewDay());
+		         				hmData.put("strShowReportsPOSWise",objSetupHdModel.getStrShowReportsPOSWise());
 		             		   
-		         				objJsonObject.put("strEnableDineIn", objSetupHdModel.getStrEnableDineIn());
-		        				objJsonObject.put("strAutoAreaSelectionInMakeKOT",objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
+		         				hmData.put("strEnableDineIn", objSetupHdModel.getStrEnableDineIn());
+		        				hmData.put("strAutoAreaSelectionInMakeKOT",objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
 		        			
-		                         dataObjectArray.add(objJsonObject);
+		                         listData.add(hmData);
 		                     }
 		                 }
 		                 else
 			             {
-			                    JSONObject objJsonObject = new JSONObject();
+			                    Map hmData = new HashMap();
 			             		  
-			                     objJsonObject.put("strClientCode", objSetupHdModel.getStrClientCode());//clientCode
-			     				objJsonObject.put("strClientName",objSetupHdModel.getStrClientName());//clientName
-			     				objJsonObject.put("strAddressLine1", objSetupHdModel.getStrAddressLine1());
-			     				objJsonObject.put("strAddressLine2", objSetupHdModel.getStrAddressLine2());
-			     				objJsonObject.put("strAddressLine3", objSetupHdModel.getStrAddressLine3());
-			     				objJsonObject.put("strEmail", objSetupHdModel.getStrEmail());
-			     				objJsonObject.put("strBillFooter", objSetupHdModel.getStrBillFooter());
-			     				objJsonObject.put("strBillFooterStatus", objSetupHdModel.getStrBillFooterStatus());
-			         			objJsonObject.put("intBillPaperSize", objSetupHdModel.getIntBillPaperSize());
-			         			objJsonObject.put("strNegativeBilling", objSetupHdModel.getStrNegativeBilling());
-			     				objJsonObject.put("strDayEnd", objSetupHdModel.getStrDayEnd());
-			     				objJsonObject.put("strPrintMode", objSetupHdModel.getStrPrintMode());
-			     				objJsonObject.put("strDiscountNote", objSetupHdModel.getStrDiscountNote());
-			     				objJsonObject.put("strCityName", objSetupHdModel.getStrCityName());
-			     				objJsonObject.put("strState",objSetupHdModel.getStrState());
-			     				objJsonObject.put("strCountry",objSetupHdModel.getStrCountry());
-			     				objJsonObject.put("intTelephoneNo",objSetupHdModel.getIntTelephoneNo());
-			     				objJsonObject.put("gMobileNoForSMS",objSetupHdModel.getIntTelephoneNo());
-			     				objJsonObject.put("dteStartDate",objSetupHdModel.getDteStartDate());
-			     				objJsonObject.put("dteEndDate", objSetupHdModel.getDteEndDate());
-			     				objJsonObject.put("gEndTime",objSetupHdModel.getDteEndDate());
-			     				objJsonObject.put("strNatureOfBusinnes", objSetupHdModel.getStrNatureOfBusinnes());
-			     				objJsonObject.put("strMultipleBillPrinting",objSetupHdModel.getStrMultipleBillPrinting());
-			     				objJsonObject.put("strEnableKOT",objSetupHdModel.getStrEnableKOT());
-			     				objJsonObject.put("strEffectOnPSP",objSetupHdModel.getStrEffectOnPSP());
-			     				objJsonObject.put("strPrintVatNo", objSetupHdModel.getStrPrintVatNo());
-			     				objJsonObject.put("strVatNo",objSetupHdModel.getStrVatNo());
-			     				objJsonObject.put("strShowBill", objSetupHdModel.getStrShowBill());
-			     				objJsonObject.put("strPrintServiceTaxNo", objSetupHdModel.getStrPrintServiceTaxNo());
-			     				objJsonObject.put("strServiceTaxNo", objSetupHdModel.getStrServiceTaxNo());
-			     				objJsonObject.put("strManualBillNo", objSetupHdModel.getStrManualBillNo());
-			     				objJsonObject.put("strMenuItemDispSeq",objSetupHdModel.getStrMenuItemDispSeq());
-			     				objJsonObject.put("strSenderEmailId", objSetupHdModel.getStrSenderEmailId());
-			     				objJsonObject.put("strEmailPassword",objSetupHdModel.getStrEmailPassword());
-			     				objJsonObject.put("strConfirmEmailPassword",objSetupHdModel.getStrConfirmEmailPassword());
-			     				objJsonObject.put("strBody", objSetupHdModel.getStrBody());
-			     				objJsonObject.put("strEmailServerName",objSetupHdModel.getStrEmailServerName());
-			     				objJsonObject.put("strSMSApi", objSetupHdModel.getStrSMSApi());
-			     				objJsonObject.put("strUserCreated", objSetupHdModel.getStrUserCreated());
-			     				objJsonObject.put("strUserEdited", objSetupHdModel.getStrUserEdited());
-			     				objJsonObject.put("dteDateCreated", objSetupHdModel.getDteDateCreated());
-			     				objJsonObject.put("dteDateEdited", objSetupHdModel.getDteDateEdited());
-			     				objJsonObject.put("strPOSType", objSetupHdModel.getStrPOSType());
-			     				objJsonObject.put("strWebServiceLink",objSetupHdModel.getStrWebServiceLink());
-			     				objJsonObject.put("strDataSendFrequency",objSetupHdModel.getStrDataSendFrequency());
-			     				objJsonObject.put("dteHOServerDate",objSetupHdModel.getDteHOServerDate());
-			     				objJsonObject.put("strRFID",objSetupHdModel.getStrRFID());
-			     				objJsonObject.put("strServerName",objSetupHdModel.getStrServerName());
-			     				objJsonObject.put("strDBUserName", objSetupHdModel.getStrDBUserName());
-			     				objJsonObject.put("strDBPassword",objSetupHdModel.getStrDBPassword());
-			     				objJsonObject.put("strDatabaseName",objSetupHdModel.getStrDatabaseName());
-			     				objJsonObject.put("strEnableKOTForDirectBiller", objSetupHdModel.getStrEnableKOTForDirectBiller());
-			     				objJsonObject.put("intPinCode",objSetupHdModel.getIntPinCode());
-			     				objJsonObject.put("strChangeTheme", objSetupHdModel.getStrChangeTheme());
-			     				objJsonObject.put("dblMaxDiscount",objSetupHdModel.getDblMaxDiscount());
-			     				objJsonObject.put("strAreaWisePricing",objSetupHdModel.getStrAreaWisePricing());
-			     				objJsonObject.put("strMenuItemSortingOn",objSetupHdModel.getStrMenuItemSortingOn());
-			     				objJsonObject.put("strDirectAreaCode", objSetupHdModel.getStrDirectAreaCode());
-			     				objJsonObject.put("intColumnSize", objSetupHdModel.getIntColumnSize());
-			     				objJsonObject.put("strPrintType", objSetupHdModel.getStrPrintType());
-			     				objJsonObject.put("strEditHomeDelivery", objSetupHdModel.getStrEditHomeDelivery());
-			     				objJsonObject.put("strSlabBasedHDCharges", objSetupHdModel.getStrSlabBasedHDCharges());
-			     				objJsonObject.put("strSkipWaiterAndPax", objSetupHdModel.getStrSkipWaiterAndPax());
-			     				objJsonObject.put("strSkipWaiter",objSetupHdModel.getStrSkipWaiter());
-			     				objJsonObject.put("strDirectKOTPrintMakeKOT", objSetupHdModel.getStrDirectKOTPrintMakeKOT());
-			     				objJsonObject.put("strSkipPax",objSetupHdModel.getStrSkipPax());
-			     				objJsonObject.put("strCRMInterface",objSetupHdModel.getStrCRMInterface());
-			     				objJsonObject.put("strGetWebserviceURL",objSetupHdModel.getStrGetWebserviceURL());
-			     				objJsonObject.put("strPostWebserviceURL", objSetupHdModel.getStrPostWebserviceURL());
-			     				objJsonObject.put("strOutletUID",objSetupHdModel.getStrOutletUID());
-			     				objJsonObject.put("strPOSID",objSetupHdModel.getStrPOSID());
-			     				objJsonObject.put("strStockInOption",objSetupHdModel.getStrStockInOption());
-			     				objJsonObject.put("longCustSeries", objSetupHdModel.getStrCustSeries());
-			     				objJsonObject.put("intAdvReceiptPrintCount",objSetupHdModel.getIntAdvReceiptPrintCount());
-			     				objJsonObject.put("strHomeDeliverySMS",objSetupHdModel.getStrHomeDeliverySMS());
-			     				objJsonObject.put("strBillStettlementSMS", objSetupHdModel.getStrBillStettlementSMS());
-			       				objJsonObject.put("strBillFormatType",objSetupHdModel.getStrBillFormatType());
-			     				objJsonObject.put("strActivePromotions",objSetupHdModel.getStrActivePromotions());
-			     				objJsonObject.put("strSendHomeDelSMS",objSetupHdModel.getStrSendHomeDelSMS());
-			     				objJsonObject.put("strSendBillSettlementSMS", objSetupHdModel.getStrSendBillSettlementSMS());
-			     				objJsonObject.put("strSMSType", objSetupHdModel.getStrSMSType());
-			     				objJsonObject.put("strPrintShortNameOnKOT",objSetupHdModel.getStrPrintShortNameOnKOT());
-			     				objJsonObject.put("strShowCustHelp",objSetupHdModel.getStrShowCustHelp());
-			     				objJsonObject.put("strPrintOnVoidBill", objSetupHdModel.getStrPrintOnVoidBill());
-			     				objJsonObject.put("strPostSalesDataToMMS", objSetupHdModel.getStrPostSalesDataToMMS());
-			     				objJsonObject.put("strCustAreaMasterCompulsory",objSetupHdModel.getStrCustAreaMasterCompulsory());
-			     				objJsonObject.put("strPriceFrom",objSetupHdModel.getStrPriceFrom());
-			     				objJsonObject.put("strShowPrinterErrorMessage", objSetupHdModel.getStrShowPrinterErrorMessage());
-			     				objJsonObject.put("strTouchScreenMode", objSetupHdModel.getStrTouchScreenMode());
-			     				objJsonObject.put("strCardInterfaceType", objSetupHdModel.getStrCardInterfaceType());
-			     				objJsonObject.put("strCMSIntegrationYN",objSetupHdModel.getStrCMSIntegrationYN());
-			     				objJsonObject.put("strCMSWebServiceURL",objSetupHdModel.getStrCMSWebServiceURL());
-			     				objJsonObject.put("strChangeQtyForExternalCode", objSetupHdModel.getStrChangeQtyForExternalCode());
-			     				objJsonObject.put("strPointsOnBillPrint",objSetupHdModel.getStrPointsOnBillPrint());
-			     				objJsonObject.put("strCMSPOSCode",objSetupHdModel.getStrCMSPOSCode());
-			     				objJsonObject.put("strManualAdvOrderNoCompulsory",objSetupHdModel.getStrManualAdvOrderNoCompulsory());
-			     				objJsonObject.put("strPrintManualAdvOrderNoOnBill", objSetupHdModel.getStrPrintManualAdvOrderNoOnBill());
-			     				objJsonObject.put("strPrintModifierQtyOnKOT",objSetupHdModel.getStrPrintModifierQtyOnKOT());
-			     				objJsonObject.put("strNoOfLinesInKOTPrint",objSetupHdModel.getStrNoOfLinesInKOTPrint());
-			     				objJsonObject.put("strMultipleKOTPrintYN",objSetupHdModel.getStrMultipleKOTPrintYN());
-			     				objJsonObject.put("strItemQtyNumpad", objSetupHdModel.getStrItemQtyNumpad());
-			     				objJsonObject.put("strTreatMemberAsTable", objSetupHdModel.getStrTreatMemberAsTable());
-			     				objJsonObject.put("strKOTToLocalPrinter",objSetupHdModel.getStrKOTToLocalPrinter());
-			     				objJsonObject.put("strSettleBtnForDirectBillerBill",objSetupHdModel.getStrSettleBtnForDirectBillerBill());
-			     				objJsonObject.put("strDelBoySelCompulsoryOnDirectBiller", objSetupHdModel.getStrDelBoySelCompulsoryOnDirectBiller());
-			     				objJsonObject.put("strCMSMemberForKOTJPOS",objSetupHdModel.getStrCMSMemberForKOTJPOS());
-			     				objJsonObject.put("strCMSMemberForKOTMPOS", objSetupHdModel.getStrCMSMemberForKOTMPOS());
-			     				objJsonObject.put("strDontShowAdvOrderInOtherPOS",objSetupHdModel.getStrDontShowAdvOrderInOtherPOS());
-			     				objJsonObject.put("strPrintZeroAmtModifierInBill",objSetupHdModel.getStrPrintZeroAmtModifierInBill());
-			     				objJsonObject.put("strPrintKOTYN",objSetupHdModel.getStrPrintKOTYN());
-			     				objJsonObject.put("strCreditCardSlipNoCompulsoryYN",objSetupHdModel.getStrCreditCardSlipNoCompulsoryYN());
-			     				objJsonObject.put("strCreditCardExpiryDateCompulsoryYN", objSetupHdModel.getStrCreditCardExpiryDateCompulsoryYN());
-			     				objJsonObject.put("strSelectWaiterFromCardSwipe",objSetupHdModel.getStrSelectWaiterFromCardSwipe());
-			     				objJsonObject.put("strMultiWaiterSelectionOnMakeKOT",objSetupHdModel.getStrMultiWaiterSelectionOnMakeKOT());
-			     				objJsonObject.put("strMoveTableToOtherPOS",objSetupHdModel.getStrMoveTableToOtherPOS());
-			     				objJsonObject.put("strMoveKOTToOtherPOS",objSetupHdModel.getStrMoveKOTToOtherPOS());
-			     				objJsonObject.put("strCalculateTaxOnMakeKOT",objSetupHdModel.getStrCalculateTaxOnMakeKOT());
-			     				objJsonObject.put("strReceiverEmailId", objSetupHdModel.getStrReceiverEmailId());
-			     				objJsonObject.put("strCalculateDiscItemWise",objSetupHdModel.getStrCalculateDiscItemWise());
-			     				objJsonObject.put("strTakewayCustomerSelection",objSetupHdModel.getStrTakewayCustomerSelection());
-			     				objJsonObject.put("StrShowItemStkColumnInDB",objSetupHdModel.getStrShowItemStkColumnInDB());
-			     				objJsonObject.put("strItemType",objSetupHdModel.getStrItemType());
-			     				objJsonObject.put("strAllowNewAreaMasterFromCustMaster", objSetupHdModel.getStrAllowNewAreaMasterFromCustMaster());
-			     				objJsonObject.put("strCustAddressSelectionForBill", objSetupHdModel.getStrCustAddressSelectionForBill());
-			     				objJsonObject.put("strGenrateMI",objSetupHdModel.getStrGenrateMI());
-			     				objJsonObject.put("strFTPAddress", objSetupHdModel.getStrFTPAddress());
-			     				objJsonObject.put("strFTPServerUserName", objSetupHdModel.getStrFTPServerUserName());
-			     				objJsonObject.put("strFTPServerPass",objSetupHdModel.getStrFTPServerPass());
-			     				objJsonObject.put("strAllowToCalculateItemWeight", objSetupHdModel.getStrAllowToCalculateItemWeight());
-			     				objJsonObject.put("strShowBillsDtlType", objSetupHdModel.getStrShowBillsDtlType());
-			     				objJsonObject.put("strPrintTaxInvoiceOnBill", objSetupHdModel.getStrPrintTaxInvoiceOnBill());
-			     				objJsonObject.put("strPrintInclusiveOfAllTaxesOnBill",objSetupHdModel.getStrPrintInclusiveOfAllTaxesOnBill());
-			     				objJsonObject.put("strApplyDiscountOn",objSetupHdModel.getStrApplyDiscountOn());
-			     				objJsonObject.put("strMemberCodeForKotInMposByCardSwipe",objSetupHdModel.getStrMemberCodeForKotInMposByCardSwipe());
-			     				objJsonObject.put("strPrintBillYN", objSetupHdModel.getStrPrintBillYN());
-			     				objJsonObject.put("strVatAndServiceTaxFromPos",objSetupHdModel.getStrVatAndServiceTaxFromPos());
-			     				objJsonObject.put("strMemberCodeForMakeBillInMPOS",objSetupHdModel.getStrMemberCodeForMakeBillInMPOS());
-			     				objJsonObject.put("strItemWiseKOTYN", objSetupHdModel.getStrItemWiseKOTYN());
-			     				objJsonObject.put("strLastPOSForDayEnd", objSetupHdModel.getStrLastPOSForDayEnd());
-			     				objJsonObject.put("strCMSPostingType", objSetupHdModel.getStrCMSPostingType());
-			     				objJsonObject.put("strPopUpToApplyPromotionsOnBill",objSetupHdModel.getStrPopUpToApplyPromotionsOnBill());
-			     				objJsonObject.put("strSelectCustomerCodeFromCardSwipe", objSetupHdModel.getStrSelectCustomerCodeFromCardSwipe());
-			     				objJsonObject.put("strCheckDebitCardBalOnTransactions", objSetupHdModel.getStrCheckDebitCardBalOnTransactions());
-			     				objJsonObject.put("strSettlementsFromPOSMaster", objSetupHdModel.getStrSettlementsFromPOSMaster());
-			     				objJsonObject.put("strShiftWiseDayEndYN", objSetupHdModel.getStrShiftWiseDayEndYN());
-			     				objJsonObject.put("strProductionLinkup", objSetupHdModel.getStrProductionLinkup());
-			     				objJsonObject.put("strLockDataOnShift",objSetupHdModel.getStrLockDataOnShift());
-			     				objJsonObject.put("strWSClientCode", objSetupHdModel.getStrWSClientCode());
-			     				objJsonObject.put("strPOSCode", objSetupHdModel.getStrPOSCode());
-			     				objJsonObject.put("strEnableBillSeries",objSetupHdModel.getStrEnableBillSeries());
-			     				objJsonObject.put("strEnablePMSIntegrationYN",objSetupHdModel.getStrEnablePMSIntegrationYN());
-			     				objJsonObject.put("strPrintTimeOnBill", objSetupHdModel.getStrPrintTimeOnBill());
-			     				objJsonObject.put("strPrintTDHItemsInBill", objSetupHdModel.getStrPrintTDHItemsInBill());
-			     				objJsonObject.put("strPrintRemarkAndReasonForReprint",objSetupHdModel.getStrPrintRemarkAndReasonForReprint());
+			                    hmData.put("strClientCode", objSetupHdModel.getStrClientCode());//clientCode
+			     				hmData.put("strClientName",objSetupHdModel.getStrClientName());//clientName
+			     				hmData.put("strAddressLine1", objSetupHdModel.getStrAddressLine1());
+			     				hmData.put("strAddressLine2", objSetupHdModel.getStrAddressLine2());
+			     				hmData.put("strAddressLine3", objSetupHdModel.getStrAddressLine3());
+			     				hmData.put("strEmail", objSetupHdModel.getStrEmail());
+			     				hmData.put("strBillFooter", objSetupHdModel.getStrBillFooter());
+			     				hmData.put("strBillFooterStatus", objSetupHdModel.getStrBillFooterStatus());
+			         			hmData.put("intBillPaperSize", objSetupHdModel.getIntBillPaperSize());
+			         			hmData.put("strNegativeBilling", objSetupHdModel.getStrNegativeBilling());
+			     				hmData.put("strDayEnd", objSetupHdModel.getStrDayEnd());
+			     				hmData.put("strPrintMode", objSetupHdModel.getStrPrintMode());
+			     				hmData.put("strDiscountNote", objSetupHdModel.getStrDiscountNote());
+			     				hmData.put("strCityName", objSetupHdModel.getStrCityName());
+			     				hmData.put("strState",objSetupHdModel.getStrState());
+			     				hmData.put("strCountry",objSetupHdModel.getStrCountry());
+			     				hmData.put("intTelephoneNo",objSetupHdModel.getIntTelephoneNo());
+			     				hmData.put("gMobileNoForSMS",objSetupHdModel.getIntTelephoneNo());
+			     				hmData.put("dteStartDate",objSetupHdModel.getDteStartDate());
+			     				hmData.put("dteEndDate", objSetupHdModel.getDteEndDate());
+			     				hmData.put("gEndTime",objSetupHdModel.getDteEndDate());
+			     				hmData.put("strNatureOfBusinnes", objSetupHdModel.getStrNatureOfBusinnes());
+			     				hmData.put("strMultipleBillPrinting",objSetupHdModel.getStrMultipleBillPrinting());
+			     				hmData.put("strEnableKOT",objSetupHdModel.getStrEnableKOT());
+			     				hmData.put("strEffectOnPSP",objSetupHdModel.getStrEffectOnPSP());
+			     				hmData.put("strPrintVatNo", objSetupHdModel.getStrPrintVatNo());
+			     				hmData.put("strVatNo",objSetupHdModel.getStrVatNo());
+			     				hmData.put("strShowBill", objSetupHdModel.getStrShowBill());
+			     				hmData.put("strPrintServiceTaxNo", objSetupHdModel.getStrPrintServiceTaxNo());
+			     				hmData.put("strServiceTaxNo", objSetupHdModel.getStrServiceTaxNo());
+			     				hmData.put("strManualBillNo", objSetupHdModel.getStrManualBillNo());
+			     				hmData.put("strMenuItemDispSeq",objSetupHdModel.getStrMenuItemDispSeq());
+			     				hmData.put("strSenderEmailId", objSetupHdModel.getStrSenderEmailId());
+			     				hmData.put("strEmailPassword",objSetupHdModel.getStrEmailPassword());
+			     				hmData.put("strConfirmEmailPassword",objSetupHdModel.getStrConfirmEmailPassword());
+			     				hmData.put("strBody", objSetupHdModel.getStrBody());
+			     				hmData.put("strEmailServerName",objSetupHdModel.getStrEmailServerName());
+			     				hmData.put("strSMSApi", objSetupHdModel.getStrSMSApi());
+			     				hmData.put("strUserCreated", objSetupHdModel.getStrUserCreated());
+			     				hmData.put("strUserEdited", objSetupHdModel.getStrUserEdited());
+			     				hmData.put("dteDateCreated", objSetupHdModel.getDteDateCreated());
+			     				hmData.put("dteDateEdited", objSetupHdModel.getDteDateEdited());
+			     				hmData.put("strPOSType", objSetupHdModel.getStrPOSType());
+			     				hmData.put("strWebServiceLink",objSetupHdModel.getStrWebServiceLink());
+			     				hmData.put("strDataSendFrequency",objSetupHdModel.getStrDataSendFrequency());
+			     				hmData.put("dteHOServerDate",objSetupHdModel.getDteHOServerDate());
+			     				hmData.put("strRFID",objSetupHdModel.getStrRFID());
+			     				hmData.put("strServerName",objSetupHdModel.getStrServerName());
+			     				hmData.put("strDBUserName", objSetupHdModel.getStrDBUserName());
+			     				hmData.put("strDBPassword",objSetupHdModel.getStrDBPassword());
+			     				hmData.put("strDatabaseName",objSetupHdModel.getStrDatabaseName());
+			     				hmData.put("strEnableKOTForDirectBiller", objSetupHdModel.getStrEnableKOTForDirectBiller());
+			     				hmData.put("intPinCode",objSetupHdModel.getIntPinCode());
+			     				hmData.put("strChangeTheme", objSetupHdModel.getStrChangeTheme());
+			     				hmData.put("dblMaxDiscount",objSetupHdModel.getDblMaxDiscount());
+			     				hmData.put("strAreaWisePricing",objSetupHdModel.getStrAreaWisePricing());
+			     				hmData.put("strMenuItemSortingOn",objSetupHdModel.getStrMenuItemSortingOn());
+			     				hmData.put("strDirectAreaCode", objSetupHdModel.getStrDirectAreaCode());
+			     				hmData.put("intColumnSize", objSetupHdModel.getIntColumnSize());
+			     				hmData.put("strPrintType", objSetupHdModel.getStrPrintType());
+			     				hmData.put("strEditHomeDelivery", objSetupHdModel.getStrEditHomeDelivery());
+			     				hmData.put("strSlabBasedHDCharges", objSetupHdModel.getStrSlabBasedHDCharges());
+			     				hmData.put("strSkipWaiterAndPax", objSetupHdModel.getStrSkipWaiterAndPax());
+			     				hmData.put("strSkipWaiter",objSetupHdModel.getStrSkipWaiter());
+			     				hmData.put("strDirectKOTPrintMakeKOT", objSetupHdModel.getStrDirectKOTPrintMakeKOT());
+			     				hmData.put("strSkipPax",objSetupHdModel.getStrSkipPax());
+			     				hmData.put("strCRMInterface",objSetupHdModel.getStrCRMInterface());
+			     				hmData.put("strGetWebserviceURL",objSetupHdModel.getStrGetWebserviceURL());
+			     				hmData.put("strPostWebserviceURL", objSetupHdModel.getStrPostWebserviceURL());
+			     				hmData.put("strOutletUID",objSetupHdModel.getStrOutletUID());
+			     				hmData.put("strPOSID",objSetupHdModel.getStrPOSID());
+			     				hmData.put("strStockInOption",objSetupHdModel.getStrStockInOption());
+			     				hmData.put("longCustSeries", objSetupHdModel.getStrCustSeries());
+			     				hmData.put("intAdvReceiptPrintCount",objSetupHdModel.getIntAdvReceiptPrintCount());
+			     				hmData.put("strHomeDeliverySMS",objSetupHdModel.getStrHomeDeliverySMS());
+			     				hmData.put("strBillStettlementSMS", objSetupHdModel.getStrBillStettlementSMS());
+			       				hmData.put("strBillFormatType",objSetupHdModel.getStrBillFormatType());
+			     				hmData.put("strActivePromotions",objSetupHdModel.getStrActivePromotions());
+			     				hmData.put("strSendHomeDelSMS",objSetupHdModel.getStrSendHomeDelSMS());
+			     				hmData.put("strSendBillSettlementSMS", objSetupHdModel.getStrSendBillSettlementSMS());
+			     				hmData.put("strSMSType", objSetupHdModel.getStrSMSType());
+			     				hmData.put("strPrintShortNameOnKOT",objSetupHdModel.getStrPrintShortNameOnKOT());
+			     				hmData.put("strShowCustHelp",objSetupHdModel.getStrShowCustHelp());
+			     				hmData.put("strPrintOnVoidBill", objSetupHdModel.getStrPrintOnVoidBill());
+			     				hmData.put("strPostSalesDataToMMS", objSetupHdModel.getStrPostSalesDataToMMS());
+			     				hmData.put("strCustAreaMasterCompulsory",objSetupHdModel.getStrCustAreaMasterCompulsory());
+			     				hmData.put("strPriceFrom",objSetupHdModel.getStrPriceFrom());
+			     				hmData.put("strShowPrinterErrorMessage", objSetupHdModel.getStrShowPrinterErrorMessage());
+			     				hmData.put("strTouchScreenMode", objSetupHdModel.getStrTouchScreenMode());
+			     				hmData.put("strCardInterfaceType", objSetupHdModel.getStrCardInterfaceType());
+			     				hmData.put("strCMSIntegrationYN",objSetupHdModel.getStrCMSIntegrationYN());
+			     				hmData.put("strCMSWebServiceURL",objSetupHdModel.getStrCMSWebServiceURL());
+			     				hmData.put("strChangeQtyForExternalCode", objSetupHdModel.getStrChangeQtyForExternalCode());
+			     				hmData.put("strPointsOnBillPrint",objSetupHdModel.getStrPointsOnBillPrint());
+			     				hmData.put("strCMSPOSCode",objSetupHdModel.getStrCMSPOSCode());
+			     				hmData.put("strManualAdvOrderNoCompulsory",objSetupHdModel.getStrManualAdvOrderNoCompulsory());
+			     				hmData.put("strPrintManualAdvOrderNoOnBill", objSetupHdModel.getStrPrintManualAdvOrderNoOnBill());
+			     				hmData.put("strPrintModifierQtyOnKOT",objSetupHdModel.getStrPrintModifierQtyOnKOT());
+			     				hmData.put("strNoOfLinesInKOTPrint",objSetupHdModel.getStrNoOfLinesInKOTPrint());
+			     				hmData.put("strMultipleKOTPrintYN",objSetupHdModel.getStrMultipleKOTPrintYN());
+			     				hmData.put("strItemQtyNumpad", objSetupHdModel.getStrItemQtyNumpad());
+			     				hmData.put("strTreatMemberAsTable", objSetupHdModel.getStrTreatMemberAsTable());
+			     				hmData.put("strKOTToLocalPrinter",objSetupHdModel.getStrKOTToLocalPrinter());
+			     				hmData.put("strSettleBtnForDirectBillerBill",objSetupHdModel.getStrSettleBtnForDirectBillerBill());
+			     				hmData.put("strDelBoySelCompulsoryOnDirectBiller", objSetupHdModel.getStrDelBoySelCompulsoryOnDirectBiller());
+			     				hmData.put("strCMSMemberForKOTJPOS",objSetupHdModel.getStrCMSMemberForKOTJPOS());
+			     				hmData.put("strCMSMemberForKOTMPOS", objSetupHdModel.getStrCMSMemberForKOTMPOS());
+			     				hmData.put("strDontShowAdvOrderInOtherPOS",objSetupHdModel.getStrDontShowAdvOrderInOtherPOS());
+			     				hmData.put("strPrintZeroAmtModifierInBill",objSetupHdModel.getStrPrintZeroAmtModifierInBill());
+			     				hmData.put("strPrintKOTYN",objSetupHdModel.getStrPrintKOTYN());
+			     				hmData.put("strCreditCardSlipNoCompulsoryYN",objSetupHdModel.getStrCreditCardSlipNoCompulsoryYN());
+			     				hmData.put("strCreditCardExpiryDateCompulsoryYN", objSetupHdModel.getStrCreditCardExpiryDateCompulsoryYN());
+			     				hmData.put("strSelectWaiterFromCardSwipe",objSetupHdModel.getStrSelectWaiterFromCardSwipe());
+			     				hmData.put("strMultiWaiterSelectionOnMakeKOT",objSetupHdModel.getStrMultiWaiterSelectionOnMakeKOT());
+			     				hmData.put("strMoveTableToOtherPOS",objSetupHdModel.getStrMoveTableToOtherPOS());
+			     				hmData.put("strMoveKOTToOtherPOS",objSetupHdModel.getStrMoveKOTToOtherPOS());
+			     				hmData.put("strCalculateTaxOnMakeKOT",objSetupHdModel.getStrCalculateTaxOnMakeKOT());
+			     				hmData.put("strReceiverEmailId", objSetupHdModel.getStrReceiverEmailId());
+			     				hmData.put("strCalculateDiscItemWise",objSetupHdModel.getStrCalculateDiscItemWise());
+			     				hmData.put("strTakewayCustomerSelection",objSetupHdModel.getStrTakewayCustomerSelection());
+			     				hmData.put("StrShowItemStkColumnInDB",objSetupHdModel.getStrShowItemStkColumnInDB());
+			     				hmData.put("strItemType",objSetupHdModel.getStrItemType());
+			     				hmData.put("strAllowNewAreaMasterFromCustMaster", objSetupHdModel.getStrAllowNewAreaMasterFromCustMaster());
+			     				hmData.put("strCustAddressSelectionForBill", objSetupHdModel.getStrCustAddressSelectionForBill());
+			     				hmData.put("strGenrateMI",objSetupHdModel.getStrGenrateMI());
+			     				hmData.put("strFTPAddress", objSetupHdModel.getStrFTPAddress());
+			     				hmData.put("strFTPServerUserName", objSetupHdModel.getStrFTPServerUserName());
+			     				hmData.put("strFTPServerPass",objSetupHdModel.getStrFTPServerPass());
+			     				hmData.put("strAllowToCalculateItemWeight", objSetupHdModel.getStrAllowToCalculateItemWeight());
+			     				hmData.put("strShowBillsDtlType", objSetupHdModel.getStrShowBillsDtlType());
+			     				hmData.put("strPrintTaxInvoiceOnBill", objSetupHdModel.getStrPrintTaxInvoiceOnBill());
+			     				hmData.put("strPrintInclusiveOfAllTaxesOnBill",objSetupHdModel.getStrPrintInclusiveOfAllTaxesOnBill());
+			     				hmData.put("strApplyDiscountOn",objSetupHdModel.getStrApplyDiscountOn());
+			     				hmData.put("strMemberCodeForKotInMposByCardSwipe",objSetupHdModel.getStrMemberCodeForKotInMposByCardSwipe());
+			     				hmData.put("strPrintBillYN", objSetupHdModel.getStrPrintBillYN());
+			     				hmData.put("strVatAndServiceTaxFromPos",objSetupHdModel.getStrVatAndServiceTaxFromPos());
+			     				hmData.put("strMemberCodeForMakeBillInMPOS",objSetupHdModel.getStrMemberCodeForMakeBillInMPOS());
+			     				hmData.put("strItemWiseKOTYN", objSetupHdModel.getStrItemWiseKOTYN());
+			     				hmData.put("strLastPOSForDayEnd", objSetupHdModel.getStrLastPOSForDayEnd());
+			     				hmData.put("strCMSPostingType", objSetupHdModel.getStrCMSPostingType());
+			     				hmData.put("strPopUpToApplyPromotionsOnBill",objSetupHdModel.getStrPopUpToApplyPromotionsOnBill());
+			     				hmData.put("strSelectCustomerCodeFromCardSwipe", objSetupHdModel.getStrSelectCustomerCodeFromCardSwipe());
+			     				hmData.put("strCheckDebitCardBalOnTransactions", objSetupHdModel.getStrCheckDebitCardBalOnTransactions());
+			     				hmData.put("strSettlementsFromPOSMaster", objSetupHdModel.getStrSettlementsFromPOSMaster());
+			     				hmData.put("strShiftWiseDayEndYN", objSetupHdModel.getStrShiftWiseDayEndYN());
+			     				hmData.put("strProductionLinkup", objSetupHdModel.getStrProductionLinkup());
+			     				hmData.put("strLockDataOnShift",objSetupHdModel.getStrLockDataOnShift());
+			     				hmData.put("strWSClientCode", objSetupHdModel.getStrWSClientCode());
+			     				hmData.put("strPOSCode", objSetupHdModel.getStrPOSCode());
+			     				hmData.put("strEnableBillSeries",objSetupHdModel.getStrEnableBillSeries());
+			     				hmData.put("strEnablePMSIntegrationYN",objSetupHdModel.getStrEnablePMSIntegrationYN());
+			     				hmData.put("strPrintTimeOnBill", objSetupHdModel.getStrPrintTimeOnBill());
+			     				hmData.put("strPrintTDHItemsInBill", objSetupHdModel.getStrPrintTDHItemsInBill());
+			     				hmData.put("strPrintRemarkAndReasonForReprint",objSetupHdModel.getStrPrintRemarkAndReasonForReprint());
 			     			 
-			     				objJsonObject.put("intDaysBeforeOrderToCancel", objSetupHdModel.getIntDaysBeforeOrderToCancel());
-			     				objJsonObject.put("intNoOfDelDaysForAdvOrder", objSetupHdModel.getIntNoOfDelDaysForAdvOrder());
-			     				objJsonObject.put("intNoOfDelDaysForUrgentOrder", objSetupHdModel.getIntNoOfDelDaysForUrgentOrder());
-			     				objJsonObject.put("strSetUpToTimeForAdvOrder",objSetupHdModel.getStrSetUpToTimeForAdvOrder());
-			     				objJsonObject.put("strSetUpToTimeForUrgentOrder", objSetupHdModel.getStrSetUpToTimeForUrgentOrder());
-			     				objJsonObject.put("strUpToTimeForAdvOrder",objSetupHdModel.getStrUpToTimeForAdvOrder());
-			     				objJsonObject.put("strUpToTimeForUrgentOrder", objSetupHdModel.getStrUpToTimeForUrgentOrder());
-			     				objJsonObject.put("strEnableBothPrintAndSettleBtnForDB",objSetupHdModel.getStrEnableBothPrintAndSettleBtnForDB());
-			     				objJsonObject.put("strInrestoPOSIntegrationYN", objSetupHdModel.getStrInrestoPOSIntegrationYN());
-			     				objJsonObject.put("strInrestoPOSWebServiceURL", objSetupHdModel.getStrInrestoPOSWebServiceURL());
-			     				objJsonObject.put("strInrestoPOSId", objSetupHdModel.getStrInrestoPOSId());
-			     				objJsonObject.put("strInrestoPOSKey",objSetupHdModel.getStrInrestoPOSKey());
-			     				objJsonObject.put("strCarryForwardFloatAmtToNextDay", objSetupHdModel.getStrCarryForwardFloatAmtToNextDay());
-			     				objJsonObject.put("strOpenCashDrawerAfterBillPrintYN",objSetupHdModel.getStrOpenCashDrawerAfterBillPrintYN());
-			     				objJsonObject.put("strPropertyWiseSalesOrderYN",objSetupHdModel.getStrPropertyWiseSalesOrderYN());
-			     				objJsonObject.put("strDataPostFlag",objSetupHdModel.getStrDataPostFlag());
-			         			objJsonObject.put("strShowItemDetailsGrid", objSetupHdModel.getStrShowItemDetailsGrid());
+			     				hmData.put("intDaysBeforeOrderToCancel", objSetupHdModel.getIntDaysBeforeOrderToCancel());
+			     				hmData.put("intNoOfDelDaysForAdvOrder", objSetupHdModel.getIntNoOfDelDaysForAdvOrder());
+			     				hmData.put("intNoOfDelDaysForUrgentOrder", objSetupHdModel.getIntNoOfDelDaysForUrgentOrder());
+			     				hmData.put("strSetUpToTimeForAdvOrder",objSetupHdModel.getStrSetUpToTimeForAdvOrder());
+			     				hmData.put("strSetUpToTimeForUrgentOrder", objSetupHdModel.getStrSetUpToTimeForUrgentOrder());
+			     				hmData.put("strUpToTimeForAdvOrder",objSetupHdModel.getStrUpToTimeForAdvOrder());
+			     				hmData.put("strUpToTimeForUrgentOrder", objSetupHdModel.getStrUpToTimeForUrgentOrder());
+			     				hmData.put("strEnableBothPrintAndSettleBtnForDB",objSetupHdModel.getStrEnableBothPrintAndSettleBtnForDB());
+			     				hmData.put("strInrestoPOSIntegrationYN", objSetupHdModel.getStrInrestoPOSIntegrationYN());
+			     				hmData.put("strInrestoPOSWebServiceURL", objSetupHdModel.getStrInrestoPOSWebServiceURL());
+			     				hmData.put("strInrestoPOSId", objSetupHdModel.getStrInrestoPOSId());
+			     				hmData.put("strInrestoPOSKey",objSetupHdModel.getStrInrestoPOSKey());
+			     				hmData.put("strCarryForwardFloatAmtToNextDay", objSetupHdModel.getStrCarryForwardFloatAmtToNextDay());
+			     				hmData.put("strOpenCashDrawerAfterBillPrintYN",objSetupHdModel.getStrOpenCashDrawerAfterBillPrintYN());
+			     				hmData.put("strPropertyWiseSalesOrderYN",objSetupHdModel.getStrPropertyWiseSalesOrderYN());
+			     				hmData.put("strDataPostFlag",objSetupHdModel.getStrDataPostFlag());
+			         			hmData.put("strShowItemDetailsGrid", objSetupHdModel.getStrShowItemDetailsGrid());
 			     				
-			     				objJsonObject.put("strShowPopUpForNextItemQuantity", objSetupHdModel.getStrShowPopUpForNextItemQuantity());
+			     				hmData.put("strShowPopUpForNextItemQuantity", objSetupHdModel.getStrShowPopUpForNextItemQuantity());
 			     				
-			     				objJsonObject.put("strJioMoneyIntegration", objSetupHdModel.getStrJioMoneyIntegration());
-			     				objJsonObject.put("strJioWebServiceUrl",objSetupHdModel.getStrJioWebServiceUrl());
+			     				hmData.put("strJioMoneyIntegration", objSetupHdModel.getStrJioMoneyIntegration());
+			     				hmData.put("strJioWebServiceUrl",objSetupHdModel.getStrJioWebServiceUrl());
 			     				
-			     				objJsonObject.put("strJioMID", objSetupHdModel.getStrJioMID());
+			     				hmData.put("strJioMID", objSetupHdModel.getStrJioMID());
 			     				
-			     				objJsonObject.put("strJioTID", objSetupHdModel.getStrJioTID());
+			     				hmData.put("strJioTID", objSetupHdModel.getStrJioTID());
 			     				
-			     				objJsonObject.put("strJioActivationCode", objSetupHdModel.getStrJioActivationCode());
-			     				objJsonObject.put("strJioDeviceID",objSetupHdModel.getStrJioDeviceID());
-			     				objJsonObject.put("strNewBillSeriesForNewDay", objSetupHdModel.getStrNewBillSeriesForNewDay());
-			     				objJsonObject.put("strShowReportsPOSWise",objSetupHdModel.getStrShowReportsPOSWise());
+			     				hmData.put("strJioActivationCode", objSetupHdModel.getStrJioActivationCode());
+			     				hmData.put("strJioDeviceID",objSetupHdModel.getStrJioDeviceID());
+			     				hmData.put("strNewBillSeriesForNewDay", objSetupHdModel.getStrNewBillSeriesForNewDay());
+			     				hmData.put("strShowReportsPOSWise",objSetupHdModel.getStrShowReportsPOSWise());
 			         		   
-			     				objJsonObject.put("strEnableDineIn", objSetupHdModel.getStrEnableDineIn());
-			    				objJsonObject.put("strAutoAreaSelectionInMakeKOT",objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
+			     				hmData.put("strEnableDineIn", objSetupHdModel.getStrEnableDineIn());
+			    				hmData.put("strAutoAreaSelectionInMakeKOT",objSetupHdModel.getStrAutoAreaSelectionInMakeKOT());
 			    			
-			                     dataObjectArray.add(objJsonObject);
+			                     listData.add(hmData);
 			                    
 			                 }
 		             }
 	        	 }
 	         }
-	           rootObject.put("tblsetup", dataObjectArray);
-	           funPOSTDataToHO(rootObject);
+	           hmMainMap.put("tblsetup", listData);
+	           funPOSTDataToHO(hmMainMap);
 	    }
     	catch (Exception e)
     	{
@@ -1520,37 +1594,37 @@ public class clsPOSPropertySetupController {
 	     
 	        try
 	        {
-	            JSONObject rootObject = new JSONObject();
-	            JSONArray dataObjectArray = new JSONArray();
+	            Map hmMainMap = new HashMap();
+	            List listData = new ArrayList();
 
 	            sql.append("select * from tblbillseries where strDataPostFlag='N'");
 	            
     			 List list = objBaseService.funGetList(sql, "sql");
     			 for(int j=0; j<list.size();j++)
     	         {	
-    				 Object[] obj=(Object[])list.get(j);
-	                JSONObject dataObject = new JSONObject();
-	                dataObject.put("POSCode", obj[0].toString());
-	                dataObject.put("Type",  obj[1].toString());
-	                dataObject.put("BillSeries", obj[2].toString());
-	                dataObject.put("LastNo",  obj[3].toString());
-	                dataObject.put("Codes",  obj[4].toString());
-	                dataObject.put("Names",  obj[5].toString());
-	                dataObject.put("UserCreated",  obj[6].toString());
-	                dataObject.put("UserEdited",  obj[7].toString());
-	                dataObject.put("DateCreated",  obj[8].toString());
-	                dataObject.put("DateEdited", obj[9].toString());
-	                dataObject.put("DataPostFlag",  obj[10].toString());
-	                dataObject.put("ClientCode",  obj[11].toString());
-	                dataObject.put("PropertyCode",  obj[12].toString());
-	                dataObject.put("PrintGTOfOtherBills", obj[13].toString());
-	                dataObject.put("PrintIncOfTaxOnBill", obj[14].toString());
+    				Object[] obj=(Object[])list.get(j);
+	                Map hmObject = new HashMap();
+	                hmObject.put("POSCode", obj[0].toString());
+	                hmObject.put("Type",  obj[1].toString());
+	                hmObject.put("BillSeries", obj[2].toString());
+	                hmObject.put("LastNo",  obj[3].toString());
+	                hmObject.put("Codes",  obj[4].toString());
+	                hmObject.put("Names",  obj[5].toString());
+	                hmObject.put("UserCreated",  obj[6].toString());
+	                hmObject.put("UserEdited",  obj[7].toString());
+	                hmObject.put("DateCreated",  obj[8].toString());
+	                hmObject.put("DateEdited", obj[9].toString());
+	                hmObject.put("DataPostFlag",  obj[10].toString());
+	                hmObject.put("ClientCode",  obj[11].toString());
+	                hmObject.put("PropertyCode",  obj[12].toString());
+	                hmObject.put("PrintGTOfOtherBills", obj[13].toString());
+	                hmObject.put("PrintIncOfTaxOnBill", obj[14].toString());
 
-	                dataObjectArray.add(dataObject);
+	                listData.add(hmObject);
 	            }
 	          
-	            rootObject.put("tblbillseries", dataObjectArray);
-	            funPOSTDataToHO(rootObject);
+	            hmMainMap.put("tblbillseries", listData);
+	            funPOSTDataToHO(hmMainMap);
 	        }
 	        catch (Exception e)
 	        {
@@ -1560,7 +1634,7 @@ public class clsPOSPropertySetupController {
 	    }
 	
 	 
-	public void funPOSTDataToHO(JSONObject jObj)
+	public void funPOSTDataToHO(Map hmData)
 	{
 		String posURL = clsPOSGlobalFunctionsController.POSWSURL+"/POSIntegration/funPostPropertySetup";
 		try{
@@ -1572,7 +1646,7 @@ public class clsPOSPropertySetupController {
 	        conn.setRequestMethod("POST");
 	        conn.setRequestProperty("Content-Type", "application/json");
 	        OutputStream os = conn.getOutputStream();
-	        os.write(jObj.toString().getBytes());
+	        os.write(hmData.toString().getBytes());
 	        os.flush();
 	        if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED)
 	        {
@@ -1595,11 +1669,11 @@ public class clsPOSPropertySetupController {
 	}
 	 
 	@RequestMapping(value = "/fetchDeviceID", method = RequestMethod.GET)
-	public @ResponseBody JSONObject funFetchDeviceID(HttpServletRequest req)
+	public @ResponseBody Map funFetchDeviceID(HttpServletRequest req)
     {
 		String IP="localhost", PORT="5150";
 		objPOSGlobal.funStartSocketBat();
-		JSONObject jobj=new JSONObject();
+		Map hmData=new HashMap();
       try
         {
             String host = IP;	//IP address of the server
@@ -1630,20 +1704,20 @@ public class clsPOSPropertySetupController {
                 dout.close();	//Closing the output stream
                 din.close();	//Closing the input stream
             } //creating outputstream to send data to server
-            jobj.put("deviceID",response.trim()); 
-            return jobj;
+            hmData.put("deviceID",response.trim()); 
+            return hmData;
         }
       catch (Exception e)
       {
             System.out.println("Exception:" + e);
-            return jobj;
+            return hmData;
       }
     }
     
 	public void funSaveMapMyDevice( String mid, String tid, String deviceId,String strJioMoneyActivationCode,String posCode)
 	    {
 		 
-		  objPOSGlobal.funStartSocketBat();
+		    objPOSGlobal.funStartSocketBat();
 	        try
 	        {
 	           
@@ -1676,13 +1750,13 @@ public class clsPOSPropertySetupController {
 	            Response =  objPOSGlobal.funMakeTransaction(requestData, RequestType, mid, tid, Amount,"PRE_PROD","localhost","5150",posCode, strJioMoneyActivationCode);
 	             System.out.println(Response);
 
-	            String strRes = Response.trim();
+	            /*String strRes = Response.trim();
 	            JSONParser jsonParser = new JSONParser();
 	            JSONObject jsonObject = (JSONObject) jsonParser.parse(strRes);
 	            JSONArray lang= (JSONArray) jsonObject.get("result");
 	            JSONParser jsonParser1 = new JSONParser();
-	            JSONObject jsonObject1 = (JSONObject) jsonParser1.parse(lang.get(0).toString());
-	            String responseCode= (String) jsonObject1.get("messageCode");
+	            JSONObject jsonObject1 = (JSONObject) jsonParser1.parse(lang.get(0).toString()); responseCode= (String) jsonObject1.get("messageCode");
+	            */
   
 	        }catch (Exception e)
 	        {
@@ -1704,4 +1778,54 @@ public class clsPOSPropertySetupController {
 	        String nextDate = ( date1[0]+ "/" + date1[1] + "/" +String.valueOf(year));
 	        return nextDate;
 	    }
+	  
+	  public Map funLoadAreaList(String posCode){
+			
+			Map mapArea=new TreeMap();	
+			
+			try 
+			{
+				StringBuilder sqlBuilder=new StringBuilder();
+	 	       	sqlBuilder.append("select * from tblareamaster where (strPOSCode='" + posCode + "' or strPOSCode='All' )");  
+	    	    List listSql=objBaseService.funGetList(sqlBuilder, "sql");
+	    	    if(listSql.size()>0)
+	    	    {
+	      	       for(int j=0;j<listSql.size();j++)
+	      	       {
+	      		     Object obj = (Object ) listSql.get(j);
+	      		     mapArea.put(Array.get(obj, 0).toString(), Array.get(obj, 1).toString());
+	               }
+	    	     }
+			}catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			return mapArea;
+		}
+	  
+	    public Map funLoadTaxList(){
+			
+			Map mapTax=new TreeMap();	
+			
+			try 
+			{
+				StringBuilder sqlBuilder=new StringBuilder();
+	 	       	sqlBuilder.append("select a.strTaxCode,a.strTaxDesc from tbltaxhd a");  
+	    	    List listSql=objBaseService.funGetList(sqlBuilder, "sql");
+	    	    if(listSql.size()>0)
+	    	    {
+	      	       for(int j=0;j<listSql.size();j++)
+	      	       {
+	      		     Object obj = (Object ) listSql.get(j);
+	      		   mapTax.put(Array.get(obj, 0).toString(), Array.get(obj, 1).toString());
+	               }
+	    	     }
+			}catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			return mapTax;
+		}
+	  
+	 
 }

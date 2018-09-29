@@ -86,7 +86,7 @@ public class clsPOSBillingAPIController
 			StringBuilder sqlBuilder = new StringBuilder();
 
 			sqlBuilder.setLength(0);
-			sqlBuilder.append("select strAreaCode from tblareamaster where strAreaName='All' ");
+			sqlBuilder.append("select strAreaCode from tblareamaster where strAreaName like '%All%' and strClientCode='"+clientCode+"' and (strPOSCode='"+posCode+"' or strPOSCode='All')  ");
 
 			list = objBaseService.funGetList(sqlBuilder, "sql");
 
@@ -98,7 +98,7 @@ public class clsPOSBillingAPIController
 			String gAreaWisePricing = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, posCode, "gAreaWisePricing");
 			if (gAreaWisePricing.equalsIgnoreCase("N"))
 			{
-				sql_ItemDtl = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable ,a.strMenuCode ,b.strSubGroupCode,c.strGroupCode ,c.strSubGroupName,d.strGroupName" + " FROM tblmenuitempricingdtl a ,tblitemmaster b left outer join tblsubgrouphd c on b.strSubGroupCode=c.strSubGroupCode " + " left outer join  tblgrouphd d  on c.strGroupCode= d.strGroupCode  " + " WHERE  a.strItemCode=b.strItemCode " + " and a.strAreaCode='" + gAreaCodeForTrans + "' " + " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(dteFromDate)<='" + posDate + "' and date(dteToDate)>='" + posDate + "' " + " ORDER BY b.strItemName ASC";
+				sql_ItemDtl = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable ,a.strMenuCode ,b.strSubGroupCode,c.strGroupCode ,c.strSubGroupName,d.strGroupName" + " FROM tblmenuitempricingdtl a ,tblitemmaster b left outer join tblsubgrouphd c on b.strSubGroupCode=c.strSubGroupCode " + " left outer join  tblgrouphd d  on c.strGroupCode= d.strGroupCode  " + " WHERE  a.strItemCode=b.strItemCode " + " and a.strAreaCode='" + gAreaCodeForTrans + "' " + " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(dteFromDate)<='" + posDate + "' and date(dteToDate)>='" + posDate + "' and a.strClientCode='"+clientCode+"' " + " ORDER BY b.strItemName ASC";
 			}
 			else
 			{
@@ -107,7 +107,7 @@ public class clsPOSBillingAPIController
 
 				sql_ItemDtl = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable ,a.strMenuCode,b.strSubGroupCode,c.strGroupCode,c.strSubGroupName,d.strGroupName " + " FROM tblmenuitempricingdtl a ,tblitemmaster b left outer join tblsubgrouphd c on b.strSubGroupCode=c.strSubGroupCode " + " left outer join  tblgrouphd d  on c.strGroupCode= d.strGroupCode  " + " WHERE a.strAreaCode='" + gDirectAreaCode + "' " + "  and a.strItemCode=b.strItemCode "
 				// + "WHERE (a.strAreaCode='" + clsAreaCode + "') "
-						+ " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " ORDER BY b.strItemName ASC";
+						+ " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' and a.strClientCode='"+clientCode+"' " + " ORDER BY b.strItemName ASC";
 			}
 
 			sqlBuilder.setLength(0);
@@ -165,7 +165,7 @@ public class clsPOSBillingAPIController
 		return jObjTableData;
 	}
 
-	public JSONObject funGetMenuHeads(String strPOSCode, String userCode)
+	public JSONObject funGetMenuHeads(String strPOSCode, String userCode,String clientCode)
 	{
 		LinkedHashMap<String, ArrayList<JSONObject>> mapBillHd;
 		mapBillHd = new LinkedHashMap<String, ArrayList<JSONObject>>();
@@ -177,7 +177,7 @@ public class clsPOSBillingAPIController
 
 			sqlBuilder.setLength(0);
 
-			String sql = "select strCounterWiseBilling from tblposmaster";
+			String sql = "select strCounterWiseBilling from tblposmaster where strClientCode='"+clientCode+"' ";
 
 			sqlBuilder.setLength(0);
 			sqlBuilder.append(sql);
@@ -186,7 +186,7 @@ public class clsPOSBillingAPIController
 			if (list.size() > 0)
 				strCounterWiseBilling = (String) list.get(0);
 
-			sql = "select strCounterCode from tblcounterhd " + " where strUserCode='" + userCode + "' ";
+			sql = "select strCounterCode from tblcounterhd " + " where strUserCode='" + userCode + "'  and strClientCode='"+clientCode+"' ";
 			sqlBuilder.setLength(0);
 			sqlBuilder.append(sql);
 			list = objBaseService.funGetList(sqlBuilder, "sql");
@@ -199,11 +199,11 @@ public class clsPOSBillingAPIController
 
 			{
 
-				sql = "select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b on a.strMenuCode=b.strMenuCode " + "left outer join tblcounterdtl c on b.strMenuCode=c.strMenuCode " + "left outer join tblcounterhd d on c.strCounterCode=d.strCounterCode " + "where d.strOperational='Yes' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL') " + "and c.strCounterCode='" + strCounterCode + "' " + "order by b.intSequence";
+				sql = "select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b on a.strMenuCode=b.strMenuCode " + "left outer join tblcounterdtl c on b.strMenuCode=c.strMenuCode " + "left outer join tblcounterhd d on c.strCounterCode=d.strCounterCode " + "where d.strOperational='Yes' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL')  and a.strClientCode='"+clientCode+"' " + "and c.strCounterCode='" + strCounterCode + "' " + "order by b.intSequence";
 			}
 			else
 			{
-				sql = "select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b " + "on a.strMenuCode=b.strMenuCode " + "where  b.strOperational='Y' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL') " + "order by b.intSequence";
+				sql = "select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b " + "on a.strMenuCode=b.strMenuCode " + "where  b.strOperational='Y' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL')  and a.strClientCode='"+clientCode+"' " + "order by b.intSequence";
 			}
 			sqlBuilder.setLength(0);
 			sqlBuilder.append(sql);

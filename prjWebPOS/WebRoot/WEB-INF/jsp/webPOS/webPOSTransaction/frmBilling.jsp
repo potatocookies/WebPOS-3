@@ -1725,7 +1725,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        	 	$("#Customer").val(response.CustomerName);
 			        	}
 			         	else 
-			        		$("#Customer").val("New Customer");
+			        		$("#Customer").val("");
 					},
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {
@@ -2165,6 +2165,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			        		 gBuildingCodeForHD= response.strBuldingCode;
 			        		 
 			        		 $("#customerName").text(gCustomerName);
+			        		 $("#hidCustomerName").text(gCustomerName);
 			        		 $("#Customer").val(response.longMobileNo);
 			        		  
 			        		 

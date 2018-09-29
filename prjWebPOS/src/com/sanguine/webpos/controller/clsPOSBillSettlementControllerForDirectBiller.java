@@ -133,7 +133,7 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		JSONArray jsonArrForDirectBillerMenuItemPricing = (JSONArray) jObj.get("MenuItemPricingDtl");
 		obBillSettlementBean.setJsonArrForDirectBillerMenuItemPricing(jsonArrForDirectBillerMenuItemPricing);
 
-		jObj = objBillingAPI.funGetMenuHeads(posCode, userCode);
+		jObj = objBillingAPI.funGetMenuHeads(posCode, userCode,clientCode);
 		JSONArray jsonArrForDirectBillerMenuHeads = (JSONArray) jObj.get("MenuHeads");
 		obBillSettlementBean.setJsonArrForMenuHeads(jsonArrForDirectBillerMenuHeads);
 		obBillSettlementBean.setJsonArrForDirectBillerMenuHeads(jsonArrForDirectBillerMenuHeads);
@@ -151,7 +151,7 @@ public class clsPOSBillSettlementControllerForDirectBiller
 		JSONArray jsonArrForTableDtl = objMakeKOT.funLoadTableDtl(clientCode, posCode);
 		obBillSettlementBean.setJsonArrForTableDtl(jsonArrForTableDtl);
 
-		JSONArray jsonArrForWaiterDtl = objMakeKOT.funGetWaiterList(posCode);
+		JSONArray jsonArrForWaiterDtl = objMakeKOT.funGetWaiterList(posCode,clientCode);
 		obBillSettlementBean.setJsonArrForWaiterDtl(jsonArrForWaiterDtl);
 
 		model.put("gPOSCode", posCode);

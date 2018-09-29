@@ -1146,7 +1146,7 @@
 		                     
 		                 case "Credit":
 	
-		                     if (customerCodeForCredit=="")
+		                     if (gCustomerCode=="")
 		                     {
 		                    	 alert("Please Select Customer!!!");
 		                         return;
@@ -2393,7 +2393,7 @@ function funDiscOkClicked()
 			 		<table style="width:95%;height:28px;font-size:11px; font-weight: bold;">
 						<tr>
 							<td><label id="lblCustName" style=" display: inline-block;width: 100%;text-align: left;">Customer Name</label></td>
-					 		<td><s:input  type="text"  id="hidCustomerName" path="" cssStyle="width:150px;" cssClass="longTextBox jQKeyboard form-control"  /> </td>
+					 		<td><s:input  type="text"  id="hidCustomerName" path="" cssStyle="width:150px;" cssClass="longTextBox jQKeyboard form-control"  ondblclick="funHelp('POSCustomerMaster')" /> </td>
 				 		</tr>
 					</table>
 					

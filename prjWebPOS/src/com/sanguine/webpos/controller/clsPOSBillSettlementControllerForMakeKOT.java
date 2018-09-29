@@ -150,147 +150,134 @@ public class clsPOSBillSettlementControllerForMakeKOT
 	JSONArray listReasonCode,
 			listReasonName;
 
-	/*@RequestMapping(value = "/frmPOSRestaurantBill", method = RequestMethod.GET)
-	public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest request)
-	{
-		String clientCode = "",
-				posCode = "",
-				posDate = "",
-				userCode = "",
-				posClientCode = "";
-		String urlHits = "1";
-		try
-		{
-			urlHits = request.getParameter("saddr").toString();
-			request.getSession().setAttribute("customerMobile", ""); // mobile
-																		// no
-		}
-		catch (NullPointerException e)
-		{
-			urlHits = "1";
-		}
-
-		clsPOSBillSettlementBean obBillSettlementBean = new clsPOSBillSettlementBean();
-		clientCode = request.getSession().getAttribute("gClientCode").toString();
-		posClientCode = request.getSession().getAttribute("gClientCode").toString();
-		posCode = request.getSession().getAttribute("gPOSCode").toString();
-		posDate = request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
-		userCode = request.getSession().getAttribute("gUserCode").toString();
-
-		JSONArray jsonArrForTableDtl = funLoadTableDtl(clientCode, posCode);
-		obBillSettlementBean.setJsonArrForTableDtl(jsonArrForTableDtl);
-
-		JSONArray jsonArrForButtonList = funGetButttonList("MakeKOT", posCode, posClientCode);
-		obBillSettlementBean.setJsonArrForButtonList(jsonArrForButtonList);
-
-		JSONArray jsonArrForWaiterDtl = funGetWaiterList(posCode);
-		obBillSettlementBean.setJsonArrForWaiterDtl(jsonArrForWaiterDtl);
-
-		JSONArray jsonArrForMenuHeads = funGetMenuHeads(posCode, userCode);
-		obBillSettlementBean.setJsonArrForMenuHeads(jsonArrForMenuHeads);
-
-		JSONArray jsonArrForPopularItems = funGetPopularItem(clientCode, posDate, posCode);
-		obBillSettlementBean.setJsonArrForPopularItems(jsonArrForPopularItems);
-
-		JSONArray jsonArrForMenuItemPricing = funGetItemPricingDtl(clientCode, posDate, posCode);
-		obBillSettlementBean.setJsonArrForMenuItemPricing(jsonArrForMenuItemPricing);
-
-		model.put("gCheckDebitCardBalanceOnTrans", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("strCheckDebitCardBalOnTransactions"));
-		model.put("gCMSIntegrationYN", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN"));
-		model.put("gCMSMemberCodeForKOTJPOS", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSMemberForKOTJPOS"));
-		model.put("gCRMInterface", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface"));
-		model.put("gGetWebserviceURL", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("GetWebserviceURL"));
-		model.put("gCustAddressSelectionForBill", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CustAddressSelectionForBill"));
-		model.put("gOutletUID", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("OutletUID"));
-		model.put("gPrintType", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("PrintType"));
-		model.put("gSkipPax", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SkipPax"));
-		model.put("gSkipWaiter", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SkipWaiter"));
-		model.put("gSelectWaiterFromCardSwipe", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SelectWaiterFromCardSwipe"));
-		model.put("gMenuItemSortingOn", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("MenuItemSortingOn"));
-		model.put("gMultiWaiterSelOnMakeKOT", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("MultiWaiterSelectionOnMakeKOT"));
-
-		// ///Bill Settlement
-
-		// ///////////Bill Settlement tab ////////////////////////////////////
-
-		List listSettlementObject = new ArrayList<clsPOSSettelementOptions>();
-		try
-		{
-			String posURL = "";
-			posURL = clsPOSGlobalFunctionsController.POSWSURL + "/WebPOSTransactions/funGetSettleButtons" + "?posCode=" + posCode + "&userCode=" + userCode + "&clientCode=" + clientCode;
-			JSONObject jObj1 = objGlobalFunctions.funGETMethodUrlJosnObjectData(posURL);
-			JSONArray jArr = new JSONArray();// (JSONArray)jObj.get("SettleDesc");
-			Gson gson = new Gson();
-			Type objectType = new TypeToken<clsPOSSettelementOptions>()
-			{
-			}.getType();
-			JSONObject jsSettelementOptionsDtl = (JSONObject) jObj1.get("SettleObj");
-
-			Type listType = new TypeToken<List<clsPOSSettelementOptions>>()
-			{
-			}.getType();
-			listSettlementObject = gson.fromJson(jObj1.get("listSettleObj").toString(), listType);
-
-			JSONObject jsSettle = new JSONObject();
-			for (int j = 0; j < listSettlementObject.size(); j++)
-			{
-				// if(jArr.size()==listSettlementObject.size())
-				// jsSettle.put(jArr.get(j).toString(),
-				// listSettlementObject.get(j));
-				jArr.add(listSettlementObject.get(j));
-			}
-			model.put("ObSettleObject", jsSettle);
-			obBillSettlementBean.setJsonArrForSettleButtons(jArr);
-			// objDirectBillerBean.setListOfBillItemDtl(listOfPunchedItemsDtl);
-			obBillSettlementBean.setDteExpiryDate(posDate);
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		String operationFrom = "MakeKOT";
-		model.put("operationFrom", operationFrom);
-		model.put("billDate", posDate);
-		model.put("gCMSIntegrationYN", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN"));
-		model.put("gCRMInterface", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface"));
-		String gPopUpToApplyPromotionsOnBill = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, posCode, "gPopUpToApplyPromotionsOnBill");
-		model.put("gPopUpToApplyPromotionsOnBill", gPopUpToApplyPromotionsOnBill);
-		model.put("gCreditCardSlipNo", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CreditCardSlipNoCompulsoryYN"));
-		model.put("gCreditCardExpiryDate", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CreditCardExpiryDateCompulsoryYN"));
-
-		funLoadAllReasonMasterData(request);
-
-		model.put("listReasonCode", listReasonCode);
-		model.put("listReasonName", listReasonName);
-
-		StringBuilder sqlBuilder = new StringBuilder();
-		sqlBuilder.setLength(0);
-		sqlBuilder.append("select dblMaxDiscount ,strApplyDiscountOn from tblsetup where (strPOSCode='" + posCode + "'  OR strPOSCode='All') ");
-		List list1 = null;
-		try
-		{
-			list1 = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		double gMaxDiscount = 0;
-		String gApplyDiscountOn = "";
-		if (list1 != null && list1.size() > 0)
-		{
-			Object[] obj = (Object[]) list1.get(0);
-			gMaxDiscount = Double.parseDouble(obj[0].toString());
-			gApplyDiscountOn = obj[1].toString();
-		}
-
-		model.put("urlHits", urlHits);
-
-		return new ModelAndView("frmBillSettlementMakeKOT", "command", obBillSettlementBean);// frmWebPOSBilling//frmBillSettlementMakeKOT
-	}
-*/
+	/*
+	 * @RequestMapping(value = "/frmPOSRestaurantBill", method = RequestMethod.GET)
+	 * public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest
+	 * request) { String clientCode = "", posCode = "", posDate = "", userCode = "",
+	 * posClientCode = ""; String urlHits = "1"; try { urlHits =
+	 * request.getParameter("saddr").toString();
+	 * request.getSession().setAttribute("customerMobile", ""); // mobile // no }
+	 * catch (NullPointerException e) { urlHits = "1"; }
+	 * 
+	 * clsPOSBillSettlementBean obBillSettlementBean = new
+	 * clsPOSBillSettlementBean(); clientCode =
+	 * request.getSession().getAttribute("gClientCode").toString(); posClientCode =
+	 * request.getSession().getAttribute("gClientCode").toString(); posCode =
+	 * request.getSession().getAttribute("gPOSCode").toString(); posDate =
+	 * request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
+	 * userCode = request.getSession().getAttribute("gUserCode").toString();
+	 * 
+	 * JSONArray jsonArrForTableDtl = funLoadTableDtl(clientCode, posCode);
+	 * obBillSettlementBean.setJsonArrForTableDtl(jsonArrForTableDtl);
+	 * 
+	 * JSONArray jsonArrForButtonList = funGetButttonList("MakeKOT", posCode,
+	 * posClientCode);
+	 * obBillSettlementBean.setJsonArrForButtonList(jsonArrForButtonList);
+	 * 
+	 * JSONArray jsonArrForWaiterDtl = funGetWaiterList(posCode);
+	 * obBillSettlementBean.setJsonArrForWaiterDtl(jsonArrForWaiterDtl);
+	 * 
+	 * JSONArray jsonArrForMenuHeads = funGetMenuHeads(posCode, userCode);
+	 * obBillSettlementBean.setJsonArrForMenuHeads(jsonArrForMenuHeads);
+	 * 
+	 * JSONArray jsonArrForPopularItems = funGetPopularItem(clientCode, posDate,
+	 * posCode);
+	 * obBillSettlementBean.setJsonArrForPopularItems(jsonArrForPopularItems);
+	 * 
+	 * JSONArray jsonArrForMenuItemPricing = funGetItemPricingDtl(clientCode,
+	 * posDate, posCode);
+	 * obBillSettlementBean.setJsonArrForMenuItemPricing(jsonArrForMenuItemPricing);
+	 * 
+	 * model.put("gCheckDebitCardBalanceOnTrans",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get(
+	 * "strCheckDebitCardBalOnTransactions")); model.put("gCMSIntegrationYN",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN"));
+	 * model.put("gCMSMemberCodeForKOTJPOS",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSMemberForKOTJPOS"));
+	 * model.put("gCRMInterface",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface"));
+	 * model.put("gGetWebserviceURL",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("GetWebserviceURL"));
+	 * model.put("gCustAddressSelectionForBill",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get(
+	 * "CustAddressSelectionForBill")); model.put("gOutletUID",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("OutletUID"));
+	 * model.put("gPrintType",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("PrintType"));
+	 * model.put("gSkipPax",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SkipPax"));
+	 * model.put("gSkipWaiter",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("SkipWaiter"));
+	 * model.put("gSelectWaiterFromCardSwipe",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get(
+	 * "SelectWaiterFromCardSwipe")); model.put("gMenuItemSortingOn",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("MenuItemSortingOn"));
+	 * model.put("gMultiWaiterSelOnMakeKOT",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get(
+	 * "MultiWaiterSelectionOnMakeKOT"));
+	 * 
+	 * // ///Bill Settlement
+	 * 
+	 * // ///////////Bill Settlement tab ////////////////////////////////////
+	 * 
+	 * List listSettlementObject = new ArrayList<clsPOSSettelementOptions>(); try {
+	 * String posURL = ""; posURL = clsPOSGlobalFunctionsController.POSWSURL +
+	 * "/WebPOSTransactions/funGetSettleButtons" + "?posCode=" + posCode +
+	 * "&userCode=" + userCode + "&clientCode=" + clientCode; JSONObject jObj1 =
+	 * objGlobalFunctions.funGETMethodUrlJosnObjectData(posURL); JSONArray jArr =
+	 * new JSONArray();// (JSONArray)jObj.get("SettleDesc"); Gson gson = new Gson();
+	 * Type objectType = new TypeToken<clsPOSSettelementOptions>() { }.getType();
+	 * JSONObject jsSettelementOptionsDtl = (JSONObject) jObj1.get("SettleObj");
+	 * 
+	 * Type listType = new TypeToken<List<clsPOSSettelementOptions>>() {
+	 * }.getType(); listSettlementObject =
+	 * gson.fromJson(jObj1.get("listSettleObj").toString(), listType);
+	 * 
+	 * JSONObject jsSettle = new JSONObject(); for (int j = 0; j <
+	 * listSettlementObject.size(); j++) { //
+	 * if(jArr.size()==listSettlementObject.size()) //
+	 * jsSettle.put(jArr.get(j).toString(), // listSettlementObject.get(j));
+	 * jArr.add(listSettlementObject.get(j)); } model.put("ObSettleObject",
+	 * jsSettle); obBillSettlementBean.setJsonArrForSettleButtons(jArr); //
+	 * objDirectBillerBean.setListOfBillItemDtl(listOfPunchedItemsDtl);
+	 * obBillSettlementBean.setDteExpiryDate(posDate);
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); } String operationFrom =
+	 * "MakeKOT"; model.put("operationFrom", operationFrom); model.put("billDate",
+	 * posDate); model.put("gCMSIntegrationYN",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN"));
+	 * model.put("gCRMInterface",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface")); String
+	 * gPopUpToApplyPromotionsOnBill =
+	 * objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, posCode,
+	 * "gPopUpToApplyPromotionsOnBill"); model.put("gPopUpToApplyPromotionsOnBill",
+	 * gPopUpToApplyPromotionsOnBill); model.put("gCreditCardSlipNo",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get(
+	 * "CreditCardSlipNoCompulsoryYN")); model.put("gCreditCardExpiryDate",
+	 * clsPOSGlobalFunctionsController.hmPOSSetupValues.get(
+	 * "CreditCardExpiryDateCompulsoryYN"));
+	 * 
+	 * funLoadAllReasonMasterData(request);
+	 * 
+	 * model.put("listReasonCode", listReasonCode); model.put("listReasonName",
+	 * listReasonName);
+	 * 
+	 * StringBuilder sqlBuilder = new StringBuilder(); sqlBuilder.setLength(0);
+	 * sqlBuilder.
+	 * append("select dblMaxDiscount ,strApplyDiscountOn from tblsetup where (strPOSCode='"
+	 * + posCode + "'  OR strPOSCode='All') "); List list1 = null; try { list1 =
+	 * objBaseServiceImpl.funGetList(sqlBuilder, "sql"); } catch (Exception e) { //
+	 * TODO Auto-generated catch block e.printStackTrace(); } double gMaxDiscount =
+	 * 0; String gApplyDiscountOn = ""; if (list1 != null && list1.size() > 0) {
+	 * Object[] obj = (Object[]) list1.get(0); gMaxDiscount =
+	 * Double.parseDouble(obj[0].toString()); gApplyDiscountOn = obj[1].toString();
+	 * }
+	 * 
+	 * model.put("urlHits", urlHits);
+	 * 
+	 * return new ModelAndView("frmBillSettlementMakeKOT", "command",
+	 * obBillSettlementBean);// frmWebPOSBilling//frmBillSettlementMakeKOT }
+	 */
 	public void funLoadAllReasonMasterData(HttpServletRequest request)
 	{
 		Map<String, String> mapModBill = new HashMap<String, String>();
@@ -365,22 +352,33 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		JSONArray jArrData = new JSONArray();
 		try
 		{
-			String gCMSIntegrationY = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, posCode, "gCMSIntegrationYN");
+
+			String gCMSIntegrationY = "N";
+			if (clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN") != null)
+			{
+				gCMSIntegrationY = clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CMSIntegrationYN").toString();
+			}
+			String gTreatMemberAsTable = "N";
+			if (clsPOSGlobalFunctionsController.hmPOSSetupValues.get("TreatMemberAsTable") != null)
+			{
+				gTreatMemberAsTable = clsPOSGlobalFunctionsController.hmPOSSetupValues.get("TreatMemberAsTable").toString();
+			}
+
 			if (gCMSIntegrationY.equalsIgnoreCase("Y"))
 			{
-				String gTreatMemberAsTable = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, posCode, "gTreatMemberAsTable");
+
 				if (gTreatMemberAsTable.equalsIgnoreCase("Y"))
 				{
-					sql = "select strTableNo,strTableName from tbltablemaster " + " where (strPOSCode='" + posCode + "' or strPOSCode='All') " + " and strOperational='Y' and strStatus!='Normal' " + " order by strTableName";
+					sql = "select strTableNo,strTableName from tbltablemaster " + " where (strPOSCode='" + posCode + "' or strPOSCode='All') " + " and strOperational='Y' and strStatus!='Normal' " + " and strClientCode='"+clientCode+"' order by strTableName";
 				}
 				else
 				{
-					sql = "select strTableNo,strTableName,intSequence from tbltablemaster " + " where (strPOSCode='" + posCode + "' or strPOSCode='All') " + " and strOperational='Y' " + " order by intSequence";
+					sql = "select strTableNo,strTableName,intSequence from tbltablemaster " + " where (strPOSCode='" + posCode + "' or strPOSCode='All') " + " and strOperational='Y' " + " and strClientCode='"+clientCode+"' order by intSequence";
 				}
 			}
 			else
 			{
-				sql = "select strTableNo,strTableName,intSequence from tbltablemaster " + " where (strPOSCode='" + posCode + "' or strPOSCode='All') " + " and strOperational='Y' " + " order by intSequence";
+				sql = "select strTableNo,strTableName,intSequence from tbltablemaster " + " where (strPOSCode='" + posCode + "' or strPOSCode='All') " + " and strOperational='Y' " + " and strClientCode='"+clientCode+"' order by intSequence";
 			}
 
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
@@ -408,7 +406,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 				String tblInfo = arrObjTables[cntTable].toString().split("=")[0];
 				String tblNo = tblInfo.split("!")[0];
 				String tableName = tblInfo.split("!")[1];
-				sql = "select strTableNo,strStatus,intPaxNo from tbltablemaster " + " where strTableNo='" + tblNo + "' " + " and strOperational='Y' " + " order by intSequence";
+				sql = "select strTableNo,strStatus,intPaxNo from tbltablemaster " + " where strTableNo='" + tblNo + "' " + " and strOperational='Y' " + " and strClientCode='"+clientCode+"' order by intSequence";
 
 				list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 				if (list.size() > 0)
@@ -467,14 +465,14 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		}
 	}
 
-	public JSONArray funGetWaiterList(String posCode)
+	public JSONArray funGetWaiterList(String posCode,String clientCode)
 	{
 		List list = null;
 		JSONArray jArrData = new JSONArray();
 		try
 		{
 
-			String sql = "select strWaiterNo,strWShortName,strWFullName " + " from tblwaitermaster where strOperational='Y' and (strPOSCode='All' or strPOSCode='" + posCode + "')  ";
+			String sql = "select strWaiterNo,strWShortName,strWFullName " + " from tblwaitermaster where strOperational='Y' and (strPOSCode='All' or strPOSCode='" + posCode + "') and strClientCode='"+clientCode+"' ";
 
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 			if (list != null)
@@ -502,7 +500,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		}
 	}
 
-	public JSONArray funGetMenuHeads(String strPOSCode, String userCode)
+	public JSONArray funGetMenuHeads(String strPOSCode, String userCode,String clientCode)
 	{
 		LinkedHashMap<String, ArrayList<JSONObject>> mapBillHd;
 		mapBillHd = new LinkedHashMap<String, ArrayList<JSONObject>>();
@@ -511,13 +509,13 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		String strCounterWiseBilling = "";
 		try
 		{
-			StringBuilder sql = new StringBuilder("select strCounterWiseBilling from tblposmaster");
+			StringBuilder sql = new StringBuilder("select strCounterWiseBilling from tblposmaster where strPOSCode='"+strPOSCode+"' and strClientCode='"+clientCode+"'   ");
 
 			list = objBaseService.funGetList(sql, "sql");
 			if (list.size() > 0)
 				strCounterWiseBilling = (String) list.get(0);
 
-			sql = new StringBuilder("select strCounterCode from tblcounterhd " + " where strUserCode='" + userCode + "' ");
+			sql = new StringBuilder("select strCounterCode from tblcounterhd " + " where strUserCode='" + userCode + "' and strPOSCode='"+strPOSCode+"' and strClientCode='"+clientCode+"' ");
 			list = objBaseService.funGetList(sql, "sql");
 			if (list.size() > 0)
 				strCounterCode = (String) list.get(0);
@@ -525,11 +523,11 @@ public class clsPOSBillSettlementControllerForMakeKOT
 			if (strCounterWiseBilling.equalsIgnoreCase("Yes"))
 			{
 
-				sql = new StringBuilder("select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b on a.strMenuCode=b.strMenuCode " + "left outer join tblcounterdtl c on b.strMenuCode=c.strMenuCode " + "left outer join tblcounterhd d on c.strCounterCode=d.strCounterCode " + "where d.strOperational='Yes' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL') " + "and c.strCounterCode='" + strCounterCode + "' " + "order by b.intSequence ");
+				sql = new StringBuilder("select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b on a.strMenuCode=b.strMenuCode " + "left outer join tblcounterdtl c on b.strMenuCode=c.strMenuCode " + "left outer join tblcounterhd d on c.strCounterCode=d.strCounterCode " + "where d.strOperational='Yes' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL') and a.strClientCode='"+clientCode+"' " + "and c.strCounterCode='" + strCounterCode + "' " + "order by b.intSequence ");
 			}
 			else
 			{
-				sql = new StringBuilder("select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b " + "on a.strMenuCode=b.strMenuCode " + "where  b.strOperational='Y' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL') " + "order by b.intSequence");
+				sql = new StringBuilder("select distinct(a.strMenuCode),b.strMenuName " + "from tblmenuitempricingdtl a left outer join tblmenuhd b " + "on a.strMenuCode=b.strMenuCode " + "where  b.strOperational='Y' " + "and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='ALL') and a.strClientCode='"+clientCode+"' " + "order by b.intSequence");
 			}
 
 			list = objBaseService.funGetList(sql, "sql");
@@ -564,14 +562,14 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		List list = null;
 		try
 		{
-			String sql = "select strAreaCode from tblareamaster where strAreaName='All'";
+			String sql = "select strAreaCode from tblareamaster where strAreaName like '%All%' and strClientCode='"+clientCode+"' ";
 
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 			if (list.size() > 0)
 				gAreaCodeForTrans = (String) list.get(0);
 			String gDirectAreaCode = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, strPOSCode, "gDirectAreaCode");
 
-			sql = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable " + " FROM tblmenuitempricingdtl a ,tblitemmaster b " + " where a.strPopular='Y' and  a.strItemCode= b.strItemCode " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='All') " + " and (a.strAreaCode='" + gDirectAreaCode + "' or a.strAreaCode='" + gAreaCodeForTrans + "') ";
+			sql = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable " + " FROM tblmenuitempricingdtl a ,tblitemmaster b " + " where a.strPopular='Y' and  a.strItemCode= b.strItemCode " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='All') " + " and (a.strAreaCode='" + gDirectAreaCode + "' or a.strAreaCode='" + gAreaCodeForTrans + "') and a.strClientCode='"+clientCode+"' ";
 
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 			if (list.size() > 0)
@@ -627,13 +625,13 @@ public class clsPOSBillSettlementControllerForMakeKOT
 			String gAreaWisePricing = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, strPOSCode, "gAreaWisePricing");
 			if (gAreaWisePricing.equalsIgnoreCase("N"))
 			{
-				sql_ItemDtl = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable ,a.strMenuCode ,b.strSubGroupCode,c.strGroupCode ,c.strSubGroupName,d.strGroupName " + " FROM tblmenuitempricingdtl a ,tblitemmaster b left outer join tblsubgrouphd c on b.strSubGroupCode=c.strSubGroupCode " + " left outer join  tblgrouphd d  on c.strGroupCode= d.strGroupCode  " + " WHERE  a.strItemCode=b.strItemCode " + " and a.strAreaCode='" + gAreaCodeForTrans + "' " + " and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='All') " + " and date(dteFromDate)<='" + posDate + "' and date(dteToDate)>='" + posDate + "' " + " ORDER BY b.strItemName ASC";
+				sql_ItemDtl = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable ,a.strMenuCode ,b.strSubGroupCode,c.strGroupCode ,c.strSubGroupName,d.strGroupName " + " FROM tblmenuitempricingdtl a ,tblitemmaster b left outer join tblsubgrouphd c on b.strSubGroupCode=c.strSubGroupCode " + " left outer join  tblgrouphd d  on c.strGroupCode= d.strGroupCode  " + " WHERE  a.strItemCode=b.strItemCode " + " and a.strAreaCode='" + gAreaCodeForTrans + "' " + " and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='All')  and a.strClientCode='"+clientCode+"' " + " and date(dteFromDate)<='" + posDate + "' and date(dteToDate)>='" + posDate + "' " + " ORDER BY b.strItemName ASC";
 			}
 			else
 			{
 				sql_ItemDtl = "SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate,b.strStockInEnable ,a.strMenuCode,b.strSubGroupCode,c.strGroupCode,c.strSubGroupName,d.strGroupName   " + " FROM tblmenuitempricingdtl a ,tblitemmaster b left outer join tblsubgrouphd c on b.strSubGroupCode=c.strSubGroupCode " + " left outer join  tblgrouphd d  on c.strGroupCode= d.strGroupCode  " + " WHERE a.strAreaCode='" + clsAreaCode + "' " + "  and a.strItemCode=b.strItemCode "
 				// + "WHERE (a.strAreaCode='" + clsAreaCode + "') "
-						+ " and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " ORDER BY b.strItemName ASC";
+						+ " and (a.strPosCode='" + strPOSCode + "' or a.strPosCode='All')  and a.strClientCode='"+clientCode+"' " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " ORDER BY b.strItemName ASC";
 			}
 			list = objBaseService.funGetList(new StringBuilder(sql_ItemDtl), "sql");
 			if (list.size() > 0)
@@ -693,7 +691,10 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		try
 		{
 
-			String sql = "select a.strModifierName,a.strModifierCode" + " ,b.dblRate,a.strModifierGroupCode,b.strDefaultModifier " + " from tblmodifiermaster a,tblitemmodofier b " + " where a.strModifierCode=b.strModifierCode " + " and b.strItemCode='" + itemCode + "' " + " group by a.strModifierCode;";
+			
+			String clientCode = request.getSession().getAttribute("gClientCode").toString();
+			
+			String sql = "select a.strModifierName,a.strModifierCode" + " ,b.dblRate,a.strModifierGroupCode,b.strDefaultModifier " + " from tblmodifiermaster a,tblitemmodofier b " + " where a.strModifierCode=b.strModifierCode " + " and b.strItemCode='" + itemCode + "' and a.strClientCode='"+clientCode+"' " + " group by a.strModifierCode;";
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 
 			JSONArray jArr = new JSONArray();
@@ -734,7 +735,9 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		try
 		{
 
-			String sql = "select a.strModifierGroupCode,a.strModifierGroupShortName,a.strApplyMaxItemLimit," + "a.intItemMaxLimit,a.strApplyMinItemLimit,a.intItemMinLimit  from tblmodifiergrouphd a,tblmodifiermaster b,tblitemmodofier c " + "where a.strOperational='YES' and a.strModifierGroupCode=b.strModifierGroupCode and " + "b.strModifierCode=c.strModifierCode and c.strItemCode='" + itemCode + "' group by a.strModifierGroupCode";
+			String clientCode = request.getSession().getAttribute("gClientCode").toString();
+			
+			String sql = "select a.strModifierGroupCode,a.strModifierGroupShortName,a.strApplyMaxItemLimit," + "a.intItemMaxLimit,a.strApplyMinItemLimit,a.intItemMinLimit  from tblmodifiergrouphd a,tblmodifiermaster b,tblitemmodofier c " + "where a.strOperational='YES' and a.strModifierGroupCode=b.strModifierGroupCode and " + "b.strModifierCode=c.strModifierCode and c.strItemCode='" + itemCode + "' and a.strClientCode='"+clientCode+"' group by a.strModifierGroupCode";
 
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 			JSONArray jArr = new JSONArray();
@@ -846,13 +849,14 @@ public class clsPOSBillSettlementControllerForMakeKOT
 		JSONObject jObjTableData = new JSONObject();
 		try
 		{
+			String clientCode = request.getSession().getAttribute("gClientCode").toString();
 
-			String sql = "select a.strTableNo,a.strTableName,a.strStatus " + "from tbltablemaster a " + "where a.strTableNo='" + strTableNo + "' " + "and a.strStatus='Reserve' ";
+			String sql = "select a.strTableNo,a.strTableName,a.strStatus " + "from tbltablemaster a " + "where a.strTableNo='" + strTableNo + "' " + " and a.strStatus='Reserve'  and a.strClientCode='"+clientCode+"' ";
 
 			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 			if (list.size() > 0)
 			{
-				sql = "select a.strResCode,a.strCustomerCode,b.strCustomerName,b.longMobileNo " + "from tblreservation a,tblcustomermaster b " + "where a.strTableNo='" + strTableNo + "' " + "and a.strCustomerCode=b.strCustomerCode " + "order by a.strResCode desc " + "limit 1; ";
+				sql = "select a.strResCode,a.strCustomerCode,b.strCustomerName,b.longMobileNo " + "from tblreservation a,tblcustomermaster b " + "where a.strTableNo='" + strTableNo + "' " + "and a.strCustomerCode=b.strCustomerCode " + " and a.strClientCode='"+clientCode+"' order by a.strResCode desc " + "limit 1; ";
 
 				list = objBaseService.funGetList(new StringBuilder(sql), "sql");
 				if (list.size() > 0)
@@ -895,11 +899,11 @@ public class clsPOSBillSettlementControllerForMakeKOT
 			String gAreaWisePricing = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode, posCode, "gAreaWisePricing");
 			if (gAreaWisePricing.equalsIgnoreCase("N"))
 			{
-				sql = new StringBuilder("SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate" + " ,b.strStockInEnable " + " FROM tblmenuitempricingdtl a ,tblitemmaster b " + " WHERE a.strItemCode=b.strItemCode " + " and a.strAreaCode='" + gAreaCodeForTrans + "' " + " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " and a.strHourlyPricing='Yes'");
+				sql = new StringBuilder("SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday, " + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate" + " ,b.strStockInEnable " + " FROM tblmenuitempricingdtl a ,tblitemmaster b " + " WHERE a.strItemCode=b.strItemCode " + " and a.strAreaCode='" + gAreaCodeForTrans + "' " + " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' and a.strClientCode='"+clientCode+"' " + " and a.strHourlyPricing='Yes'");
 			}
 			else
 			{
-				sql = new StringBuilder("SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday," + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate" + ",b.strStockInEnable " + " FROM tblmenuitempricingdtl a ,tblitemmaster b " + " WHERE a.strAreaCode='" + gAreaCodeForTrans + "' " + " and a.strItemCode=b.strItemCode " + " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' " + " and a.strHourlyPricing='Yes'");
+				sql = new StringBuilder("SELECT a.strItemCode,b.strItemName,a.strTextColor,a.strPriceMonday,a.strPriceTuesday," + " a.strPriceWednesday,a.strPriceThursday,a.strPriceFriday," + " a.strPriceSaturday,a.strPriceSunday,a.tmeTimeFrom,a.strAMPMFrom,a.tmeTimeTo,a.strAMPMTo," + " a.strCostCenterCode,a.strHourlyPricing,a.strSubMenuHeadCode,a.dteFromDate,a.dteToDate" + ",b.strStockInEnable " + " FROM tblmenuitempricingdtl a ,tblitemmaster b " + " WHERE a.strAreaCode='" + gAreaCodeForTrans + "' " + " and a.strItemCode=b.strItemCode " + " and (a.strPosCode='" + posCode + "' or a.strPosCode='All') " + " and date(a.dteFromDate)<='" + posDate + "' and date(a.dteToDate)>='" + posDate + "' and a.strClientCode='"+clientCode+"' " + " and a.strHourlyPricing='Yes'");
 			}
 
 			list = objBaseService.funGetList(sql, "sql");
@@ -948,7 +952,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 			jObjTableData.put("ListTDHOnModifierItem", ListTDHOnModifierItem);
 			jObjTableData.put("ListTDHOnModifierItemMaxQTY", ListTDHOnModifierItemMaxQTY);
 
-			sql = new StringBuilder("select strPosCode,strPosName,strPosType,strDebitCardTransactionYN" + " ,strPropertyPOSCode,strCounterWiseBilling,strDelayedSettlementForDB,strBillPrinterPort" + " ,strAdvReceiptPrinterPort,strPrintVatNo,strPrintServiceTaxNo,strVatNo,strServiceTaxNo" + " ,strEnableShift from tblposmaster");
+			sql = new StringBuilder("select strPosCode,strPosName,strPosType,strDebitCardTransactionYN" + " ,strPropertyPOSCode,strCounterWiseBilling,strDelayedSettlementForDB,strBillPrinterPort" + " ,strAdvReceiptPrinterPort,strPrintVatNo,strPrintServiceTaxNo,strVatNo,strServiceTaxNo" + " ,strEnableShift from tblposmaster where strClientCode='"+clientCode+"' ");
 
 			list = list = objBaseService.funGetList(sql, "sql");
 			if (list.size() > 0)
@@ -2342,10 +2346,10 @@ public class clsPOSBillSettlementControllerForMakeKOT
 					String billSeriesBillNo = objBillingAPI.funGetBillSeriesBillNo(key, POSCode);
 
 					/* To save billseries bill */
-					objBillingAPI.funSaveBill(isBillSeries, key, listBillSeriesBillDtl, billSeriesBillNo, listOfItemsBillSeriesWise, objBean, request,hmPromoItem);
+					objBillingAPI.funSaveBill(isBillSeries, key, listBillSeriesBillDtl, billSeriesBillNo, listOfItemsBillSeriesWise, objBean, request, hmPromoItem);
 
 					billCount++;
-				}				
+				}
 
 				// save bill series bill detail
 				for (int i = 0; i < listBillSeriesBillDtl.size(); i++)
@@ -2367,7 +2371,7 @@ public class clsPOSBillSettlementControllerForMakeKOT
 					}
 
 				}
-				
+
 				boolean flagBillForItems = false;
 				// clear temp kot table
 				if (flagBillForItems)
@@ -2396,8 +2400,8 @@ public class clsPOSBillSettlementControllerForMakeKOT
 			String voucherNo = objBillingAPI.funGenerateBillNo(POSCode);
 
 			/* To save normal bill */
-			objBillingAPI.funSaveBill(isBillSeries, "", listBillSeriesBillDtl, voucherNo, listOfWholeKOTItemDtl, objBean, request,hmPromoItem);
-			
+			objBillingAPI.funSaveBill(isBillSeries, "", listBillSeriesBillDtl, voucherNo, listOfWholeKOTItemDtl, objBean, request, hmPromoItem);
+
 			boolean flagBillForItems = false;
 			// clear temp kot table
 			if (flagBillForItems)
@@ -2412,16 +2416,15 @@ public class clsPOSBillSettlementControllerForMakeKOT
 			/* printing bill............... */
 			objTextFileGeneration.funGenerateAndPrintBill(voucherNo, POSCode, clientCode);
 		}
-		
-		
-		if(objBean.getTransactionType().equalsIgnoreCase("Make Bill"))
+
+		if (objBean.getTransactionType().equalsIgnoreCase("Make Bill"))
 		{
-			return  new ModelAndView("redirect:/frmPOSMakeBill.html?saddr=1");
+			return new ModelAndView("redirect:/frmPOSMakeBill.html?saddr=1");
 		}
 		else
 		{
-			return  new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
-		}		
+			return new ModelAndView("redirect:/frmWebPOSBilling.html?saddr=1");
+		}
 	}
 
 	// kot ptinging logic

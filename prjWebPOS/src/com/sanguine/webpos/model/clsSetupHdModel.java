@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+
 import com.sanguine.base.model.clsBaseModel;
 
 import java.sql.Blob;
@@ -588,6 +589,87 @@ public class clsSetupHdModel extends clsBaseModel implements Serializable
 	
 	@Column(name="dblNoOfDecimalPlace")
 	private int dblNoOfDecimalPlace;
+	
+	@Column(name = "strHomeDeliveryAreaForDirectBiller")
+	private String strHomeDeliveryAreaForDirectBiller;
+	
+	@Column(name = "strTakeAwayAreaForDirectBiller")
+	private String strTakeAwayAreaForDirectBiller;
+	
+	@Column(name = "strAreaWiseCostCenterKOTPrintingYN")
+	private String strAreaWiseCostCenterKOTPrintingYN;
+	
+	@Column(name="strRoundOffBillFinalAmt")
+	private String strRoundOffBillFinalAmt;
+	
+	@Column(name="strPrintMoveTableMoveKOTYN")
+	private String strPrintMoveTableMoveKOTYN;
+	
+	@Column(name="strPrintItemsOnMoveKOTMoveTable")
+	private String strPrintItemsOnMoveKOTMoveTable;
+	
+	@Column(name="strSendDBBackupOnClientMail")
+	private String strSendDBBackupOnClientMail;
+	
+	@Column(name="strPrintQtyTotal")
+	private String strPrintQtyTotal;
+	
+	@Column(name="strPrintOrderNoOnBillYN")
+	private String strPrintOrderNoOnBillYN;
+	
+	@Column(name="strAutoAddKOTToBill")
+	private String strAutoAddKOTToBill;
+	
+	@Column(name="strPrintDeviceAndUserDtlOnKOTYN")
+	private String strPrintDeviceAndUserDtlOnKOTYN;
+	
+	@Column(name="strFireCommunication")
+	private String strFireCommunication;
+
+	@Column(name="strRemoveSCTaxCode")
+	private String strRemoveSCTaxCode;
+	
+	@Column(name="strLockTableForWaiter")
+	private String strLockTableForWaiter;
+	
+
+	@Column(name="dblUSDConverionRate")
+	private double dblUSDConverionRate;
+	
+	@Column(name="strShowReportsInCurrency")
+	private String strShowReportsInCurrency;
+
+	@Column(name="strPOSToMMSPostingCurrency")
+	private String strPOSToMMSPostingCurrency;
+
+	@Column(name="strPOSToWebBooksPostingCurrency")
+	private String strPOSToWebBooksPostingCurrency;
+	
+	@Column(name="strBenowIntegrationYN")
+	private String strBenowIntegrationYN;
+
+	@Column(name="strXEmail")
+	private String strXEmail;
+
+	@Column(name="strMerchantCode")
+	private String strMerchantCode;
+
+	@Column(name="strAuthenticationKey")
+	private String strAuthenticationKey;
+	
+	@Column(name="strSalt")
+	private String strSalt;
+
+	@Column(name="strWERAOnlineOrderIntegration")
+	private String strWERAOnlineOrderIntegration;
+	
+	@Column(name="strWERAMerchantOutletId")
+	private String strWERAMerchantOutletId;
+
+	@Column(name="strWERAAuthenticationAPIKey")
+	private String strWERAAuthenticationAPIKey;
+	
+	
 	
 //Setter-Getter Methods
 	public String getStrClientCode()
@@ -2404,6 +2486,267 @@ public class clsSetupHdModel extends clsBaseModel implements Serializable
 		this.dblNoOfDecimalPlace = dblNoOfDecimalPlace;
 	}
 
+	public String getStrHomeDeliveryAreaForDirectBiller()
+	{
+		return strHomeDeliveryAreaForDirectBiller;
+	}
+
+	public void setStrHomeDeliveryAreaForDirectBiller(String strHomeDeliveryAreaForDirectBiller)
+	{
+		this.strHomeDeliveryAreaForDirectBiller = strHomeDeliveryAreaForDirectBiller;
+	}
+
+	public String getStrTakeAwayAreaForDirectBiller()
+	{
+		return strTakeAwayAreaForDirectBiller;
+	}
+
+	public void setStrTakeAwayAreaForDirectBiller(String strTakeAwayAreaForDirectBiller)
+	{
+		this.strTakeAwayAreaForDirectBiller = strTakeAwayAreaForDirectBiller;
+	}
+
+	public String getStrAreaWiseCostCenterKOTPrintingYN()
+	{
+		return strAreaWiseCostCenterKOTPrintingYN;
+	}
+
+	public void setStrAreaWiseCostCenterKOTPrintingYN(String strAreaWiseCostCenterKOTPrintingYN)
+	{
+		this.strAreaWiseCostCenterKOTPrintingYN = strAreaWiseCostCenterKOTPrintingYN;
+	}
+
+	public String getStrRoundOffBillFinalAmt()
+	{
+		return strRoundOffBillFinalAmt;
+	}
+
+	public void setStrRoundOffBillFinalAmt(String strRoundOffBillFinalAmt)
+	{
+		this.strRoundOffBillFinalAmt = strRoundOffBillFinalAmt;
+	}
+
+	public String getStrPrintMoveTableMoveKOTYN()
+	{
+		return strPrintMoveTableMoveKOTYN;
+	}
+
+	public void setStrPrintMoveTableMoveKOTYN(String strPrintMoveTableMoveKOTYN)
+	{
+		this.strPrintMoveTableMoveKOTYN = strPrintMoveTableMoveKOTYN;
+	}
+
+	public String getStrPrintItemsOnMoveKOTMoveTable()
+	{
+		return strPrintItemsOnMoveKOTMoveTable;
+	}
+
+	public void setStrPrintItemsOnMoveKOTMoveTable(String strPrintItemsOnMoveKOTMoveTable)
+	{
+		this.strPrintItemsOnMoveKOTMoveTable = strPrintItemsOnMoveKOTMoveTable;
+	}
+
+	public String getStrSendDBBackupOnClientMail()
+	{
+		return strSendDBBackupOnClientMail;
+	}
+
+	public void setStrSendDBBackupOnClientMail(String strSendDBBackupOnClientMail)
+	{
+		this.strSendDBBackupOnClientMail = strSendDBBackupOnClientMail;
+	}
+
+	public String getStrPrintQtyTotal()
+	{
+		return strPrintQtyTotal;
+	}
+
+	public void setStrPrintQtyTotal(String strPrintQtyTotal)
+	{
+		this.strPrintQtyTotal = strPrintQtyTotal;
+	}
+
+	public String getStrPrintOrderNoOnBillYN()
+	{
+		return strPrintOrderNoOnBillYN;
+	}
+
+	public void setStrPrintOrderNoOnBillYN(String strPrintOrderNoOnBillYN)
+	{
+		this.strPrintOrderNoOnBillYN = strPrintOrderNoOnBillYN;
+	}
+
+	public String getStrAutoAddKOTToBill()
+	{
+		return strAutoAddKOTToBill;
+	}
+
+	public void setStrAutoAddKOTToBill(String strAutoAddKOTToBill)
+	{
+		this.strAutoAddKOTToBill = strAutoAddKOTToBill;
+	}
+
+	public String getStrPrintDeviceAndUserDtlOnKOTYN()
+	{
+		return strPrintDeviceAndUserDtlOnKOTYN;
+	}
+
+	public void setStrPrintDeviceAndUserDtlOnKOTYN(String strPrintDeviceAndUserDtlOnKOTYN)
+	{
+		this.strPrintDeviceAndUserDtlOnKOTYN = strPrintDeviceAndUserDtlOnKOTYN;
+	}
+
+	public String getStrFireCommunication()
+	{
+		return strFireCommunication;
+	}
+
+	public void setStrFireCommunication(String strFireCommunication)
+	{
+		this.strFireCommunication = strFireCommunication;
+	}
+
+	public String getStrRemoveSCTaxCode()
+	{
+		return strRemoveSCTaxCode;
+	}
+
+	public void setStrRemoveSCTaxCode(String strRemoveSCTaxCode)
+	{
+		this.strRemoveSCTaxCode = strRemoveSCTaxCode;
+	}
+
+	public String getStrLockTableForWaiter()
+	{
+		return strLockTableForWaiter;
+	}
+
+	public void setStrLockTableForWaiter(String strLockTableForWaiter)
+	{
+		this.strLockTableForWaiter = strLockTableForWaiter;
+	}
+
+	public double getDblUSDConverionRate()
+	{
+		return dblUSDConverionRate;
+	}
+
+	public void setDblUSDConverionRate(double dblUSDConverionRate)
+	{
+		this.dblUSDConverionRate = dblUSDConverionRate;
+	}
+
+	public String getStrShowReportsInCurrency()
+	{
+		return strShowReportsInCurrency;
+	}
+
+	public void setStrShowReportsInCurrency(String strShowReportsInCurrency)
+	{
+		this.strShowReportsInCurrency = strShowReportsInCurrency;
+	}
+
+	public String getStrPOSToMMSPostingCurrency()
+	{
+		return strPOSToMMSPostingCurrency;
+	}
+
+	public void setStrPOSToMMSPostingCurrency(String strPOSToMMSPostingCurrency)
+	{
+		this.strPOSToMMSPostingCurrency = strPOSToMMSPostingCurrency;
+	}
+
+	public String getStrPOSToWebBooksPostingCurrency()
+	{
+		return strPOSToWebBooksPostingCurrency;
+	}
+
+	public void setStrPOSToWebBooksPostingCurrency(String strPOSToWebBooksPostingCurrency)
+	{
+		this.strPOSToWebBooksPostingCurrency = strPOSToWebBooksPostingCurrency;
+	}
+
+	public String getStrBenowIntegrationYN()
+	{
+		return strBenowIntegrationYN;
+	}
+
+	public void setStrBenowIntegrationYN(String strBenowIntegrationYN)
+	{
+		this.strBenowIntegrationYN = strBenowIntegrationYN;
+	}
+
+	public String getStrXEmail()
+	{
+		return strXEmail;
+	}
+
+	public void setStrXEmail(String strXEmail)
+	{
+		this.strXEmail = strXEmail;
+	}
+
+	public String getStrMerchantCode()
+	{
+		return strMerchantCode;
+	}
+
+	public void setStrMerchantCode(String strMerchantCode)
+	{
+		this.strMerchantCode = strMerchantCode;
+	}
+
+	public String getStrAuthenticationKey()
+	{
+		return strAuthenticationKey;
+	}
+
+	public void setStrAuthenticationKey(String strAuthenticationKey)
+	{
+		this.strAuthenticationKey = strAuthenticationKey;
+	}
+
+	public String getStrSalt()
+	{
+		return strSalt;
+	}
+
+	public void setStrSalt(String strSalt)
+	{
+		this.strSalt = strSalt;
+	}
+
+	public String getStrWERAOnlineOrderIntegration()
+	{
+		return strWERAOnlineOrderIntegration;
+	}
+
+	public void setStrWERAOnlineOrderIntegration(String strWERAOnlineOrderIntegration)
+	{
+		this.strWERAOnlineOrderIntegration = strWERAOnlineOrderIntegration;
+	}
+
+	public String getStrWERAMerchantOutletId()
+	{
+		return strWERAMerchantOutletId;
+	}
+
+	public void setStrWERAMerchantOutletId(String strWERAMerchantOutletId)
+	{
+		this.strWERAMerchantOutletId = strWERAMerchantOutletId;
+	}
+
+	public String getStrWERAAuthenticationAPIKey()
+	{
+		return strWERAAuthenticationAPIKey;
+	}
+
+	public void setStrWERAAuthenticationAPIKey(String strWERAAuthenticationAPIKey)
+	{
+		this.strWERAAuthenticationAPIKey = strWERAAuthenticationAPIKey;
+	}
+
+	
 	
 
 }

@@ -89,11 +89,11 @@ ul.tab li.active {
 			$("#" + activeTab).fadeIn();
 		});
 	
-		 $("#cmbPosCode").change(function() {
-			
-			 funSetSaveUpdateBtn();
-			 	funFillPOSWiseData();
-		        	});
+		 $("#cmbPosCode").change(function() 
+		   {
+			    funSetSaveUpdateBtn();
+			 
+		   });
 		  
 		   $("#cmbSelectedType").change(function() {
 			   funFillSelectedTypeDtlTable();
@@ -117,7 +117,7 @@ ul.tab li.active {
 					session.removeAttribute("success");
 					if (test) 
 					{
-						%>alert("Data Saved Successfully! \n\n"+message);<%
+						%>alert(message);<%
 					}
 				}%>
 			});
@@ -130,13 +130,16 @@ ul.tab li.active {
 			        type: "GET",
 			        url: searchurl,
 			        dataType: "json",
+			        async:true,
 			        success: function(response)
 			        {
 			        	if(response.count==0)
 			        		$('#submitBtn').val("Save");
+			        	
 			        	else
 			        		$('#submitBtn').val("Update");
 
+			        	funFillPOSWiseData();
 			    	 },
 		error: function(jqXHR, exception) {
          if (jqXHR.status === 0) {
@@ -160,11 +163,12 @@ ul.tab li.active {
 	function funFillPOSWiseData()
 	{
 		var code= $("#cmbPosCode").val();
-		var searchurl=getContextPath()+"/loadPOSWisePropertySetupData.html?posCode="+code;
+		var searchurl=getContextPath()+"/loadPOSWisePropertySetupData.html?posCode="+$("#cmbPosCode").val();
 		 $.ajax({
 			        type: "GET",
 			        url: searchurl,
 			        dataType: "json",
+			        async:true,
 			        success: function(response)
 			        {
 			        	
@@ -870,12 +874,112 @@ ul.tab li.active {
 					        			$("#txtJioMID").val(response.strJioMID);
 					        			$("#txtJioTID").val(response.strJioTID);
 					        			$("#txtJioActivationCode").val(response.strJioActivationCode);
-					        			
 					        			$("#txtJioDeviceID").val(response.strJioDeviceID);
-					        			funLoadPrinterDtl();
-				        				funSetSelectedBillSeries();
-				        				//hghhg
+					        			
+					        			if(response.chkAreaWiseCostCenterKOTPrinting=='Y')
+					        			{
+					        			$("#chkAreaWiseCostCenterKOTPrinting").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkAreaWiseCostCenterKOTPrinting").prop('checked',false);
+					        			
+					        			$("cmbDineInAreaForDirectBiller").val(response.strDineInAreaForDirectBiller);
+					        			$("cmbHomeDeliAreaForDirectBiller").val(response.strHomeDeliAreaForDirectBille);
+					        			$("cmbTakeAwayAreaForDirectBiller").val(response.strTakeAwayAreaForDirectBiller);
+					        			
+					        			if(response.chkRoundOffBillAmount=='Y')
+					        			{
+					        			$("#chkRoundOffBillAmount").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkRoundOffBillAmount").prop('checked',false);
+					        			
+					        			if(response.chkPrintItemsOnMoveKOTMoveTable=='Y')
+					        			{
+					        			$("#chkPrintItemsOnMoveKOTMoveTable").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintItemsOnMoveKOTMoveTable").prop('checked',false);
+					        			
+					        			$("txtNoOfDecimalPlaces").val(response.intNoOfDecimalPlaces);
+					        			
+					        			if(response.chkPrintMoveTableMoveKOT=='Y')
+					        			{
+					        			$("#chkPrintMoveTableMoveKOT").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintMoveTableMoveKOT").prop('checked',false);
+					        			
+					        			if(response.chkSendDBBackupOnMail=='Y')
+					        			{
+					        			$("#chkSendDBBackupOnMail").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkSendDBBackupOnMail").prop('checked',false);
+					        			
+					        			if(response.chkPrintQtyTotal=='Y')
+					        			{
+					        			$("#chkPrintQtyTotal").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintQtyTotal").prop('checked',false);
+				        					
+					        			if(response.chkPrintOrderNoOnBill=='Y')
+					        			{
+					        			$("#chkPrintOrderNoOnBill").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintOrderNoOnBill").prop('checked',false);
 				        				
+					        			if(response.chkAutoAddKOTToBill=='Y')
+					        			{
+					        			$("#chkAutoAddKOTToBill").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkAutoAddKOTToBill").prop('checked',false);
+				        					
+					        			if(response.chkPrintDeviceUserDtlOnKOT=='Y')
+					        			{
+					        			$("#chkPrintDeviceUserDtlOnKOT").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintDeviceUserDtlOnKOT").prop('checked',false);
+				        				
+					        			if(response.chkFireCommunication=='Y')
+					        			{
+					        			$("#chkFireCommunication").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkFireCommunication").prop('checked',false);
+				        					
+					        			if(response.chkLockTableForWaiter=='Y')
+					        			{
+					        			$("#chkLockTableForWaiter").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkLockTableForWaiter").prop('checked',false);
+				        				
+					        			$("cmbRemoveServiceChargeTaxCode").val(response.strRemoveServiceChargeTaxCode);
+					        			$("cmbShowReportsInCurrency").val(response.strShowReportsInCurrency);
+					        			$("cmbPOSToMMSPostingCurrency").val(response.strPOSToMMSPostingCurrency);
+					        			$("cmbPOSToWebBooksPostingCurrency").val(response.strPOSToWebBooksPostingCurrency);
+					        			$("txtUSDCrrencyConverionRate").val(response.dblUSDCrrencyConverionRate);
+					        			
+					        			$("cmbBenowPOSIntegrationYN").val(response.strBenowPOSIntegrationYN);
+					        			$("txtMerchantCode").val(response.strMerchantCode);
+					        			$("txtXEmail").val(response.strXEmail);
+					        			$("txtAuthenticationKey").val(response.strAuthenticationKey);
+					        			$("txtSalt").val(response.strSalt);
+					        			
+					        			$("cmbWeraIntegrationYN").val(response.strWeraIntegrationYN);
+					        			$("txtWeraAuthenticationAPIKey").val(response.strWeraAuthenticationAPIKey);
+					        			$("txtWeraMerchantOutletId").val(response.strWeraMerchantOutletId);
+					        			$("cmbPostMMSSalesEffectCostOrLoc").val(response.strPostMMSSalesEffectCostOrLoc);
+					        			
+					        			funLoadPrinterDtl();
+				        				//funSetSelectedBillSeries();
+				        				
+					        			
 			        },
 					error: function(jqXHR, exception) {
 			            if (jqXHR.status === 0) {
@@ -993,7 +1097,7 @@ ul.tab li.active {
 			        dataType: "json",
 			        success: function(response)
 			        {
-			        		$("#cmbPosCode").val(response.strPosCode);
+			        	    $("#cmbPosCode").val(response.strPosCode);
 				        	$("#cmbCity").val(response.strCity);
 				        	
 				        	$("#txtClientCode").val(response.strClientCode);
@@ -1481,14 +1585,111 @@ ul.tab li.active {
 					        			}
 					        			$("#txtJioMID").val(response.strJioMID);
 					        			$("#txtJioTID").val(response.strJioTID);
-					        			
-					        			
 					        			$("#txtJioActivationCode").val(response.strJioActivationCode);
+					        			$("#txtJioDeviceID").val(response.strJioDeviceID);
 					        			
+					        			if(response.chkAreaWiseCostCenterKOTPrinting=='Y')
+					        			{
+					        			$("#chkAreaWiseCostCenterKOTPrinting").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkAreaWiseCostCenterKOTPrinting").prop('checked',false);
 					        			
-					        				$("#txtJioDeviceID").val(response.strJioDeviceID);
-					        				funLoadPrinterDtl();
-				        				funSetSelectedBillSeries();
+					        			$("cmbDineInAreaForDirectBiller").val(response.strDineInAreaForDirectBiller);
+					        			$("cmbHomeDeliAreaForDirectBiller").val(response.strHomeDeliAreaForDirectBille);
+					        			$("cmbTakeAwayAreaForDirectBiller").val(response.strTakeAwayAreaForDirectBiller);
+					        			
+					        			if(response.chkRoundOffBillAmount=='Y')
+					        			{
+					        			$("#chkRoundOffBillAmount").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkRoundOffBillAmount").prop('checked',false);
+					        			
+					        			if(response.chkPrintItemsOnMoveKOTMoveTable=='Y')
+					        			{
+					        			$("#chkPrintItemsOnMoveKOTMoveTable").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintItemsOnMoveKOTMoveTable").prop('checked',false);
+					        			
+					        			$("txtNoOfDecimalPlaces").val(response.intNoOfDecimalPlaces);
+					        			
+					        			if(response.chkPrintMoveTableMoveKOT=='Y')
+					        			{
+					        			$("#chkPrintMoveTableMoveKOT").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintMoveTableMoveKOT").prop('checked',false);
+					        			
+					        			if(response.chkSendDBBackupOnMail=='Y')
+					        			{
+					        			$("#chkSendDBBackupOnMail").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkSendDBBackupOnMail").prop('checked',false);
+					        			
+					        			if(response.chkPrintQtyTotal=='Y')
+					        			{
+					        			$("#chkPrintQtyTotal").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintQtyTotal").prop('checked',false);
+				        					
+					        			if(response.chkPrintOrderNoOnBill=='Y')
+					        			{
+					        			$("#chkPrintOrderNoOnBill").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintOrderNoOnBill").prop('checked',false);
+				        				
+					        			if(response.chkAutoAddKOTToBill=='Y')
+					        			{
+					        			$("#chkAutoAddKOTToBill").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkAutoAddKOTToBill").prop('checked',false);
+				        					
+					        			if(response.chkPrintDeviceUserDtlOnKOT=='Y')
+					        			{
+					        			$("#chkPrintDeviceUserDtlOnKOT").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkPrintDeviceUserDtlOnKOT").prop('checked',false);
+				        				
+					        			if(response.chkFireCommunication=='Y')
+					        			{
+					        			$("#chkFireCommunication").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkFireCommunication").prop('checked',false);
+				        					
+					        			if(response.chkLockTableForWaiter=='Y')
+					        			{
+					        			$("#chkLockTableForWaiter").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkLockTableForWaiter").prop('checked',false);
+				        				
+					        			$("cmbRemoveServiceChargeTaxCode").val(response.strRemoveServiceChargeTaxCode);
+					        			$("cmbShowReportsInCurrency").val(response.strShowReportsInCurrency);
+					        			$("cmbPOSToMMSPostingCurrency").val(response.strPOSToMMSPostingCurrency);
+					        			$("cmbPOSToWebBooksPostingCurrency").val(response.strPOSToWebBooksPostingCurrency);
+					        			$("txtUSDCrrencyConverionRate").val(response.dblUSDCrrencyConverionRate);
+					        			
+					        			$("cmbBenowPOSIntegrationYN").val(response.strBenowPOSIntegrationYN);
+					        			$("txtMerchantCode").val(response.strMerchantCode);
+					        			$("txtXEmail").val(response.strXEmail);
+					        			$("txtAuthenticationKey").val(response.strAuthenticationKey);
+					        			$("txtSalt").val(response.strSalt);
+					        			
+					        			$("cmbWeraIntegrationYN").val(response.strWeraIntegrationYN);
+					        			$("txtWeraAuthenticationAPIKey").val(response.strWeraAuthenticationAPIKey);
+					        			$("txtWeraMerchantOutletId").val(response.strWeraMerchantOutletId);
+					        			$("cmbPostMMSSalesEffectCostOrLoc").val(response.strPostMMSSalesEffectCostOrLoc);
+					        			
+					        			funLoadPrinterDtl();
+				        				//funSetSelectedBillSeries();
 				        				
 			        },
 					error: function(jqXHR, exception) {
@@ -1911,7 +2112,7 @@ ul.tab li.active {
 			<tr>
 				<td >
 				<label>POS Name</label>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<s:select id="cmbPosCode" name="cmbPosCode" path="strPosCode" cssClass="BoxW124px" items="${posList}" >
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<s:select id="cmbPosCode" name="cmbPosCode" path="strPosCode" cssClass="BoxW124px" items="${posList}"  >
 				</s:select></td>
 				<td></td>
 				<!-- <td></td> -->
@@ -1925,34 +2126,35 @@ ul.tab li.active {
 						<div id="tab_container" >
 						<div style="float:left;">
 							<ul class="tab">
-								<li class="active" data-state="tab1">Property Setup</li>
-								<li data-state="tab2">Bill Setup</li>
-								<li data-state="tab3">POS Setup 1</li>
-								<li data-state="tab4">POS Setup 2</li>
-								<li data-state="tab5">POS Setup 3</li>
-								<li data-state="tab6">Email Setup</li>
-								<li data-state="tab7">Card Interface</li>
-								<li data-state="tab8">CRM Interface</li>
-								<li data-state="tab9">SMS Setup</li>
-								<li data-state="tab10">FTP Setup</li>
-								<li data-state="tab11">CMS Integration</li>
-								<li data-state="tab12">Printer Setup</li>
-								<li data-state="tab13">Debit Card Setup</li>
-								<li data-state="tab14">Bill Series Setup</li>
-								<li data-state="tab15">Inresto Integration</li>
-								<li data-state="tab16">Jio Integration</li>
+								<li class="active" data-state="tab1"  style="border: 1px solid black; width: 100%;">Property Setup</li>
+								<li data-state="tab2" style="border: 1px solid black; width: 100%;">Bill Setup</li>
+								<li data-state="tab3" style="border: 1px solid black; width: 100%;">POS Setup 1</li>
+								<li data-state="tab4" style="border: 1px solid black; width: 100%;">POS Setup 2</li>
+								<li data-state="tab5" style="border: 1px solid black; width: 100%;">POS Setup 3</li>
+								<li data-state="tab6" style="border: 1px solid black; width: 100%;">POS Setup 4</li>
+								<li data-state="tab7" style="border: 1px solid black; width: 100%;">Email Setup</li>
+								<li data-state="tab8" style="border: 1px solid black; width: 100%;">Card Interface</li>
+								<li data-state="tab9" style="border: 1px solid black; width: 100%;">CRM Interface</li>
+								<li data-state="tab10" style="border: 1px solid black; width: 100%;">SMS Setup</li>
+								<li data-state="tab11" style="border: 1px solid black; width: 100%;">FTP Setup</li>
+								<li data-state="tab12" style="border: 1px solid black; width: 100%;">CMS Integration</li>
+								<li data-state="tab13" style="border: 1px solid black; width: 100%;">Printer Setup</li>
+								<li data-state="tab14" style="border: 1px solid black; width: 100%;">Debit Card Setup</li>
+								<li data-state="tab15" style="border: 1px solid black; width: 100%;">Inresto Integration</li>
+								<li data-state="tab16" style="border: 1px solid black; width: 100%;">Jio Integration</li>
+								<li data-state="tab17" style="border: 1px solid black; width: 100%;">Benow Integration</li>
+								<li data-state="tab18" style="border: 1px solid black; width: 100%;">WERA Online Order Integration</li>
 				
 							</ul>
 						</div>
 
-							<!--  Start of Property Setup tab-->
+		<!--  Start of Property Setup tab-->
 
-						<div id="tab1" class="tab_content">
-						<br><br>
-						<div style="float:left;">
-								<table  class="masterTable" style="width:500px;">
-																		
-									<tr>
+		<div id="tab1" class="tab_content">
+		<br><br>
+		<div style="float:left; margin-left: 5%">
+			<table  class="masterTable" style="width:600px; ">
+			  <tr>
 				<td>Client Code & Name</td>
 				<td><s:input id="txtClientCode" path="strClientCode"
 						cssClass="searchTextBox" readonly="true" ondblclick="funHelp('POSTaxMaster.a')" />
@@ -1960,30 +2162,30 @@ ul.tab li.active {
 						name="txtClientName" path="strClientName"
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  />	
 		       </td>
-		       </tr>
-			<tr>
-			<td><label>Address Line 1</label></td>
+		     </tr>
+			 <tr>
+			    <td><label>Address Line 1</label></td>
 				<td><s:input colspan="" type="text" id="txtAddrLine1" 
-						path="strAddrLine1" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
-						</tr>
-						<tr>
-					<td><label>Address Line 2</label></td>
-				<td><s:input colspan="" type="text" id="txtAddrLine2" 
-						path="strAddrLine2" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
-				</tr>
-					<tr>
-					<td><label>Address Line 3</label></td>
-				<td><s:input colspan="" type="text" id="txtAddrLine3" 
-						path="strAddrLine3" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
+					path="strAddrLine1" 
+					cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
+			</tr>
+			<tr>
+			  <td><label>Address Line 2</label></td>
+			  <td><s:input colspan="" type="text" id="txtAddrLine2" 
+					path="strAddrLine2" 
+					cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
+			</tr>
+			<tr>
+			  <td><label>Address Line 3</label></td>
+			  <td><s:input colspan="" type="text" id="txtAddrLine3" 
+					path="strAddrLine3" 
+					cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
 					
 			</tr>
 		
 			<tr>
-			<td><label>City &amp; PIN Code</label></td>
-				<td><s:select id="cmbCity" path="strCity" cssClass="BoxW124px" >
+			   <td><label>City &amp; PIN Code</label></td>
+			   <td><s:select id="cmbCity" path="strCity" cssClass="BoxW124px" >
 				 <option value="Pune">Pune</option><option value="Agalgaon">Agalgaon</option> <option value="Agartala">Agartala</option>
 				 <option value="Agra">Agra</option> <option value="Ahmedabad">Ahmedabad</option><option value="Ahmednagar">Ahmednagar</option>
 				 <option value="Ajmer">Ajmer</option> <option value="Akluj">Akluj</option> <option value="Akola">Akola</option><option value="Akot">Akot</option>
@@ -1998,31 +2200,31 @@ ul.tab li.active {
 				 <option value="Cochin">Cochin</option><option value="Coimbature">Coimbature</option> <option value="Dehradun">Dehradun</option><option value="Delhi">Delhi</option>  <option value="Dhanbad">Dhanbad</option> <option value="Dhule">Dhule</option>
 				 <option value="Faridabad">Faridabad</option> <option value="Goa">Goa</option> <option value="Gujrat">Gujrat</option><option value="Gurgaon">Gurgaon</option>  <option value="Guwahati">Guwahati</option><option value="Gwalior">Gwalior</option>
 				 <option value="Hyderabad">Hyderabad</option>  <option value="Ichalkaranji">Ichalkaranji</option>  <option value="Indapur">Indapur</option>  <option value="Indore">Indore</option><option value="Jabalpur">Jabalpur</option> <option value="Jaipur">Jaipur</option>
-				<option value="Jalandhar">Jalandhar</option><option value="Jalgaon">Jalgaon</option>  <option value="Jalna">Jalna</option><option value="Jamshedpur">Jamshedpur</option> <option value="Kalamnuri">Kalamnuri</option> <option value="Kanpur">Kanpur</option>
-				<option value="Karad">Karad</option> <option value="Kochi(Cochin)">Kochi(Cochin)</option><option value="Kolhapur">Kolhapur</option><option value="Kolkata(Calcutta)">Kolkata(Calcutta)</option><option value="Kozhikode(Calicut)">Kozhikode(Calicut)</option>   <option value="Latur">Latur</option>
-			 <option value="Lucknow">Lucknow</option>    <option value="Ludhiana">Ludhiana</option><option value="Mumbai">Mumbai</option> <option value="Madurai">Madurai</option><option value="Mangalvedha">Mangalvedha</option>  <option value="Manmad">Manmad</option>
-			<option value="Meerut">Meerut</option> <option value="Mumbai(Bombay)">Mumbai(Bombay)</option>
-			<option value="Mysore">Mysore</option>   <option value="Nagpur">Nagpur</option><option value="Nanded">Nanded</option>
-			<option value="Nandurbar">Nandurbar</option> <option value="Nashik">Nashik</option><option value="Orisa">Orisa</option><option value="Osmanabad">Osmanabad</option>
-			 <option value="Pachora">Pachora</option><option value="Pandharpur">Pandharpur</option><option value="Parbhani">Parbhani</option><option value="Patna">Patna</option>
-		<option value="Pratapgad">Pratapgad</option><option value="Raipur">Raipur</option> <option value="Rajasthan">Rajasthan</option><option value="Rajkot">Rajkot</option>
-		<option value="Ranchi">Ranchi</option><option value="Ratnagiri">Ratnagiri</option><option value="Salem">Salem</option>
-				  <option value="Sangamner">Sangamner</option><option value="Sangli">Sangli</option> <option value="Satara">Satara</option>
+				 <option value="Jalandhar">Jalandhar</option><option value="Jalgaon">Jalgaon</option>  <option value="Jalna">Jalna</option><option value="Jamshedpur">Jamshedpur</option> <option value="Kalamnuri">Kalamnuri</option> <option value="Kanpur">Kanpur</option>
+				 <option value="Karad">Karad</option> <option value="Kochi(Cochin)">Kochi(Cochin)</option><option value="Kolhapur">Kolhapur</option><option value="Kolkata(Calcutta)">Kolkata(Calcutta)</option><option value="Kozhikode(Calicut)">Kozhikode(Calicut)</option>   <option value="Latur">Latur</option>
+			     <option value="Lucknow">Lucknow</option>    <option value="Ludhiana">Ludhiana</option><option value="Mumbai">Mumbai</option> <option value="Madurai">Madurai</option><option value="Mangalvedha">Mangalvedha</option>  <option value="Manmad">Manmad</option>
+			     <option value="Meerut">Meerut</option> <option value="Mumbai(Bombay)">Mumbai(Bombay)</option>
+			     <option value="Mysore">Mysore</option>   <option value="Nagpur">Nagpur</option><option value="Nanded">Nanded</option>
+			     <option value="Nandurbar">Nandurbar</option> <option value="Nashik">Nashik</option><option value="Orisa">Orisa</option><option value="Osmanabad">Osmanabad</option>
+			     <option value="Pachora">Pachora</option><option value="Pandharpur">Pandharpur</option><option value="Parbhani">Parbhani</option><option value="Patna">Patna</option>
+				 <option value="Pratapgad">Pratapgad</option><option value="Raipur">Raipur</option> <option value="Rajasthan">Rajasthan</option><option value="Rajkot">Rajkot</option>
+				 <option value="Ranchi">Ranchi</option><option value="Ratnagiri">Ratnagiri</option><option value="Salem">Salem</option>
+				 <option value="Sangamner">Sangamner</option><option value="Sangli">Sangli</option> <option value="Satara">Satara</option>
 				 <option value="Sawantwadi">Sawantwadi</option><option value="Secunderabad">Secunderabad</option> <option value="Shirdi">Shirdi</option>
 				 <option value="Sindhudurga">Sindhudurga</option><option value="Solapur">Solapur</option> <option value="Srinagar">Srinagar</option>
 				 <option value="Surat">Surat</option><option value="Tiruchirapalli">Tiruchirapalli</option><option value="Vadodara(Baroda)">Vadodara(Baroda)</option>
-				<option value="Varanasi(Benares)">Varanasi(Benares)</option><option value="Vijayawada">Vijayawada</option><option value="Visakhapatnam">Visakhapatnam</option><option value="Yawatmal">Yawatmal</option>
+				 <option value="Varanasi(Benares)">Varanasi(Benares)</option><option value="Vijayawada">Vijayawada</option><option value="Visakhapatnam">Visakhapatnam</option><option value="Yawatmal">Yawatmal</option>
 				 <option value="Other">Other</option>
-				 </s:select> &nbsp;&nbsp;
+				</s:select> &nbsp;&nbsp;
 				<s:input colspan="" type="text" id="txtPinCode" 
-						 path="strPinCode" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
+					path="strPinCode" 
+					cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /></td>
 				
 			</tr>
+			
 			<tr>
-			<td><label>State And Country</label></td>
-				
-				<td>  
+			   <td><label>State And Country</label></td>
+			   <td>  
 		       <s:select id="cmbState" path="strState" cssClass="BoxW124px" >
 				 <option value="Maharashtra">Maharashtra</option><option value="Delhi">Delhi</option> <option value="Karnataka">Karnataka</option>
 				 <option value="Telangana">Telangana</option> <option value="TamilNadu">TamilNadu</option><option value="Gujrat">Gujrat</option>
@@ -2035,265 +2237,266 @@ ul.tab li.active {
 			</tr>
 			
 			<tr>
-			<td><label>Telephone</label></td>
-				  <td><s:input colspan="" type="text" id="txtTelephone" 
-						path="strTelephone" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			    <td><label>Telephone</label></td>
+				<td><s:input colspan="" type="text" id="txtTelephone" 
+					path="strTelephone" 
+					cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
 		       </td>
-		       </tr>
+		    </tr>
 		   
-		       <tr>
-			<td><label>Email Address</label></td>
-				  <td><s:input colspan="" type="text" id="txtEmail" 
+		    <tr>
+			    <td><label>Email Address</label></td>
+				<td><s:input colspan="" type="text" id="txtEmail" 
 					 path="strEmail" 
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
-		       </tr>
-		       <tr>
-		       <td><label>Nature Of Bussness</label></td>
+		        </td>
+		    </tr>
+		    
+		    <tr>
+		        <td><label>Nature Of Bussness</label></td>
 				<td>
-					<s:select id="cmbNatureOfBussness" name="cmbNatureOfBussness" path="strNatureOfBussness" cssClass="BoxW124px" >
-				<option value="Retail">Retail</option>
-				 <option value="F&B">F &amp; B</option>
+				 <s:select id="cmbNatureOfBussness" name="cmbNatureOfBussness" path="strNatureOfBussness" cssClass="BoxW124px" >
+				   <option value="Retail">Retail</option>
+				   <option value="F&B">F &amp; B</option>
  				 </s:select> 	
 		       </td>
-		      </tr>
-		      </table>
-		      </div>
-		      <table  class="masterTable" style="width:90px;">
-				<tr style="width:90px;">
+		   </tr>
+		   
+		 </table>
+		</div>
+		 <table  class="masterTable" style="width:90px;">
+		   <tr style="width:90px;">
 				<td>
-		      <img id="clientImage" src=""  width="100px" height="100px" alt="Client Image" />
-		      </td>
-		      </tr>
-		      <tr>
-		      <td>
-		      <div> <input style="width:80px;" id="companyLogo" name="companyLogo"  type="file" accept="image/png" onchange="funShowImagePreview(this);" /></div>
-		      </td></tr>
-		      </table>
-		      </div>
-							<!--  End of  Property Setup tab-->
+		          <img id="clientImage" src=""  width="100px" height="100px" alt="Client Image" />
+		        </td>
+		   </tr>
+		   <tr>
+		        <td>
+		          <div> <input style="width:80px;" id="companyLogo" name="companyLogo"  type="file" accept="image/png" onchange="funShowImagePreview(this);" /></div>
+		        </td>
+		   </tr>
+		  </table>
+		</div>
+	<!--  End of  Property Setup tab-->
 
 
-						<!-- Start of Bill Setup tab -->
+	<!-- Start of Bill Setup tab -->
 
-							<div id="tab2" class="tab_content">
-							<br><br>
-							<table  class="masterTable">
+		<div id="tab2" class="tab_content">
+		  <br><br>
+		  <table  class="masterTable">
 																		
 				<tr>
-				<td><label>Bill Footer</label></td>
+				   <td><label>Bill Footer</label></td>
 			
-				  <td colspan="5"><s:input  type="text" id="txtBillFooter" 
+				   <td colspan="5"><s:input  type="text" id="txtBillFooter" 
 						name="txtBillFooter" path="strBillFooter" 
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
+		           </td>
 		       </tr>
 		       <tr>
-				<td><label>Bill Paper Size</label></td>
-				<td><s:select id="cmbBillPaperSize" path="intBiilPaperSize" cssClass="BoxW124px" >
+				   <td><label>Bill Paper Size</label></td>
+				   <td><s:select id="cmbBillPaperSize" path="intBiilPaperSize" cssClass="BoxW124px" >
 				
-				 <option value=2>2</option>
- 				 <option value=3>3</option>
-				 </s:select>
-		       </td>
+				   <option value=2>2</option>
+	 			   <option value=3>3</option>
+				   </s:select>
+		           </td>
 		       
-		       <td><label>Print Mode</label></td>
-				<td><s:select id="cmbPrintMode"  path="strBillPrintMode" cssClass="BoxW124px" >
+		          <td><label>Print Mode</label></td>
+				  <td><s:select id="cmbPrintMode"  path="strBillPrintMode" cssClass="BoxW124px" >
 				
-				 <option value="Portrait">Portrait</option>
- 				 <option value="Landscape">Landscape</option>
-				 </s:select>
-		       </td>
+				   <option value="Portrait">Portrait</option>
+ 				   <option value="Landscape">Landscape</option>
+				   </s:select>
+		          </td>
 		       
-		        <td><label>Column Size</label></td>
-				<td><s:select id="cmbColumnSize" path="intColumnSize" cssClass="BoxW124px" >
+		          <td><label>Column Size</label></td>
+				  <td><s:select id="cmbColumnSize" path="intColumnSize" cssClass="BoxW124px" >
 				
-				 <option value=40>40</option>
- 				 <option value=48>48</option>
-				 </s:select>
-		       </td>
-		       </tr>
+				   <option value=40>40</option>
+ 				   <option value=48>48</option>
+				   </s:select>
+		          </td>
+		      </tr>
 		       
 		        
-		       <tr>
-				<td><label>Doc Printing Type</label></td>
-				<td><s:select id="cmbPrintType"  path="strPrintingType" cssClass="BoxW124px" >
-				
-				 <option value="Jasper">Jasper</option>
- 				 <option value="Text File">Text File</option>
-				 </s:select>
-		       </td>
+		      <tr>
+					<td><label>Doc Printing Type</label></td>
+					<td><s:select id="cmbPrintType"  path="strPrintingType" cssClass="BoxW124px" >
+					
+					 <option value="Jasper">Jasper</option>
+	 				 <option value="Text File">Text File</option>
+					 </s:select>
+			       </td>
 		       
-		       <td><label>Bill Format</label></td>
-				<td><s:select id="cmbBillFormatType" name="cmbBillFormatType" path="strBillFormat" cssClass="BoxW124px" >
-				
-				 <option value="Format 1">Format 1</option>
- 				 <option value="Format 2">Format 2</option>
- 				 <option value="Format 3">Format 3</option>
- 				 <option value="Format 4">Format 4</option>
- 				 <option value="Format 5">Format 5</option>
- 				 <option value="Format 6">Format 6</option>
- 				 <option value="Format 7">Format 7</option>
- 				 <option value="Format 8">Format 8</option>
- 				 <option value="Format 9">Format 9</option>
- 				 <option value="Format 10">Format 10</option>
- 				 <option value="Format 11">Format 11</option>
- 				 <option value="Format 12">Format 12</option>
- 				 <option value="Format 13">Format 13</option>
- 				 <option value="Format 14">Format 14</option>
-				 </s:select>
-		       </td>
+			        <td><label>Bill Format</label></td>
+					<td><s:select id="cmbBillFormatType" name="cmbBillFormatType" path="strBillFormat" cssClass="BoxW124px" >
+					
+					 <option value="Format 1">Format 1</option>
+	 				 <option value="Format 2">Format 2</option>
+	 				 <option value="Format 3">Format 3</option>
+	 				 <option value="Format 4">Format 4</option>
+	 				 <option value="Format 5">Format 5</option>
+	 				 <option value="Format 6">Format 6</option>
+	 				 <option value="Format 7">Format 7</option>
+	 				 <option value="Format 8">Format 8</option>
+	 				 <option value="Format 9">Format 9</option>
+	 				 <option value="Format 10">Format 10</option>
+	 				 <option value="Format 11">Format 11</option>
+	 				 <option value="Format 12">Format 12</option>
+	 				 <option value="Format 13">Format 13</option>
+	 				 <option value="Format 14">Format 14</option>
+					 </s:select>
+			       </td>
 		       
-		        <td><label>Show Docs</label></td>
-				<td>
-						
+			       <td><label>Show Docs</label></td>
+					<td>
+							
 						<s:checkbox element="li" id="chkShowBills" 
 						path="chkShowBills" value="Yes" />
-						
-		       </td>
-		       </tr>
+							
+			       </td>
+		    </tr>
 			<tr>
-			 <td><label>Allow Negative Billing </label></td>
+			 		<td><label>Allow Negative Billing </label></td>
 				
-				<td> 
-						<s:checkbox element="li" id="chkNegBilling" path="chkNegBilling" value="Yes" />
-		       </td>
-				
-				 <td><label>Enable KOT Printing For Direct Biller</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintKotForDirectBiller" path="chkPrintKotForDirectBiller" value="Yes" />
-		       </td>
-		        <td><label>Enable KOT Printing</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkEnableKOT" path="chkEnableKOT" value="Yes" />
-		       </td>		
-				
+					<td> 
+							<s:checkbox element="li" id="chkNegBilling" path="chkNegBilling" value="Yes" />
+			       </td>
+					
+					 <td><label>Enable KOT Printing For Direct Biller</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintKotForDirectBiller" path="chkPrintKotForDirectBiller" value="Yes" />
+			       </td>
+			        <td><label>Enable KOT Printing</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkEnableKOT" path="chkEnableKOT" value="Yes" />
+			       </td>
 			</tr>
 		
 			<tr>
-			<td><label>Multiple Bill Printing </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkMultiBillPrint" path="chkMultiBillPrint" value="Yes"/>
-		       </td>
-			<td><label>Day End (Mandatory) </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkDayEnd" path="chkDayEnd" value="Yes" />
-		       </td>
-		       <td><label>Print Short Name On KOT </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintShortNameOnKOT" path="chkPrintShortNameOnKOT" value="Yes"  />
-		       </td>
+					<td><label>Multiple Bill Printing </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkMultiBillPrint" path="chkMultiBillPrint" value="Yes"/>
+			       </td>
+					<td><label>Day End (Mandatory) </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkDayEnd" path="chkDayEnd" value="Yes" />
+			       </td>
+			       <td><label>Print Short Name On KOT </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintShortNameOnKOT" path="chkPrintShortNameOnKOT" value="Yes"  />
+			       </td>
 			</tr>
 			
 			<tr>
-			<td><label>Multiple KOT Printing </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkMultiKOTPrint" path="chkMultiKOTPrint" value="Yes"/>
-		       </td>
-			<td><label>Print TAX Invoice On Bill</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintInvoiceOnBill" path="chkPrintInvoiceOnBill"  value="Yes"/>
-						
-		       </td>
-		       <td><label>Print TDH Items In Bill</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintTDHItemsInBill" path="chkPrintTDHItemsInBill" value="Yes"  />
-		       </td>
+					<td><label>Multiple KOT Printing </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkMultiKOTPrint" path="chkMultiKOTPrint" value="Yes"/>
+			       </td>
+					<td><label>Print TAX Invoice On Bill</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintInvoiceOnBill" path="chkPrintInvoiceOnBill"  value="Yes"/>
+							
+			       </td>
+			       <td><label>Print TDH Items In Bill</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintTDHItemsInBill" path="chkPrintTDHItemsInBill" value="Yes"  />
+			       </td>
 			</tr>
 			
 			<tr>
-			<td><label>Manual Bill No. </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkManualBillNo" path="chkManualBillNo" value="Yes" />
-		       </td>
-			<td><label>Print Inclusive Of All Taxes On Bill</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintInclusiveOfAllTaxesOnBill" path="chkPrintInclusiveOfAllTaxesOnBill"  value="Yes"/>
-		       </td>
-		       <td></td><td></td>
+					<td><label>Manual Bill No. </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkManualBillNo" path="chkManualBillNo" value="Yes" />
+			       </td>
+					<td><label>Print Inclusive Of All Taxes On Bill</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintInclusiveOfAllTaxesOnBill" path="chkPrintInclusiveOfAllTaxesOnBill"  value="Yes"/>
+			       </td>
+			       <td></td><td></td>
 			</tr>
 			
 			<tr>
-			<td><label>Effect On PSP </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkEffectOnPSP" path="chkEffectOnPSP" value="Yes"/>
-		       </td>
-			<td><label>Print VAT No.</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintVatNo" path="chkPrintVatNo" value="Yes" />
-		       </td>
-		        <td colspan="2"><s:input  type="text" id="txtVatNo" 
-						name="txtVatNo" path="strVatNo" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
+					<td><label>Effect On PSP </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkEffectOnPSP" path="chkEffectOnPSP" value="Yes"/>
+			       </td>
+					<td><label>Print VAT No.</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintVatNo" path="chkPrintVatNo" value="Yes" />
+			       </td>
+			        <td colspan="2"><s:input  type="text" id="txtVatNo" 
+							name="txtVatNo" path="strVatNo" 
+							cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>
 			</tr>
 			<tr>
-			<td><label>No Of Lines In KOT Print</label></td>
-			<td ><s:input  type="text" id="txtNoOfLinesInKOTPrint" 
-						path="intNoOfLinesInKOTPrint" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
-		       <td><label>Print Service Tax No</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkServiceTaxNo" path="chkServiceTaxNo" value="Yes" />
-		       </td>
-		        <td colspan="2"><s:input  type="text" id="txtServiceTaxNo" 
-						 path="strServiceTaxNo" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
+					<td><label>No Of Lines In KOT Print</label></td>
+					<td ><s:input  type="text" id="txtNoOfLinesInKOTPrint" 
+							path="intNoOfLinesInKOTPrint" 
+							cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>
+			       <td><label>Print Service Tax No</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkServiceTaxNo" path="chkServiceTaxNo" value="Yes" />
+			       </td>
+			        <td colspan="2"><s:input  type="text" id="txtServiceTaxNo" 
+							 path="strServiceTaxNo" 
+							cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>
 			</tr>
 			<tr>
-			<td><label>Show Bills Detail Type</label></td>
-			<td><s:select id="cmbShowBillsDtlType" name="cmbShowBillsDtlType" path="strShowBillsDtlType" cssClass="BoxW124px" >
-				
-				 <option value="Table Detail Wise">Table Detail Wise</option>
- 				 <option value="Delivery Detail Wise">Delivery Detail Wise</option>
-				 </s:select>
-		       </td>
-		     <td colspan="2"><label>No Of Advance Receipt Print  </label></td>
-		         <td colspan="2"><s:input  type="text" id="txtAdvRecPrintCount" 
-						 path="strAdvRecPrintCount" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
+					<td><label>Show Bills Detail Type</label></td>
+					<td><s:select id="cmbShowBillsDtlType" name="cmbShowBillsDtlType" path="strShowBillsDtlType" cssClass="BoxW124px" >
+					
+					 <option value="Table Detail Wise">Table Detail Wise</option>
+	 				 <option value="Delivery Detail Wise">Delivery Detail Wise</option>
+					 </s:select>
+			        </td>
+			     	<td colspan="2"><label>No Of Advance Receipt Print  </label></td>
+			         <td colspan="2"><s:input  type="text" id="txtAdvRecPrintCount" 
+							 path="strAdvRecPrintCount" 
+							cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>
 			</tr>
-			</table>
-			</div>
-							<!-- End of Bill Setup tab -->
+		</table>
+	   </div>
+	  <!-- End of Bill Setup tab -->
 
 
 
 
-							<!-- Start of POS Setup 1 tab -->
-
-							<div id="tab3" class="tab_content">
-							<br><br>
-							<table  class="masterTable">
-																		
+	  <!-- Start of POS Setup 1 tab -->
+	
+		<div id="tab3" class="tab_content">
+		  <br><br>
+		  <table  class="masterTable">
 				
-		       <tr>
+	       <tr>
 				<td><label>Property Type</label></td>
 				<td colspan="2"><s:select id="cmbPOSType"  path="strPOSType" cssClass="BoxW124px" >
 				
 				 <option value="Stand Alone-HOPOS">Stand Alone-HOPOS</option>
- 				 <option value="Stand Alone">Stand Alone</option>
- 				  <option value="HOPOS">HOPOS</option>
- 				 <option value="Client POS">Client POS</option>
- 				   <option value="DebitCard POS">DebitCard POS</option>
- 				
+					 <option value="Stand Alone">Stand Alone</option>
+					  <option value="HOPOS">HOPOS</option>
+					 <option value="Client POS">Client POS</option>
+					   <option value="DebitCard POS">DebitCard POS</option>
+					
 				 </s:select>
 		       </td>
 		       
@@ -2301,34 +2504,34 @@ ul.tab li.active {
 				<td colspan="2"><s:select id="cmbDataSendFrequency"  path="strDataSendFrequency" cssClass="BoxW124px" >
 				
 				 <option value="After Every Bill">After Every Bill</option>
- 				 <option value="After Day End">After Day End</option>
- 				  <option value="Manual">Manual</option>
+					 <option value="After Day End">After Day End</option>
+					  <option value="Manual">Manual</option>
 				 </s:select>
 		       </td>
-		    
-		       </tr>
+	    
+	       </tr>
 		       
-		        <tr>
-				<td><label>Web Service Link</label></td>
+		   <tr>
+				 <td><label>Web Service Link</label></td>
 			
 				  <td colspan="5"><s:input  type="text" id="txtWebServiceLink" 
 						 path="strWebServiceLink" 
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
-		       </tr>
+		         </td>
+		   </tr>
 		       
-		       <tr>
+		   <tr>
 				<td><label>HO Server Date</label></td>
-			<td colspan="3" ><s:input id="dteHOServerDate" path="dteHOServerDate"  cssClass="calenderTextBox" /></td>
+				<td colspan="3" ><s:input id="dteHOServerDate" path="dteHOServerDate"  cssClass="calenderTextBox" /></td>
 		       
-		       <td><label>Max. discount</label></td>
-				 <td ><s:input  type="text" id="txtMaxDiscount" 
+		        <td><label>Max. discount</label></td>
+				<td ><s:input  type="text" id="txtMaxDiscount" 
 						 path="dblMaxDiscount"
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>
+		        </td>
 		      
-		       </tr>
-		       <tr>
+		  </tr>
+		   <tr>
 				<td><label>Change Theme</label></td>
 				<td colspan="2"><s:select id="cmbChangeTheme"  path="strChangeTheme" cssClass="BoxW124px" >
 				
@@ -2337,20 +2540,15 @@ ul.tab li.active {
  				  <option value="Color">Color</option>
  				 
 				 </s:select>
-		       </td>
+		         </td>
 		       
-		       <td><label>Select Area For Direct Biller</label></td>
-				<td colspan="2"><s:select id="cmbDirectArea" path="strDirectArea" items="${areaList}" cssClass="BoxW124px" />
-				</td>
+		         <td><label>Select Area For Direct Biller</label></td>
+				 <td colspan="2"><s:select id="cmbDirectArea" path="strDirectArea" items="${areaList}" cssClass="BoxW124px" />
+				 </td>
 		    
-		       </tr>
+		   </tr>
 			<tr>
-			 <td><label>Area Wise Pricing  </label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkAreaWisePricing" path="chkAreaWisePricing" value="Yes" />
-		       </td>
-				 <td><label>Customer Series</label></td>
+			     <td><label>Customer Series</label></td>
 				 <td ><s:input  type="text" id="txtCustSeries" 
 						 path="strCustSeries" 
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
@@ -2359,22 +2557,21 @@ ul.tab li.active {
 				
 				<td> 
 						<s:checkbox element="li" id="chkSlabBasedHomeDelCharges" path="chkSlabBasedHomeDelCharges" value="Yes" />
-		       </td>		
-				
+		       </td>			
 			</tr>
 		
 			<tr>
-			<td><label>Edit Home Delivery </label></td>
+			    <td><label>Edit Home Delivery </label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkEditHomeDelivery" path="chkEditHomeDelivery" value="Yes"/>
-		       </td>
-			<td><label>Print For Void Bill</label></td>
+		        </td>
+			    <td><label>Print For Void Bill</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkPrintForVoidBill" path="chkPrintForVoidBill" value="Yes" />
-		       </td>
-		       <td><label>Direct KOT Print from Make KOT</label></td>
+		        </td>
+		        <td><label>Direct KOT Print from Make KOT</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkDirectKOTPrintMakeKOT" path="chkDirectKOTPrintMakeKOT" value="Yes"  />
@@ -2382,64 +2579,65 @@ ul.tab li.active {
 			</tr>
 			
 			<tr>
-			<td><label>Skip Waiter Selection </label></td>
+			    <td><label>Skip Waiter Selection </label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkSkipWaiterSelection" path="chkSkipWaiterSelection" value="Yes" />
 		       </td>
-			<td><label>Skip Pax Selection </label></td>
+			   <td><label>Skip Pax Selection </label></td>
 				
-				<td> 
+			   <td> 
 						<s:checkbox element="li" id="chkSkipPaxSelection" path="chkSkipPaxSelection" value="Yes" />
 		       </td>
-		       <td><label>Compulsory Customer Area Master</label></td>
+		        <td><label>Compulsory Customer Area Master</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkAreaMasterCompulsory" path="chkAreaMasterCompulsory" value="Yes"  />
 		       </td>
 			</tr>
+			
 			<tr>
-			<td><label>Post Sales Data to MMS  </label></td>
+			   <td><label>Post Sales Data to MMS  </label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkPostSalesDataToMMS" path="chkPostSalesDataToMMS" value="Yes"/>
-		       </td>
+		        </td>
 		    
 				<td colspan="2"><s:select id="cmbItemType"  path="strItemType" cssClass="BoxW124px" >
 				
 				 <option value="Both">Both</option>
  				 <option value="Liquor">Liquor</option>
- 				  <option value="Food">Food</option>
+ 				 <option value="Food">Food</option>
  				 
 				 </s:select>
-		       </td>
-			<td><label>Show Printer Error Message</label></td>
+		        </td>
+			    <td><label>Show Printer Error Message</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkPrinterErrorMessage" path="chkPrinterErrorMessage"  value="Yes"/>
-		       </td>
+		        </td>
 		     
 			</tr>
 			
 			<tr>
-			<td><label>Active Promotions </label></td>
+			   <td><label>Active Promotions </label></td>
 				
-				<td> 
+			   <td> 
 						<s:checkbox element="li" id="chkActivePromotions" path="chkActivePromotions" value="Yes"/>
 		       </td>
-			<td><label>Print KOT</label></td>
+			   <td><label>Print KOT</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkPrintKOTYN" path="chkPrintKOTYN" value="Yes" />
-		       </td>
-		      <td><label>Change Quantity For External Code</label></td>
+		        </td>
+		        <td><label>Change Quantity For External Code</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkChangeQtyForExternalCode" path="chkChangeQtyForExternalCode" value="Yes" />
-		       </td>
+		        </td>
 			</tr>
 			<tr>
-			<td><label>Stock In Options</label></td>
+			    <td><label>Stock In Options</label></td>
 			
 				<td colspan="3"><s:select id="cmbStockInOption"  path="strStockInOption" cssClass="BoxW124px" >
 				
@@ -2447,53 +2645,62 @@ ul.tab li.active {
  				 <option value="MenuHeadWise">MenuHeadWise</option>
  				 
 				 </s:select>
-		       </td>
-		       <td><label>Show Item StK Column in DB</label></td>
+		         </td>
+		        <td><label>Show Item StK Column in DB</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkShowItemStkColumnInDB" path="chkShowItemStkColumnInDB" value="Yes" />
-		       </td>
+		        </td>
 		      
 			</tr>
 			<tr>
-			<td><label>Pick Up Price From</label></td>
-			<td colspan="3"><s:select id="cmbPriceFrom"  path="strPriceFrom" cssClass="BoxW124px" >
+				<td><label>Pick Up Price From</label></td>
+				<td colspan="3"><s:select id="cmbPriceFrom"  path="strPriceFrom" cssClass="BoxW124px" >
 				
 				 <option value="Menu Pricing">Menu Pricing</option>
  				 <option value="Item Master">Item Master</option>
 				 </s:select>
-		       </td>
-		      <td><label>Ask For Print Bill  Popup</label></td>
+		        </td>
+		        <td><label>Ask For Print Bill  Popup</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkPrintBill" path="chkPrintBill" value="Yes" />
 		       </td>
 			</tr>
 			<tr>
-			<td><label>Discount On</label></td>
-			<td colspan="3"><s:select id="cmbApplyDiscountOn"  path="strApplyDiscountOn" cssClass="BoxW124px" >
+				<td><label>Discount On</label></td>
+				<td colspan="3"><s:select id="cmbApplyDiscountOn"  path="strApplyDiscountOn" cssClass="BoxW124px" >
 				
 				 <option value="SubTotal">SubTotal</option>
  				 <option value="SubTotalTax">SubTotalTax</option>
 				 </s:select>
 		       </td>
-		      <td><label>Use Vat And Service No From POS</label></td>
+		       <td><label>Use Vat And Service No From POS</label></td>
 				
 				<td> 
 						<s:checkbox element="li" id="chkUseVatAndServiceNoFromPos" path="chkUseVatAndServiceNoFromPos" value="Yes" />
-		       </td>
+		        </td>
 			</tr>
-			</table>
-			</div>
-							<!-- End of POS Setup 1 tab -->
+			
+			 <tr>
+				<td><label>Post MMS Sales Effect</label></td>
+				<td colspan="3"><s:select id="cmbPostMMSSalesEffectCostOrLoc"  path="strPostMMSSalesEffectCostOrLoc" cssClass="BoxW124px" >
+				 <option value="Cost Center">Cost Center</option>
+ 				 <option value="WS Location"> WS Location</option>
+				 </s:select>
+				</td> 
+			</tr>
+		</table>
+	   </div>
+	  <!-- End of POS Setup 1 tab -->
 							
-							<!-- Start of POS Setup 2 tab -->
+	  <!-- Start of POS Setup 2 tab -->
 
-							<div id="tab4" class="tab_content">
-							<br><br>
-							<table  class="masterTable">
+	  <div id="tab4" class="tab_content">
+		<br><br>
+		<table  class="masterTable">
 				
-				<tr>
+		  <tr>
 			 <td><label>Manual Advance Order No Compulsory </label></td>
 				
 				<td colspan="2"> 
@@ -2506,10 +2713,10 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkPrintManualAdvOrderOnBill" path="chkPrintManualAdvOrderOnBill" value="Yes" />
 		       </td>		
 				
-			</tr>														
+		  </tr>														
 				
-				<tr>
-			 <td><label>Print Modifier Quantity On KOT </label></td>
+		  <tr>
+			    <td><label>Print Modifier Quantity On KOT </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkPrintModifierQtyOnKOT" path="chkPrintModifierQtyOnKOT" value="Yes" />
@@ -2521,43 +2728,43 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkBoxAllowNewAreaMasterFromCustMaster" path="chkBoxAllowNewAreaMasterFromCustMaster" value="Yes" />
 		       </td>		
 				
-			</tr>	
-		       <tr>
+		 </tr>	
+		 <tr>
 				<td><label>Menu Item Sorting</label></td>
 				<td colspan="2"><s:select id="cmbMenuItemSortingOn"  path="strMenuItemSortingOn" cssClass="BoxW124px" >
 				
 				 <option value="SELECT">SELECT</option>
  				 <option value="subGroupWise">SUB GROUP WISE</option>
- 				  <option value="subMenuHeadWise">SUB MENU HEAD WISE</option>
+ 				 <option value="subMenuHeadWise">SUB MENU HEAD WISE</option>
  				
 				 </s:select>
-		       </td>
+		        </td>
 		       
-		       <td><label>Allow To Calculate Item Weight</label></td>
+		        <td><label>Allow To Calculate Item Weight</label></td>
 					<td> 
 						<s:checkbox element="li" id="chkAllowToCalculateItemWeight" path="chkAllowToCalculateItemWeight" value="Yes" />
-		       </td>
+		        </td>
 		    
-		       </tr>
+		 </tr>
 		       
 		      
-		       <tr>
+		  <tr>
 				<td><label>Menu Item Display Sequence</label></td>
-			<td colspan="2" ><s:select id="cmbMenuItemDisSeq"  path="strMenuItemDisSeq" cssClass="BoxW124px" >
+			    <td colspan="2" ><s:select id="cmbMenuItemDisSeq"  path="strMenuItemDisSeq" cssClass="BoxW124px" >
 				
 				 <option value="Ascending">Ascending</option>
  				 <option value="As Entered">As Entered</option>
  				
 				 </s:select>
 		      
-			 <td><label>Item Wise KOT Y/N : </label></td>
+			     <td><label>Item Wise KOT Y/N : </label></td>
 				
-				<td> 
+				 <td> 
 						<s:checkbox element="li" id="chkItemWiseKOTPrintYN" path="chkItemWiseKOTPrintYN" value="Yes" />
-		       </td>
-		       </tr>
-		      <tr>
-			 <td><label>Item Quantiy Numeric Pad </label></td>
+		         </td>
+		  </tr>
+		  <tr>
+			    <td><label>Item Quantiy Numeric Pad </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkItemQtyNumpad" path="chkItemQtyNumpad" value="Yes" />
@@ -2569,9 +2776,9 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkSlipNoForCreditCardBillYN" path="chkSlipNoForCreditCardBillYN" value="Yes" />
 		       </td>		
 				
-			</tr>	
-			<tr>
-			 <td><label>Print KOT To Local Printer </label></td>
+		</tr>	
+		<tr>
+			  <td><label>Print KOT To Local Printer </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkPrintKOTToLocalPrinter" path="chkPrintKOTToLocalPrinter" value="Yes" />
@@ -2583,9 +2790,9 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkExpDateForCreditCardBillYN" path="chkExpDateForCreditCardBillYN" value="Yes" />
 		       </td>		
 				
-			</tr>	
-			<tr>
-			 <td><label>Delivery Boy Compulsory On Direct Biller </label></td>
+		</tr>	
+		<tr>
+			   <td><label>Delivery Boy Compulsory On Direct Biller </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkDelBoyCompulsoryOnDirectBiller" path="chkDelBoyCompulsoryOnDirectBiller" value="Yes" />
@@ -2597,10 +2804,10 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkSelectWaiterFromCardSwipe" path="chkSelectWaiterFromCardSwipe" value="Yes" />
 		       </td>		
 				
-			</tr>	
+		</tr>	
 			
-			<tr>
-			 <td><label>Enable Settle Button For Direct Biller Bill</label></td>
+		<tr>
+			   <td><label>Enable Settle Button For Direct Biller Bill</label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkEnableSettleBtnForDirectBillerBill" path="chkEnableSettleBtnForDirectBillerBill" value="Yes" />
@@ -2612,9 +2819,9 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkMultipleWaiterSelectionOnMakeKOT" path="chkMultipleWaiterSelectionOnMakeKOT" value="Yes" />
 		       </td>		
 				
-			</tr>	
-			<tr>
-			 <td><label>Don't Show Advance Order In Other POS </label></td>
+		</tr>	
+		<tr>
+			   <td><label>Don't Show Advance Order In Other POS </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkDontShowAdvOrderInOtherPOS" path="chkDontShowAdvOrderInOtherPOS" value="Yes" />
@@ -2626,9 +2833,9 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkMoveTableToOtherPOS" path="chkMoveTableToOtherPOS" value="Yes" />
 		       </td>		
 				
-			</tr>	
-			<tr>
-			 <td><label>Print Zero Amount Modifiers In Bill </label></td>
+		</tr>	
+		<tr>
+			   <td><label>Print Zero Amount Modifiers In Bill </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkPrintZeroAmtModifierInBill" path="chkPrintZeroAmtModifierInBill" value="Yes" />
@@ -2640,9 +2847,9 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkMoveKOTToOtherPOS" path="chkMoveKOTToOtherPOS" value="Yes" />
 		       </td>		
 				
-			</tr>	
-			<tr>
-			 <td><label>Points On Bill Print </label></td>
+	    </tr>	
+		<tr>
+			   <td><label>Points On Bill Print </label></td>
 				
 				<td colspan="2"> 
 						<s:checkbox element="li" id="chkPointsOnBillPrint" path="chkPointsOnBillPrint" value="Yes" />
@@ -2654,8 +2861,8 @@ ul.tab li.active {
 						<s:checkbox element="li" id="chkCalculateTaxOnMakeKOT" path="chkCalculateTaxOnMakeKOT" value="Yes" />
 		       </td>		
 				
-			</tr>	
-			<tr>
+		</tr>	
+		<tr>
 			
 				
 		        <td><label>Calculate Discount Item Wise </label></td>
@@ -2668,8 +2875,8 @@ ul.tab li.active {
 				<td> 
 						<s:checkbox element="li" id="chkTakewayCustomerSelection" path="chkTakewayCustomerSelection" value="Yes" />
 		       </td>
-			</tr>	
-			<tr>
+		</tr>	
+		<tr>
 			
 				
 		        <td><label>Customer Address Selection For Billing</label></td>
@@ -2683,316 +2890,480 @@ ul.tab li.active {
 				<td> 
 						<s:checkbox element="li" id="chkGenrateMI" path="chkGenrateMI" value="Yes" />
 		       </td>
-			</tr>	
+		</tr>	
 			
-			</table>
-			</div>
-							<!-- End of POS Setup 2 tab -->
+		</table>
+	   </div>
+	  <!-- End of POS Setup 2 tab -->
 					
-						<!-- Start of POS Setup 3 tab -->
+	<!-- Start of POS Setup 3 tab -->
 
-							<div id="tab5" class="tab_content">
-							<br><br>
-							<table  class="masterTable">
-				
+		<div id="tab5" class="tab_content">
+			<br><br>
+			<table  class="masterTable">
+					
 				<tr>
-			 <td><label>Pop Up to Apply Promotions on Bill</label></td>
+			       <td><label>Pop Up to Apply Promotions on Bill</label></td>
 				
-				<td> 
+				   <td> 
 						<s:checkbox element="li" id="chkPopUpToApplyPromotionsOnBill" path="chkPopUpToApplyPromotionsOnBill" value="Yes" />
-		       </td>
+		          </td>
 				
-		        <td><label>WebStock /HO Client Code</label></td>
+		           <td><label>WebStock /HO Client Code</label></td>
 				
-				 <td><s:input type="text" id="txtWSClientCode" 
+				   <td><s:input type="text" id="txtWSClientCode" 
 						name="txtWSClientCode" path="strWSClientCode" 
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>		
+		           </td>		
 				
-			</tr>														
+			    </tr>														
 				<tr>
-			 <td><label>Check Debit Card Bal on Transactions</label></td>
+			        <td><label>Check Debit Card Bal on Transactions</label></td>
 				
-				<td> 
+				    <td> 
 						<s:checkbox element="li" id="chkCheckDebitCardBalOnTrans" path="chkCheckDebitCardBalOnTrans" value="Yes" />
-		       </td>
+		           </td>
 				
-		        <td><label>Days Before Order Can Be Cancelled</label></td>
+		           <td><label>Days Before Order Can Be Cancelled</label></td>
 				
-				 <td><s:input type="text" id="txtDaysBeforeOrderToCancel" 
+				   <td><s:input type="text" id="txtDaysBeforeOrderToCancel" 
 						path="intDaysBeforeOrderToCancel" 
 						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>		
+		          </td>		
 				
-			</tr>														
-				<tr>
-			 <td><label>Pick Settlements from POS Master </label></td>
+			   </tr>														
+			   <tr>
+				    <td><label>Pick Settlements from POS Master </label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkSettlementsFromPOSMaster" path="chkSettlementsFromPOSMaster" value="Yes" />
+			       </td>
+					
+			        <td><label>Dont allow Adv Order for next how many days</label></td>
+					
+					 <td><s:input type="text" id="txtNoOfDelDaysForAdvOrder" 
+							 path="intNoOfDelDaysForAdvOrder" 
+							cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>		
 				
-				<td> 
-						<s:checkbox element="li" id="chkSettlementsFromPOSMaster" path="chkSettlementsFromPOSMaster" value="Yes" />
-		       </td>
+			  </tr>														
+			  <tr>
+				 	<td><label>Enable Shift</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkShiftWiseDayEnd" path="chkShiftWiseDayEnd" value="Yes" />
+			       </td>
+					
+			        <td><label>Allow Urgent Order for next how many days</label></td>
+					
+					 <td><s:input type="text" id="txtNoOfDelDaysForUrgentOrder" 
+							 path="intNoOfDelDaysForUrgentOrder" 
+							cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>		
 				
-		        <td><label>Dont allow Adv Order for next how many days</label></td>
-				
-				 <td><s:input type="text" id="txtNoOfDelDaysForAdvOrder" 
-						 path="intNoOfDelDaysForAdvOrder" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>		
-				
-			</tr>														
-				<tr>
-			 <td><label>Enable Shift</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkShiftWiseDayEnd" path="chkShiftWiseDayEnd" value="Yes" />
-		       </td>
-				
-		        <td><label>Allow Urgent Order for next how many days</label></td>
-				
-				 <td><s:input type="text" id="txtNoOfDelDaysForUrgentOrder" 
-						 path="intNoOfDelDaysForUrgentOrder" 
-						cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
-		       </td>		
-				
-			</tr>														
-				
-				<tr>
-			 <td><label>Production Link Up</label></td>
-				
-				<td >
-						<s:checkbox element="li" id="chkProductionLinkup" path="chkProductionLinkup" value="Yes" />
-		       </td>
-				
-		        <td><label>Set UpTo Time For Adv Order</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkSetUpToTimeForAdvOrder" path="chkSetUpToTimeForAdvOrder" value="Yes" />
-		       </td>		
+			 </tr>														
+					
+			<tr>
+				   <td><label>Production Link Up</label></td>
+					
+					<td >
+							<s:checkbox element="li" id="chkProductionLinkup" path="chkProductionLinkup" value="Yes" />
+			       </td>
+					
+			        <td><label>Set UpTo Time For Adv Order</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkSetUpToTimeForAdvOrder" path="chkSetUpToTimeForAdvOrder" value="Yes" />
+			       </td>		
 				
 			</tr>	
-		      
-		       
-		      
-		      <tr>
-			 <td><label>Lock Data On Shift</label></td>
+			      
+		     <tr>
+			      <td><label>Lock Data On Shift</label></td>
 				
-				<td> 
+				  <td> 
 						<s:checkbox element="li" id="chkLockDataOnShift" path="chkLockDataOnShift" value="Yes" />
-		       </td>
+		         </td>
 				
-		        <td><label>UpTo Time To Punch Adv Order</label></td>
+		          <td><label>UpTo Time To Punch Adv Order</label></td>
 				
-			<td><s:select id="cmbHH" name="cmbHH" path="strHours" cssStyle="width:25%" cssClass="BoxW124px" >
-				<option value="HH">HH</option>
-				<option value="00">00</option>
-				<option value="01">01</option>
-				<option value="02">02</option>
-				<option value="03">03</option>
-				<option value="04">04</option>
-				<option value="05">05</option>
-				<option value="06">06</option>
-				<option value="07">07</option> 
-				<option value="08">08</option>
-				<option value="09">09</option>
-				<option value="10">10</option>
-				<option value="11">11</option>
-				<option value="12">12</option>
-				 </s:select>
+			      <td><s:select id="cmbHH" name="cmbHH" path="strHours" cssStyle="width:25%" cssClass="BoxW124px" >
+					<option value="HH">HH</option>
+					<option value="00">00</option>
+					<option value="01">01</option>
+					<option value="02">02</option>
+					<option value="03">03</option>
+					<option value="04">04</option>
+					<option value="05">05</option>
+					<option value="06">06</option>
+					<option value="07">07</option> 
+					<option value="08">08</option>
+					<option value="09">09</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					 </s:select>
 			
-				 <s:select id="cmbMM" name="cmbMM" path="strMinutes" cssStyle="width:25%" cssClass="BoxW124px" >
-				<option value="MM">MM</option><option value="00">00</option><option value="01">01</option>
-				<option value="02">02</option><option value="03">03</option><option value="04">04</option>
-				<option value="05">05</option><option value="06">06</option><option value="07">07</option> 
-				<option value="08">08</option><option value="09">09</option><option value="10">10</option>
-				<option value="11">11</option><option value="12">12</option><option value="13">13</option>
-				<option value="14">14</option><option value="15">15</option><option value="16">16</option>
-				<option value="17">17</option><option value="18">18</option><option value="19">19</option>
-				<option value="20">20</option><option value="21">21</option><option value="22">22</option>
-				<option value="23">23</option><option value="24">24</option><option value="25">25</option>
-				<option value="26">26</option><option value="27">27</option><option value="28">28</option>
-				<option value="29">29</option><option value="30">30</option><option value="31">31</option>
-				<option value="32">32</option><option value="33">33</option><option value="34">34</option>
-				<option value="35">35</option><option value="36">36</option><option value="37">37</option>
-				<option value="38">38</option><option value="39">39</option><option value="41">41</option>
-				<option value="42">42</option><option value="43">43</option><option value="44">44</option>
-				<option value="45">45</option><option value="46">46</option><option value="47">47</option>
-				<option value="48">48</option><option value="49">49</option><option value="50">50</option>
-				<option value="51">51</option><option value="52">52</option><option value="53">53</option>
-				<option value="54">54</option><option value="55">55</option><option value="56">56</option>
-				<option value="57">57</option><option value="58">58</option><option value="59">59</option>
-				 </s:select>
+					 <s:select id="cmbMM" name="cmbMM" path="strMinutes" cssStyle="width:25%" cssClass="BoxW124px" >
+					<option value="MM">MM</option><option value="00">00</option><option value="01">01</option>
+					<option value="02">02</option><option value="03">03</option><option value="04">04</option>
+					<option value="05">05</option><option value="06">06</option><option value="07">07</option> 
+					<option value="08">08</option><option value="09">09</option><option value="10">10</option>
+					<option value="11">11</option><option value="12">12</option><option value="13">13</option>
+					<option value="14">14</option><option value="15">15</option><option value="16">16</option>
+					<option value="17">17</option><option value="18">18</option><option value="19">19</option>
+					<option value="20">20</option><option value="21">21</option><option value="22">22</option>
+					<option value="23">23</option><option value="24">24</option><option value="25">25</option>
+					<option value="26">26</option><option value="27">27</option><option value="28">28</option>
+					<option value="29">29</option><option value="30">30</option><option value="31">31</option>
+					<option value="32">32</option><option value="33">33</option><option value="34">34</option>
+					<option value="35">35</option><option value="36">36</option><option value="37">37</option>
+					<option value="38">38</option><option value="39">39</option><option value="41">41</option>
+					<option value="42">42</option><option value="43">43</option><option value="44">44</option>
+					<option value="45">45</option><option value="46">46</option><option value="47">47</option>
+					<option value="48">48</option><option value="49">49</option><option value="50">50</option>
+					<option value="51">51</option><option value="52">52</option><option value="53">53</option>
+					<option value="54">54</option><option value="55">55</option><option value="56">56</option>
+					<option value="57">57</option><option value="58">58</option><option value="59">59</option>
+					 </s:select>
 		
-				 <s:select id="cmbAMPM" name="cmbAMPM" path="strAMPM" cssStyle="width:25%" cssClass="BoxW124px" >
-				<option value="AM">AM</option>
-				 <option value="PM">PM</option>
- 				 
-				 </s:select></td>
+					 <s:select id="cmbAMPM" name="cmbAMPM" path="strAMPM" cssStyle="width:25%" cssClass="BoxW124px" >
+					 <option value="AM">AM</option>
+					 <option value="PM">PM</option>
+	 				 
+					 </s:select></td>
 			</tr>
-				<tr>
-			 <td><label>Enable Bill Series</label></td>
-				
-				<td >
-						<s:checkbox element="li" id="chkEnableBillSeries" path="chkEnableBillSeries" value="Yes" />
-		       </td>
-				
-		        <td><label>Set UpTo Time For Urgent Order</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkSetUpToTimeForUrgentOrder" path="chkSetUpToTimeForUrgentOrder" value="Yes" />
-		       </td>		
+			<tr>
+				    <td><label>Enable Bill Series</label></td>
+					
+					<td >
+							<s:checkbox element="li" id="chkEnableBillSeries" path="chkEnableBillSeries" value="Yes" />
+			       </td>
+					
+			        <td><label>Set UpTo Time For Urgent Order</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkSetUpToTimeForUrgentOrder" path="chkSetUpToTimeForUrgentOrder" value="Yes" />
+			       </td>		
 				
 			</tr>	
 			<tr>
-			 <td><label>Enable PMS Integration</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkEnablePMSIntegration" path="chkEnablePMSIntegration" value="Yes" />
-		       </td>
-				<td><label>UpTo Time To Punch Urgent Order</label></td>
-		        <td><s:select id="cmbUrgentOrderHH" path="strHoursUrgentOrder" cssStyle="width:25%" cssClass="BoxW124px" >
-				<option value="HH">HH</option>
-				<option value="00">00</option>
-				<option value="01">01</option>
-				<option value="02">02</option>
-				<option value="03">03</option>
-				<option value="04">04</option>
-				<option value="05">05</option>
-				<option value="06">06</option>
-				<option value="07">07</option> 
-				<option value="08">08</option>
-				<option value="09">09</option>
-				<option value="10">10</option>
-				<option value="11">11</option>
-				<option value="12">12</option>
-				 </s:select>
-				
-				 <s:select id="cmbToMM" name="cmbToMM" path="strMinutesUrgentOrder" cssStyle="width:25%" cssClass="BoxW124px" >
-				<option value="MM">MM</option><option value="00">00</option><option value="01">10</option>
-				<option value="02">02</option><option value="03">03</option><option value="04">04</option>
-				<option value="05">05</option><option value="06">06</option><option value="07">07</option> 
-				<option value="08">08</option><option value="09">09</option><option value="10">10</option>
-				<option value="11">11</option><option value="12">12</option><option value="13">13</option>
-				<option value="14">14</option><option value="15">15</option><option value="16">16</option>
-				<option value="17">17</option><option value="18">18</option><option value="19">19</option>
-				<option value="20">20</option><option value="21">21</option><option value="22">22</option>
-				<option value="23">23</option><option value="24">24</option><option value="25">25</option>
-				<option value="26">26</option><option value="27">27</option><option value="28">28</option>
-				<option value="29">29</option><option value="30">30</option><option value="31">31</option>
-				<option value="32">32</option><option value="33">33</option><option value="34">34</option>
-				<option value="35">35</option><option value="36">36</option><option value="37">37</option>
-				<option value="38">38</option><option value="39">39</option><option value="41">41</option>
-				<option value="42">42</option><option value="43">43</option><option value="44">44</option>
-				<option value="45">45</option><option value="46">46</option><option value="47">47</option>
-				<option value="48">48</option><option value="49">49</option><option value="50">50</option>
-				<option value="51">51</option><option value="52">52</option><option value="53">53</option>
-				<option value="54">54</option><option value="55">55</option><option value="56">56</option>
-				<option value="57">57</option><option value="58">58</option><option value="59">59</option>
-				 </s:select>
-				
-				 <s:select id="cmbToAMPM" name="cmbToAMPM" path="strAMPMUrgent" cssStyle="width:25%" cssClass="BoxW124px" >
-				<option value="AM">AM</option>
-				 <option value="PM">PM</option>
- 				 
-				 </s:select></td>		
+				    <td><label>Enable PMS Integration</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkEnablePMSIntegration" path="chkEnablePMSIntegration" value="Yes" />
+			       </td>
+					<td><label>UpTo Time To Punch Urgent Order</label></td>
+			        <td><s:select id="cmbUrgentOrderHH" path="strHoursUrgentOrder" cssStyle="width:25%" cssClass="BoxW124px" >
+					<option value="HH">HH</option>
+					<option value="00">00</option>
+					<option value="01">01</option>
+					<option value="02">02</option>
+					<option value="03">03</option>
+					<option value="04">04</option>
+					<option value="05">05</option>
+					<option value="06">06</option>
+					<option value="07">07</option> 
+					<option value="08">08</option>
+					<option value="09">09</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					 </s:select>
+					
+					 <s:select id="cmbToMM" name="cmbToMM" path="strMinutesUrgentOrder" cssStyle="width:25%" cssClass="BoxW124px" >
+					<option value="MM">MM</option><option value="00">00</option><option value="01">10</option>
+					<option value="02">02</option><option value="03">03</option><option value="04">04</option>
+					<option value="05">05</option><option value="06">06</option><option value="07">07</option> 
+					<option value="08">08</option><option value="09">09</option><option value="10">10</option>
+					<option value="11">11</option><option value="12">12</option><option value="13">13</option>
+					<option value="14">14</option><option value="15">15</option><option value="16">16</option>
+					<option value="17">17</option><option value="18">18</option><option value="19">19</option>
+					<option value="20">20</option><option value="21">21</option><option value="22">22</option>
+					<option value="23">23</option><option value="24">24</option><option value="25">25</option>
+					<option value="26">26</option><option value="27">27</option><option value="28">28</option>
+					<option value="29">29</option><option value="30">30</option><option value="31">31</option>
+					<option value="32">32</option><option value="33">33</option><option value="34">34</option>
+					<option value="35">35</option><option value="36">36</option><option value="37">37</option>
+					<option value="38">38</option><option value="39">39</option><option value="41">41</option>
+					<option value="42">42</option><option value="43">43</option><option value="44">44</option>
+					<option value="45">45</option><option value="46">46</option><option value="47">47</option>
+					<option value="48">48</option><option value="49">49</option><option value="50">50</option>
+					<option value="51">51</option><option value="52">52</option><option value="53">53</option>
+					<option value="54">54</option><option value="55">55</option><option value="56">56</option>
+					<option value="57">57</option><option value="58">58</option><option value="59">59</option>
+					 </s:select>
+					
+					 <s:select id="cmbToAMPM" name="cmbToAMPM" path="strAMPMUrgent" cssStyle="width:25%" cssClass="BoxW124px" >
+					<option value="AM">AM</option>
+					 <option value="PM">PM</option>
+	 				 
+					 </s:select></td>		
 				
 			</tr>	
 			<tr>
-			 <td><label>Print Time On Bill </label></td>
-				
-				<td > 
-						<s:checkbox element="li" id="chkPrintTimeOnBill" path="chkPrintTimeOnBill" value="Yes" />
-		       </td>
-				
-		        <td><label>Carry Forward Float Amt to Next Day</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkCarryForwardFloatAmtToNextDay" path="chkCarryForwardFloatAmtToNextDay" value="Yes" />
-		       </td>		
+				    <td><label>Print Time On Bill </label></td>
+					
+					<td > 
+							<s:checkbox element="li" id="chkPrintTimeOnBill" path="chkPrintTimeOnBill" value="Yes" />
+			       </td>
+					
+			        <td><label>Carry Forward Float Amt to Next Day</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkCarryForwardFloatAmtToNextDay" path="chkCarryForwardFloatAmtToNextDay" value="Yes" />
+			       </td>		
 				
 			</tr>	
 			
 			<tr>
-			 <td><label>Print Remark And Reason For Reprint</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPrintRemarkAndReasonForReprint" path="chkPrintRemarkAndReasonForReprint" value="Yes" />
-		       </td>
-				
-		        <td><label>Show Item Details Grid For Change Customer On Bill</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkShowItemDtlsForChangeCustomerOnBill" path="chkShowItemDtlsForChangeCustomerOnBill" value="Yes" />
-		       </td>		
-				
-			</tr>	
-			<tr>
-			 <td><label>Enable Both Print And Settle Btn For DB </label></td>
-				
-				<td > 
-						<s:checkbox element="li" id="chkEnableBothPrintAndSettleBtnForDB" path="chkEnableBothPrintAndSettleBtnForDB" value="Yes" />
-		       </td>
-				
-		        <td><label>Show Pop Up For Next Item Quantity</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkShowPopUpForNextItemQuantity" path="chkShowPopUpForNextItemQuantity" value="Yes" />
-		       </td>		
+				    <td><label>Print Remark And Reason For Reprint</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPrintRemarkAndReasonForReprint" path="chkPrintRemarkAndReasonForReprint" value="Yes" />
+			       </td>
+					
+			        <td><label>Show Item Details Grid For Change Customer On Bill</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkShowItemDtlsForChangeCustomerOnBill" path="chkShowItemDtlsForChangeCustomerOnBill" value="Yes" />
+			       </td>		
 				
 			</tr>	
 			<tr>
-			 <td><label>Open Cash Drawer After Bill Print</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkOpenCashDrawerAfterBillPrint" path="chkOpenCashDrawerAfterBillPrint" value="Yes" />
-		       </td>
-				
-		        <td><label>Property Wise Sales Order</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkPropertyWiseSalesOrder" path="chkPropertyWiseSalesOrder" value="Yes" />
-		       </td>		
+				    <td><label>Enable Both Print And Settle Btn For DB </label></td>
+					
+					<td > 
+							<s:checkbox element="li" id="chkEnableBothPrintAndSettleBtnForDB" path="chkEnableBothPrintAndSettleBtnForDB" value="Yes" />
+			       </td>
+					
+			        <td><label>Show Pop Up For Next Item Quantity</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkShowPopUpForNextItemQuantity" path="chkShowPopUpForNextItemQuantity" value="Yes" />
+			       </td>		
 				
 			</tr>	
 			<tr>
-			 <td><label>New Bill Series For New Day</label></td>
+				    <td><label>Open Cash Drawer After Bill Print</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkOpenCashDrawerAfterBillPrint" path="chkOpenCashDrawerAfterBillPrint" value="Yes" />
+			       </td>
+					
+			        <td><label>Property Wise Sales Order</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkPropertyWiseSalesOrder" path="chkPropertyWiseSalesOrder" value="Yes" />
+			       </td>		
 				
-				<td> 
-						<s:checkbox element="li" id="chkNewBillSeriesForNewDay" path="chkNewBillSeriesForNewDay" value="Yes" />
-		       </td>
-				
-		        <td><label>Show Only Login POS Reports</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkShowReportsPOSWise" path="chkShowReportsPOSWise" value="Yes" />
-		       </td>		
+			</tr>	
+			<tr>
+				    <td><label>New Bill Series For New Day</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkNewBillSeriesForNewDay" path="chkNewBillSeriesForNewDay" value="Yes" />
+			       </td>
+					
+			        <td><label>Show Only Login POS Reports</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkShowReportsPOSWise" path="chkShowReportsPOSWise" value="Yes" />
+			       </td>		
 				
 			</tr>
 			<tr>
-			 <td><label>Enable Dine In</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkEnableDineIn" path="chkEnableDineIn" value="Yes" />
-		       </td>
-				
-		        <td><label>Auto Area Selection In Make KOT</label></td>
-				
-				<td> 
-						<s:checkbox element="li" id="chkAutoAreaSelectionInMakeKOT" path="chkAutoAreaSelectionInMakeKOT" value="Yes" />
-		       </td>		
+				    <td><label>Enable Dine In</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkEnableDineIn" path="chkEnableDineIn" value="Yes" />
+			       </td>
+					
+			        <td><label>Auto Area Selection In Make KOT</label></td>
+					
+					<td> 
+							<s:checkbox element="li" id="chkAutoAreaSelectionInMakeKOT" path="chkAutoAreaSelectionInMakeKOT" value="Yes" />
+			       </td>		
 				
 			</tr>
+		  </table>
+		</div>
+		<!-- End of POS Setup 3 tab -->
+			
+		<!-- 	Start of property setup tab 4 -->
+		<div id="tab6" class="tab_content">
+				<br><br>
+				<table  class="masterTable">
+				
+				<tr>
+			         <td><label>Area Wise Pricing  </label></td>
+				
+					 <td> 
+						<s:checkbox element="li" id="chkAreaWisePricing" path="chkAreaWisePricing" value="Yes" />
+			         </td>
+					 
+			         <td><label>Area Wise Cost Center KOT Printing</label></td>
+					
+					 <td>
+				      <s:checkbox element="li" id="chkAreaWiseCostCenterKOTPrinting" path="chkAutoAreaSelectionInMakeKOT" value="Yes" />
+		            </td>
+			    </tr>
+			    
+			    <tr>
+			         <td><label>Dine In Area For Direct Biller </label></td>
+				
+					 <td ><s:select id="cmbDineInAreaForDirectBiller"  path="strDineInAreaForDirectBiller" items="${areaList}" cssClass="BoxW124px" >
+				          </s:select>
+					 </td>
+					 
+			         <td><label>Home Delivery Area For Direct Biller</label></td>
+					
+					 <td><s:select id="cmbHomeDeliAreaForDirectBiller"  path="strHomeDeliAreaForDirectBiller" items="${areaList}" cssClass="BoxW124px" >
+				           </s:select>
+					 </td>
+			    </tr>
+			    
+			     <tr>
+			         <td><label>Take Away Area For Direct Biller</label></td>
+				
+					 <td><s:select id="cmbTakeAwayAreaForDirectBiller"  path="strTakeAwayAreaForDirectBiller" items="${areaList}" cssClass="BoxW124px" >
+				          </s:select>
+					 </td>
+					 
+			         <td><label>Round Off Bill Final Amount</label></td>
+				
+					 <td> 
+						<s:checkbox element="li" id="chkRoundOffBillAmount" path="chkRoundOffBillAmount" value="Yes" />
+			         </td>
+			    </tr>
+			    
+			    
+			    <tr>
+			         <td><label>Print Items On Move KOT,Move Table,Move KOT Items</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkPrintItemsOnMoveKOTMoveTable" path="chkPrintItemsOnMoveKOTMoveTable" value="Yes" />
+					 </td>
+					 
+			         <td><label>No Of Decimal Places</label></td>
+				
+					 <td >
+					     <s:input  type="text" id="txtNoOfDecimalPlaces" path="intNoOfDecimalPlaces" cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			       </td>
+			    </tr>
+			    
+			    <tr>
+			         <td><label>Print Move Table,Move KOT</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkPrintMoveTableMoveKOT" path="chkPrintMoveTableMoveKOT" value="Yes" />
+					 </td>
+					 
+			         <td><label>Send Database Backup On Mail</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkSendDBBackupOnMail" path="chkSendDBBackupOnMail" value="Yes" />
+					 </td>
+			    </tr>
+			    
+			    
+			    <tr>
+			         <td><label>Print Quantity Total</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkPrintQtyTotal" path="chkPrintQtyTotal" value="Yes" />
+					 </td>
+					 
+			         <td><label>Print Order No On Bill</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkPrintOrderNoOnBill" path="chkPrintOrderNoOnBill" value="Yes" />
+					 </td>
+			    </tr>	
+			    
+			     <tr>
+			         <td><label>Auto Add KOT To Bill</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkAutoAddKOTToBill" path="chkAutoAddKOTToBill" value="Yes" />
+					 </td>
+					 
+			         <td><label>Print Device,User Detail on KOT</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkPrintDeviceUserDtlOnKOT" path="chkPrintDeviceUserDtlOnKOT" value="Yes" />
+					 </td>
+			    </tr>	
+			    
+			    
+			    <tr>
+			         <td><label>Fire Communication</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkFireCommunication" path="chkFireCommunication" value="Yes" />
+					 </td>
+					 
+			         <td><label>Lock Table For Waiter</label></td>
+				
+					 <td>
+					     <s:checkbox element="li" id="chkLockTableForWaiter" path="chkLockTableForWaiter" value="Yes" />
+					 </td>
+			    </tr>
+			    
+			       <tr>
+			         <td><label>Service Charge Tax</label></td>
+				
+					 <td ><s:select id="cmbRemoveServiceChargeTaxCode"  path="strRemoveServiceChargeTaxCode" items="${taxList}" cssClass="BoxW124px" >
+						  </s:select>
+					 </td>
+					 
+			         <td><label>Show Reports In Currency</label></td>
+					
+					 <td><s:select id="cmbShowReportsInCurrency"  path="strShowReportsInCurrency" cssClass="BoxW124px" >
+							<option value="BASE">BASE</option>
+		 				   <option value="USD">USD</option>
+						 </s:select>
+					 </td>
+			    </tr>
+			    
+			    
+			    <tr>
+			         <td><label>POS To MMS Posting Currency</label></td>
+				
+					 <td><s:select id="cmbPOSToMMSPostingCurrency"  path="strPOSToMMSPostingCurrency" cssClass="BoxW124px" >
+							<option value="BASE">BASE</option>
+		 				   <option value="USD">USD</option></s:select>
+					 </td>
+					 
+			         <td><label>POS To WebBook Posting Currency</label></td>
+					
+					 <td ><s:select id="cmbPOSToWebBooksPostingCurrency"  path="strPOSToWebBooksPostingCurrency" cssClass="BoxW124px" >
+						   <option value="BASE">BASE</option>
+		 				   <option value="USD">USD</option>
+						 </s:select>
+					 </td>
+			    </tr>
+			    
+			    <tr>
+					<td><label>USD Currency Convertion Rate</label></td>
+					<td ><s:input  type="text" id="txtUSDCrrencyConverionRate" path="dblUSDCrrencyConverionRate" cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> 
+			        </td>
+		      
+		      </tr>															
+				
 			</table>
-			</div>
-							<!-- End of POS Setup 3 tab -->
+		</div>
+		<!-- End of POS Setup 4 tab -->	
+			
+			
+					
+	  <!-- 	Start of Email Setup tab -->
 							
-							
-							<!-- 	Start of Email Setup tab -->
-							
-					<div id="tab6" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
-																		
-									<tr>
+	  <div id="tab7" class="tab_content">
+		<br><br>
+		<table  class="masterTable">
+												
+			<tr>
 				
 				<td><label>Sender Email Id</label></td>
 				
@@ -3002,7 +3373,7 @@ ul.tab li.active {
 					
 			</tr>
 		
-		<tr>
+		    <tr>
 			<td><label>Password</label></td>
 				<td><s:input type="password" id="txtEmailPassword" 
 						path="strEmailPassword" 
@@ -3051,17 +3422,17 @@ ul.tab li.active {
 			
 			</table>
 			
-						</div>
-						<!-- 	End of Email Setup tab -->
-						
-						
-							<!-- 	Start of Card Interface tab -->
-							
-					<div id="tab7" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
-																		
-									 <tr>
+		</div>
+		<!-- 	End of Email Setup tab -->
+		
+		
+		<!-- 	Start of Card Interface tab -->
+			
+		<div id="tab8" class="tab_content">
+		<br><br>
+		  <table  class="masterTable">
+														
+			<tr>
 			<td><label>Card Interface Type</label></td>
 				
 				<td>
@@ -3073,7 +3444,7 @@ ul.tab li.active {
 			</tr>
 	
 			
-			 <tr>
+			<tr>
 			<td><label>Card Interface</label></td>
 				
 				<td><s:select id="cmbRFIDSetup" path="strRFIDSetup" cssClass="BoxW124px" >
@@ -3123,17 +3494,17 @@ ul.tab li.active {
 			
 			</table>
 			
-						</div>
-						<!-- 	End of Card Interface tab -->
-						
-							<!-- 	Start of CRM Interface tab -->
-							
-					<div id="tab8" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
+		</div>
+	  <!-- 	End of Card Interface tab -->
+		
+	  <!-- 	Start of CRM Interface tab -->
+			
+	  <div id="tab9" class="tab_content">
+	     <br><br>
+		 <table  class="masterTable">
 			
 			 <tr>
-			<td><label>CRM Interface</label></td>
+			    <td><label>CRM Interface</label></td>
 				
 				<td><s:select id="cmbCRM" path="strCRM" cssClass="BoxW124px" >
 				<option value="SQY">SQY CRM Interface</option>
@@ -3187,20 +3558,17 @@ ul.tab li.active {
 			
 			</table>
 			
-						</div>
-						<!-- 	End of CRM Interface tab -->
-						
-								<!-- 	Start of SMS Setup tab -->
-							
-					<div id="tab9" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
-																		
-									<tr>
+		</div>
+	  <!-- 	End of CRM Interface tab -->
+		
+     <!-- 	Start of SMS Setup tab -->
+			
+	   <div id="tab10" class="tab_content">
+	    <br><br>
+		  <table  class="masterTable">
+			<tr>
 				
 				<td><label>SMS Type</label></td>
-				
-			
 				<td><s:select id="cmbSMSType" path="strSMSType" cssClass="BoxW124px" >
 				<option value="SINFINI">SINFINI</option>
 				 <option value="CELLX">CELLX</option>
@@ -3211,85 +3579,82 @@ ul.tab li.active {
 			</tr>
 					
 				<tr>
-			<td><label>SMS API</label></td>
-			<td><s:textarea  id="txtAreaSMSApi" 
-						path="strAreaSMSApi"  style="height:30px"
-						 cssClass="longTextBox"  />
-		       </td>
+				<td><label>SMS API</label></td>
+				<td><s:textarea  id="txtAreaSMSApi" 
+							path="strAreaSMSApi"  style="height:30px"
+							 cssClass="longTextBox"  />
+			    </td>
 			</tr>
 		<tr>
-		<td>
-		<div >
-	
-		<label>Home Delivery SMS</label> 
-		<s:checkbox element="li" id="chkHomeDelSMS" path="chkHomeDelSMS" value="Yes" /><br>
-		<s:select id="cmbSendHomeDelivery" path="" cssClass="BoxW124px" >
-				<option value="BILL NO">BILL NO</option>
-				 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
-				 	 <option value="DATE">DATE</option>
- 				<option value="DELIVERY BOY">DELIVERY BOY</option>
-				 <option value="ITEMS">ITEMS</option>
-				 	 <option value="BILL AMT">BILL AMT</option>
- 				<option value="USER">USER</option>
-				 <option value="TIME">TIME</option>
-				 	
-				 </s:select> <br><br>
-				  <input id="btnAddDelSMS" type="button" class="smallButton" value=">>" onclick="return btnAddDelSMS_onclick();"></input>
-		</div>
-		</td>
+			<td>
+			<div >
 		
-		<td>
-		<s:textarea  id="txtAreaSendHomeDeliverySMS" 
-						path="strAreaSendHomeDeliverySMS"  style="height:100px"
-						 cssClass="longTextBox"  />
-		
-		</td>
+			<label>Home Delivery SMS</label> 
+			<s:checkbox element="li" id="chkHomeDelSMS" path="chkHomeDelSMS" value="Yes" /><br>
+			<s:select id="cmbSendHomeDelivery" path="" cssClass="BoxW124px" >
+					<option value="BILL NO">BILL NO</option>
+					 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
+					 	 <option value="DATE">DATE</option>
+	 				<option value="DELIVERY BOY">DELIVERY BOY</option>
+					 <option value="ITEMS">ITEMS</option>
+					 	 <option value="BILL AMT">BILL AMT</option>
+	 				<option value="USER">USER</option>
+					 <option value="TIME">TIME</option>
+					 	
+					 </s:select> <br><br>
+					  <input id="btnAddDelSMS" type="button" class="smallButton" value=">>" onclick="return btnAddDelSMS_onclick();"></input>
+			</div>
+			</td>
+			
+			<td>
+			<s:textarea  id="txtAreaSendHomeDeliverySMS" 
+							path="strAreaSendHomeDeliverySMS"  style="height:100px"
+							 cssClass="longTextBox"  />
+			
+			</td>
 		</tr>
 		
-			<tr>
-		<td>
-		<div >
-	
-		<label>Bill Settlement SMS</label> 
-		<s:checkbox element="li" id="chkBillSettlementSMS" path="chkBillSettlementSMS" value="Yes" /><br>
-		<s:select id="cmbBillSettlement" path="" cssClass="BoxW124px" >
-				<option value="BILL NO">BILL NO</option>
-				 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
-				 	 <option value="DATE">DATE</option>
- 				<option value="DELIVERY BOY">DELIVERY BOY</option>
-				 <option value="ITEMS">ITEMS</option>
-				 	 <option value="BILL AMT">BILL AMT</option>
- 				<option value="USER">USER</option>
-				 <option value="TIME">TIME</option>
-				 	
-				 </s:select> <br><br>
-				  <input id="btnAddSettleSMS" type="button" class="smallButton" value=">>" onclick="return btnAddSettleSMS_onclick();"></input>
-		</div>
-		</td>
+		<tr>
+			<td>
+			<div >
 		
-		<td>
-		<s:textarea  id="txtAreaBillSettlementSMS" 
-						path="strAreaBillSettlementSMS" style="height:100px"
-						 cssClass="longTextBox"  />
-		
-		</td>
+			<label>Bill Settlement SMS</label> 
+			<s:checkbox element="li" id="chkBillSettlementSMS" path="chkBillSettlementSMS" value="Yes" /><br>
+			<s:select id="cmbBillSettlement" path="" cssClass="BoxW124px" >
+					<option value="BILL NO">BILL NO</option>
+					 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
+					 	 <option value="DATE">DATE</option>
+	 				<option value="DELIVERY BOY">DELIVERY BOY</option>
+					 <option value="ITEMS">ITEMS</option>
+					 	 <option value="BILL AMT">BILL AMT</option>
+	 				<option value="USER">USER</option>
+					 <option value="TIME">TIME</option>
+					 	
+					 </s:select> <br><br>
+					  <input id="btnAddSettleSMS" type="button" class="smallButton" value=">>" onclick="return btnAddSettleSMS_onclick();"></input>
+			</div>
+			</td>
+			
+			<td>
+			<s:textarea  id="txtAreaBillSettlementSMS" 
+							path="strAreaBillSettlementSMS" style="height:100px"
+							 cssClass="longTextBox"  />
+			
+			</td>
 		</tr>
 			
-			</table>
-			
-						</div>
-						<!-- 	End of SMS Setup tab -->
-						
-						
-							<!-- 	Start of FTP Setup tab -->
-							
-					<div id="tab10" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
-																		
-			
-			
-			<tr>
+	  </table>
+		
+	</div>
+	<!-- 	End of SMS Setup tab -->
+	
+	<!-- 	Start of FTP Setup tab -->
+		
+	<div id="tab11" class="tab_content">
+	<br><br>
+	   <table  class="masterTable">
+																	
+		  <tr>
 			<td><label>FTP Server Address</label></td>
 				
 			 <td><s:input type="text" id="txtFTPAddress" 
@@ -3317,20 +3682,17 @@ ul.tab li.active {
 				
 		     
 			</tr>
+	     </table>
 			
+	</div>
+	<!-- 	End of FTP Setup tab -->
+	
+	
+	<!-- 	Start of CMS Integration tab -->
 			
-			
-			</table>
-			
-						</div>
-						<!-- 	End of FTP Setup tab -->
-						
-						
-						<!-- 	Start of CMS Integration tab -->
-							
-					<div id="tab11" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
+	<div id="tab12" class="tab_content">
+	  <br><br>
+		  <table  class="masterTable">
 			
 			 <tr>
 			<td><label>CMS Integration</label></td>
@@ -3353,10 +3715,10 @@ ul.tab li.active {
 			</tr>
 			
 			<tr>
-			<td><label>Treat Member As Table</label>
-			</td><td colspan="3">
-			<s:checkbox element="li" id="chkMemberAsTable" path="chkMemberAsTable" value="Yes" />
-			 </td>
+				<td><label>Treat Member As Table</label>
+				</td><td colspan="3">
+				<s:checkbox element="li" id="chkMemberAsTable" path="chkMemberAsTable" value="Yes" />
+				 </td>
 			</tr>
 			<tr>
 			<td><label>Member Code For KOT In JPOS</label>
@@ -3399,181 +3761,75 @@ ul.tab li.active {
 			</tr>
 			</table>
 			
-						</div>
-						<!-- 	End of CMS Integration tab -->
-						
-							
-							<!-- 	Start of Printer Setup tab -->
-							
-					<div id="tab12" class="tab_content">
-					<br>
-								<table border="1" class="myTable" style="width:80%;margin: auto;"  >
-										
-										<tr>
-										
-										<td style="width:30%; border: #c0c0c0 1px solid; background: #78BEF9;">Cost Center Name</td>
-										<td style="width:25%; border: #c0c0c0 1px solid; background: #78BEF9;">Primary Printer</td>
-										<td style="width:25%; border: #c0c0c0 1px solid; background: #78BEF9;">Secondary Printer</td>
-										<td style="width:20%; border: #c0c0c0 1px solid; background: #78BEF9;">Print On Both Printer</td>
-										</tr>
-					</table>
+		</div>
+	<!-- 	End of CMS Integration tab -->
+		
+			
+	<!-- 	Start of Printer Setup tab -->
+			
+	<div id="tab13" class="tab_content">
+	    <br>
+			<table border="1" class="myTable" style="width:80%;margin: auto;"  >
+					
+					<tr>
+					
+					<td style="width:30%; border: #c0c0c0 1px solid; background: #78BEF9;">Cost Center Name</td>
+					<td style="width:25%; border: #c0c0c0 1px solid; background: #78BEF9;">Primary Printer</td>
+					<td style="width:25%; border: #c0c0c0 1px solid; background: #78BEF9;">Secondary Printer</td>
+					<td style="width:20%; border: #c0c0c0 1px solid; background: #78BEF9;">Print On Both Printer</td>
+					</tr>
+			</table>
 					<div style="background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 380px;
-				    				margin:auto;overflow-x: hidden; overflow-y: scroll;width: 80%;">
-										<table id="tblPrinterDtl" class="transTablex col5-center" style="width:100%;">
-										<tbody>   
-										<col style="width:0%"><!--  COl1   --> 
-												<col style="width:30%"><!--  COl1   -->
-												<col style="width:25%"><!--  COl2   -->
-												<col style="width:25%"><!--  COl2   -->
-												<col style="width:20%"><!--  COl3   -->
-																				
-										</tbody>							
-										</table>
-								</div>
-			
-						</div>
-						<!-- 	End of Printer Setup tab -->
-						
-						
-							
-							<!-- 	Start of Debit Card Setup tab -->
-							
-					<div id="tab13" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
+		    				margin:auto;overflow-x: hidden; overflow-y: scroll;width: 80%;">
+								<table id="tblPrinterDtl" class="transTablex col5-center" style="width:100%;">
+								<tbody>   
+								<col style="width:0%"><!--  COl1   --> 
+										<col style="width:30%"><!--  COl1   -->
+										<col style="width:25%"><!--  COl2   -->
+										<col style="width:25%"><!--  COl2   -->
+										<col style="width:20%"><!--  COl3   -->
 																		
+								</tbody>							
+								</table>
+					</div>
 			
-			
-			<tr>
-		<td><label>Last POS Day For Day End</label></td>
+	</div>
+	<!-- 	End of Printer Setup tab -->
+						
+						
+							
+	<!-- 	Start of Debit Card Setup tab -->
+							
+	<div id="tab14" class="tab_content">
+	<br><br>
+		<table  class="masterTable">
+																		
+		  <tr>
+		       <td><label>Last POS Day For Day End</label></td>
 				<td ><s:select id="cmbPOSForDayEnd" name="cmbPOSForDayEnd" path="strPOSForDayEnd" items="${posListForDayEnd}" cssClass="BoxW124px" />
 				</td>
 		    
-		       </tr>
+	      </tr>
+	  </table>
 			
-			
-			
-			</table>
-			
-						</div>
-						<!-- 	End of Debit Card Setup tab -->
-						
-							<!-- 	Start of Bill Series Setup tab -->
-							
-					<div id="tab14" class="tab_content">
-					
-						
-								<table  class="masterTable">
-																		
-			
-			
-			<tr>
-		<td><label>Select Type</label></td>
-				<td >	<s:select id="cmbSelectedType" path="strBillSeriesType" cssClass="BoxW124px" >
-				<option value="Group">Group</option>
-				 <option value="Sub Group">Sub Group</option>
-				 	 <option value="Menu Head">Menu Head</option>
- 				<option value="Revenue Head">Revenue Head</option>
-				 </s:select></td>
-				 <td>
-				  <input id="btnAdd" type="button" class="smallButton" value="Add" onclick="return btnAdd_onclick();"></input>
-		</td>
-		    
-		       </tr>
-			
-			
-			
-			</table>
-					
-								<table border="1" class="myTable" style="width:80%;margin: auto;"  >
-										
-											<tr>
-										<td style="width:30%; border: #c0c0c0 1px solid; background: #78BEF9;">Type</td>
-										<td style="width:25%; border: #c0c0c0 1px solid; background: #78BEF9;">Name</td>
-										<td style="width:25%; border: #c0c0c0 1px solid; background: #78BEF9;">Code</td>
-										<td style="width:20%; border: #c0c0c0 1px solid; background: #78BEF9;">Select</td>
-										</tr>
-					</table>
-					<div style="background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 150px;
-				    				margin:auto;overflow-x: hidden; overflow-y: scroll;width: 80%;">
-										<table id="tblSelectedTypeDtl" class="transTablex col5-center" style="width:100%;">
-										<tbody>    
-												<col style="width:30%"><!--  COl1   -->
-												<col style="width:30%"><!--  COl2   -->
-												<col style="width:30%"><!--  COl2   -->
-												<col style="width:10%"><!--  COl3   -->
-																				
-										</tbody>							
-										</table>
-								</div>
-			
-			<br>
-								<table border="1" class="myTable" style="width:80%;margin: auto;"  >
-										
-										<tr>
-										
-										<td style="width:10%; border: #c0c0c0 1px solid; background: #78BEF9;">Serial No.</td>
-										<td style="width:10%; border: #c0c0c0 1px solid; background: #78BEF9;">Bill Series</td>
-										<td style="width:30%; border: #c0c0c0 1px solid; background: #78BEF9;">Contents</td>
-										<td style="width:10%; border: #c0c0c0 1px solid; background: #78BEF9;">Remove</td>
-										<td style="width:20%; border: #c0c0c0 1px solid; background: #78BEF9;">Print Grand Total of<br>Other Bills</td>
-										<td style="width:20%; border: #c0c0c0 1px solid; background: #78BEF9;">Print Inclusive of<br>All Taxes</td>
-										
-										</tr>
-					</table>
-					<div style="background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 130px;
-				    				margin:auto;overflow-x: hidden; overflow-y: scroll;width: 80%;">
-										<table id="tblBillseriesDtl" class="transTablex col5-center" style="width:100%;">
-										<tbody>   
-												<col style="width:0%"><!--  COl1   --> 
-												<col style="width:10%"><!--  COl1   -->
-												<col style="width:10%"><!--  COl2   -->
-												<col style="width:30%"><!--  COl2   -->
-												<col style="width:10%"><!--  COl3   -->
-												<col style="width:20%"><!--  COl2   -->
-												<col style="width:20%"><!--  COl3   -->
-																			
-										</tbody>							
-										</table>
-									
-								</div>
-									
-								<table  class="masterTable">
-																		
-			
-			
-			<tr>
-		<td ></td><td ></td><td ></td><td ></td><td ></td><td ></td><td ></td><td ></td>
-				 <td>
-				  <input id="btnRemove" type="button" class="smallButton" value="Remove" onclick="return btnRemove_onclick();"></input>
-		</td>
-		    
-		       </tr>
-			
-			
-			
-			</table>
-						</div>
-						<!-- 	End of Bill Series Setup tab -->
-						
-							<!-- 	Start of Inresto Integration Setup tab -->
-							
-					<div id="tab15" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
-																		
-			
-			
-			<tr>
-		<td><label>Inresto Integration</label></td>
+	</div>
+	<!-- 	End of Debit Card Setup tab -->
+	
+	
+	<!-- 	Start of Inresto Integration Setup tab -->
+		
+	<div id="tab15" class="tab_content">
+	<br><br>
+	   <table  class="masterTable">
+		  <tr>
+		      <td><label>Inresto Integration</label></td>
 				<td ><s:select id="cmbInrestoPOSIntegrationYN" path="strInrestoPOSIntegrationYN" cssClass="BoxW124px" >
 				<option value="N">No</option>
 				 <option value="Y">Yes</option>
- 			 </s:select> </td>
-		    
-		       </tr>
-			<tr>
-			<td><label>Web Service URL</label></td>
+ 			     </s:select> </td>
+		  </tr>
+		   <tr>
+			  <td><label>Web Service URL</label></td>
 				
 				 <td><s:input type="text" id="txtInrestoPOSWesServiceURL" 
 						 path="strInrestoPOSWesServiceURL" 
@@ -3605,27 +3861,24 @@ ul.tab li.active {
 			
 			</table>
 			
-						</div>
-						<!-- 	End of Inresto Integration Setup tab -->
-						
-							<!-- 	Start of Jio Integration Setup tab -->
-							
-					<div id="tab16" class="tab_content">
-					<br><br>
-								<table  class="masterTable">
-																		
+	  </div>
+	 <!-- 	End of Inresto Integration Setup tab -->
+		
+	<!-- 	Start of Jio Integration Setup tab -->
 			
-			
-			<tr>
-		<td><label>Jio Money Integration</label></td>
+	<div id="tab16" class="tab_content">
+	<br><br>
+	   <table  class="masterTable">
+		 <tr>
+		     <td><label>Jio Money Integration</label></td>
 				<td ><s:select id="cmbJioPOSIntegrationYN" path="strJioPOSIntegrationYN" cssClass="BoxW124px" >
 				<option value="N">No</option>
 				 <option value="Y">Yes</option>
  			 </s:select> </td>
 		    
-		       </tr>
-			<tr>
-			<td><label>Web Service URL</label></td>
+		  </tr>
+		  <tr>
+			 <td><label>Web Service URL</label></td>
 				
 				 <td><s:input type="text" id="txtJioPOSWesServiceURL" 
 						 path="strJioPOSWesServiceURL" 
@@ -3665,21 +3918,97 @@ ul.tab li.active {
 			</tr>
 				
 				
-			</table>
+	  </table>
+	
+	</div>
+	<!-- 	End of Jio Integration Setup tab -->
+	
+	<!-- 	Start of Benow Integration Setup tab -->
 			
-						</div>
-						<!-- 	End of Jio Integration Setup tab -->
-						
-						</div>
-					</td>
-				</tr>
-				</table>
-		<br />
-		<br />
-		<p align="center">
-			<input id="submitBtn" type="submit" value="Update" tabindex="3" class="form_button"/> 
-				</p>
-	</s:form>
+	<div id="tab17" class="tab_content">
+	<br><br>
+	   <table  class="masterTable">
+		 <tr>
+		     <td><label>Benow Integration Y/N</label></td>
+				<td ><s:select id="cmbBenowPOSIntegrationYN" path="strBenowPOSIntegrationYN" cssClass="BoxW124px" >
+				<option value="N">No</option>
+				 <option value="Y">Yes</option>
+ 			 </s:select> </td>
+		  </tr>
+		 <tr>
+			    <td><label>X-Email</label></td>
+				<td colspan="4"><s:input type="text" id="txtXEmail" path="strXEmail"  cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> </td>			
+		 </tr>
+		 <tr>
+		       <td><label>Super Merchant Code</label></td>
+			   <td>
+			       <s:input type="text" id="txtSuperMerchantCode" path="strSuperMerchantCode" cssClass="longTextBox"/>
+			       <input id="btnAuthorize" type="button" class="smallButton" value="Authenticate" onclick="return btnFetchID_onclick();"></input>
+	           </td>
+	       
+	           <td style="width:30% ">
+			      <s:input type="text" id="txtOTP" path="" cssClass="longTextBox"/>
+			      <input id="btnOK" type="button" class="smallButton" value="......" onclick="return btnFetchID_onclick();">
+	          </td>
+	       
+	         
+			    
+		 </tr>
+		  <tr>
+			    <td><label>Merchant Code</label></td>
+				<td colspan="4"><s:input type="text" id="txtMerchantCode" path="strMerchantCode" cssClass="longTextBox"  /></td>
+		 </tr>
+		 <tr>
+			    <td><label>Authentication Key</label></td>
+			    <td colspan="4"><s:input type="text" id="txtAuthenticationKey" path="strAuthenticationKey" cssClass="longTextBox"  /></td>
+		 </tr>
+		 <tr>
+			    <td><label>Salt</label></td>
+			    <td colspan="4"><s:input type="text" id="txtSalt" path="strSalt" cssClass="longTextBox"  /></td>
+		 </tr>
+				
+				
+	  </table>
+	
+	</div>
+	<!-- 	End of Benow Integration Setup tab -->
+	
+	<!-- 	Start of WERA Online Order Integration Setup tab -->
+			
+	<div id="tab18" class="tab_content">
+	<br><br>
+	   <table  class="masterTable">
+		 <tr>
+		     <td><label>WERA Integration Y/N</label></td>
+				<td ><s:select id="cmbWeraIntegrationYN" path="strWeraIntegrationYN" cssClass="BoxW124px" >
+				<option value="N">No</option>
+				 <option value="Y">Yes</option>
+ 			 </s:select> </td>
+		  </tr>
+		 <tr>
+		     <td><label>Authentication API Key</label></td>
+			 <td><s:input type="text" id="txtWeraAuthenticationAPIKey" path="strWeraAuthenticationAPIKey"  cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> </td>			
+		 </tr>
+		 
+		 <tr>
+		     <td><label>Outlet Id/WERA Merchant</label></td>
+			 <td><s:input type="text" id="txtWeraMerchantOutletId" path="strWeraMerchantOutletId"  cssStyle="text-transform: uppercase;" cssClass="longTextBox"  /> </td>			
+		 </tr>
+				
+	  </table>
+	
+	</div>
+	<!-- 	End of WERA Online Order Integration Setup tab -->
+	</div>
+   </td>
+  </tr>
+ </table>
+	<br />
+	<br />
+	<p align="center">
+		<input id="submitBtn" type="submit" value="Update" tabindex="3" class="form_button"/> 
+	</p>
+</s:form>
 
 </body>
 </html>

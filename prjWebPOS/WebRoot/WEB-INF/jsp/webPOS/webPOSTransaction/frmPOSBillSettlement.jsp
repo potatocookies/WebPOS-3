@@ -2246,8 +2246,8 @@ function funDiscOkClicked()
 			<div id="divOrder" style=" border: 0px solid #ccc; height: 560px;  overflow-x: auto; width: 350px;">
 				<label id="billNoForDisplay" style=" display: inline-block;width: 175px;text-align: left;" >Bill No: ${billNo}</label>
 				<label id="tableNameForDisplay" style=" display: inline-block;width: 175px;text-align: left;">Table No: ${gTableName}</label>
-				<br>
-				<label id="billDateForDisplay" style=" display: inline-block;width: 130px;text-align: left;">Date: ${billDate}</label>
+				<%-- <br>
+				<label id="billDateForDisplay" style=" display: inline-block;width: 130px;text-align: left;">Date: ${billDate}</label> --%>
 				
 				<!--  here the div of Item table-->
 				<!-- <div id="divItemTable" style=" border: 1px solid #ccc; height: 460px; width: 400px;"> -->

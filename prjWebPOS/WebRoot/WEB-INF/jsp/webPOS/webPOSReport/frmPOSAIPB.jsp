@@ -30,66 +30,28 @@
 
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(function() 
-    			{		
-    				$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-    				$("#txtFromDate" ).datepicker('setDate', 'today');
-    				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-    				$("#txtToDate" ).datepicker('setDate', 'today');
-    				
-    			}); 
+{	
+	var POSDate="${gPOSDate}"
+    var startDate="${gPOSDate}";
+  	var Date = startDate.split(" ");
+	var arr = Date[0].split("-");
+	Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
+	$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
+	$("#txtFromDate" ).datepicker('setDate', Dat);
+	$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+	$("#txtToDate" ).datepicker('setDate', Dat);
+				
+}); 
 
 	
-	function funSetDate()
-	{
 		
-		var searchurl=getContextPath()+"/getPOSDate.html";
-		 $.ajax({
-			        type: "GET",
-			        url: searchurl,
-			        dataType: "json",
-			        success: function(response)
-			        {
-			        	/* var dateTime=response.POSDate;
-			        	var date=dateTime.split(" ");
-			        	$("#txtFromDate").val(date[0]);
-			        	$("#txtToDate").val(date[0]); */
-			        	
-			        var date = new Date(response.POSDate);
-			        var	dateTime=date.getDate()  + '-' + (date.getMonth() + 1)+ '-' +  date.getFullYear();
-			        var posDate=dateTime.split(" ");
-			        $("#txtFromDate").val(posDate[0]);
-		        	$("#txtToDate").val(posDate[0]);
-		        	
-			        },
-			        error: function(jqXHR, exception)
-			        {
-			            if (jqXHR.status === 0) {
-			                alert('Not connect.n Verify Network.');
-			            } else if (jqXHR.status == 404) {
-			                alert('Requested page not found. [404]');
-			            } else if (jqXHR.status == 500) {
-			                alert('Internal Server Error [500].');
-			            } else if (exception === 'parsererror') {
-			                alert('Requested JSON parse failed.');
-			            } else if (exception === 'timeout') {
-			                alert('Time out error.');
-			            } else if (exception === 'abort') {
-			                alert('Ajax request aborted.');
-			            } else {
-			                alert('Uncaught Error.n' + jqXHR.responseText);
-			            }		            
-			        }
-		 });
-		 
-	}
-	
 	
 </script>
 
 
 </head>
 
-<body onload="funSetDate()">
+<body >
 	<div id="formHeading">
 		<label>Average Item Per Bill Report</label>
 	</div>

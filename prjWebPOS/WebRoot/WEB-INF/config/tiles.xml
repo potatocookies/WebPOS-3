@@ -523,12 +523,6 @@
 		<put-attribute name="title" value="Day End Flash Report"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDayEndFlashReport.jsp"></put-attribute>
 	</definition>
-
-
-	<definition name="frmPOSAvgItemPerBillReport" extends="base.definition6">
-		<put-attribute name="title" value="Average Item Per Bill"></put-attribute>
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAvgItemPerBillReport.jsp"></put-attribute>
-	</definition>
 	
 	<definition name="frmPOSAvgPerCoverReport" extends="base.definition6">
 		<put-attribute name="title" value="Aveage Per Cover Report"></put-attribute>
@@ -1066,6 +1060,10 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmSettlementWiseGroupWiseBreakup.jsp" />
 	</definition>
 
+	<definition name="frmPOSAIPB" extends="base.definition6">
+		<put-attribute name="title" value="Average Item Per Bill"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAIPB.jsp"></put-attribute>
+	</definition>
 	
 <!-- 	End Of WebPOS Tiles Entry -->
 

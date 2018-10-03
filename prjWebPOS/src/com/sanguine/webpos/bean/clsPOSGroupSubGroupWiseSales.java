@@ -14,9 +14,10 @@ public class clsPOSGroupSubGroupWiseSales {
     private double grandTotal;
     private double dblNetTotalPlusTax;
     private double dblNetTotal;
-    
+    private int intNoOfBills;
+    private double dblGroupWiseAIPBAvg;
 
-    public clsPOSGroupSubGroupWiseSales()
+   	public clsPOSGroupSubGroupWiseSales()
     {
         
     }        
@@ -157,6 +158,21 @@ public class clsPOSGroupSubGroupWiseSales {
 		this.dblNetTotal = dblNetTotal;
 	}
 	
-	
+	public int getIntNoOfBills()
+	{
+		return intNoOfBills;
+	}
+	public void setIntNoOfBills(int intNoOfBills)
+	{
+		this.intNoOfBills = intNoOfBills;
+	}
+	public double getDblGroupWiseAIPBAvg()
+	{
+		return dblGroupWiseAIPBAvg;
+	}
+	public void setDblGroupWiseAIPBAvg(double dblGroupWiseAIPBAvg)
+	{
+		this.dblGroupWiseAIPBAvg = dblGroupWiseAIPBAvg;
+	}
 
 }

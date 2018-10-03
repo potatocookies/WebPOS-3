@@ -329,8 +329,11 @@ public class clsPOSMoveItemsToTableController {
 			    		double itemRate = obj.getDblAmount();
 			    		double itemQty = obj.getDblQuantity();
 			    		double moveQty =obj.getFreeItemQty();
-
-			    		boolean isItemSelected = obj.getStrApplicableYN();
+			    		boolean isItemSelected = false;
+			    		if(obj.getStrApplicableYN()!=null)
+			    		{	
+			    		isItemSelected = obj.getStrApplicableYN();
+			    		}
 			    		String itemCode = obj.getStrItemCode();
 			    		String waiterNo = obj.getStrWaiterName();
 			    		double firedQty = obj.getDblModifiedAmount();

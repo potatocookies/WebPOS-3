@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -126,9 +127,6 @@ public class clsPOSSalesSummaryFlashController {
 			String payMode= req.getParameter("payMode").toString() ;
 			Map hmPayData=  funGetPaymentMode(payMode);
 			listPayMode=(List)hmPayData.get("payName");
-		    
-			 
-			
 		}
 		catch(Exception e){
 			
@@ -250,6 +248,7 @@ public class clsPOSSalesSummaryFlashController {
 	
 	public LinkedHashMap funGetData(String strReportType,String payCode,String strFromdate,String strToDate,String posCode,List listPayMode)
 	{
+		DecimalFormat decimalFormtFor2DecPoint = new DecimalFormat("0.00");
 		LinkedHashMap resMap = new LinkedHashMap();
 		List listcol=new ArrayList();
 		List list =null;
@@ -297,8 +296,9 @@ public class clsPOSSalesSummaryFlashController {
 						String settlementName = objData.toString();
 						if(hmSettelmentDesc.containsKey(settlementName))
 						{
-							arrList.add(hmSettelmentDesc.get(settlementName));
-							totalList.add(hmSettelmentDesc.get(settlementName));
+							double settleAmt=Double.valueOf(hmSettelmentDesc.get(settlementName).toString());
+							arrList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
+							totalList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
 						}else{
 							arrList.add("0");
 							totalList.add(0);
@@ -330,6 +330,7 @@ public class clsPOSSalesSummaryFlashController {
 			if(listData.size()>0)
 	  	    {
 				int j=0;
+				list =new ArrayList();
 				List arrList =null;
 				for(int i=0;i<listData.size();i++)
 	  	    	{
@@ -338,12 +339,12 @@ public class clsPOSSalesSummaryFlashController {
 	  	    		hmSettelmentDesc = objReportService.funProcessSalesSummaryReport( obj[0].toString(),obj[2].toString(),"otherSettleAmt");
 	  	    		System.out.println(hmSettelmentDesc);
 	  	    		arrList = new ArrayList();
-	  	    		arrList.add(obj[0].toString());
 	  	    		arrList.add(obj[1].toString());
 	  	    		arrList.add(obj[2].toString());
-					listcol.add("PosCode");
+	  	    		arrList.add(obj[3].toString());
 					listcol.add("PosName");
-					listcol.add("PosDate");
+					listcol.add("Month");
+					listcol.add("Year");
 					
 					if(listPayMode.size()>0)
 					{
@@ -354,18 +355,17 @@ public class clsPOSSalesSummaryFlashController {
 						String settlementName = objData.toString();
 						if(hmSettelmentDesc.containsKey(settlementName))
 						{
-							arrList.add(hmSettelmentDesc.get(settlementName));
-							totalList.add(hmSettelmentDesc.get(settlementName));
+							double settleAmt=Double.valueOf(hmSettelmentDesc.get(settlementName).toString());
+							arrList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
+							totalList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
 						}else{
 							arrList.add("0");
 							totalList.add(0);
 						}
 						listcol.add(listPayMode.get(j));
-						
-						list.add(arrList);
-						
 						}
 					}
+					list.add(arrList);
 	  	    	}
 				resMap.put("listcol", listcol);
 				resMap.put("List", list);

@@ -51,22 +51,21 @@ $(document).ready(function() {
 	});
 
 	 $(function() 
-	    			{		
-		 var POSDate="${POSDate}"
-			    var startDate="${POSDate}";
-			  	var Date = startDate.split(" ");
-				var arr = Date[0].split("-");
-				Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
-				$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
-				$("#txtFromDate" ).datepicker('setDate', Dat); 
-				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-				$("#txtToDate" ).datepicker('setDate', Dat); 
-    				
-	    			
-    				funExecute();
-	    			});
+	 	{		
+	        var POSDate="${POSDate}"
+		    var startDate="${POSDate}";
+		  	var Date = startDate.split(" ");
+			var arr = Date[0].split("-");
+			Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
+			$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
+			$("#txtFromDate" ).datepicker('setDate', Dat); 
+			$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+			$("#txtToDate" ).datepicker('setDate', Dat); 
+			funExecute();
+	 	});
 	 
-	 $("form").submit(function(event){
+	 $("form").submit(function(event)
+		{
 			var table = document.getElementById("tblsalesSumFlash");
 			var rowCount = table.rows.length;
 			if (rowCount > 1){
@@ -96,46 +95,34 @@ $(document).ready(function() {
 	 
 	 function funFillTableData(fromDate,toDate,payMode,posName,reportType)
 	 {
-		 
-		 
 		 var searchurl=getContextPath()+"/loadColumnData.html?payMode=" + payMode;
 		 $.ajax({
-		        type: "GET",
-		        url: searchurl,
-		        dataType: "json",
-		        
-		        success: function (response) {
-		        
-		                	
-// 		            	$.each(response,function(i,item){
-		            	    
-		            		funfillColumnData(response,reportType);
-		            				            				            	
-			            	 
-// 		            	});
-		    
-		            },
-		            
-		      
-		        error: function(jqXHR, exception)
-		        {
-		            if (jqXHR.status === 0) {
-		                alert('Not connect.n Verify Network.');
-		            } else if (jqXHR.status == 404) {
-		                alert('Requested page not found. [404]');
-		            } else if (jqXHR.status == 500) {
-		                alert('Internal Server Error [500].');
-		            } else if (exception === 'parsererror') {
-		                alert('Requested JSON parse failed.');
-		            } else if (exception === 'timeout') {
-		                alert('Time out error.');
-		            } else if (exception === 'abort') {
-		                alert('Ajax request aborted.');
-		            } else {
-		                alert('Uncaught Error.n' + jqXHR.responseText);
-		            }		            
-		        }
-		            
+	        type: "GET",
+	        url: searchurl,
+	        dataType: "json",
+	        
+	        success: function (response) 
+	        {
+	        	funfillColumnData(response,reportType);
+	        },
+	        error: function(jqXHR, exception)
+	        {
+	            if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }		            
+	        }         
 		            
 	 });
 	       
@@ -144,26 +131,22 @@ $(document).ready(function() {
 	
 	 function funfillColumnData(colData,reportType)
 	 {
-
-		
 			var table = document.getElementById("tblsalesSumFlash");
 		    var rowCount = table.rows.length;
 		    var row = table.insertRow(rowCount);
 			if(reportType=='Daily')  
 			{
-		    row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value=PosCode >";
-		    row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value=PosName >";
-		    row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value=PosDate >";
+		    row.insertCell(0).innerHTML= "<input type=\"text\" readonly=\"readonly\" class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosCode >";
+		    row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosName >";
+		    row.insertCell(2).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosDate >";
 			}else{
-				row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value=PosCode >";
-			    row.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value=Month >";
-			    row.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value=Year >";	
-				
+				row.insertCell(0).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosName >";
+			    row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=Month >";
+			    row.insertCell(2).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=Year >";		
 			}
 		    
 		    for(var i=0;i<colData.length;i++){
-			row.insertCell(i+3).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(rowCount)+"\" value='"+colData[i]+"' >";
-					
+			row.insertCell(i+3).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value='"+colData[i]+"' >";		
 		}
 	 }
 
@@ -187,8 +170,14 @@ $(document).ready(function() {
 		              row = table.insertRow(rowCount);
 		  		 	  for(var i=0;i<colCount;i++)
 		  		 	  {
-		  		 		row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";
-		  		 		
+		  		 		  if(i>2)
+		  		 		  {
+		  		 			row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";
+		  		 		  }
+		  		 		  else
+		  		 		  {
+		  		 			row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";  
+		  		 		  }	
 		  		 	  }
 		  		 	 rowCount++;
 		  		 	 i--;
@@ -200,7 +189,7 @@ $(document).ready(function() {
 		    	 	var row1 = table.insertRow(rowCoun);
 		    	 	row1.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(j)+"\" value='"+ +"'>";
 		    		row1.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(j)+"\" value='"+ +"'>";
-		    		row1.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(j)+"\" value='Total'>";
+		    		row1.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"font-weight: bold;color:black\" size=\"15%\" id=\""+(j)+"\" value='Total'>";
 		    	 	for(var j=3;j<col;j++)
 		    		{
 		    			var amount=0.0;
@@ -214,7 +203,7 @@ $(document).ready(function() {
 		    				  var amountData=parseFloat(dblAount[1].substring(1,dblAount[1].length-2));
 		    				  amount=amount+amountData;
 		    		   }
-		    		   row1.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(j)+"\" value='"+amount+"'>";
+		    		   row1.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"font-weight: bold;color:black\"size=\"15%\" id=\""+(j)+"\" value='"+amount+"'>";
 		    		}
 		    
 		            },
@@ -384,65 +373,7 @@ $(document).ready(function() {
 				    </div>
 			
 	 </div>
-
-
-<!-- 	<div> -->
-<!-- 		<div> -->
-<!-- 		<table class="masterTable" style="margin:auto;"> -->
-
-<!-- 			<tr> -->
-<!-- 				<td width="140px">POS Name</td> -->
-<%-- 				<td ><s:select id="cmbPOSName" name="cmbPOSName" --%>
-<%-- 						path="strPOSName" cssClass="BoxW124px" items="${posList}"> --%>
-
-<%-- 					</s:select></td> --%>
-<!-- 				<td></td> -->
-<!-- 				<td></td> -->
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>From Date</label></td> -->
-<%-- 				<td width="10%"><s:input id="txtFromDate" required="required" --%>
-<%-- 						path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" --%>
-<%-- 						cssClass="calenderTextBox" /></td> --%>
-<!-- 				<td width="10%"><label>To Date</label></td> -->
-<%-- 				<td ><s:input id="txtToDate" required="required" path="toDate" --%>
-<%-- 						pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox" /></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 			<td><label>Payment Mode</label></td> -->
-<%-- 				<td><s:select id="cmbPaymentMode" name="cmbReportType" --%>
-<%-- 						path="strPayMode" cssClass="BoxW124px" items="${payModeList}"></s:select></td> --%>
-
-<!-- 				<td><label>Report Type</label></td> -->
-<%-- 				<td><s:select id="cmbDocType" path="strDocType" --%>
-<%-- 						cssClass="BoxW124px"> --%>
-<%-- 						<s:option value="Daily">Daily</s:option> --%>
-<%-- 						<s:option value="Monthly">Monthly</s:option> --%>
-
-<%-- 					</s:select></td> --%>
-<!-- 				</tr> -->
-				
-<!-- 		</table> -->
-<!-- 		</div> -->
-<!-- 		<br /> -->
-<!-- 		<br/> -->
-		
-<!-- 		<div -->
-<!-- 				style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 80%;"> -->
-				
-<!-- 				<table id="tblsalesSumFlash" class="transTablex" -->
-<!-- 					style="width: 100%; text-align: center !important;"> -->
-<!-- 				</table> -->
-				
-<!-- 			</div> -->
-<!-- 		</div>	 -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="button" value="Execute" onClick="funExecute()" tabindex="3" class="form_button" />  -->
-<!-- 			<input type="submit" value="Export" tabindex="3" class="form_button" id="submit"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()" /> -->
-<!-- 		</p> -->
-		
+	
 	</s:form>
 
 </body>

@@ -1065,6 +1065,11 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAIPB.jsp"></put-attribute>
 	</definition>
 	
+		<definition name="frmKDSFlash" extends="base.definition6">
+		<put-attribute name="title" value="KDS Flash" />
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmKDSFlash.jsp" />
+	</definition>
+	
 <!-- 	End Of WebPOS Tiles Entry -->
 
 

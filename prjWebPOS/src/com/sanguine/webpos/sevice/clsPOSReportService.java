@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8018,12 +8020,11 @@ public class clsPOSReportService {
 			} else {
 				if (payCode.equals("ALL")) {
 					sb.setLength(0);
-					sb.append(
-							"select a.strPOSCode,c.strPOSName,monthname(date(a.dteBillDate)),year(date(a.dteBillDate)) "
-									+ " from vqbillhdsettlementdtl a,tblsettelmenthd b,tblposmaster c "
-									+ " where a.strSettlementCode=b.strSettelmentCode "
-									+ " and a.strPOSCode=c.strPOSCode " + " and month(date(dteBillDate)) between '"
-									+ fromDate + "' and '" + toDate + "' ");
+					sb.append("select a.strPOSCode,c.strPOSName,monthname(date(a.dteBillDate)),year(date(a.dteBillDate)) "
+					+ " from vqbillhdsettlementdtl a,tblsettelmenthd b,tblposmaster c "
+					+ " where a.strSettlementCode=b.strSettelmentCode "
+					+ " and a.strPOSCode=c.strPOSCode " + " and date(dteBillDate) between '"
+					+ fromDate + "' and '" + toDate + "' ");
 					if (!posCode.equals("ALL")) {
 						sb.append(" and a.strPOSCode='" + posCode + "' ");
 					}
@@ -8033,12 +8034,11 @@ public class clsPOSReportService {
 				} else {
 
 					sb.setLength(0);
-					sb.append(
-							"select a.strPOSCode,c.strPOSName,monthname(date(a.dteBillDate)),year(date(a.dteBillDate)) "
-									+ " from vqbillhdsettlementdtl a,tblsettelmenthd b,tblposmaster c "
-									+ " where a.strSettlementCode=b.strSettelmentCode "
-									+ " and a.strPOSCode=c.strPOSCode " + " and month(date(dteBillDate)) between '"
-									+ fromDate + "' and '" + toDate + "' and b.strSettelmentCode='" + payCode + "' ");
+					sb.append("select a.strPOSCode,c.strPOSName,monthname(date(a.dteBillDate)),year(date(a.dteBillDate)) "
+					+ " from vqbillhdsettlementdtl a,tblsettelmenthd b,tblposmaster c "
+					+ " where a.strSettlementCode=b.strSettelmentCode "
+					+ " and a.strPOSCode=c.strPOSCode " + " and date(dteBillDate) between '"
+					+ fromDate + "' and '" + toDate + "' and b.strSettelmentCode='" + payCode + "' ");
 					if (!posCode.equals("ALL")) {
 						sb.append(" and a.strPOSCode='" + posCode + "' ");
 					}
@@ -8076,7 +8076,7 @@ public class clsPOSReportService {
 
 					for (int j = 0; j < listSql1.size(); j++) {
 						Object[] obj1 = (Object[]) listSql1.get(j);
-						hmSettelmentDesc.put(obj1[2].toString(), obj1[3].toString());
+						hmSettelmentDesc.put(obj1[2].toString(), obj1[4].toString());
 					}
 
 				}
@@ -8096,7 +8096,7 @@ public class clsPOSReportService {
 
 					for (int j = 0; j < listSql1.size(); j++) {
 						Object[] obj1 = (Object[]) listSql1.get(j);
-						hmSettelmentDesc.put(obj1[2].toString(), obj1[3].toString());
+						hmSettelmentDesc.put(obj1[2].toString(), obj1[4].toString());
 					}
 
 				}
@@ -18015,6 +18015,1163 @@ public class clsPOSReportService {
 		return listOfReprintTextData;
 		
 	}
+	
+	
+	
+	
+
+	public Map funProcessKDSFlashReport(String clientCode,String fromDate,String toDate,String reportType,String posCode,String costCenterCode,String waiterNo,String strType) 
+	{
+		StringBuilder sbSql = new StringBuilder();
+		List listArr = new ArrayList();
+		Map<String, List<clsPOSBillDtl>> hmKDSFlashData = new TreeMap<String, List<clsPOSBillDtl>>();
+		int colCount = 5;
+		DecimalFormat decimalFormtFor2DecPoint = new DecimalFormat("0.00");
+	    Map hmKDSData=new TreeMap();
+		try 
+		{
+			double sumBillAmt = 0.00, sumNewAmt = 0.00;
+			double sumQty = 0.00, discAmt = 0.0, sumTotalAmt = 0.00;
+			
+			if (reportType.equalsIgnoreCase("Group"))
+		    {
+				sbSql.setLength(0);
+				sbSql.append("SELECT a.strBillNo,b.strKOTNo, DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " TIME(b.dteBillDate) as tmeKOTTime,TIME(b.tmeOrderProcessing) as OrderProcessingTime, "
+				    + " TIME(b.tmeOrderPickup) as OrderPickupTime,b.strItemCode, "
+				    + " if(TIME(b.tmeOrderProcessing)<TIME(b.dteBillDate),ADDTIME(TIME(b.tmeOrderProcessing),TIMEDIFF('24:00:00',TIME(b.dteBillDate))),TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)) )  AS processtimediff, "
+				    + " TIMEDIFF(if(TIME(b.tmeOrderPickup)='00:00:00',TIME(b.tmeOrderProcessing),TIME(b.tmeOrderPickup)),TIME(b.tmeOrderProcessing)) AS pickuptimediff,"
+				    + " e.strCostCenterName,f.strWShortName,g.strGroupName "
+				    + " FROM tblbillhd a,tblbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " ,tblgrouphd g,tblsubgrouphd h"
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " and DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'  "
+				    + " and c.strSubGroupCode = h.strSubGroupCode "
+				    + " AND h.strGroupCode = g.strGroupCode ");
+				if (!costCenterCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and d.strCostCenterCode='" + costCenterCode + "'  ");
+			    }
+			    if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+			    }
+			    if (!waiterNo.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strWaiterNo='" + waiterNo + "'  ");
+			    }
+
+			    sbSql.append(" GROUP BY g.strGroupCode  ");
+			    sbSql.append(" Order By  g.strGroupCode DESC");
+			    
+			    String time = "", timeForGroupWise = "";
+			    long sum = 0, sumOfGroupWise = 0;
+			    int i = 0;
+			    String date4 = "";
+			    int qty = 0, quantity = 0;
+			    Date date1;
+			    Date dateForGroup;
+			    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+			    timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			    
+			    
+				List listSql = objBaseService.funGetList(sbSql, "sql");
+
+				if (listSql.size() > 0) 
+				{
+
+					for (int cnt = 0; cnt < listSql.size(); cnt++) 
+					{
+						Object[] obj = (Object[]) listSql.get(cnt);
+						clsPOSBillDtl objBill = new clsPOSBillDtl();
+
+						qty = qty +(new BigDecimal(obj[4].toString())).intValue();
+						quantity = quantity +(new BigDecimal(obj[4].toString())).intValue();
+						objBill.setDblQuantity(qty);
+						objBill.setStrGroupName(obj[15].toString());
+						time = obj[11].toString();
+						date1 = timeFormat.parse(time);
+						sum = sum + date1.getTime();
+
+						timeForGroupWise = obj[11].toString();
+						dateForGroup = timeFormat.parse(timeForGroupWise);
+						sumOfGroupWise = dateForGroup.getTime();
+
+						date4 = timeFormat.format(new Date(sumOfGroupWise / qty));
+						objBill.setTmeOrderProcessing(date4);
+						//String key=rsSales.getString(3)+"!"+rsSales.getString(14);
+						String key = obj[15].toString() + "!" + obj[2].toString();
+
+						List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+						if (hmKDSFlashData.containsKey(key))
+						{
+						    arrListBillDtl = hmKDSFlashData.get(key);
+						    arrListBillDtl.add(objBill);
+						}
+						else
+						{
+						    arrListBillDtl.add(objBill);
+						}
+						hmKDSFlashData.put(key, arrListBillDtl);
+
+						i++;
+					}
+
+				}
+				
+				sbSql.setLength(0);
+			    sbSql.append("SELECT a.strBillNo,b.strKOTNo,DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " TIME(b.dteBillDate) as tmeKOTTime,TIME(b.tmeOrderProcessing) as OrderProcessingTime, "
+				    + " TIME(b.tmeOrderPickup) as OrderPickupTime,b.strItemCode, "
+				    + " if(TIME(b.tmeOrderProcessing)<TIME(b.dteBillDate),ADDTIME(TIME(b.tmeOrderProcessing),TIMEDIFF('24:00:00',TIME(b.dteBillDate))),TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)) )  AS processtimediff, "
+				    + " TIMEDIFF(if(TIME(b.tmeOrderPickup)='00:00:00',TIME(b.tmeOrderProcessing),TIME(b.tmeOrderPickup)),TIME(b.tmeOrderProcessing)) AS pickuptimediff,"
+				    + " e.strCostCenterName,f.strWShortName,g.strGroupName "
+				    + " FROM tblqbillhd a,tblqbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " ,tblgrouphd g,tblsubgrouphd h"
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " AND DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+				    + " and c.strSubGroupCode = h.strSubGroupCode "
+				    + " AND h.strGroupCode = g.strGroupCode ");
+			    if (!costCenterCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and d.strCostCenterCode=='" + costCenterCode + "'   ");
+			    }
+			    if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+			    }
+			    if (!waiterNo.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strWaiterNo='" + waiterNo+ "'  ");
+			    }
+			    sbSql.append(" GROUP BY g.strGroupCode ");
+			    sbSql.append(" Order By g.strGroupCode DESC");
+			    
+			    
+			    listSql = objBaseService.funGetList(sbSql, "sql");
+
+				if (listSql.size() > 0) 
+				{
+
+					for (int cnt = 0; cnt < listSql.size(); cnt++) 
+					{
+						Object[] obj = (Object[]) listSql.get(cnt);
+						clsPOSBillDtl objBill = new clsPOSBillDtl();
+
+						qty = qty +(new BigDecimal(obj[4].toString())).intValue();
+						quantity = quantity +(new BigDecimal(obj[4].toString())).intValue();
+						objBill.setDblQuantity(qty);
+						objBill.setStrGroupName(obj[15].toString());
+						time = obj[11].toString();
+						date1 = timeFormat.parse(time);
+						sum = sum + date1.getTime();
+
+						timeForGroupWise = obj[11].toString();
+						dateForGroup = timeFormat.parse(timeForGroupWise);
+						sumOfGroupWise = dateForGroup.getTime();
+						date4 = timeFormat.format(new Date(sumOfGroupWise / qty));
+						objBill.setTmeOrderProcessing(date4);
+
+						List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+						String key = obj[15].toString() + "!" + obj[2].toString();
+
+						if (hmKDSFlashData.containsKey(key))
+						{
+						    arrListBillDtl = hmKDSFlashData.get(key);
+						    arrListBillDtl.add(objBill);
+						}
+						else
+						{
+						    arrListBillDtl.add(objBill);
+						}
+						hmKDSFlashData.put(key, arrListBillDtl);
+
+						i++;
+					}
+				}
+			    
+			    String date3 = "";
+			    if (i > 0)
+			    {
+				date3 = timeFormat.format(new Date(sum / qty));
+			    }
+			    System.out.println(hmKDSFlashData.keySet());
+
+			    List<clsPOSBillDtl> arrListDetail=new ArrayList();
+			    for (Map.Entry<String, List<clsPOSBillDtl>> entry : hmKDSFlashData.entrySet())
+			    {
+					for (int cnt = 0; cnt < entry.getValue().size(); cnt++)
+					{
+						clsPOSBillDtl objBill = entry.getValue().get(cnt);
+						arrListDetail.add(objBill);
+					    sumQty = sumQty + objBill.getDblQuantity();
+					}
+					
+			    }
+				
+			    if(arrListDetail.size()>0)
+			    {
+			    	listArr=arrListDetail;
+			    	hmKDSData.put("avgProTime", date3);
+			    	hmKDSData.put("listData", listArr);
+			    }
+				
+		    }
+			else if (reportType.equalsIgnoreCase("SubGroup"))
+		    {
+				long masterProcesTime = 0;
+				String maxDelayTime = "", minDelayTime = "";
+
+			    String time = "", processTime = "", targetTime = "";
+			    long sum = 0, totProcessTime = 0, sumOfDelayOrders = 0, longMasterTarTime = 0, sumOfDelayOrderTargetTime = 0, transProcessTime = 0;
+			    long sumOfTotOrdTarAvg = 0, sumMasterProcessTime = 0;
+			    long totDelayOrderTotAvg = 0;
+			    int countOfDelayOrder = 0;
+
+			    int noOfItemsCount = 0;
+			    Date date1, dateProcessTime, itemTargetTme;
+			    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+			    timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			    SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
+			    fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+			    long minProcessTime = 0, maxProcessTime = 0;
+			    long minDelayedTime = 0, maxDelayedTime = 0;
+			    long sumOfMasterTarTime = 0, sumOfMasterProcTimeXMasterTarTime = 0, sumOfMasterProcTimeXTransProcTime = 0, sumOfKOTProcTime = 0;
+			    boolean isFirstRecord = true;
+				if(strType.equalsIgnoreCase("Detail"))
+				{
+					sbSql.setLength(0);
+					sbSql.append("SELECT a.strBillNo,b.strKOTNo, DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " IFNULL(TIME(b.dteBillDate),'00:00:00') as tmeKOTTime,IFNULL(TIME(b.tmeOrderProcessing),'00:00:00') as OrderProcessingTime,  "
+				    + " IFNULL(TIME(b.tmeOrderPickup),'00:00:00') as OrderPickupTime,b.strItemCode, "
+				    + " IFNULL(if(TIME(b.tmeOrderProcessing)<TIME(b.dteBillDate),ADDTIME(TIME(b.tmeOrderProcessing),"
+				    + " TIMEDIFF('24:00:00',TIME(b.dteBillDate))),TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', "
+				    + " TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)) ),'00:00:00')  AS processtimediff,  "
+				    + " IFNULL( TIMEDIFF(if(TIME(b.tmeOrderPickup)='00:00:00',TIME(b.tmeOrderProcessing),"
+				    + " TIME(b.tmeOrderPickup)),TIME(b.tmeOrderProcessing)),'00:00:00') AS pickuptimediff, "
+				    + " e.strCostCenterName,f.strWShortName,h.strSubGroupName,"
+				    + " IFNULL(time(CONCAT('00',':',c.intProcTimeMin,':','00')),'00:00:00')intProcTimeMin ,"
+				    + " IFNULL(time(CONCAT('00',':',c.tmeTargetMiss,':','00')),'00:00:00')tmeTargetMiss "
+				    + " FROM tblbillhd a,tblbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " ,tblsubgrouphd h"
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " and DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'  "
+				    + " and c.strSubGroupCode = h.strSubGroupCode ");
+				    if (!costCenterCode.equalsIgnoreCase("All"))
+				    {
+					sbSql.append("and d.strCostCenterCode='" +costCenterCode + "'  ");
+				    }
+				    if (!posCode.equalsIgnoreCase("All"))
+				    {
+					sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+				    }
+				    if (!waiterNo.equalsIgnoreCase("All"))
+				    {
+					sbSql.append(" and a.strWaiterNo='" +waiterNo + "'  ");
+				    }
+
+				    sbSql.append(" GROUP BY h.strSubGroupCode,b.strItemCode  ");
+				    sbSql.append(" Order By h.strSubGroupCode DESC");
+				    List listSql = objBaseService.funGetList(sbSql, "sql");
+
+					if (listSql.size() > 0) 
+					{
+
+						for (int i = 0; i < listSql.size(); i++) 
+						{
+							Object[] obj = (Object[]) listSql.get(i);
+							clsPOSBillDtl objBill = new clsPOSBillDtl();
+
+							objBill.setStrBillNo(obj[0].toString());           //Bill No
+							objBill.setStrKOTNo(obj[1].toString());            //KOT No
+							objBill.setDteBillDate(obj[2].toString());        //Kot Date
+							objBill.setStrItemName(obj[3].toString());        //Item Name
+							objBill.setDblQuantity(Double.valueOf(obj[4].toString()));        //Qty
+							objBill.setDblAmount(Double.valueOf(obj[5].toString()));          //Amount
+							objBill.setDblBillAmt(Double.valueOf(obj[6].toString()));         //Sub Total
+							objBill.setTmeBillTime(obj[7].toString());
+							objBill.setTmeOrderProcessing(obj[8].toString()); //Process Time	
+							objBill.setTmeBillSettleTime(obj[9].toString()); //Puckup Time	
+							objBill.setStrProcessTimeDiff(obj[11].toString()); //diff kot & process Time	
+							objBill.setStrPickUpTimeDiff(obj[12].toString()); //diff process & pickup Time
+							objBill.setStrItemProcessTime(obj[16].toString()); //item process time
+							objBill.setStrCounterCode(obj[13].toString());     // costCenterName
+							objBill.setStrWShortName(obj[14].toString());        // waiterName
+							objBill.setStrGroupName(obj[15].toString());
+							targetTime = obj[17].toString();
+							itemTargetTme = timeFormat.parse(targetTime);
+							objBill.setStrItemTargetTime(targetTime);        // item target time
+							longMasterTarTime = itemTargetTme.getTime();
+							sumOfMasterTarTime = sumOfMasterTarTime + longMasterTarTime;
+							sumOfTotOrdTarAvg = sumOfTotOrdTarAvg + itemTargetTme.getTime();
+							masterProcesTime = timeFormat.parse(obj[16].toString()).getTime();
+							
+							sumMasterProcessTime = sumMasterProcessTime + masterProcesTime;
+							processTime = obj[11].toString();
+							dateProcessTime = timeFormat.parse(processTime);
+							transProcessTime = dateProcessTime.getTime();
+
+							if (isFirstRecord)
+							{
+							    minProcessTime = transProcessTime;
+							    maxProcessTime = transProcessTime;
+
+							    minDelayedTime = transProcessTime;
+							    maxDelayedTime = transProcessTime;
+							}
+
+							if (transProcessTime < minProcessTime)
+							{
+							    minProcessTime = transProcessTime;
+							}
+							if (transProcessTime > maxProcessTime)
+							{
+							    maxProcessTime = transProcessTime;
+							}
+
+							if (transProcessTime > longMasterTarTime)
+							{
+							    long delayTime = (transProcessTime - longMasterTarTime);
+
+							    if (delayTime < minDelayedTime)
+							    {
+								minDelayedTime = delayTime;
+							    }
+
+							    if (delayTime > maxDelayedTime)
+							    {
+								maxDelayedTime = delayTime;
+							    }
+
+							    sumOfDelayOrders = sumOfDelayOrders + transProcessTime;
+							    sumOfDelayOrderTargetTime = sumOfDelayOrderTargetTime + longMasterTarTime;
+							    countOfDelayOrder++;
+							}
+
+							noOfItemsCount = noOfItemsCount + 1;
+							time = obj[11].toString();
+							date1 = timeFormat.parse(time);
+							sumOfKOTProcTime = sumOfKOTProcTime + date1.getTime();
+
+							String key = obj[15].toString() + "!" + obj[2].toString();
+
+							List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+							if (hmKDSFlashData.containsKey(key))
+							{
+							    arrListBillDtl = hmKDSFlashData.get(key);
+							    arrListBillDtl.add(objBill);
+							}
+							else
+							{
+							    arrListBillDtl.add(objBill);
+							}
+							hmKDSFlashData.put(key, arrListBillDtl);
+
+							sumOfMasterProcTimeXMasterTarTime = sumOfMasterProcTimeXMasterTarTime + (masterProcesTime * longMasterTarTime);
+							sumOfMasterProcTimeXTransProcTime = sumOfMasterProcTimeXTransProcTime + (masterProcesTime * transProcessTime);
+
+							isFirstRecord = false;
+						}
+
+					}
+					
+					sbSql.setLength(0);
+				    sbSql.append("SELECT a.strBillNo,b.strKOTNo,DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+					    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+					    + " IFNULL(TIME(b.dteBillDate),'00:00:00') as tmeKOTTime,IFNULL(TIME(b.tmeOrderProcessing),'00:00:00') as OrderProcessingTime,  "
+					    + " IFNULL(TIME(b.tmeOrderPickup),'00:00:00') as OrderPickupTime,b.strItemCode, "
+					    + " IFNULL(if(TIME(b.tmeOrderProcessing)<TIME(b.dteBillDate),ADDTIME(TIME(b.tmeOrderProcessing),"
+					    + " TIMEDIFF('24:00:00',TIME(b.dteBillDate))),TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', "
+					    + " TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)) ),'00:00:00')  AS processtimediff,  "
+					    + " IFNULL( TIMEDIFF(if(TIME(b.tmeOrderPickup)='00:00:00',TIME(b.tmeOrderProcessing),"
+					    + " TIME(b.tmeOrderPickup)),TIME(b.tmeOrderProcessing)),'00:00:00') AS pickuptimediff, "
+					    + " e.strCostCenterName,f.strWShortName,h.strSubGroupName,"
+					    + " IFNULL(time(CONCAT('00',':',c.intProcTimeMin,':','00')),'00:00:00')intProcTimeMin ,"
+					    + " IFNULL(time(CONCAT('00',':',c.tmeTargetMiss,':','00')),'00:00:00')tmeTargetMiss "
+					    + " FROM tblqbillhd a,tblqbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+					    + " ,tblsubgrouphd h"
+					    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+					    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+					    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+					    + " AND DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+					    + " and c.strSubGroupCode = h.strSubGroupCode ");
+				    if (!costCenterCode.equalsIgnoreCase("All"))
+				    {
+					sbSql.append("and d.strCostCenterCode='" +costCenterCode + "'  ");
+				    }
+				    if (!posCode.equalsIgnoreCase("All"))
+				    {
+					sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+				    }
+				    if (!waiterNo.equalsIgnoreCase("All"))
+				    {
+					sbSql.append(" and a.strWaiterNo='" + waiterNo + "'  ");
+				    }
+				    sbSql.append(" GROUP BY h.strSubGroupCode,b.strItemCode ");
+				    sbSql.append(" Order By h.strSubGroupCode DESC");
+				    
+				    listSql = objBaseService.funGetList(sbSql, "sql");
+
+					if (listSql.size() > 0) 
+					{
+
+						for (int i = 0; i < listSql.size(); i++) 
+						{
+							Object[] obj = (Object[]) listSql.get(i);
+							clsPOSBillDtl objBill = new clsPOSBillDtl();
+							objBill.setStrBillNo(obj[0].toString());           //Bill No
+							objBill.setStrKOTNo(obj[1].toString());            //KOT No
+							objBill.setDteBillDate(obj[2].toString());        //Kot Date
+							objBill.setStrItemName(obj[3].toString());        //Item Name
+							objBill.setDblQuantity(Double.valueOf(obj[4].toString()));        //Qty
+							objBill.setDblAmount(Double.valueOf(obj[5].toString()));          //Amount
+							objBill.setDblBillAmt(Double.valueOf(obj[6].toString()));         //Sub Total
+							objBill.setTmeBillTime(obj[7].toString());        //Kot Time
+							objBill.setTmeOrderProcessing(obj[8].toString()); //Process Time	
+							objBill.setTmeBillSettleTime(obj[9].toString()); //Puckup Time	
+							objBill.setStrProcessTimeDiff(obj[11].toString()); //diff kot & process Time
+							objBill.setStrPickUpTimeDiff(obj[12].toString()); //diff process & pickup Time
+							objBill.setStrItemProcessTime(obj[16].toString()); //item process time
+							//System.out.println(rsQSales.getString(1)+"   "+rsQSales.getString(2));
+							objBill.setStrPickUpTimeDiff(obj[12].toString());  // diff process & pickup Time
+							objBill.setStrCounterCode(obj[13].toString());     // costCenterName
+							objBill.setStrWShortName(obj[14].toString());        // waiterName
+							//objBill.setStrItemProcessTime(obj[16].toString());        // item process time
+							targetTime =obj[17].toString();
+							itemTargetTme = timeFormat.parse(targetTime);
+							objBill.setStrItemTargetTime(targetTime);        // item target time
+							longMasterTarTime = itemTargetTme.getTime();
+							sumOfMasterTarTime = sumOfMasterTarTime + longMasterTarTime;
+							sumOfTotOrdTarAvg = sumOfTotOrdTarAvg + itemTargetTme.getTime();
+
+							masterProcesTime = timeFormat.parse(obj[16].toString()).getTime();
+							sumMasterProcessTime = sumMasterProcessTime + masterProcesTime;
+							processTime = obj[11].toString();
+							dateProcessTime = timeFormat.parse(processTime);
+							transProcessTime = dateProcessTime.getTime();
+
+							if (isFirstRecord)
+							{
+							    minProcessTime = transProcessTime;
+							    maxProcessTime = transProcessTime;
+
+							    minDelayedTime = transProcessTime;
+							    maxDelayedTime = transProcessTime;
+							}
+
+							if (transProcessTime < minProcessTime)
+							{
+							    minProcessTime = transProcessTime;
+							}
+							if (transProcessTime > maxProcessTime)
+							{
+							    maxProcessTime = transProcessTime;
+							}
+
+							if (transProcessTime > longMasterTarTime)
+							{
+							    long delayTime = (transProcessTime - longMasterTarTime);
+
+							    if (delayTime < minDelayedTime)
+							    {
+								minDelayedTime = delayTime;
+							    }
+
+							    if (delayTime > maxDelayedTime)
+							    {
+								maxDelayedTime = delayTime;
+							    }
+
+							    sumOfDelayOrders = sumOfDelayOrders + transProcessTime;
+							    sumOfDelayOrderTargetTime = sumOfDelayOrderTargetTime + longMasterTarTime;
+							    countOfDelayOrder++;
+							}
+
+							noOfItemsCount = noOfItemsCount + 1;
+							time = obj[11].toString();
+							date1 = timeFormat.parse(time);
+							sumOfKOTProcTime = sumOfKOTProcTime + date1.getTime();
+
+							String key = obj[15].toString() + "!" + obj[2].toString();
+
+							List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+							if (hmKDSFlashData.containsKey(key))
+							{
+							    arrListBillDtl = hmKDSFlashData.get(key);
+							    arrListBillDtl.add(objBill);
+							}
+							else
+							{
+							    arrListBillDtl.add(objBill);
+							}
+							hmKDSFlashData.put(key, arrListBillDtl);
+
+							sumOfMasterProcTimeXMasterTarTime = sumOfMasterProcTimeXMasterTarTime + (masterProcesTime * longMasterTarTime);
+							sumOfMasterProcTimeXTransProcTime = sumOfMasterProcTimeXTransProcTime + (masterProcesTime * transProcessTime);
+
+							isFirstRecord = false;
+						}
+					}
+					
+					
+					List<clsPOSBillDtl> arrListDetail=new ArrayList();
+				    
+					String avgProTime = "", quantity = "", DOAvg = "", totOrdTarAvg = "", delayOrderTargAvg = "";
+				    String totDelayOrderTotAvgPer = "", weightedAvgTargetTime = "", weightedAvgActualTime = "";
+				    long first = 0, second = 0, longWeightedAvgTargetTime = 0, longWeightedAvgActualTime = 0, longAvgMasterTarTime;
+				    double finalDelayedOrder = 0;
+				    double totOrderePer = 0;
+				    long finalDota = 0;
+				    if (!isFirstRecord)
+				    {
+					finalDelayedOrder = countOfDelayOrder;
+
+					longWeightedAvgTargetTime = sumOfMasterProcTimeXMasterTarTime / sumMasterProcessTime;
+					longWeightedAvgActualTime = sumOfMasterProcTimeXTransProcTime / sumMasterProcessTime;
+					longAvgMasterTarTime = sumOfMasterTarTime / noOfItemsCount;
+
+					weightedAvgTargetTime = fmt.format(new Date(longWeightedAvgTargetTime));
+					weightedAvgActualTime = fmt.format(new Date(longWeightedAvgActualTime));
+					first = (sumMasterProcessTime * sumOfMasterTarTime) / sumMasterProcessTime;
+					avgProTime = fmt.format(new Date(sumOfKOTProcTime / noOfItemsCount));
+					if (noOfItemsCount != 0)
+					{
+					    avgProTime = fmt.format(new Date(sumOfKOTProcTime / noOfItemsCount));
+					    totOrderePer = ((finalDelayedOrder / noOfItemsCount) * 100);
+					    totOrdTarAvg = fmt.format(new Date(longAvgMasterTarTime));
+					    second = sumOfMasterTarTime / noOfItemsCount;
+					}
+					else
+					{
+					    avgProTime = fmt.format(new Date(sumOfKOTProcTime));
+					    totOrderePer = ((finalDelayedOrder) * 100);
+					    totOrdTarAvg = fmt.format(new Date(sumOfMasterTarTime));
+					    second = sumOfMasterTarTime;
+					}
+
+					if (countOfDelayOrder != 0)
+					{
+					    DOAvg = fmt.format(new Date(sumOfDelayOrderTargetTime / countOfDelayOrder));
+					    delayOrderTargAvg = fmt.format(new Date(sumOfDelayOrderTargetTime / countOfDelayOrder));
+					}
+					else
+					{
+					    DOAvg = fmt.format(new Date(sumOfDelayOrderTargetTime));
+					    delayOrderTargAvg = fmt.format(new Date(sumOfDelayOrderTargetTime));
+
+					}
+
+					double finalPer = (double) (longAvgMasterTarTime / (double) longWeightedAvgTargetTime) * 100;
+
+					totDelayOrderTotAvgPer = String.valueOf(decimalFormtFor2DecPoint.format(finalPer));
+
+				    }
+
+				    System.out.println(hmKDSFlashData.keySet());
+
+				    for (Map.Entry<String, List<clsPOSBillDtl>> entry : hmKDSFlashData.entrySet())
+				    {
+				    	clsPOSBillDtl objBill =new clsPOSBillDtl();
+				    	objBill.setStrSubGroupName(entry.getKey().split("!")[0]);
+						objBill.setStrSubGroupCode(entry.getKey().split("!")[1]);
+						arrListDetail.add(objBill);
+						for (int cnt = 0; cnt < entry.getValue().size(); cnt++)
+						{
+							objBill = entry.getValue().get(cnt);
+						    arrListDetail.add(objBill);
+						}
+				     }
+				    
+				    if(arrListDetail.size()>0)
+				    {
+				    	listArr=arrListDetail;
+				    	hmKDSData.put("listData", listArr);
+				    	hmKDSData.put("avgProTime", avgProTime);
+				    	hmKDSData.put("finalDelayedOrder", finalDelayedOrder);
+				    	hmKDSData.put("noOfItemsCount", String.valueOf(noOfItemsCount));
+				    	hmKDSData.put("totOrderePer", String.valueOf(Math.round(totOrderePer) + " %"));
+				    	hmKDSData.put("totOrdTarAvg", totOrdTarAvg);
+				    	hmKDSData.put("delayOrderTargAvg", delayOrderTargAvg);
+				    	hmKDSData.put("totDelayOrderTotAvgPer", String.valueOf(totDelayOrderTotAvgPer) + " %");
+				    	hmKDSData.put("weightedAvgActualTime", weightedAvgActualTime);
+				    	hmKDSData.put("weightedAvgTargetTime", weightedAvgTargetTime);
+				    	hmKDSData.put("minProcessTime", String.valueOf(fmt.format(new Date(minProcessTime))));
+				    	hmKDSData.put("maxProcessTime", String.valueOf(fmt.format(new Date(maxProcessTime))));
+				    	hmKDSData.put("minDelayedTime", String.valueOf(fmt.format(new Date(minDelayedTime))));
+				    	hmKDSData.put("maxDelayedTime", String.valueOf(fmt.format(new Date(maxDelayedTime))));
+				    }
+				}
+				else
+				{
+					
+				}
+				
+		    }
+			
+			else if (reportType.equalsIgnoreCase("Menu Head"))
+		    {
+				List<clsPOSBillDtl> arrListDetail=new ArrayList();
+				
+				String time = "", timeForGroupWise = "";
+			    long sum = 0, sumOfGroupWise = 0;
+			    int i = 0;
+			    String date4 = "";
+			    int qty = 0, quantity = 0;
+			    Date date1;
+			    Date dateForGroup;
+			    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+			    timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+				
+				sbSql.setLength(0);
+				sbSql.append("SELECT a.strBillNo,b.strKOTNo, DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " TIME(b.dteBillDate) as tmeKOTTime,TIME(b.tmeOrderProcessing) as OrderProcessingTime, "
+				    + " TIME(b.tmeOrderPickup) as OrderPickupTime,b.strItemCode, "
+				    + " if(TIME(b.tmeOrderProcessing)<TIME(b.dteBillDate),ADDTIME(TIME(b.tmeOrderProcessing),TIMEDIFF('24:00:00',TIME(b.dteBillDate))),TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)) )  AS processtimediff, "
+				    + " TIMEDIFF(if(TIME(b.tmeOrderPickup)='00:00:00',TIME(b.tmeOrderProcessing),TIME(b.tmeOrderPickup)),TIME(b.tmeOrderProcessing)) AS pickuptimediff,"
+				    + " e.strCostCenterName,f.strWShortName,g.strMenuName "
+				    + " FROM tblbillhd a,tblbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " ,tblmenuhd g"
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " and DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'  "
+				    + " and d.strMenuCode = g.strMenuCode ");
+			    if (!costCenterCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append("and d.strCostCenterCode='" + costCenterCode + "'  ");
+			    }
+			    if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+			    }
+			    if (!waiterNo.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strWaiterNo='" + waiterNo+ "'  ");
+			    }
+	
+			    sbSql.append(" GROUP BY g.strMenuCode  ");
+			    sbSql.append(" Order By g.strMenuCode DESC");
+				List listSql = objBaseService.funGetList(sbSql, "sql");
+
+				if (listSql.size() > 0) 
+				{
+					for (int cnt = 0; cnt < listSql.size(); cnt++) 
+					{
+						Object[] obj = (Object[]) listSql.get(cnt);
+						clsPOSBillDtl objBill = new clsPOSBillDtl();
+						qty = qty +(new BigDecimal(obj[4].toString())).intValue();
+						quantity = (new BigDecimal(obj[4].toString())).intValue();
+						objBill.setDblQuantity(quantity);
+						objBill.setStrGroupName(obj[15].toString());
+						time = obj[11].toString();
+						date1 = timeFormat.parse(time);
+						sum = sum + date1.getTime();
+
+						timeForGroupWise = obj[11].toString();
+						dateForGroup = timeFormat.parse(timeForGroupWise);
+						sumOfGroupWise = dateForGroup.getTime();
+
+						date4 = timeFormat.format(new Date(sumOfGroupWise / quantity));
+						objBill.setTmeOrderProcessing(date4);
+						String key = obj[15].toString() + "!" + obj[2].toString();
+
+						List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+						if (hmKDSFlashData.containsKey(key))
+						{
+						    arrListBillDtl = hmKDSFlashData.get(key);
+						    arrListBillDtl.add(objBill);
+						}
+						else
+						{
+						    arrListBillDtl.add(objBill);
+						}
+						hmKDSFlashData.put(key, arrListBillDtl);
+						i++;
+
+					}
+
+				}
+				
+				sbSql.setLength(0);
+			    sbSql.append("SELECT a.strBillNo,b.strKOTNo,DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " TIME(b.dteBillDate) as tmeKOTTime,TIME(b.tmeOrderProcessing) as OrderProcessingTime, "
+				    + " TIME(b.tmeOrderPickup) as OrderPickupTime,b.strItemCode, "
+				    + " if(TIME(b.tmeOrderProcessing)<TIME(b.dteBillDate),ADDTIME(TIME(b.tmeOrderProcessing),TIMEDIFF('24:00:00',TIME(b.dteBillDate))),TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)) )  AS processtimediff, "
+				    + " TIMEDIFF(if(TIME(b.tmeOrderPickup)='00:00:00',TIME(b.tmeOrderProcessing),TIME(b.tmeOrderPickup)),TIME(b.tmeOrderProcessing)) AS pickuptimediff,"
+				    + " e.strCostCenterName,f.strWShortName,g.strMenuName "
+				    + " FROM tblqbillhd a,tblqbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " ,tblmenuhd g"
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " AND DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+				    + " and d.strMenuCode = g.strMenuCode ");
+			    if (!costCenterCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append("and d.strCostCenterCode='" + costCenterCode + "'  ");
+			    }
+			    if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+			    }
+			    if (!waiterNo.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strWaiterNo='" + waiterNo+ "'  ");
+			    }
+			    sbSql.append(" GROUP BY g.strMenuCode ");
+			    sbSql.append(" Order By g.strMenuCode DESC");
+			    listSql = objBaseService.funGetList(sbSql, "sql");
+
+				if (listSql.size() > 0) 
+				{
+					for (int cnt = 0; cnt < listSql.size(); cnt++) 
+					{
+						Object[] obj = (Object[]) listSql.get(cnt);
+						clsPOSBillDtl objBill = new clsPOSBillDtl();
+						qty = qty +(new BigDecimal(obj[4].toString())).intValue();
+						quantity = (new BigDecimal(obj[4].toString())).intValue();
+						
+						objBill.setDblQuantity(quantity);
+						objBill.setStrGroupName(obj[15].toString());
+						time = obj[11].toString();
+						date1 = timeFormat.parse(time);
+						sum = sum + date1.getTime();
+
+						timeForGroupWise = obj[11].toString();
+						dateForGroup = timeFormat.parse(timeForGroupWise);
+						sumOfGroupWise = dateForGroup.getTime();
+						date4 = timeFormat.format(new Date(sumOfGroupWise / quantity));
+						objBill.setTmeOrderProcessing(date4);
+
+						List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+						String key = obj[15].toString() + "!" +obj[2].toString();
+
+						if (hmKDSFlashData.containsKey(key))
+						{
+						    arrListBillDtl = hmKDSFlashData.get(key);
+						    arrListBillDtl.add(objBill);
+						}
+						else
+						{
+						    arrListBillDtl.add(objBill);
+						}
+						hmKDSFlashData.put(key, arrListBillDtl);
+						i++;
+					}
+				}
+				
+				String date3 = "";
+			    if (i > 0)
+			    {
+				date3 = timeFormat.format(new Date(sum / qty));
+			    }
+			    System.out.println(hmKDSFlashData.keySet());
+			    for (Map.Entry<String, List<clsPOSBillDtl>> entry : hmKDSFlashData.entrySet())
+			    {
+					for (int cnt = 0; cnt < entry.getValue().size(); cnt++)
+					{
+						clsPOSBillDtl objBill = entry.getValue().get(cnt);
+						arrListDetail.add(objBill);
+					    sumQty = sumQty + objBill.getDblQuantity();
+					}
+					
+			    }
+				
+			    if(arrListDetail.size()>0)
+			    {
+			    	listArr=arrListDetail;
+			    	hmKDSData.put("listData", listArr);
+			    	hmKDSData.put("avgProTime", date3);
+			    }
+		    }
+			
+			else 
+		    {
+				long minProcessTime = 0, maxProcessTime = 0;
+			    long minDelayedTime = 0, maxDelayedTime = 0;
+			    boolean isFirstRecord = true;
+			    String maxDelayTime = "", minDelayTime = "";
+			    
+			    sbSql.setLength(0);
+			    sbSql.append("SELECT a.strBillNo,b.strKOTNo, DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " ifnull(TIME(b.dteBillDate),'00:00:00') as tmeKOTTime,ifnull(TIME(b.tmeOrderProcessing),'00:00:00') as OrderProcessingTime, "
+				    + " ifnull(TIME(b.tmeOrderPickup),'00:00:00') as OrderPickupTime,b.strItemCode  ,ifnull(if(TIME(b.tmeOrderProcessing)=time('00:00:00'),time('00:00:00'),"
+				    + " IF(TIME(b.tmeOrderProcessing)< TIME(b.dteBillDate), ADDTIME(TIME(b.tmeOrderProcessing), TIMEDIFF('24:00:00', TIME(b.dteBillDate))), TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)))),'00:00:00') AS processtimediff  ,"
+				    + " ifnull(if(TIME(b.tmeOrderPickup)=time('00:00:00'),time('00:00:00'),IF(TIME(b.tmeOrderPickup)< TIME(b.tmeOrderProcessing), ADDTIME(TIME(b.tmeOrderPickup), TIMEDIFF('24:00:00', TIME(b.tmeOrderProcessing))), TIMEDIFF(IF(TIME(b.tmeOrderPickup)='00:00:00', TIME(b.tmeOrderProcessing), TIME(b.tmeOrderPickup)), TIME(b.tmeOrderProcessing)))),'00:00:00') AS pickuptimediff  ,"
+				    + " e.strCostCenterName,f.strWShortName ,"
+				    + " ifnull(time(CONCAT('00',':',c.intProcTimeMin,':','00')),'00:00:00')intProcTimeMin ,ifnull(time(CONCAT('00',':',c.tmeTargetMiss,':','00')),'00:00:00')tmeTargetMiss"
+				    + " FROM tblbillhd a,tblbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " and DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'  ");
+			    if (!costCenterCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append("and d.strCostCenterCode='" + costCenterCode + "'  ");
+			    }
+			    if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+			    }
+			    if (!waiterNo.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strWaiterNo='" + waiterNo+ "'  ");
+			    }
+
+			    sbSql.append("GROUP BY a.strBillNo,b.strItemCode ");
+			    sbSql.append(" Order By a.strBillNo desc");
+				List listSql = objBaseService.funGetList(sbSql, "sql");
+				
+				String time = "", processTime = "", targetTime = "";
+			    long masterProcesTime = 0;
+			    long sumOfKOTProcTime = 0, transProcessTime = 0, sumOfDelayOrders = 0, masterTargetTime = 0, sumOfDelayOrderTargetTime = 0;
+			    long sumOfMasterTarTime = 0, sumMasterProcessTime = 0, sumOfMasterProcTimeXMasterTarTime = 0, sumOfMasterProcTimeXTransProcTime = 0;
+			    long totDelayOrderTotAvg = 0;
+			    int countOfDelayOrder = 0;
+			    long noOfItemsCount = 0;
+			    Date date1, dateProcessTime, itemTargetTme;
+			    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+			    timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			    SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
+			    fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+				if (listSql.size() > 0) 
+				{
+					for (int i = 0; i < listSql.size(); i++) 
+					{
+						Object[] obj = (Object[]) listSql.get(i);
+						clsPOSBillDtl objBill = new clsPOSBillDtl();
+						objBill.setStrBillNo(obj[0].toString());           //Bill No
+						objBill.setStrKOTNo(obj[1].toString());            //KOT No
+						objBill.setDteBillDate(obj[2].toString());        //Kot Date
+						objBill.setStrItemName(obj[3].toString());        //Item Name
+						objBill.setDblQuantity(Double.valueOf(obj[4].toString()));        //Qty
+						objBill.setDblAmount(Double.valueOf(obj[5].toString()));          //Amount
+						objBill.setDblBillAmt(Double.valueOf(obj[6].toString()));         //Sub Total
+						objBill.setTmeBillTime(obj[7].toString());        //Kot Time
+						objBill.setTmeOrderProcessing(obj[8].toString()); //Process Time
+						objBill.setTmeBillSettleTime(obj[9].toString());  //Puckup Time
+						objBill.setStrProcessTimeDiff(obj[11].toString());  // diff kot & process Time
+						objBill.setStrPickUpTimeDiff(obj[12].toString());  // diff process & pickup Time
+						objBill.setStrCounterCode(obj[13].toString());     // costCenterName
+						objBill.setStrWShortName(obj[14].toString());        // waiterName
+						objBill.setStrItemProcessTime(obj[15].toString());        // item process time
+						targetTime = obj[16].toString();
+						itemTargetTme = timeFormat.parse(targetTime);
+						objBill.setStrItemTargetTime(targetTime);        // item target time
+						masterTargetTime = itemTargetTme.getTime();
+						sumOfMasterTarTime = sumOfMasterTarTime + itemTargetTme.getTime();
+
+						masterProcesTime = timeFormat.parse(obj[15].toString()).getTime();
+						sumMasterProcessTime = sumMasterProcessTime + masterProcesTime;
+
+						processTime = obj[11].toString();
+						dateProcessTime = timeFormat.parse(processTime);
+						transProcessTime = dateProcessTime.getTime();
+
+						if (isFirstRecord)
+						{
+						    minProcessTime = transProcessTime;
+						    maxProcessTime = transProcessTime;
+
+						    minDelayedTime = transProcessTime;
+						    maxDelayedTime = transProcessTime;
+						}
+
+						if (transProcessTime < minProcessTime)
+						{
+						    minProcessTime = transProcessTime;
+						}
+						if (transProcessTime > maxProcessTime)
+						{
+						    maxProcessTime = transProcessTime;
+						}
+
+						if (transProcessTime > masterTargetTime)
+						{
+						    long delayTime = (transProcessTime - masterTargetTime);
+
+						    if (delayTime < minDelayedTime)
+						    {
+							minDelayedTime = delayTime;
+						    }
+
+						    if (delayTime > maxDelayedTime)
+						    {
+							maxDelayedTime = delayTime;
+						    }
+
+						    sumOfDelayOrders = sumOfDelayOrders + transProcessTime;
+						    sumOfDelayOrderTargetTime = sumOfDelayOrderTargetTime + masterTargetTime;
+						    countOfDelayOrder++;
+						}
+
+						noOfItemsCount = noOfItemsCount + 1;
+						time = obj[11].toString();
+						date1 = timeFormat.parse(time);
+						sumOfKOTProcTime = sumOfKOTProcTime + date1.getTime();
+
+						String key = obj[13].toString() + "!" + obj[2].toString();
+
+						List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+						if (hmKDSFlashData.containsKey(key))
+						{
+						    arrListBillDtl = hmKDSFlashData.get(key);
+						    arrListBillDtl.add(objBill);
+						}
+						else
+						{
+						    arrListBillDtl.add(objBill);
+						}
+						hmKDSFlashData.put(key, arrListBillDtl);
+
+						sumOfMasterProcTimeXMasterTarTime = sumOfMasterProcTimeXMasterTarTime + (masterProcesTime * masterTargetTime);
+						sumOfMasterProcTimeXTransProcTime = sumOfMasterProcTimeXTransProcTime + (masterProcesTime * transProcessTime);
+
+						isFirstRecord = false;
+					}
+
+				}
+				sbSql.setLength(0);
+			    sbSql.append("SELECT a.strBillNo,b.strKOTNo,DATE_FORMAT(DATE(b.dteBillDate),'%d-%m-%Y') dteKOTDate,"
+				    + " b.strItemName, SUM(b.dblQuantity),SUM(b.dblAmount) AS Amount,sum(b.dblAmount)-sum(b.dblDiscountAmt) AS SubTotal, "
+				    + " ifnull(TIME(b.dteBillDate),'00:00:00') as tmeKOTTime,ifnull(TIME(b.tmeOrderProcessing),'00:00:00') as OrderProcessingTime, "
+				    + " ifnull(TIME(b.tmeOrderPickup),'00:00:00') as OrderPickupTime,b.strItemCode  ,ifnull(if(TIME(b.tmeOrderProcessing)=time('00:00:00'),time('00:00:00'),"
+				    + " IF(TIME(b.tmeOrderProcessing)< TIME(b.dteBillDate), ADDTIME(TIME(b.tmeOrderProcessing), TIMEDIFF('24:00:00', TIME(b.dteBillDate))), TIMEDIFF(IF(TIME(b.tmeOrderProcessing)='00:00:00', TIME(b.dteBillDate), TIME(b.tmeOrderProcessing)), TIME(b.dteBillDate)))),'00:00:00') AS processtimediff  ,"
+				    + " ifnull(if(TIME(b.tmeOrderPickup)=time('00:00:00'),time('00:00:00'),IF(TIME(b.tmeOrderPickup)< TIME(b.tmeOrderProcessing), ADDTIME(TIME(b.tmeOrderPickup), TIMEDIFF('24:00:00', TIME(b.tmeOrderProcessing))), TIMEDIFF(IF(TIME(b.tmeOrderPickup)='00:00:00', TIME(b.tmeOrderProcessing), TIME(b.tmeOrderPickup)), TIME(b.tmeOrderProcessing)))),'00:00:00') AS pickuptimediff  ,"
+				    + " e.strCostCenterName,f.strWShortName ,"
+				    + " ifnull(time(CONCAT('00',':',c.intProcTimeMin,':','00')),'00:00:00')intProcTimeMin ,ifnull(time(CONCAT('00',':',c.tmeTargetMiss,':','00')),'00:00:00')tmeTargetMiss"
+				    + " FROM tblqbillhd a,tblqbilldtl b,tblitemmaster c,tblmenuitempricingdtl d,tblcostcentermaster e,tblwaitermaster f "
+				    + " WHERE a.strBillNo=b.strBillNo AND DATE(a.dtBillDate)= DATE(b.dtBillDate) "
+				    + " and b.strItemCode=c.strItemCode and c.strItemCode=d.strItemCode "
+				    + " and (a.strPOSCode=d.strPosCode or d.strPosCode='All') and d.strCostCenterCode=e.strCostCenterCode and a.strWaiterNo=f.strWaiterNo "
+				    + " AND DATE(a.dtBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
+			    if (!costCenterCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append("and d.strCostCenterCode='" + costCenterCode+ "'  ");
+			    }
+			    if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strPOSCode='" + posCode + "'  ");
+			    }
+			    if (!waiterNo.equalsIgnoreCase("All"))
+			    {
+				sbSql.append(" and a.strWaiterNo='" +waiterNo + "'  ");
+			    }
+			    sbSql.append("GROUP BY a.strBillNo,b.strItemCode ");
+			    sbSql.append(" Order By a.strBillNo desc");
+				listSql = objBaseService.funGetList(sbSql, "sql");
+				if (listSql.size() > 0) 
+				{
+					for (int i = 0; i < listSql.size(); i++) 
+					{
+						Object[] obj = (Object[]) listSql.get(i);
+						clsPOSBillDtl objBill = new clsPOSBillDtl();
+						objBill.setStrBillNo(obj[0].toString());           //Bill No
+						objBill.setStrKOTNo(obj[1].toString());            //KOT No
+						objBill.setDteBillDate(obj[2].toString());        //Kot Date
+						objBill.setStrItemName(obj[3].toString());        //Item Name
+						objBill.setDblQuantity(Double.valueOf(obj[4].toString()));        //Qty
+						objBill.setDblAmount(Double.valueOf(obj[5].toString()));          //Amount
+						objBill.setDblBillAmt(Double.valueOf(obj[6].toString()));         //Sub Total
+						objBill.setTmeBillTime(obj[7].toString());        //Kot Time
+						objBill.setTmeOrderProcessing(obj[8].toString()); //Process Time
+						objBill.setTmeBillSettleTime(obj[9].toString()); //Puckup Time                
+						objBill.setStrProcessTimeDiff(obj[10].toString());  // diff kot & process Time
+
+						//System.out.println(rsQSales.getString(1)+"   "+rsQSales.getString(2));
+						objBill.setStrPickUpTimeDiff(obj[12].toString());  // diff process & pickup Time
+						objBill.setStrCounterCode(obj[13].toString());     // costCenterName
+						objBill.setStrWShortName(obj[14].toString());        // waiterName
+						objBill.setStrItemProcessTime(obj[15].toString());        // item process time
+						targetTime = obj[16].toString();
+						itemTargetTme = timeFormat.parse(targetTime);
+						objBill.setStrItemTargetTime(targetTime);        // item target time
+						masterTargetTime = itemTargetTme.getTime();
+						sumOfMasterTarTime = sumOfMasterTarTime + itemTargetTme.getTime();
+						processTime =obj[11].toString();
+						dateProcessTime = timeFormat.parse(processTime);
+						transProcessTime = dateProcessTime.getTime();
+
+						masterProcesTime = timeFormat.parse(obj[15].toString()).getTime();
+						sumMasterProcessTime = sumMasterProcessTime + masterProcesTime;
+						if (isFirstRecord)
+						{
+						    minProcessTime = transProcessTime;
+						    maxProcessTime = transProcessTime;
+
+						    minDelayedTime = transProcessTime;
+						    maxDelayedTime = transProcessTime;
+						}
+
+						if (transProcessTime < minProcessTime)
+						{
+						    minProcessTime = transProcessTime;
+						}
+						if (transProcessTime > maxProcessTime)
+						{
+						    maxProcessTime = transProcessTime;
+						}
+
+						if (transProcessTime > masterTargetTime)
+						{
+						    long delayTime = (transProcessTime - masterTargetTime);
+
+						    if (delayTime < minDelayedTime)
+						    {
+							minDelayedTime = delayTime;
+						    }
+
+						    if (delayTime > maxDelayedTime)
+						    {
+							maxDelayedTime = delayTime;
+						    }
+
+						    sumOfDelayOrders = sumOfDelayOrders + transProcessTime;
+						    sumOfDelayOrderTargetTime = sumOfDelayOrderTargetTime + masterTargetTime;
+						    countOfDelayOrder++;
+						}
+
+						noOfItemsCount = noOfItemsCount + 1;
+
+						time = obj[11].toString();
+						date1 = timeFormat.parse(time);
+						sumOfKOTProcTime = sumOfKOTProcTime + date1.getTime();
+
+						List<clsPOSBillDtl> arrListBillDtl = new ArrayList<clsPOSBillDtl>();
+						//String key=rsQSales.getString(3)+"!"+rsQSales.getString(14);
+						String key = obj[13].toString() + "!" + obj[2].toString();
+
+						if (hmKDSFlashData.containsKey(key))
+						{
+						    arrListBillDtl = hmKDSFlashData.get(key);
+						    arrListBillDtl.add(objBill);
+						}
+						else
+						{
+						    arrListBillDtl.add(objBill);
+						}
+						hmKDSFlashData.put(key, arrListBillDtl);
+
+						sumOfMasterProcTimeXMasterTarTime = sumOfMasterProcTimeXMasterTarTime + (masterProcesTime * masterTargetTime);
+						sumOfMasterProcTimeXTransProcTime = sumOfMasterProcTimeXTransProcTime + (masterProcesTime * transProcessTime);
+
+						isFirstRecord = false;
+					}
+
+				}
+				
+				String avgProTime = "", quantity = "", DOAvg = "", totOrdTarAvg = "", delayOrderTargAvg = "";
+			    String totDelayOrderTotAvgPer = "", weightedAvgTargetTime = "", weightedAvgActualTime = "";
+			    long first = 0, second = 0, longWeightedAvgTargetTime = 0, longWeightedAvgActualTime = 0, longAvgMasterTarTime;
+			    double finalDelayedOrder = 0;
+			    double totOrderePer = 0;
+			    long finalDota = 0;
+			    if (!isFirstRecord)
+			    {
+				finalDelayedOrder = countOfDelayOrder;
+
+				longWeightedAvgTargetTime = sumOfMasterProcTimeXMasterTarTime / sumMasterProcessTime;
+				longWeightedAvgActualTime = sumOfMasterProcTimeXTransProcTime / sumMasterProcessTime;
+				longAvgMasterTarTime = sumOfMasterTarTime / noOfItemsCount;
+
+				weightedAvgTargetTime = fmt.format(new Date(longWeightedAvgTargetTime));
+				weightedAvgActualTime = fmt.format(new Date(longWeightedAvgActualTime));
+				first = (sumMasterProcessTime * sumOfMasterTarTime) / sumMasterProcessTime;
+				avgProTime = fmt.format(new Date(sumOfKOTProcTime / noOfItemsCount));
+				if (noOfItemsCount != 0)
+				{
+				    avgProTime = fmt.format(new Date(sumOfKOTProcTime / noOfItemsCount));
+				    totOrderePer = ((finalDelayedOrder / noOfItemsCount) * 100);
+				    totOrdTarAvg = fmt.format(new Date(longAvgMasterTarTime));
+				    second = sumOfMasterTarTime / noOfItemsCount;
+				}
+				else
+				{
+				    avgProTime = fmt.format(new Date(sumOfKOTProcTime));
+				    totOrderePer = ((finalDelayedOrder) * 100);
+				    totOrdTarAvg = fmt.format(new Date(sumOfMasterTarTime));
+				    second = sumOfMasterTarTime;
+				}
+
+				if (countOfDelayOrder != 0)
+				{
+				    DOAvg = fmt.format(new Date(sumOfDelayOrderTargetTime / countOfDelayOrder));
+				    delayOrderTargAvg = fmt.format(new Date(sumOfDelayOrderTargetTime / countOfDelayOrder));
+				}
+				else
+				{
+				    DOAvg = fmt.format(new Date(sumOfDelayOrderTargetTime));
+				    delayOrderTargAvg = fmt.format(new Date(sumOfDelayOrderTargetTime));
+
+				}
+
+				double finalPer = (double) (longAvgMasterTarTime / (double) longWeightedAvgTargetTime) * 100;
+
+				totDelayOrderTotAvgPer = String.valueOf(decimalFormtFor2DecPoint.format(finalPer));
+
+			    }
+				
+				
+				System.out.println(hmKDSFlashData.keySet());
+				List<clsPOSBillDtl> arrListDetail=new ArrayList();
+			    for (Map.Entry<String, List<clsPOSBillDtl>> entry : hmKDSFlashData.entrySet())
+			    {
+			    	clsPOSBillDtl objBill =new clsPOSBillDtl();
+			    	objBill.setStrSubGroupName(entry.getKey().split("!")[0]);
+					objBill.setStrSubGroupCode(entry.getKey().split("!")[1]);
+					arrListDetail.add(objBill);
+					for (int cnt = 0; cnt < entry.getValue().size(); cnt++)
+					{
+						objBill = entry.getValue().get(cnt);
+					    arrListDetail.add(objBill);
+					}
+			     }
+			    
+			    
+			    if(arrListDetail.size()>0)
+			    {
+			    	listArr=arrListDetail;
+			    	hmKDSData.put("listData", listArr);
+			    	hmKDSData.put("avgProTime", avgProTime);
+			    	hmKDSData.put("finalDelayedOrder", finalDelayedOrder);
+			    	hmKDSData.put("noOfItemsCount", String.valueOf(noOfItemsCount));
+			    	hmKDSData.put("totOrderePer", String.valueOf(Math.round(totOrderePer) + " %"));
+			    	hmKDSData.put("totOrdTarAvg", totOrdTarAvg);
+			    	hmKDSData.put("delayOrderTargAvg", delayOrderTargAvg);
+			    	hmKDSData.put("totDelayOrderTotAvgPer", String.valueOf(totDelayOrderTotAvgPer) + " %");
+			    	hmKDSData.put("weightedAvgActualTime", weightedAvgActualTime);
+			    	hmKDSData.put("weightedAvgTargetTime", weightedAvgTargetTime);
+			    	hmKDSData.put("minProcessTime", String.valueOf(fmt.format(new Date(minProcessTime))));
+			    	hmKDSData.put("maxProcessTime", String.valueOf(fmt.format(new Date(maxProcessTime))));
+			    	hmKDSData.put("minDelayedTime", String.valueOf(fmt.format(new Date(minDelayedTime))));
+			    	hmKDSData.put("maxDelayedTime", String.valueOf(fmt.format(new Date(maxDelayedTime))));
+			    	
+				   
+			    }
+		    }		
+
+		} // end of try
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return hmKDSData;
+	}
+
 	
 	
 }

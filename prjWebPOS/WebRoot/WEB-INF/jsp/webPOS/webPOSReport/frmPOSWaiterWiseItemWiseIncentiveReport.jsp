@@ -6,10 +6,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Waiter Wise Item Wise Incentive</title>
+<title>Waiter Wise Item Wise Incentives Report</title>
 <style>
 .ui-autocomplete {
     max-height: 200px;
@@ -30,112 +28,126 @@
 
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(function() 
-    			{		
-    				$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-    				$("#txtFromDate" ).datepicker('setDate', 'today');
-    				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-    				$("#txtToDate" ).datepicker('setDate', 'today');
-    				
-    			}); 
-
-
-	function funSetDate()
-	{
+    		{	
+	 var gEnableShiftYN="${gEnableShiftYN}";
+				var POSDate="${POSDate}"
+			    var startDate="${POSDate}";
+			  	var Date = startDate.split(" ");
+				var arr = Date[0].split("-");
+				Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
+				$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
+				$("#txtFromDate" ).datepicker('setDate', Dat); 
+				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+				$("#txtToDate" ).datepicker('setDate', Dat);  
 		
-		var searchurl=getContextPath()+"/getPOSDate.html";
-		 $.ajax({
-			        type: "GET",
-			        url: searchurl,
-			        dataType: "json",
-			        success: function(response)
-			        {
-			        	/* var dateTime=response.POSDate;
-			        	var date=dateTime.split(" ");
-			        	$("#txtFromDate").val(date[0]);
-			        	$("#txtToDate").val(date[0]); */
-			        	
-			        var date = new Date(response.POSDate);
-			        var	dateTime=date.getDate()  + '-' + (date.getMonth() + 1)+ '-' +  date.getFullYear();
-			        var posDate=dateTime.split(" ");
-			        $("#txtFromDate").val(posDate[0]);
-		        	$("#txtToDate").val(posDate[0]);
-		        	
-			        },
-			        error: function(jqXHR, exception)
-			        {
-			            if (jqXHR.status === 0) {
-			                alert('Not connect.n Verify Network.');
-			            } else if (jqXHR.status == 404) {
-			                alert('Requested page not found. [404]');
-			            } else if (jqXHR.status == 500) {
-			                alert('Internal Server Error [500].');
-			            } else if (exception === 'parsererror') {
-			                alert('Requested JSON parse failed.');
-			            } else if (exception === 'timeout') {
-			                alert('Time out error.');
-			            } else if (exception === 'abort') {
-			                alert('Ajax request aborted.');
-			            } else {
-			                alert('Uncaught Error.n' + jqXHR.responseText);
-			            }		            
-			        }
-		 });
-		 
-	}
+				if(gEnableShiftYN=='Y')
+				{
+					document.getElementById("lblShift").style.visibility = "visible"; 
+					document.getElementById("txtShiftCode").style.visibility = "visible"; 
+				}
+				else
+				{
+					document.getElementById("lblShift").style.visibility = "hidden";
+					document.getElementById("txtShiftCode").style.visibility = "hidden"; 
+					
+				}
+    	 }); 
+
+ 	function funResetFields(){
+ 		location.reload();
+ 	}
+ 
+	
 </script>
 
 
 </head>
-
-<body onload="funSetDate()">
+<body >
 	<div id="formHeading">
-		<label>Waiter Wise Item Wise Incentive Report</label>
+		<label>Waiter Wise Item Wise Incentives Report</label>
 	</div>
-	<s:form name="POSWaiterWiseItemWiseIncentiveReport" method="POST" action="rptPOSWaiterWiseItemWiseIncentive.html?saddr=${urlHits}" target="_blank">
-
+	<s:form name="WaiterWiseItemWiseIncentivesReport" method="POST" action="rptWaiterWiseItemWiseIncentivesReport.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 		<br />
 		<br />
-		<table class="masterTable">
-
-			<tr>
-				<td width="140px">POS Name</td>
-				<td colspan="3"><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" >
-					
-				 </s:select></td>
-			</tr>
-			<tr>
-				<td><label>From Date</label></td>
-				<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td>
-			</tr>
-			<tr>
-				<td><label>To Date</label></td>
-				<td><s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td>
-			</tr>
-			<tr>				
-				<td><label>Report Type</label></td>
-				<td >
-						<s:select id="cmbDocType" path="strDocType" cssClass="BoxW124px">
+		<div class="title" style="margin-left: 190px;">
+		
+			<div class="row" style="background-color: #fff;display: block;">
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">POS Name</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbPOSName" path="strPOSName" items="${posList}" >
+				 	</s:select>
+				</div>
+			</div>
+			 <div class="row" style="background-color: #fff;display: block;">
+			 		<div class="element-input col-lg-6" style="width: 17%;"> 
+    					<label class="title">From Date</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;" />
+					</div>
+		     </div>
+			 <div class="row" style="background-color: #fff;display: block;">			
+			 		<div class="element-input col-lg-6" style="width: 17%;"> 
+    					<label class="title">To Date</label>
+	    			</div>
+	    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+						<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" style="width: 100%;"/>
+					</div>
+			 </div>
+			
+			 <div class="row" style="background-color: #fff;display: block;">				
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">Report Type</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbDocType" path="strDocType" >
 				    		<s:option value="PDF">PDF</s:option>
 				    		<s:option value="XLS">EXCEL</s:option>
-				    		
-				    	</s:select>
-					</td>
-				</tr>
-			
-			<tr>
-			
-				
-			</tr>
-			
-			
-		</table>
+				    </s:select>
+				</div>
+			 </div>
+			 
+			 <div class="row" style="background-color: #fff;display: block;">	
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">Group Name</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbGroupName" name="cmbGroupName" path="strGroupName"  items="${listGroupName}" >
+					 </s:select>
+				</div>
+			 </div>
+			 <div class="row" style="background-color: #fff;display: block;">
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">Sub Group</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbSGName" name="cmbSGName" path="strSGName" items="${listSubGroupName}" ></s:select>
+				</div>
+			 </div> 
+			 <div class="row" style="background-color: #fff;display: block;">	
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">Select Type</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbSelectType" name="cmbSelectType" path="strReportType"  items="${listSelectType}" >
+					 </s:select>
+				</div>
+			 </div>
+			 
+			 </div>
+		
 		<br />
 		<br />
-		<p align="center">
-			<input type="submit" value="Submit" tabindex="3" class="form_button"/> 
-			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/>
-		</p>
+		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 160px;"> 
+			 <p align="center">
+				<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="SUBMIT" tabindex="3" /></div>
+				<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="CLOSE" onclick="funResetFields()"/></div>
+			 </p>
+		</div>
 	</s:form>
 
 </body>
+
 </html>

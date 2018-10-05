@@ -636,11 +636,6 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTableWisePaxReport.jsp" />
 	</definition>
 	
-	<definition name="frmPOSTableWisePaxReport" extends="base.definition6">
-		<put-attribute name="title" value="POS Table Wise Pax Report" />
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTableWisePaxReport.jsp" />
-	</definition>	
-	
 	<definition name="frmPOSConfigSetting" extends="base.definition6">
 		<put-attribute name="title" value="POS Config Setting" />
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/frmPOSConfigSetting.jsp" />
@@ -843,10 +838,6 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSUnusedCardBalanceReport.jsp" />
 	</definition>
 
-	<definition name="frmPOSTableWisePaxReport" extends="base.definition4">
-		<put-attribute name="title" value="Unused card Balance Report" />
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSTableWisePaxReport.jsp" />
-	</definition>
 	
 	<definition name="frmPOSDayEndProcess" extends="base.definition6">
 	<put-attribute name="title" value=" Day End Process"></put-attribute>

@@ -381,23 +381,23 @@ public class clsPOSReprintController
 							{
 								objBillDtl=new clsPOSBillDtl();
 								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
-								if(!mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT"))
+								if((!mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT")) && (!mapSettlementDtl.get("settleDesc").toString().equals("REFUND AMT")))
 								{
 									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
 									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));	 
 								}
-								else
+								else if((mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT")))
 								{
 									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
 									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("paidAmt").toString()));
-									if(mapSettlementDtl.get("settleDesc").toString().equals("REFUND AMT"))
-									{
-										objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
-										objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("refundAmt").toString()));	 
-									}
+								}
+								else
+								{
+									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("refundAmt").toString()));
 								}
 									
-								 listOfSettlementDetail.add(objBillDtl);
+								listOfSettlementDetail.add(objBillDtl);
 								
 							}
 						}
@@ -664,23 +664,23 @@ public class clsPOSReprintController
 							{
 								objBillDtl=new clsPOSBillDtl();
 								Map mapSettlementDtl= (Map) listSettlementDtl.get(i);
-								if(!mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT"))
+								if((!mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT")) && (!mapSettlementDtl.get("settleDesc").toString().equals("REFUND AMT")))
 								{
 									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
 									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("settleAmt").toString()));	 
 								}
-								else
+								else if((mapSettlementDtl.get("settleDesc").toString().equals("PAID AMT")))
 								{
 									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
 									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("paidAmt").toString()));
-									if(mapSettlementDtl.get("settleDesc").toString().equals("REFUND AMT"))
-									{
-										objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
-										objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("refundAmt").toString()));	 
-									}
+								}
+								else
+								{
+									objBillDtl.setStrItemName(mapSettlementDtl.get("settleDesc").toString());	
+									objBillDtl.setDblAmount(Double.parseDouble(mapSettlementDtl.get("refundAmt").toString()));
 								}
 									
-								 listOfSettlementDetail.add(objBillDtl);
+								listOfSettlementDetail.add(objBillDtl);
 								
 							}
 						}

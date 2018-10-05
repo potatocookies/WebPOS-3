@@ -4741,7 +4741,7 @@ public class clsPOSUtilityController
 					qty = "";
 			String waiterName = "";
 			Date dt = null;
-			double quantity = 0;
+			BigDecimal quantity = null;
 			String waiterNo = "";
 			String tblName = "";
 			String advDeposite = "";
@@ -4944,121 +4944,109 @@ public class clsPOSUtilityController
 					itemName = (String) Array.get(obj, 1);
 					amount = (BigDecimal) Array.get(obj, 2);
 					itemCode = (String) Array.get(obj, 3);
-				}
-
-				sql.setLength(0);
-				sql.append("select dblQuantity from " + billPromoDtl + " " + " where strBillNo='" + billNo + "' and strItemCode='" + itemCode + "' " + " and strPromoType='ItemWise' ");
-				List listPromoItems = objBaseService.funGetList(sql, "sql");
-
-				if (null != listPromoItems)
-				{
-					for (int i = 0; i < listPromoItems.size(); i++)
-					{
-						Object[] obj = (Object[]) listPromoItems.get(i);
-						quantity = (double) Array.get(obj, 0);
-						saleQty -= quantity;
-					}
-				}
-
-				qty = String.valueOf(saleQty);
-				if (qty.contains("."))
-				{
-					String decVal = qty.substring(qty.length() - 2, qty.length());
-					if (Double.parseDouble(decVal) == 0)
-					{
-						qty = qty.substring(0, qty.length() - 2);
-					}
-				}
-
-				if (saleQty > 0)
-				{
-					if (null != listBillDtl)
-					{
-
-						for (int i = 0; i < listBillDtl.size(); i++)
-						{
-							Object[] obj = (Object[]) listBillDtl.get(i);
-							Map jObjList1 = new HashMap();
-							saleQuantity = (BigDecimal) Array.get(obj, 0);
-							saleQty = saleQuantity.doubleValue();
-							itemName = (String) Array.get(obj, 1);
-							amount = (BigDecimal) Array.get(obj, 2);
-							itemCode = (String) Array.get(obj, 3);
-							jObjList1.put("qty", qty);
-							jObjList1.put("amount", amount);
-							jObjList1.put("itemName", itemName);
-							listOfBillDetail.add(jObjList1);
-						}
-
-						// listOfBillDetail.put(jObjList);
-					}
-
-					objSetupParameter = objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintZeroAmtModifierOnBill");
-
-					String printZeroAmtModifierOnBill = (String) objSetupParameter.get("gPrintZeroAmtModifierOnBill");
-
+					
+					
 					sql.setLength(0);
-					sql.append("select count(*) " + "from " + billModifierdtl + " where strBillNo='" + billNo + "' and left(strItemCode,7)='" + itemCode + "' ");
-					if (printZeroAmtModifierOnBill.equals("N"))
+					sql.append("select dblQuantity from " + billPromoDtl + " " + " where strBillNo='" + billNo + "' and strItemCode='" + itemCode + "' " + " and strPromoType='ItemWise' ");
+					List listPromoItems = objBaseService.funGetList(sql, "sql");
+
+					if (null != listPromoItems)
 					{
-						sql.append(" and  dblAmount !=0.00 ");
-					}
-					List listCount = objBaseService.funGetList(sql, "sql");
-					String countntRec = "";
-					int cntRecord = 0;
-					if (null != listCount)
-					{
-						for (int i = 0; i < listPromoItems.size(); i++)
+						for (int cnt = 0; cnt < listPromoItems.size(); cnt++)
 						{
-							Object[] obj = (Object[]) listPromoItems.get(i);
-							countntRec = (String) Array.get(obj, 0);
-							cntRecord = Integer.parseInt(countntRec);
+							quantity = (BigDecimal) listPromoItems.get(cnt);  
+							saleQty -= quantity.doubleValue();
 						}
 					}
 
-					if (cntRecord > 0)
+					qty = String.valueOf(saleQty);
+					if (qty.contains("."))
 					{
+						String decVal = qty.substring(qty.length() - 2, qty.length());
+						if (Double.parseDouble(decVal) == 0)
+						{
+							qty = qty.substring(0, qty.length() - 2);
+						}
+					}
+
+					if (saleQty > 0)
+					{
+						Map jObjList1 = new HashMap();
+						jObjList1.put("qty", qty);
+						jObjList1.put("amount", amount);
+						jObjList1.put("itemName", itemName);
+						listOfBillDetail.add(jObjList1);
+
+						objSetupParameter = objSetupService.funGetParameterValuePOSWise(clientCode, POSCode, "gPrintZeroAmtModifierOnBill");
+
+						String printZeroAmtModifierOnBill = (String) objSetupParameter.get("gPrintZeroAmtModifierOnBill");
+
 						sql.setLength(0);
-						sql.append("select strModifierName,dblQuantity,dblAmount " + " from " + billModifierdtl + " " + " where strBillNo='" + billNo + "' and left(strItemCode,7)='" + itemCode + "' ");
+						sql.append("select count(*) " + "from " + billModifierdtl + " where strBillNo='" + billNo + "' and left(strItemCode,7)='" + itemCode + "' ");
 						if (printZeroAmtModifierOnBill.equals("N"))
 						{
 							sql.append(" and  dblAmount !=0.00 ");
 						}
-						List listmodifierRecord = objBaseService.funGetList(sql, "sql");
-						String modifierName = "";
-						double amt = 0;
-
-						if (null != listmodifierRecord)
+						List listCount = objBaseService.funGetList(sql, "sql");
+						BigDecimal countntRec = null;
+						int cntRecord = 0;
+						if (null != listCount)
 						{
-							for (int i = 0; i < listmodifierRecord.size(); i++)
+							for (int j = 0; j < listPromoItems.size(); j++)
 							{
-								Object[] obj = (Object[]) listmodifierRecord.get(i);
-								modifierName = (String) Array.get(obj, 0);
-								quantity = (double) Array.get(obj, 1);
-								amt = (double) Array.get(obj, 2);
-
-							}
-							if (flgComplimentaryBill)
-							{
-								jObjList.put("quantity", quantity);
-								jObjList.put("amount", 0);
-								jObjList.put("modifierName", modifierName.toUpperCase());
-
-								listOfBillDetail.add(jObjList);
-							}
-							else
-							{
-								jObjList.put("quantity", quantity);
-								jObjList.put("amount", amt);
-								jObjList.put("modifierName", modifierName.toUpperCase());
-
-								listOfBillDetail.add(jObjList);
-
+								countntRec = (BigDecimal) listPromoItems.get(j);
+								cntRecord = countntRec.intValue();
 							}
 						}
 
+						if (cntRecord > 0)
+						{
+							sql.setLength(0);
+							sql.append("select strModifierName,dblQuantity,dblAmount " + " from " + billModifierdtl + " " + " where strBillNo='" + billNo + "' and left(strItemCode,7)='" + itemCode + "' ");
+							if (printZeroAmtModifierOnBill.equals("N"))
+							{
+								sql.append(" and  dblAmount !=0.00 ");
+							}
+							List listmodifierRecord = objBaseService.funGetList(sql, "sql");
+							String modifierName = "";
+							double amt = 0;
+
+							if (null != listmodifierRecord)
+							{
+								for (int k = 0; k < listmodifierRecord.size(); k++)
+								{
+									Object[] objMod = (Object[]) listmodifierRecord.get(k);
+									modifierName = (String) Array.get(objMod, 0);
+									quantity = (BigDecimal) Array.get(objMod, 1);
+									amt = (double) Array.get(objMod, 2);
+									
+									if (flgComplimentaryBill)
+									{
+										jObjList.put("qty", quantity.doubleValue());
+										jObjList.put("amount", 0);
+										jObjList.put("itemName", modifierName.toUpperCase());
+
+										listOfBillDetail.add(jObjList);
+									}
+									else
+									{
+										jObjList.put("qty", quantity.doubleValue());
+										jObjList.put("amount", amt);
+										jObjList.put("itemName", modifierName.toUpperCase());
+
+										listOfBillDetail.add(jObjList);
+
+									}
+
+								}
+								
+							}
+
+						}
 					}
 				}
+
+				
 			}
 
 			funPrintPromoItemsInBill(billNo, 4, listOfBillDetail); // Print Promotion Items in Bill for this billno.
@@ -5068,9 +5056,8 @@ public class clsPOSUtilityController
 			sql.append("select a.dblDiscPer,a.dblDiscAmt,a.strDiscOnType,a.strDiscOnValue,b.strReasonName,a.strDiscRemarks " + "from " + billDscFrom + " a ,tblreasonmaster b " + "where  a.strDiscReasonCode=b.strReasonCode " + "and a.strBillNo='" + billNo + "' ");
 			List listDisc = objBaseService.funGetList(sql, "sql");
 
-			boolean flag = true;
-			double dbl = 0, discAmt = 0;
-			String discAmount = "";
+			boolean flag = false;
+			BigDecimal dbl = null, discAmt = null,discAmount=null;
 			String discOnValue = "",
 					reasonName = "",
 					discRemarks = "";
@@ -5080,12 +5067,13 @@ public class clsPOSUtilityController
 				for (int i = 0; i < listDisc.size(); i++)
 				{
 					Object[] obj = (Object[]) listDisc.get(i);
-					dbl = (double) Array.get(obj, 0);
-					discAmt = (double) Array.get(obj, 1);
-					discAmount = (String) Array.get(obj, 1);
+					dbl = (BigDecimal) Array.get(obj, 0);
+					discAmt = (BigDecimal) Array.get(obj, 1);
+					discAmount = (BigDecimal) Array.get(obj, 1);
 					discOnValue = (String) Array.get(obj, 3);
 					reasonName = (String) Array.get(obj, 4);
 					discRemarks = (String) Array.get(obj, 5);
+					flag = true;
 				}
 				if (flag)
 				{
@@ -5094,31 +5082,33 @@ public class clsPOSUtilityController
 					//
 					// listOfDiscountDtl.put(jObjList);
 					flag = false;
+					
+					String discText = String.format("%.1f", dbl.doubleValue()) + "%" + " On " + discOnValue + "";
+					if (discText.length() > 30)
+					{
+						discText = discText.substring(0, 30);
+					}
+					else
+					{
+						discText = String.format("%-30s", discText);
+					}
+
+					String discountOnItem = funPrintTextWithAlignment(discAmount.toString(), 8, "Right");
+					hmData.put("Discount", discText + " " + discountOnItem);
+
+					jObjList.put("discText", discText);
+					jObjList.put("discAmt", discAmt.doubleValue());
+					//
+					// listOfDiscountDtl.put(jObjList);
+
+					jObjList.put("Reason", reasonName);
+					// listOfDiscountDtl.put(jObjList);
+
+					jObjList.put("Remark", discRemarks);
+					listOfDiscountDtl.add(jObjList);
 				}
 
-				String discText = String.format("%.1f", dbl) + "%" + " On " + discOnValue + "";
-				if (discText.length() > 30)
-				{
-					discText = discText.substring(0, 30);
-				}
-				else
-				{
-					discText = String.format("%-30s", discText);
-				}
-
-				String discountOnItem = funPrintTextWithAlignment(discAmount, 8, "Right");
-				hmData.put("Discount", discText + " " + discountOnItem);
-
-				jObjList.put("discText", discText);
-				jObjList.put("discAmt", discAmt);
-				//
-				// listOfDiscountDtl.put(jObjList);
-
-				jObjList.put("Reason", reasonName);
-				// listOfDiscountDtl.put(jObjList);
-
-				jObjList.put("Remark", discRemarks);
-				listOfDiscountDtl.add(jObjList);
+				
 			}
 
 			// List<clsPOSBillDtl> listOfTaxDetail = new ArrayList<>();
@@ -5134,28 +5124,28 @@ public class clsPOSUtilityController
 			{
 				if (null != listTax)
 				{
-					Map jObjList = new HashMap();
 					for (int i = 0; i < listTax.size(); i++)
 					{
 						Object[] obj = (Object[]) listTax.get(i);
+						Map jObjList = new HashMap();
 						taxDesc = (String) Array.get(obj, 0);
 						taxAmount = (BigDecimal) Array.get(obj, 1);
+						if (flgComplimentaryBill)
+						{
+
+							jObjList.put("taxAmount", 0);
+							jObjList.put("taxDesc", taxDesc);
+							listOfTaxDetail.add(jObjList);
+						}
+						else
+						{
+							jObjList.put("taxAmount", taxAmount.doubleValue());
+							jObjList.put("taxDesc", taxDesc);
+							listOfTaxDetail.add(jObjList);
+						}
 
 					}
-					if (flgComplimentaryBill)
-					{
-
-						jObjList.put("taxAmount", 0);
-						jObjList.put("taxDesc", taxDesc);
-						listOfTaxDetail.add(jObjList);
-					}
-					else
-					{
-						jObjList.put("taxAmount", taxAmount.doubleValue());
-						jObjList.put("taxDesc", taxDesc);
-						listOfTaxDetail.add(jObjList);
-						listOfTaxDetail.add(jObjList);
-					}
+					
 				}
 			}
 			// List<clsPOSBillDtl> listOfGrandTotalDtl = new ArrayList<>();
@@ -5181,10 +5171,10 @@ public class clsPOSUtilityController
 
 			if (null != listBill_Settlement)
 			{
-				Map jObjList = new HashMap();
 				for (int i = 0; i < listBill_Settlement.size(); i++)
 				{
 					Object[] obj = (Object[]) listBill_Settlement.get(i);
+					Map jObjList = new HashMap();
 					settleAmt = (BigDecimal) Array.get(obj, 0);
 					settleDesc = (String) Array.get(obj, 1);
 
@@ -5193,15 +5183,11 @@ public class clsPOSUtilityController
 
 						jObjList.put("settleDesc", settleDesc);
 						jObjList.put("settleAmt", 0.00);
-						// listOfSettlementDetail.put(jObjList);
 					}
 					else
 					{
-						// objBillDtl = new clsPOSBillDtl();
-						// jObjList = new HashMap();
 						jObjList.put("settleDesc", settleDesc);
 						jObjList.put("settleAmt", settleAmt.doubleValue());
-						// listOfSettlementDetail.put(jObjList);
 					}
 					listOfSettlementDetail.add(jObjList);
 				}
@@ -6136,8 +6122,8 @@ public class clsPOSUtilityController
 							{
 								jObjList = new HashMap();
 								jObjList.put("quantity", quantity);
-								jObjList.put("amt", 0);
-								jObjList.put("modifierName", modifierName.toUpperCase());
+								jObjList.put("amount", 0);
+								jObjList.put("itemName", modifierName.toUpperCase());
 								jObjList.put("rate", rate);
 								jObjList.put("discountAmt", discountAmt);
 								listOfBillDetail.add(jObjList);
@@ -6146,8 +6132,8 @@ public class clsPOSUtilityController
 							{
 								jObjList = new HashMap();
 								jObjList.put("quantity", quantity);
-								jObjList.put("amt", amt);
-								jObjList.put("modifierName", modifierName.toUpperCase());
+								jObjList.put("amount", amt);
+								jObjList.put("itemName", modifierName.toUpperCase());
 								jObjList.put("rate", rate);
 								jObjList.put("discountAmt", discountAmt);
 								listOfBillDetail.add(jObjList);
@@ -7282,26 +7268,28 @@ public class clsPOSUtilityController
 									modifierName = (String) Array.get(objmodifierRecord, 0);
 									quantity = (double) Array.get(objmodifierRecord, 1);
 									amt = (double) Array.get(objmodifierRecord, 2);
+									
+									if (flgComplimentaryBill)
+									{
+										jObjList = new HashMap();
+										jObjList.put("quantity", quantity);
+										jObjList.put("amount", 0);
+										jObjList.put("itemName", modifierName.toUpperCase());
+
+										listGeneralBillDtl.add(jObjList);
+									}
+									else
+									{
+										jObjList = new HashMap();
+										jObjList.put("quantity", quantity);
+										jObjList.put("amount", amt);
+										jObjList.put("itemName", modifierName.toUpperCase());
+
+										listGeneralBillDtl.add(jObjList);
+									}
 								}
 
-								if (flgComplimentaryBill)
-								{
-									jObjList = new HashMap();
-									jObjList.put("quantity", quantity);
-									jObjList.put("amt", 0);
-									jObjList.put("modifierName", modifierName.toUpperCase());
-
-									listGeneralBillDtl.add(jObjList);
-								}
-								else
-								{
-									jObjList = new HashMap();
-									jObjList.put("quantity", quantity);
-									jObjList.put("amt", amt);
-									jObjList.put("modifierName", modifierName.toUpperCase());
-
-									listGeneralBillDtl.add(jObjList);
-								}
+								
 							}
 
 						}
@@ -7671,7 +7659,8 @@ public class clsPOSUtilityController
 		sql.append("select b.strItemName,a.dblQuantity,'0',dblRate " + " from tblbillpromotiondtl a,tblitemmaster b " + " where a.strItemCode=b.strItemCode and a.strBillNo='" + billNo + "' and a.strPromoType!='Discount' ");
 		List listBillPromoItemDtl = objBaseService.funGetList(sql, "sql");
 		String itemName = "";
-		double qty = 0, amt = 0;
+		BigDecimal qty = null;
+		double amt = 0;
 		clsPOSBillDtl objBillDtl = null;
 		if (listBillPromoItemDtl != null)
 		{
@@ -7680,10 +7669,10 @@ public class clsPOSUtilityController
 				Object[] obj = (Object[]) listBillPromoItemDtl.get(i);
 
 				itemName = (String) Array.get(obj, 0);
-				qty = (double) Array.get(obj, 1);
-				amt = (double) Array.get(obj, 2);
-				jObjBillDtl.put("qty", qty);
-				jObjBillDtl.put("amt", amt);
+				qty = (BigDecimal) Array.get(obj, 1);
+				amt = Double.valueOf(Array.get(obj, 2).toString());
+				jObjBillDtl.put("qty", qty.doubleValue());
+				jObjBillDtl.put("amount", amt);
 				jObjBillDtl.put("itemName", itemName.toUpperCase());
 				listOfBillDetail.add(jObjBillDtl);
 			}
@@ -7699,7 +7688,8 @@ public class clsPOSUtilityController
 		List listBillPromoItemDtl = objBaseService.funGetList(sql, "sql");
 		clsPOSBillDtl objBillDtl = null;
 		String itemName = "";
-		double qty = 0, amt = 0;
+		BigDecimal qty = null;
+		double amt = 0;
 
 		if (listBillPromoItemDtl != null)
 		{
@@ -7708,10 +7698,10 @@ public class clsPOSUtilityController
 				Object[] obj = (Object[]) listBillPromoItemDtl.get(i);
 
 				itemName = (String) Array.get(obj, 0);
-				qty = (double) Array.get(obj, 1);
-				amt = (double) Array.get(obj, 2);
+				qty = (BigDecimal) Array.get(obj, 1);
+				amt = Double.valueOf(Array.get(obj, 2).toString());
 				objBillDtl = new clsPOSBillDtl();
-				objBillDtl.setDblQuantity(qty);
+				objBillDtl.setDblQuantity(qty.doubleValue());
 				objBillDtl.setDblAmount(amt);
 				objBillDtl.setStrItemName(itemName);
 				listOfBillDetail.add(objBillDtl);

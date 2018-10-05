@@ -16251,7 +16251,6 @@ public class clsPOSReportService {
 	        return hmData;
 	    }
 
-
 	
 	
 	public LinkedHashMap funGetBillWiseSettlementBillRegisterSalesSummary(String fromDate, String toDate, String viewBy,
@@ -19172,6 +19171,307 @@ public class clsPOSReportService {
 		return hmKDSData;
 	}
 
+	
+	
+	public List funProcessTableWisePaxReport(String posCode, String fromDate, String toDate, String shiftNo,
+			String queryType) {
+
+		StringBuilder sqlBuilder = new StringBuilder();
+		List listRet = new ArrayList();
+		
+			
+		try {
+			// live
+			if (queryType.equalsIgnoreCase("liveData")) {
+				sqlBuilder.setLength(0);
+				sqlBuilder.append("select b.strTableNo,b.strTableName,sum(a.intBillSeriesPaxNo) "
+                    + " from tblbillhd a,tbltablemaster b "
+                    + " where a.strTableNo=b.strTableNo "
+                    + " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+                    + " and a.strClientCode=b.strClientCode");
+			
+				if (!posCode.equalsIgnoreCase("All")) 
+				{
+					sqlBuilder.append(" and a.strPOSCode = '" + posCode + "' ");
+				}
+				if (!shiftNo.equalsIgnoreCase("All")) 
+				{
+					sqlBuilder.append(" and a.intShiftCode = '" + shiftNo + "'  ");
+				}
+				sqlBuilder.append("group by b.strTableNo,a.strPOSCode");
+				listRet = objBaseService.funGetList(sqlBuilder, "sql");
+			} 
+			else if (queryType.equalsIgnoreCase("qData")) 
+			{
+				// QFile
+				sqlBuilder.setLength(0);
+				sqlBuilder.append("select b.strTableNo,b.strTableName,sum(a.intBillSeriesPaxNo) "
+                    + " from tblqbillhd a,tbltablemaster b "
+                    + " where a.strTableNo=b.strTableNo "
+                    + " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+                    + " and a.strClientCode=b.strClientCode ");
+				
+				if (!posCode.equalsIgnoreCase("All")) 
+				{
+					sqlBuilder.append(" and a.strPOSCode = '" + posCode + "' ");
+				}
+				if (!shiftNo.equalsIgnoreCase("All")) 
+				{
+					sqlBuilder.append(" and a.intShiftCode = '" + shiftNo + "'  ");
+				}
+				sqlBuilder.append("group by b.strTableNo,a.strPOSCode");
+				listRet = objBaseService.funGetList(sqlBuilder, "sql");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return listRet;
+	}
+	
+	
+	
+	
+	
+	
+
+	public List<clsPOSBillDtl> funProcessWaiterWiseItemWiseIncentivesSummaryReport(String posCode, String fromDate,
+			String toDate, String strShiftNo,String enableShiftYN,String groupCode,String subGroupCode,String type) 
+	  {
+		StringBuilder sqlBuilder = new StringBuilder();
+		StringBuilder sqlQBuilder = new StringBuilder();
+		sqlBuilder.setLength(0);
+		List<clsPOSBillDtl> listOfItemWiseIncentives = new ArrayList<>();
+	    Map<String, clsPOSBillDtl> mapItem = new HashMap<>();
+		String waiterShortName = " '' ";
+	    if (!type.equalsIgnoreCase("Item Wise"))
+	    {
+		waiterShortName = " d.strWShortName ";
+	    }
+	    String waiterShortNo = " '' ";
+	    if (!type.equalsIgnoreCase("Item Wise"))
+	    {
+		waiterShortNo = " d.strWaiterNo ";
+	    }
+		
+		try 
+		{
+			// Q Data
+		   sqlBuilder.setLength(0);
+		   sqlBuilder.append("SELECT " + waiterShortName + ",b.strItemName,sum(b.dblAmount),c.dblIncentiveValue "
+			    + " ,IF(c.strIncentiveType='Amt', (c.dblIncentiveValue)*sum(b.dblQuantity), (c.dblIncentiveValue/100)*sum(b.dblAmount)) as amount, "
+			    + " e.strPosName,e.strPosCode,b.strItemCode," + waiterShortNo + ",c.strIncentiveType,sum(b.dblQuantity)  "
+			    + " FROM tblqbillhd a,tblqbilldtl b,tblposwiseitemwiseincentives c ");
+		   if (!type.equalsIgnoreCase("Item Wise"))
+		   {
+			sqlBuilder.append(",tblwaitermaster d ");
+		   }
+		   sqlBuilder.append(",tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+			    + " where a.strBillNo=b.strBillNo "
+			    + " and b.strItemCode=c.strItemCode ");
+		   if (!type.equalsIgnoreCase("Item Wise"))
+		   {
+			sqlBuilder.append(" and b.strWaiterNo=d.strWaiterNo ");
+		   }
+		   sqlBuilder.append(" and a.strPOSCode=e.strPosCode "
+			    + " and a.strPOSCode=c.strPOSCode "
+			    + " and c.dblIncentiveValue>0 "
+			    + " and b.strItemCode=f.strItemCode "
+			    + " and f.strSubGroupCode=g.strSubGroupCode "
+			    + " and g.strGroupCode=h.strGroupCode "
+			    + " and date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		   if (!posCode.equalsIgnoreCase("All")) {
+				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
+			}
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			}
+		   if (!groupCode.equalsIgnoreCase("All"))
+		   {
+			sqlBuilder.append(" and h.strGroupCode='" + groupCode + "' ");
+		   }
+		   if (!subGroupCode.equalsIgnoreCase("All"))
+		   {
+			sqlBuilder.append(" and g.strSubGroupCode='" + subGroupCode + "' ");
+		   }
+
+		   sqlBuilder.append("and a.strBillNo not in (select u.strBillNo "
+			    + " from tblqbillhd v,tblqbillsettlementdtl u,tblsettelmenthd w "
+			    + " where v.strBillNo=u.strBillNo and u.strSettlementCode=w.strSettelmentCode "
+			    + " and w.strSettelmentType='Complementary' and date(v.dteBillDate) between '" + fromDate + "' and '" + toDate + "')");
+		   if (type.equalsIgnoreCase("Item Wise"))
+		   {
+			sqlBuilder.append(" group by b.strItemCode ");
+			sqlBuilder.append(" order by b.strItemName ");
+		   }
+		   else if (type.equalsIgnoreCase("Summary"))
+		   {
+			sqlBuilder.append(" group by b.strWaiterNo");
+			sqlBuilder.append(" order by d.strWShortName ");
+		   }
+		   else
+		   {
+			sqlBuilder.append(" group by b.strWaiterNo,c.strPOSCode,b.strItemCode ");
+			sqlBuilder.append(" order by e.strPosName,d.strWShortName,b.strItemName ");
+		   }
+
+			List listSqlLiveWaiterWiseItemSales = objBaseService.funGetList(sqlQBuilder, "sql");
+			if (listSqlLiveWaiterWiseItemSales.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLiveWaiterWiseItemSales.size(); i++) {
+					Object[] objData = (Object[]) listSqlLiveWaiterWiseItemSales.get(i);
+					clsPOSBillDtl objBillDtlBean = new clsPOSBillDtl();
+
+					String itemCode = objData[7].toString();
+					if (mapItem.containsKey(itemCode))
+					{
+					    clsPOSBillDtl obj = mapItem.get(itemCode);
+
+					    obj.setDblQuantity(obj.getDblQuantity() + Double.valueOf(objData[10].toString()));
+					    obj.setDblAmount(obj.getDblAmount() + Double.valueOf(objData[2].toString()));
+					    obj.setDblIncentive(obj.getDblIncentive() + Double.valueOf(objData[4].toString()));
+					}
+					else
+					{
+						clsPOSBillDtl obj = new clsPOSBillDtl();
+
+					    obj.setStrWShortName(objData[0].toString());
+					    obj.setStrItemName(objData[1].toString());
+					    obj.setStrItemCode(objData[7].toString());
+					    obj.setDblAmount(Double.valueOf(objData[2].toString()));
+					    obj.setDblIncentivePer(Double.valueOf(objData[3].toString()));
+					    obj.setDblIncentive(Double.valueOf(objData[4].toString()));
+					    obj.setStrPosName(objData[5].toString());
+					    obj.setStrPOSCode(objData[6].toString());
+					    obj.setStrWaiterNo(objData[8].toString());
+					    obj.setStrRemarks(objData[9].toString());
+					    obj.setDblQuantity(Double.valueOf(objData[10].toString()));
+
+					    mapItem.put(itemCode, obj);
+					}
+				}
+			}
+
+			//Live Data
+		    sqlBuilder.setLength(0);
+		    sqlBuilder.append("SELECT " + waiterShortName + ",b.strItemName,sum(b.dblAmount),c.dblIncentiveValue "
+			    + " ,IF(c.strIncentiveType='Amt', (c.dblIncentiveValue)*sum(b.dblQuantity), (c.dblIncentiveValue/100)*sum(b.dblAmount)) as amount, "
+			    + " e.strPosName,e.strPosCode,b.strItemCode," + waiterShortNo + ",c.strIncentiveType,sum(b.dblQuantity)  "
+			    + " FROM tblbillhd a,tblbilldtl b,tblposwiseitemwiseincentives c ");
+		    if (!type.equalsIgnoreCase("Item Wise"))
+		    {
+			sqlBuilder.append(",tblwaitermaster d ");
+		    }
+		    sqlBuilder.append(",tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+			    + " where a.strBillNo=b.strBillNo "
+			    + " and b.strItemCode=c.strItemCode ");
+		    if (!type.equalsIgnoreCase("Item Wise"))
+		    {
+			sqlBuilder.append(" and b.strWaiterNo=d.strWaiterNo ");
+		    }
+		    sqlBuilder.append(" and a.strPOSCode=e.strPosCode "
+			    + " and a.strPOSCode=c.strPOSCode "
+			    + " and c.dblIncentiveValue>0 "
+			    + " and b.strItemCode=f.strItemCode "
+			    + " and f.strSubGroupCode=g.strSubGroupCode "
+			    + " and g.strGroupCode=h.strGroupCode "
+			    + " and date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' ");
+		    if (!posCode.equalsIgnoreCase("All")) {
+				sqlBuilder.append("and a.strPOSCode='" + posCode + "' ");
+			}
+			
+			if(enableShiftYN.equalsIgnoreCase("Y") && (!strShiftNo.equalsIgnoreCase("All")))
+			{
+				sqlBuilder.append("and a.intShiftCode='" + strShiftNo + "' ");
+			}
+		    if (!groupCode.equalsIgnoreCase("All"))
+		    {
+			sqlBuilder.append(" and h.strGroupCode='" + groupCode + "' ");
+		    }
+		    if (!subGroupCode.equalsIgnoreCase("All"))
+		    {
+			sqlBuilder.append(" and g.strSubGroupCode='" + subGroupCode + "' ");
+		    }
+
+		    sqlBuilder.append("and a.strBillNo not in (select u.strBillNo "
+			    + " from tblbillhd v,tblbillsettlementdtl u,tblsettelmenthd w "
+			    + " where v.strBillNo=u.strBillNo and u.strSettlementCode=w.strSettelmentCode "
+			    + " and w.strSettelmentType='Complementary' and date(v.dteBillDate) between '" + fromDate + "' and '" + toDate + "')");
+		    if (type.equalsIgnoreCase("Item Wise"))
+		    {
+			sqlBuilder.append(" group by b.strItemCode ");
+			sqlBuilder.append(" order by b.strItemName ");
+		    }
+		    else if (type.equalsIgnoreCase("Summary"))
+		    {
+			sqlBuilder.append(" group by b.strWaiterNo");
+			sqlBuilder.append(" order by d.strWShortName ");
+		    }
+		    else
+		    {
+			sqlBuilder.append(" group by b.strWaiterNo,c.strPOSCode,b.strItemCode ");
+			sqlBuilder.append(" order by e.strPosName,d.strWShortName,b.strItemName ");
+		    }
+			List listQBillWaiterWiseItemSales = objBaseService.funGetList(sqlBuilder, "sql");
+			if (listQBillWaiterWiseItemSales.size() > 0) {
+				for (int i = 0; i < listQBillWaiterWiseItemSales.size(); i++) {
+					Object[] objData = (Object[]) listSqlLiveWaiterWiseItemSales.get(i);
+					clsPOSBillDtl objBillDtlBean = new clsPOSBillDtl();
+
+					String itemCode = objData[7].toString();
+					if (mapItem.containsKey(itemCode))
+					{
+					    clsPOSBillDtl obj = mapItem.get(itemCode);
+
+					    obj.setDblQuantity(obj.getDblQuantity() + Double.valueOf(objData[10].toString()));
+					    obj.setDblAmount(obj.getDblAmount() + Double.valueOf(objData[2].toString()));
+					    obj.setDblIncentive(obj.getDblIncentive() + Double.valueOf(objData[4].toString()));
+					}
+					else
+					{
+						clsPOSBillDtl obj = new clsPOSBillDtl();
+
+					    obj.setStrWShortName(objData[0].toString());
+					    obj.setStrItemName(objData[1].toString());
+					    obj.setStrItemCode(objData[7].toString());
+					    obj.setDblAmount(Double.valueOf(objData[2].toString()));
+					    obj.setDblIncentivePer(Double.valueOf(objData[3].toString()));
+					    obj.setDblIncentive(Double.valueOf(objData[4].toString()));
+					    obj.setStrPosName(objData[5].toString());
+					    obj.setStrPOSCode(objData[6].toString());
+					    obj.setStrWaiterNo(objData[8].toString());
+					    obj.setStrRemarks(objData[9].toString());
+					    obj.setDblQuantity(Double.valueOf(objData[10].toString()));
+
+					    mapItem.put(itemCode, obj);
+					}
+				}
+			}
+
+			Comparator<clsPOSBillDtl> itemNameComparator = new Comparator<clsPOSBillDtl>()
+		    {
+
+				@Override
+				public int compare(clsPOSBillDtl o1, clsPOSBillDtl o2)
+				{
+				    return o1.getStrItemName().compareTo(o2.getStrItemName());
+				}
+		    };
+
+		    for (clsPOSBillDtl objBillDtl : mapItem.values())
+		    {
+			   listOfItemWiseIncentives.add(objBillDtl);
+		    }
+
+		    Collections.sort(listOfItemWiseIncentives, new clsWaiterWiseSalesComparator(itemNameComparator));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return listOfItemWiseIncentives;
+	}
+
+	
 	
 	
 }

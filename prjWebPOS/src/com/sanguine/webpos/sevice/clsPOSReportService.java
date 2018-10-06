@@ -687,19 +687,26 @@ public class clsPOSReportService {
 		try {
 			// Code for Sales Qty for bill detail and bill modifier live & q data
 			// for Sales Qty for bill detail live data
+			String amount = "SUM(b.dblamount)";
+		    String rate = "b.dblRate";
+		    String discAmt = "SUM(b.dblDiscountAmt)";
+			
 			sbSql.setLength(0);
 
-			sbSql.append(
-					"SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), SUM(b.dblamount),b.dblRate, e.strposname,SUM(b.dblDiscountAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblbillhd a,tblbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
-							+ "AND a.strPOSCode=e.strPosCode  " + "AND b.strItemCode=f.strItemCode  "
-							+ "AND f.strSubGroupCode=g.strSubGroupCode  " + "AND g.strGroupCode=h.strGroupCode  "
-							+ "and b.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteBillDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "' ");
+			sbSql.append("SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), "+amount+","+rate+", e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+				    + ",i.strCostCenterCode,j.strCostCenterName "
+				    + "FROM tblbillhd a,tblbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
+				    + "WHERE a.strBillNo=b.strBillNo  "
+				    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
+				    + "AND a.strPOSCode=e.strPosCode  "
+				    + "AND b.strItemCode=f.strItemCode  "
+				    + "AND f.strSubGroupCode=g.strSubGroupCode  "
+				    + "AND g.strGroupCode=h.strGroupCode  "
+				    + "and b.strItemCode=i.strItemCode "
+				    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+				    + " and i.strHourlyPricing='NO' ");
+			sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+				    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and a.strPOSCode = '" + posCode + "' ");
@@ -717,13 +724,16 @@ public class clsPOSReportService {
 				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
 			}
 
-			sbSql.append(" group by b.strItemCode,a.strBillNo  order by j.strCostCenterCode,b.strItemName");
+			sbSql.append(" group by b.strItemCode,a.strBillNo order by j.strCostCenterCode,b.strItemName");
 			List listSqlLive = objBaseService.funGetList(sbSql, "sql");
-			if (listSqlLive.size() > 0) {
-				for (int i = 0; i < listSqlLive.size(); i++) {
+			if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
 					Object[] obj = (Object[]) listSqlLive.get(i);
 					clsPOSItemWiseConsumption objItemWiseConsumption = null;
-					if (null != hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString())) {
+					if (null != hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString())) 
+					{
 						objItemWiseConsumption = hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString());
 						objItemWiseConsumption.setSaleQty(
 								objItemWiseConsumption.getSaleQty() + Double.parseDouble(obj[2].toString()));
@@ -731,9 +741,9 @@ public class clsPOSReportService {
 								+ (Double.parseDouble(obj[3].toString()) - Double.parseDouble(obj[6].toString())));
 						objItemWiseConsumption.setSubTotal(
 								objItemWiseConsumption.getSubTotal() + Double.parseDouble(obj[4].toString()));
-						// objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() +
-						// rsSales.getDouble(3));
-					} else {
+					} 
+					else 
+					{
 						sqlNo++;
 						objItemWiseConsumption = new clsPOSItemWiseConsumption();
 						objItemWiseConsumption.setItemCode(obj[0].toString());
@@ -764,53 +774,54 @@ public class clsPOSReportService {
 						hmItemWiseConsumption.put(obj[0].toString() + "!" + obj[1].toString(), objItemWiseConsumption);
 					}
 					sbSqlMod.setLength(0);
+					String dblDiscAmount = "b.dblDiscAmt";
 					if (printZeroAmountModi.equalsIgnoreCase("Yes")) {
 						// for Sales Qty for bill modifier live data
 
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-										+ " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e"
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType!='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-										+ " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+						    + " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e"
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType!='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString() + "' and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						    + " group by b.strItemCode,b.strModifierName ");
 					} else {
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-										+ " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e"
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType!='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate
-										+ "' AND b.dblamount>0" + " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+						    + " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e"
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType!='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString() + "' and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' AND b.dblamount>0"
+						    + " group by b.strItemCode,b.strModifierName ");
 					}
 
 					List listSqlMod = objBaseService.funGetList(sbSqlMod, "sql");
 					if (listSqlMod.size() > 0) {
-						for (int j = 0; j < listSqlMod.size(); j++) {
+						for (int j = 0; j < listSqlMod.size(); j++) 
+						{
 							Object[] objMod = (Object[]) listSqlMod.get(j);
-							if (null != hmItemWiseConsumption.get(objMod[0].toString() + "!" + objMod[1].toString())) {
+							if (null != hmItemWiseConsumption.get(objMod[0].toString() + "!" + objMod[1].toString())) 
+							{
 								objItemWiseConsumption = hmItemWiseConsumption
 										.get(objMod[0].toString() + "!" + objMod[1].toString());
 								objItemWiseConsumption.setSaleQty(
@@ -821,7 +832,9 @@ public class clsPOSReportService {
 								objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal()
 										+ Double.parseDouble(objMod[3].toString()));
 
-							} else {
+							} 
+							else 
+							{
 								sqlNo++;
 								objItemWiseConsumption = new clsPOSItemWiseConsumption();
 								objItemWiseConsumption.setItemCode(objMod[0].toString());
@@ -860,17 +873,21 @@ public class clsPOSReportService {
 			// for Sales Qty for bill detail q data
 			sbSql.setLength(0);
 
-			sbSql.append(
-					"SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), SUM(b.dblamount),b.dblRate, e.strposname,SUM(b.dblDiscountAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblqbillhd a,tblqbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
-							+ "AND a.strPOSCode=e.strPosCode  " + "AND b.strItemCode=f.strItemCode  "
-							+ "AND f.strSubGroupCode=g.strSubGroupCode  " + "AND g.strGroupCode=h.strGroupCode  "
-							+ "and b.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteBillDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "' ");
+			sbSql.append("SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), "+amount+","+rate+", e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+			    + ",i.strCostCenterCode,j.strCostCenterName "
+			    + "FROM tblqbillhd a,tblqbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
+			    + "WHERE a.strBillNo=b.strBillNo  "
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
+			    + "AND a.strPOSCode=e.strPosCode  "
+			    + "AND b.strItemCode=f.strItemCode  "
+			    + "AND f.strSubGroupCode=g.strSubGroupCode  "
+			    + "AND g.strGroupCode=h.strGroupCode  "
+			    + "and b.strItemCode=i.strItemCode "
+			    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + " and i.strHourlyPricing='NO' ");
+			
+			sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+				    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and a.strPOSCode = '" + posCode + "' ");
@@ -888,14 +905,17 @@ public class clsPOSReportService {
 			{
 				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
 			}
-			sbSql.append(" group by b.strItemCode,a.strBillNo order by j.strCostCenterCode,b.strItemName");
+			sbSql.append(" group by b.strItemCode order by j.strCostCenterCode,b.strItemName");
 
 			List listSqlQBill = objBaseService.funGetList(sbSql, "sql");
-			if (listSqlQBill.size() > 0) {
-				for (int i = 0; i < listSqlQBill.size(); i++) {
+			if (listSqlQBill.size() > 0) 
+			{
+				for (int i = 0; i < listSqlQBill.size(); i++) 
+				{
 					Object[] obj = (Object[]) listSqlQBill.get(i);
 					clsPOSItemWiseConsumption objItemWiseConsumption = null;
-					if (null != hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString())) {
+					if (null != hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString())) 
+					{
 						objItemWiseConsumption = hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString());
 						objItemWiseConsumption.setSaleQty(
 								objItemWiseConsumption.getSaleQty() + Double.parseDouble(obj[2].toString()));
@@ -904,7 +924,9 @@ public class clsPOSReportService {
 						objItemWiseConsumption.setSubTotal(
 								objItemWiseConsumption.getSubTotal() + Double.parseDouble(obj[3].toString()));
 
-					} else {
+					} 
+					else 
+					{
 						sqlNo++;
 						objItemWiseConsumption = new clsPOSItemWiseConsumption();
 						objItemWiseConsumption.setItemCode(obj[0].toString());
@@ -936,53 +958,55 @@ public class clsPOSReportService {
 						hmItemWiseConsumption.put(obj[0].toString() + "!" + obj[1].toString(), objItemWiseConsumption);
 					}
 					sbSqlMod.setLength(0);
+					String dblDiscAmount = "b.dblDiscAmt";
 					if (printZeroAmountModi.equalsIgnoreCase("Yes"))// Tjs brew works dont want modifiers details
 					{
 						// Code for Sales Qty for modifier live & q data
 
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
-										+ " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType!='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' " + " and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-										+ " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
+						    + " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType!='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString() + "' "
+						    + " and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						    + " group by b.strItemCode,b.strModifierName ");
 					} else {
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
-										+ " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType!='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' " + " and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate
-										+ "' And  b.dblamount >0" + " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
+						    + " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType!='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString() + "' "
+						    + " and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' And  b.dblamount >0"
+						    + " group by b.strItemCode,b.strModifierName ");
 					}
 					sbSqlMod.append(sbFilters);
 
 					List listQBillMod = objBaseService.funGetList(sbSqlMod, "sql");
 					if (listQBillMod.size() > 0) {
-						for (int j = 0; j < listQBillMod.size(); j++) {
+						for (int j = 0; j < listQBillMod.size(); j++) 
+						{
 							Object[] objMod = (Object[]) listQBillMod.get(j);
 							if (null != hmItemWiseConsumption.get(objMod[0].toString() + "!" + objMod[1].toString())) {
 								objItemWiseConsumption = hmItemWiseConsumption
@@ -1035,18 +1059,22 @@ public class clsPOSReportService {
 			// for Complimentary Qty for live bill detail
 			sbSql.setLength(0);
 
-			sbSql.append(
-					"SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), SUM(b.dblamount),b.dblRate,e.strposname,SUM(b.dblDiscountAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblbillhd a,tblbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
-							+ "AND a.strPOSCode=e.strPosCode  " + "AND b.strItemCode=f.strItemCode  "
-							+ "AND f.strSubGroupCode=g.strSubGroupCode  " + "AND g.strGroupCode=h.strGroupCode  "
-							+ "and b.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteBillDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "' ");
+			sbSql.append("SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), "+amount+","+rate+",e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+			    + ",i.strCostCenterCode,j.strCostCenterName "
+			    + "FROM tblbillhd a,tblbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
+			    + "WHERE a.strBillNo=b.strBillNo  "
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
+			    + "AND a.strPOSCode=e.strPosCode  "
+			    + "AND b.strItemCode=f.strItemCode  "
+			    + "AND f.strSubGroupCode=g.strSubGroupCode  "
+			    + "AND g.strGroupCode=h.strGroupCode  "
+			    + "and b.strItemCode=i.strItemCode "
+			    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + " and i.strHourlyPricing='NO' ");
 
+			sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+				    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
+			
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and a.strPOSCode = '" + posCode + "' ");
 			}
@@ -1068,7 +1096,8 @@ public class clsPOSReportService {
 
 			List listSqlLiveBillComplimentary = objBaseService.funGetList(sbSql, "sql");
 			if (listSqlLiveBillComplimentary.size() > 0) {
-				for (int i = 0; i < listSqlLiveBillComplimentary.size(); i++) {
+				for (int i = 0; i < listSqlLiveBillComplimentary.size(); i++) 
+				{
 					Object[] obj = (Object[]) listSqlLiveBillComplimentary.get(i);
 					clsPOSItemWiseConsumption objItemWiseConsumption = null;
 					if (null != hmItemWiseConsumption.get(obj[0].toString() + "!" + obj[1].toString())) {
@@ -1110,47 +1139,49 @@ public class clsPOSReportService {
 					}
 
 					sbSqlMod.setLength(0);
+					String dblDiscAmount = "b.dblDiscAmt";
 					if (printZeroAmountModi.equalsIgnoreCase("Yes"))// Tjs brew works dont want modifiers details
 					{
 						// for Complimentary Qty for live bill modifier
 
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-										+ " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo  "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' " + " and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-										+ " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+						    + " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo  "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType='Complementary' "
+						    + " and left(b.strItemCode,7)='" +  obj[0].toString() + "' "
+						    + " and a.strBillNo='" +  obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						    + " group by b.strItemCode,b.strModifierName ");
 					} else {
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-										+ " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' " + " and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' " + " AND '" + toDate
-										+ "' AND  b.dblamount >0" + " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+						    + " from tblbillhd a,tblbillmodifierdtl b, tblbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString() + "' "
+						    + " and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' "
+						    + " AND '" + toDate + "' AND  b.dblamount >0"
+						    + " group by b.strItemCode,b.strModifierName ");
 					}
 					sbSqlMod.append(sbFilters);
 					// System.out.println(sbSqlMod);
@@ -1202,18 +1233,22 @@ public class clsPOSReportService {
 			// for Complimentary Qty for q bill details
 			sbSql.setLength(0);
 
-			sbSql.append(
-					"SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity), SUM(b.dblamount),b.dblRate,e.strposname,SUM(b.dblDiscountAmt)"
-							+ ",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblqbillhd a,tblqbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
-							+ "AND a.strPOSCode=e.strPosCode  " + "AND b.strItemCode=f.strItemCode  "
-							+ "AND f.strSubGroupCode=g.strSubGroupCode  " + "AND g.strGroupCode=h.strGroupCode  "
-							+ "and b.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteBillDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "' ");
+			sbSql.append("SELECT b.stritemcode,upper(b.stritemname), SUM(b.dblQuantity),"+amount+","+rate+",e.strposname,"+discAmt+""
+			    + ",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode "
+			    + ",i.strCostCenterCode,j.strCostCenterName "
+			    + "FROM tblqbillhd a,tblqbillcomplementrydtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j "
+			    + "WHERE a.strBillNo=b.strBillNo  "
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
+			    + "AND a.strPOSCode=e.strPosCode  "
+			    + "AND b.strItemCode=f.strItemCode  "
+			    + "AND f.strSubGroupCode=g.strSubGroupCode  "
+			    + "AND g.strGroupCode=h.strGroupCode  "
+			    + "and b.strItemCode=i.strItemCode "
+			    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + " and i.strHourlyPricing='NO' ");
+			
+			sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+				    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" and a.strPOSCode = '" + posCode + "' ");
 			}
@@ -1275,47 +1310,49 @@ public class clsPOSReportService {
 					}
 
 					sbSqlMod.setLength(0);
+					String dblDiscAmount = "b.dblDiscAmt";
 					if (printZeroAmountModi.equalsIgnoreCase("Yes"))// Tjs brew works dont want modifiers details
 					{
 						// for Complimentary Qty for q bill modifier
 
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
-										+ " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' " + " and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-										+ " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
+						    + " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString() + "' "
+						    + " and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						    + " group by b.strItemCode,b.strModifierName ");
 					} else {
-						sbSqlMod.append(
-								"select b.strItemCode,upper(b.strModifierName),sum(b.dblQuantity),sum(b.dblamount),b.dblRate"
-										+ " ,e.strposname,SUM(b.dblDiscAmt),g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
-										+ " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
-										+ " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
-										+ " where a.strBillNo=b.strBillNo "
-										+ " and date(a.dteBillDate)=date(b.dteBillDate) "
-										+ " and a.strBillNo=c.strBillNo "
-										+ " and date(a.dteBillDate)=date(c.dteBillDate) "
-										+ " and c.strSettlementCode=d.strSettelmentCode "
-										+ " and a.strPOSCode=e.strPosCode "
-										+ " and left(b.strItemCode,7)=f.strItemCode "
-										+ " and f.strSubGroupCode=g.strSubGroupCode "
-										+ " and g.strGroupCode=h.strGroupCode "
-										+ " and d.strSettelmentType='Complementary' " + " and left(b.strItemCode,7)='"
-										+ obj[0].toString() + "' " + " and a.strBillNo='" + obj[9].toString() + "' "
-										+ " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-										+ " AND  b.dblamount >0" + " group by b.strItemCode,b.strModifierName ");
+						sbSqlMod.append("select b.strItemCode,upper(b.strModifierName),b.dblQuantity,"+amount+","+rate+""
+						    + " ,e.strposname,"+dblDiscAmount+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode"
+						    + " from tblqbillhd a,tblqbillmodifierdtl b, tblqbillsettlementdtl c,tblsettelmenthd d,tblposmaster e "
+						    + " ,tblitemmaster f,tblsubgrouphd g,tblgrouphd h "
+						    + " where a.strBillNo=b.strBillNo "
+						    + " and date(a.dteBillDate)=date(b.dteBillDate) "
+						    + " and a.strBillNo=c.strBillNo "
+						    + " and date(a.dteBillDate)=date(c.dteBillDate) "
+						    + " and c.strSettlementCode=d.strSettelmentCode "
+						    + " and a.strPOSCode=e.strPosCode "
+						    + " and left(b.strItemCode,7)=f.strItemCode "
+						    + " and f.strSubGroupCode=g.strSubGroupCode "
+						    + " and g.strGroupCode=h.strGroupCode "
+						    + " and d.strSettelmentType='Complementary' "
+						    + " and left(b.strItemCode,7)='" + obj[0].toString()  + "' "
+						    + " and a.strBillNo='" + obj[9].toString() + "' "
+						    + " and date(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						    + " AND  b.dblamount >0"
+						    + " group by b.strItemCode,b.strModifierName ");
 					}
 					sbSqlMod.append(sbFilters);
 					// System.out.println(sbSqlMod);
@@ -1365,16 +1402,18 @@ public class clsPOSReportService {
 			// Code for NC Qty
 			sbSql.setLength(0);
 
-			sbSql.append(
-					"SELECT a.stritemcode,upper(b.stritemname), SUM(a.dblQuantity), SUM(a.dblQuantity*a.dblRate),a.dblRate, c.strposname,0 AS DiscAmt,d.strSubGroupName,e.strGroupName,b.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblnonchargablekot a, tblitemmaster b, tblposmaster c,tblsubgrouphd d,tblgrouphd e,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE LEFT(a.strItemCode,7)=b.strItemCode  " + "AND a.strPOSCode=c.strPosCode  "
-							+ "AND b.strSubGroupCode=d.strSubGroupCode  " + "AND d.strGroupCode=e.strGroupCode  "
-							+ "and a.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteNCKOTDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "' ");
+			sbSql.append("SELECT a.stritemcode,upper(b.stritemname), SUM(a.dblQuantity), SUM(a.dblQuantity*a.dblRate),a.dblRate, c.strposname,0 AS DiscAmt,d.strSubGroupName,e.strGroupName,b.strExternalCode "
+			    + ",i.strCostCenterCode,j.strCostCenterName "
+			    + "FROM tblnonchargablekot a, tblitemmaster b, tblposmaster c,tblsubgrouphd d,tblgrouphd e,tblmenuitempricingdtl i,tblcostcentermaster j "
+			    + "WHERE LEFT(a.strItemCode,7)=b.strItemCode  "
+			    + "AND a.strPOSCode=c.strPosCode  "
+			    + "AND b.strSubGroupCode=d.strSubGroupCode  "
+			    + "AND d.strGroupCode=e.strGroupCode  "
+			    + "and a.strItemCode=i.strItemCode "
+			    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "and i.strCostCenterCode=j.strCostCenterCode "
+			    + "AND DATE(a.dteNCKOTDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+			    + " and i.strHourlyPricing='NO' ");
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" AND a.strPOSCode = '" + posCode + "' ");
 			}
@@ -1432,17 +1471,21 @@ public class clsPOSReportService {
 
 			// Code for promotion Qty for Q
 			sbSql.setLength(0);
-			sbSql.append(
-					"SELECT b.strItemCode,upper(c.strItemName), SUM(b.dblQuantity), SUM(b.dblAmount),b.dblRate,f.strPosName,0,d.strSubGroupName,e.strGroupName,c.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblqbillhd a,tblqbillpromotiondtl b,tblitemmaster c,tblsubgrouphd d,tblgrouphd e,tblposmaster f,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
-							+ "AND b.strItemCode=c.strItemCode  " + "AND c.strSubGroupCode=d.strSubGroupCode  "
-							+ "AND d.strGroupCode=e.strGroupCode  " + "AND a.strPOSCode=f.strPosCode  "
-							+ "and b.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteBillDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "'");
+			sbSql.append("SELECT b.strItemCode,upper(c.strItemName), SUM(b.dblQuantity), "+amount+","+rate+",f.strPosName,0,d.strSubGroupName,e.strGroupName,c.strExternalCode "
+			    + ",i.strCostCenterCode,j.strCostCenterName "
+			    + "FROM tblqbillhd a,tblqbillpromotiondtl b,tblitemmaster c,tblsubgrouphd d,tblgrouphd e,tblposmaster f,tblmenuitempricingdtl i,tblcostcentermaster j "
+			    + "WHERE a.strBillNo=b.strBillNo  "
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
+			    + "AND b.strItemCode=c.strItemCode  "
+			    + "AND c.strSubGroupCode=d.strSubGroupCode  "
+			    + "AND d.strGroupCode=e.strGroupCode  "
+			    + "AND a.strPOSCode=f.strPosCode  "
+			    + "and b.strItemCode=i.strItemCode "
+			    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + " and i.strHourlyPricing='NO' ");
+			
+			 sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+					    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" AND a.strPOSCode = '" + posCode + "' ");
 			}
@@ -1459,7 +1502,7 @@ public class clsPOSReportService {
 			{
 				sbSql.append(" and a.intShiftCode = '" + strShiftNo + "' ");
 			}
-			sbSql.append(" group by b.strItemCode,a.strBillNo  order by j.strCostCenterCode,c.strItemName");
+			sbSql.append(" group by b.strItemCode  order by j.strCostCenterCode,c.strItemName");
 			// System.out.println(sbSql);
 
 			List listPromotionQQty = objBaseService.funGetList(sbSql, "sql");
@@ -1513,17 +1556,21 @@ public class clsPOSReportService {
 
 			// Code for promotion Qty for live
 			sbSql.setLength(0);
-			sbSql.append(
-					"SELECT b.strItemCode,upper(c.strItemName), SUM(b.dblQuantity), SUM(b.dblAmount),b.dblRate,f.strPosName,0,d.strSubGroupName,e.strGroupName,c.strExternalCode "
-							+ ",i.strCostCenterCode,j.strCostCenterName "
-							+ "FROM tblbillhd a,tblbillpromotiondtl b,tblitemmaster c,tblsubgrouphd d,tblgrouphd e,tblposmaster f,tblmenuitempricingdtl i,tblcostcentermaster j "
-							+ "WHERE a.strBillNo=b.strBillNo  " + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
-							+ "AND b.strItemCode=c.strItemCode  " + "AND c.strSubGroupCode=d.strSubGroupCode  "
-							+ "AND d.strGroupCode=e.strGroupCode  " + "AND a.strPOSCode=f.strPosCode  "
-							+ "and b.strItemCode=i.strItemCode "
-							+ "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
-							+ "and i.strCostCenterCode=j.strCostCenterCode " + "AND DATE(a.dteBillDate) BETWEEN '"
-							+ fromDate + "' AND '" + toDate + "'");
+			sbSql.append("SELECT b.strItemCode,upper(c.strItemName), SUM(b.dblQuantity), "+amount+","+rate+",f.strPosName,0,d.strSubGroupName,e.strGroupName,c.strExternalCode "
+			    + ",i.strCostCenterCode,j.strCostCenterName "
+			    + "FROM tblbillhd a,tblbillpromotiondtl b,tblitemmaster c,tblsubgrouphd d,tblgrouphd e,tblposmaster f,tblmenuitempricingdtl i,tblcostcentermaster j "
+			    + "WHERE a.strBillNo=b.strBillNo  "
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate)  "
+			    + "AND b.strItemCode=c.strItemCode  "
+			    + "AND c.strSubGroupCode=d.strSubGroupCode  "
+			    + "AND d.strGroupCode=e.strGroupCode  "
+			    + "AND a.strPOSCode=f.strPosCode  "
+			    + "and b.strItemCode=i.strItemCode "
+			    + "and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + " and i.strHourlyPricing='NO' ");
+			
+			sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+				    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'");
 
 			if (!posCode.equalsIgnoreCase("All")) {
 				sbSql.append(" AND a.strPOSCode = '" + posCode + "' ");
@@ -1667,6 +1714,10 @@ public class clsPOSReportService {
 		return list;
 	}
 
+	
+	
+	
+	
 	public List funProcessQFileSettlementWiseReport(String posCode, String fromDate, String toDate) {
 
 		StringBuilder sbSqlQFile = new StringBuilder();
@@ -7572,6 +7623,7 @@ public class clsPOSReportService {
 		return list;
 	}
 
+	
 	public List funProcessItemWiseReport(String posCode, String fromDate, String toDate, String shiftNo,
 			String printComplimentaryYN, String type, String strUserCode) {
 		List list = new ArrayList();
@@ -7582,7 +7634,16 @@ public class clsPOSReportService {
 		StringBuilder sqlModLive = new StringBuilder();
 		StringBuilder sqlModQFile = new StringBuilder();
 
-		try {
+		try 
+		 {
+			
+		    String taxAmt = "sum(a.dblTaxAmount)";
+		    String amt = "sum(a.dblAmount)";
+		    String subTotAmt = "sum(a.dblAmount)-sum(a.dblDiscountAmt)";
+		    String discAmt = "sum(a.dblDiscountAmt)";
+		    String amount = "sum(a.dblAmount)";
+		    String subTotAmount = "sum(a.dblAmount)-sum(a.dblDiscAmt)";
+		    String discAmount = "sum(a.dblDiscAmt)";
 			String sqlFilters = "";
 
 			if (!posCode.equalsIgnoreCase("All")) {
@@ -7592,70 +7653,92 @@ public class clsPOSReportService {
 				sqlFilters += " AND b.intShiftCode = '" + shiftNo + "' ";
 			}
 
-			if (type.equalsIgnoreCase("Live")) {
+			if (type.equalsIgnoreCase("Live")) 
+			{
 				sqlLive.append("select a.strItemCode,a.strItemName,c.strPOSName"
-						+ ",sum(a.dblQuantity),sum(a.dblTaxAmount)\n"
-						+ ",sum(a.dblAmount),sum(a.dblAmount)-sum(a.dblDiscountAmt),sum(a.dblDiscountAmt),DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'"
-						+ strUserCode + "'\n" + "from tblbilldtl a,tblbillhd b,tblposmaster c\n"
-						+ "where a.strBillNo=b.strBillNo " + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
-						+ "and b.strPOSCode=c.strPosCode " + "and date( b.dteBillDate ) BETWEEN '" + fromDate
-						+ "' AND '" + toDate + "' " + " and a.strClientCode=b.strClientCode ");
+			    + ",sum(a.dblQuantity)," + taxAmt + "\n"
+			    + "," + amt + "," + subTotAmt + "," + discAmt + ",DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'" + strUserCode+ "'\n"
+			    + "from tblbilldtl a,tblbillhd b,tblposmaster c\n"
+			    + "where a.strBillNo=b.strBillNo "
+			    + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
+			    + "and b.strPOSCode=c.strPosCode "
+			    + "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+			    + " and a.strClientCode=b.strClientCode ");
 				sqlLive.append(sqlFilters + "  GROUP BY a.strItemCode,a.strItemName ");
 				list = objBaseService.funGetList(sqlLive, "sql");
 
-			} else if (type.equalsIgnoreCase("LiveCompli")) {
+			} else if (type.equalsIgnoreCase("LiveCompli")) 
+			{
 				sqlLiveCompli.append("select a.strItemCode,a.strItemName,c.strPOSName"
-						+ ",sum(a.dblQuantity),sum(a.dblTaxAmount)\n"
-						+ ",sum(a.dblAmount),sum(a.dblAmount)-sum(a.dblDiscountAmt),sum(a.dblDiscountAmt),DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'"
-						+ strUserCode + "'\n" + "from tblbillcomplementrydtl a,tblbillhd b,tblposmaster c\n"
-						+ "where a.strBillNo=b.strBillNo " + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
-						+ "and b.strPOSCode=c.strPosCode " + "and date( b.dteBillDate ) BETWEEN '" + fromDate
-						+ "' AND '" + toDate + "' " + " and a.strClientCode=b.strClientCode ");
+			    + ",sum(a.dblQuantity)," + taxAmt + "\n"
+			    + "," + amt + "," + subTotAmt + "," + discAmt + ",DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'" + strUserCode+ "'\n"
+			    + "from tblbillcomplementrydtl a,tblbillhd b,tblposmaster c\n"
+			    + "where a.strBillNo=b.strBillNo "
+			    + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
+			    + "and b.strPOSCode=c.strPosCode "
+			    + "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+			    + " and a.strClientCode=b.strClientCode ");
 				sqlLiveCompli.append("  GROUP BY a.strItemCode,a.strItemName ");
 				list = objBaseService.funGetList(sqlLiveCompli, "sql");
 
-			} else if (type.equalsIgnoreCase("QFile")) {
-				sqlQFile.append("select a.strItemCode,a.strItemName,c.strPOSName"
-						+ ",sum(a.dblQuantity),sum(a.dblTaxAmount)\n"
-						+ ",sum(a.dblAmount),sum(a.dblAmount)-sum(a.dblDiscountAmt),sum(a.dblDiscountAmt),DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'"
-						+ strUserCode + "'\n" + "from tblqbilldtl a,tblqbillhd b,tblposmaster c\n"
-						+ "where a.strBillNo=b.strBillNo " + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
-						+ "and b.strPOSCode=c.strPosCode " + "and date( b.dteBillDate ) BETWEEN '" + fromDate
-						+ "' AND '" + toDate + "' " + " and a.strClientCode=b.strClientCode ");
+			} 
+			else if (type.equalsIgnoreCase("QFile")) 
+			{
+				sqlQFile.append( "select a.strItemCode,a.strItemName,c.strPOSName"
+			    + ",sum(a.dblQuantity)," + taxAmt + "\n"
+			    + "," + amt + "," + subTotAmt + "," + discAmt + ",DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'" + strUserCode+ "'\n"
+			    + "from tblqbilldtl a,tblqbillhd b,tblposmaster c\n"
+			    + "where a.strBillNo=b.strBillNo "
+			    + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
+			    + "and b.strPOSCode=c.strPosCode "
+			    + "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+			    + " and a.strClientCode=b.strClientCode ");
 				sqlQFile.append("  GROUP BY a.strItemCode,a.strItemName ");
 				list = objBaseService.funGetList(sqlQFile, "sql");
 
-			} else if (type.equalsIgnoreCase("QCompli")) {
+			} 
+			else if (type.equalsIgnoreCase("QCompli")) 
+			{
 				sqlQCompli.append("select a.strItemCode,a.strItemName,c.strPOSName"
-						+ ",sum(a.dblQuantity),sum(a.dblTaxAmount)\n"
-						+ ",sum(a.dblAmount),sum(a.dblAmount)-sum(a.dblDiscountAmt),sum(a.dblDiscountAmt),DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'"
-						+ strUserCode + "'\n" + "from tblqbillcomplementrydtl a,tblqbillhd b,tblposmaster c\n"
-						+ "where a.strBillNo=b.strBillNo " + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
-						+ "and b.strPOSCode=c.strPosCode " + "and date( b.dteBillDate ) BETWEEN '" + fromDate
-						+ "' AND '" + toDate + "' " + " and a.strClientCode=b.strClientCode ");
+			    + ",sum(a.dblQuantity)," + taxAmt + "\n"
+			    + "," + amt + "," + subTotAmt + "," + discAmt + ",DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y'),'" + strUserCode + "'\n"
+			    + "from tblqbillcomplementrydtl a,tblqbillhd b,tblposmaster c\n"
+			    + "where a.strBillNo=b.strBillNo "
+			    + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
+			    + "and b.strPOSCode=c.strPosCode "
+			    + "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+			    + " and a.strClientCode=b.strClientCode ");
 				sqlQCompli.append("  GROUP BY a.strItemCode,a.strItemName ");
 				list = objBaseService.funGetList(sqlQCompli, "sql");
 
-			} else if (type.equalsIgnoreCase("ModLive")) {
+			} 
+			else if (type.equalsIgnoreCase("ModLive")) 
+			{
 				sqlModLive.append("select a.strItemCode,a.strModifierName,c.strPOSName"
-						+ ",sum(a.dblQuantity),'0',sum(a.dblAmount),sum(a.dblAmount)-sum(a.dblDiscAmt),sum(a.dblDiscAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),'"
-						+ strUserCode + "'\n" + "from tblbillmodifierdtl a,tblbillhd b,tblposmaster c\n"
-						+ "where a.strBillNo=b.strBillNo " + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
-						+ "and b.strPOSCode=c.strPosCode " + "and a.dblamount>0 \n"
-						+ "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'"
-						+ " and a.strClientCode=b.strClientCode  ");
+			    + ",sum(a.dblQuantity),'0'," + amount + "," + subTotAmount + "," + discAmount + ",DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),'" + strUserCode + "'\n"
+			    + "from tblbillmodifierdtl a,tblbillhd b,tblposmaster c\n"
+			    + "where a.strBillNo=b.strBillNo "
+			    + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
+			    + "and b.strPOSCode=c.strPosCode "
+			    + "and a.dblamount>0 \n"
+			    + "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'"
+			    + " and a.strClientCode=b.strClientCode  ");
 				sqlModLive.append("  GROUP BY a.strItemCode,a.strModifierName ");
 				list = objBaseService.funGetList(sqlModLive, "sql");
 
-			} else if (type.equalsIgnoreCase("ModQFile")) {
+			} 
+			else if (type.equalsIgnoreCase("ModQFile")) 
+			{
 				sqlModQFile.append("select a.strItemCode,a.strModifierName,c.strPOSName"
-						+ ",sum(a.dblQuantity),'0',sum(a.dblAmount),sum(a.dblAmount)-sum(a.dblDiscAmt),sum(a.dblDiscAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),'"
-						+ strUserCode + "'\n" + "from tblqbillmodifierdtl a,tblqbillhd b,tblposmaster c\n"
-						+ "where a.strBillNo=b.strBillNo " + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
-						+ "and b.strPOSCode=c.strPosCode " + "and a.dblamount>0 \n"
-						+ "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'"
-						+ "and a.strClientCode=b.strClientCode  ");
-				sqlModQFile.append("  GROUP BY a.strItemCode,a.strModifierName ");
+			    + ",sum(a.dblQuantity),'0'," + amount + "," + subTotAmount + "," + discAmount + ",DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),'" + strUserCode+ "'\n"
+			    + "from tblqbillmodifierdtl a,tblqbillhd b,tblposmaster c\n"
+			    + "where a.strBillNo=b.strBillNo "
+			    + "AND DATE(a.dteBillDate)=DATE(b.dteBillDate) "
+			    + "and b.strPOSCode=c.strPosCode "
+			    + "and a.dblamount>0 \n"
+			    + "and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'"
+			    + "and a.strClientCode=b.strClientCode  ");
+		        sqlModQFile.append("  GROUP BY a.strItemCode,a.strModifierName ");
 				list = objBaseService.funGetList(sqlModQFile, "sql");
 
 			}
@@ -7666,6 +7749,8 @@ public class clsPOSReportService {
 		return list;
 	}
 
+	
+	
 	public List funProcessMenuHeadWiseReport(String posCode, String fromDate, String toDate, String strUserCode,
 			String shiftNo) {
 		List<clsPOSGenericBean> listOfMenuHead = new ArrayList<clsPOSGenericBean>();
@@ -19470,6 +19555,865 @@ public class clsPOSReportService {
 		}
 		return listOfItemWiseIncentives;
 	}
+
+	
+	
+
+	
+	public List<clsPOSItemWiseConsumption> funProcessItemWiseConsumptionCostCenterReport(String posCode, String fromDate,
+			String toDate, String groupCode, String costCenterCode, String strShiftNo, String printZeroAmountModi) {
+		StringBuilder sbSql = new StringBuilder();
+		StringBuilder sbSqlMod = new StringBuilder();
+		StringBuilder sbFilters = new StringBuilder();
+		Map<String, clsPOSItemWiseConsumption> hmItemWiseConsumption = new HashMap<String, clsPOSItemWiseConsumption>();
+		String costCenterCd = "", costCenterNm = "";
+		int sqlNo = 0;
+		String enableShiftYN="N";
+		Map<String, Double> hmMenuHdAmt = new HashMap<String, Double>();
+		List<clsPOSItemWiseConsumption> list = new ArrayList<clsPOSItemWiseConsumption>();
+		try {
+			// Code for Sales Qty for bill detail and bill modifier live & q data
+		    // for Sales Qty for bill detail live data  
+		    sbSql.setLength(0);
+		    String regularAmt = "a.RegularAmt";
+		    String compAmt = "b.CompAmt";
+		    String dblAmount = "SUM(b.dblamount)";
+			
+			sbSql.setLength(0);
+
+			sbSql.append(" select  a.strCostCenterName, a.stritemcode, upper(a.itemName),a.RegularQty-IFNULL(b.CompQty,0)RegularQty, "+regularAmt+",  "
+			    + "ifnull(b.CompQty,0), ifnull("+compAmt+",0) ,a.strBillNo,a.strMenuName from  "
+			    + "(SELECT j.strCostCenterName, b.stritemcode, upper(b.stritemname) itemName, SUM(b.dblQuantity) RegularQty, "+dblAmount+" RegularAmt,a.strBillNo ,k.strMenuName,a.dblUSDConverionRate dblUSDConverionRate"
+			    + "  FROM tblbillhd a,tblbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + "  and i.strHourlyPricing='NO' ");
+			sbSql.append("and i.strCostCenterCode=j.strCostCenterCode "
+				    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
+
+			if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			 sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+			
+			 sbSql.append("  and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by j.strCostCenterName, b.strItemCode, b.stritemname) a "
+			    + " left outer join   "
+			    + "(SELECT j.strCostCenterName, b.stritemcode, upper(b.stritemname), SUM(b.dblQuantity) CompQty, "+dblAmount+" CompAmt ,a.strBillNo ,k.strMenuName,a.dblUSDConverionRate dblUSDConverionRate"
+			    + "  FROM tblbillhd a,tblbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + "  and b.dblAmount = 0  "
+			    + " and i.strHourlyPricing='NO' ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+			
+		    sbSql.append(" and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by j.strCostCenterName, b.strItemCode, b.stritemname) b "
+			    + "on a.strItemCode = b.strItemCode "
+			    + " "
+			    + "Order by a.strCostCenterName, a.itemName ");
+			
+		    List listSqlLive = objBaseService.funGetList(sbSql, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[1].toString() + "!" + objSale[2].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[1].toString() + "!" + objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() + (Double.valueOf(objSale[3].toString())));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[4].toString())));
+					    //objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal() + rsSales.getDouble(4));
+					    //objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() + rsSales.getDouble(3));
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+					    objItemWiseConsumption.setCostCenterName(objSale[0].toString());
+					    objItemWiseConsumption.setItemCode(objSale[1].toString());
+					    objItemWiseConsumption.setItemName(objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(Double.valueOf(objSale[5].toString()));
+					    objItemWiseConsumption.setComplimentaryAmt(Double.valueOf(objSale[6].toString()));
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[4].toString()));
+					    objItemWiseConsumption.setSeqNo(sqlNo);
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[1].toString() + "!" + objSale[2].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[0].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[0].toString());
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+
+					}
+				}
+			}
+			
+		    
+		  //live modifiers
+		    String amount = "b.dblamount";
+		    String rate="b.dblRate";
+		    String discAmt = "b.dblDiscAmt";
+		    
+		    sbSqlMod.setLength(0);
+		    // Code for Sales Qty for modifier live & q data
+		    sbSqlMod.append("SELECT b.strItemCode, UPPER(b.strModifierName),b.dblQuantity,"+amount+","+rate+",e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode\n"
+			    + ",j.strMenuCode,j.strMenuName,k.strCostCenterName "
+			    + "FROM tblbillhd a,tblbillmodifierdtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g\n"
+			    + ",tblgrouphd h,tblmenuitempricingdtl i,tblmenuhd j,tblcostcentermaster k "
+			    + "WHERE a.strBillNo=b.strBillNo \n"
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+			    + "AND a.strPOSCode=e.strPosCode \n"
+			    + "AND LEFT(b.strItemCode,7)=f.strItemCode \n"
+			    + "AND f.strSubGroupCode=g.strSubGroupCode \n"
+			    + "AND g.strGroupCode=h.strGroupCode \n"
+			    + "AND LEFT(b.strItemCode,7)=i.strItemCode \n"
+			    + "and i.strMenuCode=j.strMenuCode\n"
+			    + "and (a.strPOSCode=e.strPosCode or i.strPosCode='All') "
+			    + "and i.strCostCenterCode=k.strCostCenterCode "
+			    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n"
+			    + "  and i.strHourlyPricing='NO'  ");
+		    if (printZeroAmountModi.equalsIgnoreCase("Yes"))//Tjs brew works dont want modifiers details
+		    {
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    else
+		    {
+			sbSqlMod.append(" And  b.dblamount >0 ");
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    sbSqlMod.append(sbFilters);
+		    
+		    listSqlLive = objBaseService.funGetList(sbSqlMod, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[0].toString() + "!" +objSale[1].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[0].toString() + "!" + objSale[1].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() + Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[3].toString()) - Double.valueOf(objSale[6].toString())));
+					    objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal() + Double.valueOf(objSale[3].toString()));
+					    //objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() + rsSalesMod.getDouble(3));
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+
+					    objItemWiseConsumption.setItemCode(objSale[0].toString());
+					    objItemWiseConsumption.setItemName(objSale[1].toString());
+					    objItemWiseConsumption.setSubGroupName(objSale[7].toString());
+					    objItemWiseConsumption.setGroupName(objSale[8].toString());
+					    objItemWiseConsumption.setSaleQty(Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(0);
+					    objItemWiseConsumption.setMenuHead(objSale[12].toString());
+					    objItemWiseConsumption.setCostCenterName(objSale[13].toString());
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[3].toString()));
+					    double totalRowQty = Double.valueOf(objSale[2].toString()) + 0 + 0 + 0;
+					    //objItemWiseConsumption.setTotalQty(totalRowQty);
+
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[0].toString() + "!" + objSale[1].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[13].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[13].toString());
+						hmMenuHdAmt.put(objSale[13].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[13].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+					}
+				}
+			}
+		    
+		    
+		    
+		    
+		 // for Sales Qty for bill detail q data 
+		    sbSql.setLength(0);
+		    sbSql.append(" select  a.strCostCenterName, a.stritemcode, upper(a.itemName),a.RegularQty-IFNULL(b.CompQty,0)RegularQty, "+regularAmt+",  "
+			    + "ifnull(b.CompQty,0), ifnull("+compAmt+",0) ,a.strBillNo,a.strMenuName from  "
+			    + "(SELECT j.strCostCenterName, b.stritemcode, upper(b.stritemname) itemName, SUM(b.dblQuantity) RegularQty, "+dblAmount+" RegularAmt,a.strBillNo ,k.strMenuName,a.dblUSDConverionRate dblUSDConverionRate"
+			    + "  FROM tblqbillhd a,tblqbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + "  and i.strHourlyPricing='NO' ");
+//			    + "  and b.dblAmount <> 0  ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+
+		    sbSql.append("  and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by j.strCostCenterName, b.strItemCode, b.stritemname) a "
+			    + " left outer join   "
+			    + "(SELECT j.strCostCenterName, b.stritemcode, upper(b.stritemname), SUM(b.dblQuantity) CompQty, "+dblAmount+" CompAmt ,a.strBillNo ,k.strMenuName,a.dblUSDConverionRate dblUSDConverionRate"
+			    + "  FROM tblqbillhd a,tblqbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + "  and b.dblAmount = 0  "
+			    + "  and i.strHourlyPricing='NO'  ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    sbSql.append(" and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by j.strCostCenterName, b.strItemCode, b.stritemname) b "
+			    + "on a.strItemCode = b.strItemCode "
+			    + " "
+			    + "Order by a.strCostCenterName, a.itemName ");
+		    listSqlLive = objBaseService.funGetList(sbSql, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[1].toString() + "!" + objSale[2].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[1].toString() + "!" + objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() + Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[4].toString())));
+
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+					    objItemWiseConsumption.setCostCenterName(objSale[0].toString());
+					    objItemWiseConsumption.setItemCode(objSale[1].toString());
+					    objItemWiseConsumption.setItemName(objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(Double.valueOf(objSale[5].toString()));
+					    objItemWiseConsumption.setComplimentaryAmt(Double.valueOf(objSale[6].toString()));
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[4].toString()));
+					    objItemWiseConsumption.setSeqNo(sqlNo);
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[1].toString()+ "!" + objSale[2].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[0].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[0].toString());
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+					}
+				}
+			}
+		    
+		    
+		  //Q modifiers
+		    sbSqlMod.setLength(0);
+		    // Code for Sales Qty for modifier live & q data
+		    sbSqlMod.append("SELECT b.strItemCode, UPPER(b.strModifierName),b.dblQuantity,"+amount+","+rate+",e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode\n"
+			    + ",j.strMenuCode,j.strMenuName,k.strCostCenterName "
+			    + "FROM tblqbillhd a,tblqbillmodifierdtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g\n"
+			    + ",tblgrouphd h,tblmenuitempricingdtl i,tblmenuhd j,tblcostcentermaster k "
+			    + "WHERE a.strBillNo=b.strBillNo \n"
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+			    + "AND a.strPOSCode=e.strPosCode \n"
+			    + "AND LEFT(b.strItemCode,7)=f.strItemCode \n"
+			    + "AND f.strSubGroupCode=g.strSubGroupCode \n"
+			    + "AND g.strGroupCode=h.strGroupCode \n"
+			    + "AND LEFT(b.strItemCode,7)=i.strItemCode \n"
+			    + "and i.strMenuCode=j.strMenuCode\n"
+			    + "and (a.strPOSCode=e.strPosCode or i.strPosCode='All') "
+			    + "and i.strCostCenterCode=k.strCostCenterCode "
+			    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+			    + "  and i.strHourlyPricing='NO'  "
+			    + " ");
+		    if (printZeroAmountModi.equalsIgnoreCase("Yes"))//Tjs brew works dont want modifiers details
+		    {
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    else
+		    {
+			sbSqlMod.append(" And  b.dblamount >0 ");
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    sbSqlMod.append(sbFilters);  
+		    
+		    listSqlLive = objBaseService.funGetList(sbSql, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[0].toString() + "!" +objSale[1].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[0].toString() + "!" + objSale[1].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() + Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[3].toString())- Double.valueOf(objSale[6].toString())));
+					    objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal() + Double.valueOf(objSale[3].toString()));
+					    //objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() + rsSalesMod.getDouble(3));
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+
+					    objItemWiseConsumption.setItemCode(objSale[0].toString());
+					    objItemWiseConsumption.setItemName(objSale[1].toString());
+					    objItemWiseConsumption.setSubGroupName(objSale[7].toString());
+					    objItemWiseConsumption.setGroupName(objSale[8].toString());
+					    objItemWiseConsumption.setSaleQty(Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(0);
+					    objItemWiseConsumption.setMenuHead(objSale[12].toString());
+					    objItemWiseConsumption.setCostCenterName(objSale[13].toString());
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[3].toString()));
+					    double totalRowQty = Double.valueOf(objSale[2].toString()) + 0 + 0 + 0;
+					    //objItemWiseConsumption.setTotalQty(totalRowQty);
+
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[0].toString() + "!" + objSale[1].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[13].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[13].toString());
+						hmMenuHdAmt.put(objSale[13].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[13].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+					}
+				}
+			} 
+		    
+		    
+		    
+		    double totalSaleAmt = 0;
+
+		    for (Map.Entry<String, clsPOSItemWiseConsumption> entry : hmItemWiseConsumption.entrySet())
+		    {
+		    	clsPOSItemWiseConsumption objItemComp = entry.getValue();
+		    	list.add(objItemComp);
+		    }
+
+		    Comparator<clsPOSItemWiseConsumption> costCenterComparator = new Comparator<clsPOSItemWiseConsumption>()
+		    {
+
+			@Override
+			public int compare(clsPOSItemWiseConsumption o1, clsPOSItemWiseConsumption o2)
+			{
+			    return o1.getCostCenterName().compareToIgnoreCase(o2.getCostCenterName());
+			}
+		    };
+
+		    Comparator<clsPOSItemWiseConsumption> itemCodeComparator = new Comparator<clsPOSItemWiseConsumption>()
+		    {
+
+			@Override
+			public int compare(clsPOSItemWiseConsumption o1, clsPOSItemWiseConsumption o2)
+			{
+			    return o1.getItemName().compareToIgnoreCase(o2.getItemName());
+			}
+		    };
+
+		    Collections.sort(list, new clsPOSItemConsumptionComparator(costCenterComparator, itemCodeComparator
+		    ));
+		    
+		    
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+	
+
+	public List<clsPOSItemWiseConsumption> funProcessItemWiseConsumptionMenuHeadReport(String posCode, String fromDate,
+			String toDate, String groupCode, String costCenterCode, String strShiftNo, String printZeroAmountModi) 
+	  {
+		StringBuilder sbSql = new StringBuilder();
+		StringBuilder sbSqlMod = new StringBuilder();
+		StringBuilder sbFilters = new StringBuilder();
+		Map<String, clsPOSItemWiseConsumption> hmItemWiseConsumption = new HashMap<String, clsPOSItemWiseConsumption>();
+		String costCenterCd = "", costCenterNm = "";
+		int sqlNo = 0;
+		String enableShiftYN="N";
+		Map<String, Double> hmMenuHdAmt = new HashMap<String, Double>();
+		List<clsPOSItemWiseConsumption> list = new ArrayList<clsPOSItemWiseConsumption>();
+		try {
+			// Code for Sales Qty for bill detail and bill modifier live & q data
+		    // for Sales Qty for bill detail live data  
+		    sbSql.setLength(0);
+		    String regularAmt = "a.RegularAmt";
+		    String compAmt = "b.CompAmt";
+		    String dblAmount = "SUM(b.dblamount)";
+			
+			sbSql.setLength(0);
+
+			sbSql.append(" select  a.strMenuName, a.stritemcode, upper(a.itemName),a.RegularQty-IFNULL(b.CompQty,0)RegularQty, "+regularAmt+",  "
+			    + "ifnull(b.CompQty,0), ifnull("+compAmt+",0) ,a.strBillNo from  "
+			    + "(SELECT k.strMenuName, b.stritemcode, upper(b.stritemname) itemName, SUM(b.dblQuantity) RegularQty, "+dblAmount+" RegularAmt,a.strBillNo,a.dblUSDConverionRate dblUSDConverionRate "
+			    + "  FROM tblbillhd a,tblbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + " and i.strHourlyPricing='NO' ");
+//				    + "  and b.dblAmount <> 0  ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    sbSql.append(" and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by k.strMenuName, b.strItemCode, b.stritemname) a left outer join   "
+			    + " "
+			    + "  "
+			    + "(SELECT k.strMenuName, b.stritemcode, upper(b.stritemname), SUM(b.dblQuantity) CompQty, "+dblAmount+" CompAmt ,a.strBillNo,a.dblUSDConverionRate dblUSDConverionRate "
+			    + "  FROM tblbillhd a,tblbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + "  and b.dblAmount = 0  "
+			    + " and i.strHourlyPricing='NO' ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    sbSql.append("  and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by k.strMenuName, b.strItemCode, b.stritemname) b "
+			    + "on a.strItemCode = b.strItemCode "
+			    + " "
+			    + "Order by a.strMenuName, a.itemName ");
+			
+		    List listSqlLive = objBaseService.funGetList(sbSql, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[1].toString() + "!" + objSale[2].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[1].toString() + "!" + objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() + Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[4].toString())));
+					    //objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal() + rsSales.getDouble(4));
+					    //objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() + rsSales.getDouble(3));
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+					    objItemWiseConsumption.setMenuHead(objSale[0].toString());
+					    objItemWiseConsumption.setItemCode(objSale[1].toString());
+					    objItemWiseConsumption.setItemName(objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(Double.valueOf(objSale[5].toString()));
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[4].toString()));
+					    objItemWiseConsumption.setSeqNo(sqlNo);
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[1].toString() + "!" + objSale[2].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[0].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[0].toString());
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+
+					}
+				}
+			}
+			
+		    
+		    // for Sales Qty for bill detail q data 
+		    sbSql.setLength(0);
+
+		    sbSql.append(" select  a.strMenuName, a.stritemcode, upper(a.itemName),a.RegularQty-IFNULL(b.CompQty,0)RegularQty, "+regularAmt+",  "
+			    + "ifnull(b.CompQty,0), ifnull("+compAmt+",0) ,a.strBillNo from  "
+			    + "(SELECT k.strMenuName, b.stritemcode, upper(b.stritemname) itemName, SUM(b.dblQuantity) RegularQty, "+dblAmount+" RegularAmt,a.strBillNo,a.dblUSDConverionRate dblUSDConverionRate "
+			    + "  FROM tblqbillhd a,tblqbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + " and i.strHourlyPricing='NO'  ");
+//			    + "  and b.dblAmount <> 0  ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    sbSql.append(" and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by k.strMenuName, b.strItemCode, b.stritemname) a left outer join   "
+			    + "  "
+			    + "(SELECT k.strMenuName, b.stritemcode, upper(b.stritemname), SUM(b.dblQuantity) CompQty, "+dblAmount+" CompAmt ,a.strBillNo,a.dblUSDConverionRate dblUSDConverionRate "
+			    + "  FROM tblqbillhd a,tblqbilldtl b, tblposmaster e,tblitemmaster f,tblsubgrouphd g,tblgrouphd h,tblmenuitempricingdtl i,tblcostcentermaster j, tblmenuhd k "
+			    + "  WHERE a.strBillNo=b.strBillNo "
+			    + "  AND DATE(a.dteBillDate)= DATE(b.dteBillDate)   "
+			    + "  AND a.strPOSCode=e.strPosCode "
+			    + "  AND b.strItemCode=f.strItemCode "
+			    + "  AND f.strSubGroupCode=g.strSubGroupCode "
+			    + "  AND g.strGroupCode=h.strGroupCode "
+			    + "  and b.strItemCode=i.strItemCode "
+			    + "  and (a.strPOSCode=i.strPosCode or i.strPosCode='All') "
+			    + "  and i.strCostCenterCode=j.strCostCenterCode "
+			    + "  and i.strMenuCode = k.strMenuCode "
+			    + "  and b.dblAmount = 0  "
+			    + " and i.strHourlyPricing='NO' ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSql.append(" and j.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    sbSql.append("  and DATE(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
+			    + "group by k.strMenuName, b.strItemCode, b.stritemname) b "
+			    + "on a.strItemCode = b.strItemCode "
+			    + "Order by a.strMenuName, a.itemName ");
+		    
+		    listSqlLive = objBaseService.funGetList(sbSql, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[0].toString() + "!" + objSale[1].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[1].toString()+ "!" + objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() + Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[4].toString())));
+
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+					    objItemWiseConsumption.setMenuHead(objSale[0].toString());
+					    objItemWiseConsumption.setItemCode(objSale[1].toString());
+					    objItemWiseConsumption.setItemName(objSale[2].toString());
+					    objItemWiseConsumption.setSaleQty(Double.valueOf(objSale[3].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(Double.valueOf(objSale[5].toString()));
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[4].toString()));
+					    objItemWiseConsumption.setSeqNo(sqlNo);
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[1].toString() + "!" + objSale[2].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[0].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[0].toString());
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[0].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+					}
+				}
+			}
+		    
+		    
+		    //live modifiers
+		    String amount = "b.dblamount";
+		    String rate = "b.dblRate";
+		    String discAmt = "b.dblDiscAmt";
+		    
+		    sbSqlMod.setLength(0);
+		    // Code for Sales Qty for modifier live & q data
+		    sbSqlMod.append("SELECT b.strItemCode, UPPER(b.strModifierName),b.dblQuantity,"+amount+","+rate+",e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode\n"
+			    + ",j.strMenuCode,j.strMenuName\n"
+			    + "FROM tblbillhd a,tblbillmodifierdtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g\n"
+			    + ",tblgrouphd h,tblmenuitempricingdtl i,tblmenuhd j\n"
+			    + "WHERE a.strBillNo=b.strBillNo \n"
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+			    + "AND a.strPOSCode=e.strPosCode \n"
+			    + "AND LEFT(b.strItemCode,7)=f.strItemCode \n"
+			    + "AND f.strSubGroupCode=g.strSubGroupCode \n"
+			    + "AND g.strGroupCode=h.strGroupCode \n"
+			    + "AND LEFT(b.strItemCode,7)=i.strItemCode \n"
+			    + "and i.strMenuCode=j.strMenuCode\n"
+			    + "and (a.strPOSCode=e.strPosCode or i.strPosCode='All')\n"
+			    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n"
+			    + "  and i.strHourlyPricing='NO' ");
+		    
+		    
+		     if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSqlMod.append(" and i.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    if (printZeroAmountModi.equalsIgnoreCase("Yes"))//Tjs brew works dont want modifiers details
+		    {
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    else
+		    {
+			sbSqlMod.append(" And  b.dblamount >0 ");
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    sbSqlMod.append(sbFilters);
+
+		    listSqlLive = objBaseService.funGetList(sbSqlMod, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[0].toString() + "!" +objSale[1].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[0].toString() + "!" + objSale[1].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() +  Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[3].toString()) -  Double.valueOf(objSale[6].toString())));
+					    objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal() +  Double.valueOf(objSale[3].toString()));
+					    //objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() + rsSalesMod.getDouble(3));
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+
+					    objItemWiseConsumption.setItemCode(objSale[0].toString());
+					    objItemWiseConsumption.setItemName(objSale[1].toString());
+					    objItemWiseConsumption.setSubGroupName(objSale[7].toString());
+					    objItemWiseConsumption.setGroupName(objSale[8].toString());
+					    objItemWiseConsumption.setSaleQty( Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(0);
+					    objItemWiseConsumption.setMenuHead(objSale[12].toString());
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal( Double.valueOf(objSale[3].toString()));
+					    double totalRowQty =  Double.valueOf(objSale[2].toString()) + 0 + 0 + 0;
+					    //objItemWiseConsumption.setTotalQty(totalRowQty);
+
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[0].toString() + "!" + objSale[1].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[12].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[12].toString());
+						hmMenuHdAmt.put(objSale[12].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[12].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+					}
+				}
+			}
+		    
+		    
+		    
+		    sbSqlMod.setLength(0);
+		    // Code for Sales Qty for modifier live & q data
+		    sbSqlMod.append("SELECT b.strItemCode, UPPER(b.strModifierName),b.dblQuantity,"+amount+","+rate+",e.strposname,"+discAmt+",g.strSubGroupName,h.strGroupName,a.strBillNo,f.strExternalCode\n"
+			    + ",j.strMenuCode,j.strMenuName\n"
+			    + "FROM tblqbillhd a,tblqbillmodifierdtl b,tblposmaster e,tblitemmaster f,tblsubgrouphd g\n"
+			    + ",tblgrouphd h,tblmenuitempricingdtl i,tblmenuhd j\n"
+			    + "WHERE a.strBillNo=b.strBillNo \n"
+			    + "AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
+			    + "AND a.strPOSCode=e.strPosCode \n"
+			    + "AND LEFT(b.strItemCode,7)=f.strItemCode \n"
+			    + "AND f.strSubGroupCode=g.strSubGroupCode \n"
+			    + "AND g.strGroupCode=h.strGroupCode \n"
+			    + "AND LEFT(b.strItemCode,7)=i.strItemCode \n"
+			    + "and i.strMenuCode=j.strMenuCode\n"
+			    + "and (a.strPOSCode=e.strPosCode or i.strPosCode='All')\n"
+			    + "AND DATE(a.dteBillDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'\n"
+			    + "  and i.strHourlyPricing='NO' ");
+		    if (!costCenterCode.equalsIgnoreCase("All"))
+		    {
+			sbSqlMod.append(" and i.strCostCenterCode = '" + costCenterCode + "' ");
+		    }
+		    if (printZeroAmountModi.equalsIgnoreCase("Yes"))//Tjs brew works dont want modifiers details
+		    {
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    else
+		    {
+			sbSqlMod.append(" And  b.dblamount >0 ");
+			sbSqlMod.append(" GROUP BY b.strItemCode,b.strModifierName ");
+		    }
+		    sbSqlMod.append(sbFilters);
+		    
+		    listSqlLive = objBaseService.funGetList(sbSqlMod, "sql");
+		    if (listSqlLive.size() > 0) 
+			{
+				for (int i = 0; i < listSqlLive.size(); i++) 
+				{
+					Object[] objSale = (Object[]) listSqlLive.get(i);
+					clsPOSItemWiseConsumption objItemWiseConsumption = null;
+					if (null != hmItemWiseConsumption.get(objSale[0].toString()+ "!" + objSale[1].toString()))
+					{
+					    objItemWiseConsumption = hmItemWiseConsumption.get(objSale[0].toString() + "!" + objSale[1].toString());
+					    objItemWiseConsumption.setSaleQty(objItemWiseConsumption.getSaleQty() +  Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setSaleAmt(objItemWiseConsumption.getSaleAmt() + (Double.valueOf(objSale[3].toString()) -  Double.valueOf(objSale[6].toString())));
+					    objItemWiseConsumption.setSubTotal(objItemWiseConsumption.getSubTotal() +  Double.valueOf(objSale[3].toString()));
+					    //objItemWiseConsumption.setTotalQty(objItemWiseConsumption.getTotalQty() + rsSalesMod.getDouble(3));
+					}
+					else
+					{
+					    sqlNo++;
+					    objItemWiseConsumption = new clsPOSItemWiseConsumption();
+
+					    objItemWiseConsumption.setItemCode(objSale[0].toString());
+					    objItemWiseConsumption.setItemName(objSale[1].toString());
+					    objItemWiseConsumption.setSubGroupName(objSale[7].toString());
+					    objItemWiseConsumption.setGroupName(objSale[8].toString());
+					    objItemWiseConsumption.setSaleQty( Double.valueOf(objSale[2].toString()));
+					    objItemWiseConsumption.setComplimentaryQty(0);
+					    objItemWiseConsumption.setMenuHead(objSale[12].toString());
+					    objItemWiseConsumption.setNcQty(0);
+					    objItemWiseConsumption.setSubTotal(Double.valueOf(objSale[3].toString()));
+					    double totalRowQty =  Double.valueOf(objSale[2].toString()) + 0 + 0 + 0;
+					    //objItemWiseConsumption.setTotalQty(totalRowQty);
+
+					}
+					if (null != objItemWiseConsumption)
+					{
+					    hmItemWiseConsumption.put(objSale[0].toString() + "!" + objSale[1].toString(), objItemWiseConsumption);
+					    if (null != hmMenuHdAmt.get(objSale[12].toString()))//check menu h
+					    {
+						double subTot = hmMenuHdAmt.get(objSale[12].toString());
+						hmMenuHdAmt.put(objSale[12].toString(), objItemWiseConsumption.getSubTotal() + subTot);
+					    }
+					    else
+					    {
+						hmMenuHdAmt.put(objSale[12].toString(), objItemWiseConsumption.getSubTotal());
+					    }
+					}
+				}
+			}
+		    
+		    
+		    
+		    
+		    double totalSaleAmt = 0;
+		    for (Map.Entry<String, Double> entry : hmMenuHdAmt.entrySet())
+		    {
+			totalSaleAmt = totalSaleAmt + entry.getValue();
+		    }
+
+		    for (Map.Entry<String, clsPOSItemWiseConsumption> entry : hmItemWiseConsumption.entrySet())
+		    {
+		    	clsPOSItemWiseConsumption objItemComp = entry.getValue();
+				double menuTot = hmMenuHdAmt.get(objItemComp.getMenuHead());
+				objItemComp.setMenuHeadPer(Math.rint((objItemComp.getSubTotal() / menuTot) * 100));
+				objItemComp.setSubTotalPer(Math.rint((objItemComp.getSubTotal() / totalSaleAmt) * 100));
+				list.add(objItemComp);
+		    }
+
+		    Comparator<clsPOSItemWiseConsumption> menuHeadComparator = new Comparator<clsPOSItemWiseConsumption>()
+		    {
+
+			@Override
+			public int compare(clsPOSItemWiseConsumption o1, clsPOSItemWiseConsumption o2)
+			{
+			    return o1.getMenuHead().compareToIgnoreCase(o2.getMenuHead());
+			}
+		    };
+
+		    Comparator<clsPOSItemWiseConsumption> itemCodeComparator = new Comparator<clsPOSItemWiseConsumption>()
+		    {
+
+			@Override
+			public int compare(clsPOSItemWiseConsumption o1, clsPOSItemWiseConsumption o2)
+			{
+			    return o1.getItemName().compareToIgnoreCase(o2.getItemName());
+			}
+		    };
+
+		    Collections.sort(list, new clsPOSItemConsumptionComparator(menuHeadComparator, itemCodeComparator
+		    ));
+		    
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	
 
 	
 	

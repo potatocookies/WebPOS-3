@@ -49,6 +49,14 @@ public class clsPOSItemWiseConsumption
 
     private double itemRate;
     
+    private double complimentaryAmt;
+    
+    private String menuHead;
+    
+    private double menuHeadPer;
+    
+    private double subTotalPer;
+    
     public double getItemRate() {
 		return itemRate;
 	}
@@ -245,8 +253,54 @@ public class clsPOSItemWiseConsumption
     {
         this.costCenterName = costCenterName;
     }
+    
+    
 
-    public static Comparator<clsPOSItemWiseConsumption> comparatorItemConsumptionColumnDtl = new Comparator<clsPOSItemWiseConsumption>()
+    public double getComplimentaryAmt()
+	{
+		return complimentaryAmt;
+	}
+
+	public void setComplimentaryAmt(double complimentaryAmt)
+	{
+		this.complimentaryAmt = complimentaryAmt;
+	}
+	
+	
+
+	public String getMenuHead()
+	{
+		return menuHead;
+	}
+
+	public void setMenuHead(String menuHead)
+	{
+		this.menuHead = menuHead;
+	}
+
+	
+	
+	public double getMenuHeadPer()
+	{
+		return menuHeadPer;
+	}
+
+	public void setMenuHeadPer(double menuHeadPer)
+	{
+		this.menuHeadPer = menuHeadPer;
+	}
+
+	public double getSubTotalPer()
+	{
+		return subTotalPer;
+	}
+
+	public void setSubTotalPer(double subTotalPer)
+	{
+		this.subTotalPer = subTotalPer;
+	}
+
+	public static Comparator<clsPOSItemWiseConsumption> comparatorItemConsumptionColumnDtl = new Comparator<clsPOSItemWiseConsumption>()
     {
         public int compare(clsPOSItemWiseConsumption s1, clsPOSItemWiseConsumption s2)
         {

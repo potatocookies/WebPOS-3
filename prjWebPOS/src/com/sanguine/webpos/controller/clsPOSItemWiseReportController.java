@@ -1,5 +1,7 @@
 package com.sanguine.webpos.controller;
 
+import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsSetupService;
+import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
@@ -58,6 +62,13 @@ public class clsPOSItemWiseReportController
 	
 	@Autowired
 	private clsPOSMasterService objMasterService;
+	
+	@Autowired
+	intfBaseService objBaseService;
+	
+	@Autowired
+	private clsSetupService objSetupService;
+	
 	
 	Map<String, String> hmPOSData = new HashMap<String,String>();
 
@@ -111,8 +122,9 @@ public class clsPOSItemWiseReportController
 		try
 		{
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptitemWiseSalesReport.jrxml");
-
+			StringBuilder sql = new StringBuilder();
 			String type = objBean.getStrDocType();
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
@@ -126,11 +138,49 @@ public class clsPOSItemWiseReportController
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
 			String shiftNo = "1";
-
+			
+			String strShiftNo = "ALL",enableShiftYN="N";	
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
+			if (!strPOSName.equalsIgnoreCase("ALL"))
+			{
+				if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
+				{
+					strShiftNo=objBean.getStrShiftCode();
+					enableShiftYN=objSetupParameter.get("gEnableShiftYN").toString();
+				}
+			}
+			hm.remove("shiftNo");
+			hm.put("shiftNo", strShiftNo);
+			hm.put("shiftCode", strShiftNo);
+			
 			String printComplimentaryYN = objBean.getStrType();
-
-
 			Map<String, clsPOSBillItemDtlBean> mapItemdtl = new HashMap<>();
+			
+			String taxCalculation = "Forward";
+			sql.append("select b.strTaxCalculation "
+			    + "from tblbilltaxdtl a,tbltaxhd b "
+			    + "where a.strTaxCode=b.strTaxCode "
+			    + "and date(a.dteBillDate) between  '" + fromDate + "' AND '" + toDate + "'  "
+			    + "group by b.strTaxCalculation ");
+		    List list = objBaseService.funGetList(sql, "sql");
+		    if (list!=null && list.size()>0)
+		    {
+			  taxCalculation = (String) list.get(0);
+		    }
+		    else
+		    {
+			    sql.setLength(0);
+			    sql.append("select b.strTaxCalculation "
+					+ "from tblqbilltaxdtl a,tbltaxhd b "
+					+ "where a.strTaxCode=b.strTaxCode "
+					+ "and date(a.dteBillDate) between  '" + fromDate + "' AND '" + toDate + "'  "
+					+ "group by b.strTaxCalculation ");
+			    list = objBaseService.funGetList(sql, "sql");
+			    if (list!=null && list.size()>0)
+				{
+			    	taxCalculation = (String) list.get(0);
+				}
+		    }
 
 			List listSqlLive = objReportService.funProcessItemWiseReport( posCode, fromDate, toDate, shiftNo, printComplimentaryYN,"Live",strUserCode);
 			if (listSqlLive.size() > 0)
@@ -158,6 +208,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblAmount(obj.getDblAmount() + amount);
 						obj.setDblSubTotal(obj.getDblSubTotal() + subTotal);
 						obj.setDblDiscountAmt(obj.getDblDiscountAmt() + discAmt);
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 
 					}
 					else
@@ -173,6 +231,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblSubTotal(subTotal);
 						obj.setDblDiscountAmt(discAmt);
 						obj.setDteBillDate(billDate);
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 
 						mapItemdtl.put(itemCode, obj);
 					}
@@ -206,7 +272,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblAmount(obj.getDblAmount() + amount);
 						obj.setDblSubTotal(obj.getDblSubTotal() + subTotal);
 						obj.setDblDiscountAmt(obj.getDblDiscountAmt() + discAmt);
-
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 					}
 					else
 					{
@@ -221,7 +294,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblSubTotal(subTotal);
 						obj.setDblDiscountAmt(discAmt);
 						obj.setDteBillDate(billDate);
-
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 						mapItemdtl.put(itemCode, obj);
 					}
 				}
@@ -254,7 +334,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblAmount(obj.getDblAmount() + amount);
 						obj.setDblSubTotal(obj.getDblSubTotal() + subTotal);
 						obj.setDblDiscountAmt(obj.getDblDiscountAmt() + discAmt);
-
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 					}
 					else
 					{
@@ -269,7 +356,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblSubTotal(subTotal);
 						obj.setDblDiscountAmt(discAmt);
 						obj.setDteBillDate(billDate);
-
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 						mapItemdtl.put(itemCode, obj);
 					}
 				}
@@ -302,7 +396,14 @@ public class clsPOSItemWiseReportController
 						obj.setDblAmount(obj.getDblAmount() + amount);
 						obj.setDblSubTotal(obj.getDblSubTotal() + subTotal);
 						obj.setDblDiscountAmt(obj.getDblDiscountAmt() + discAmt);
-
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 					}
 					else
 					{
@@ -317,11 +418,64 @@ public class clsPOSItemWiseReportController
 						obj.setDblSubTotal(subTotal);
 						obj.setDblDiscountAmt(discAmt);
 						obj.setDteBillDate(billDate);
-
+						if (taxCalculation.equalsIgnoreCase("Forward"))
+					     {
+						   obj.setDblGrandTotal((obj.getDblSubTotal() + obj.getDblTaxAmt()));
+					     }
+					    else
+					     {
+						   obj.setDblGrandTotal(obj.getDblSubTotal());
+					     }
 						mapItemdtl.put(itemCode, obj);
 					}
 				}
 			}
+			
+			
+			
+			 double roundOff = 0.00;
+			 String roundOffAmount = "sum(a.dblRoundOff)dblRoundOff";
+			 StringBuilder sqlRoundOff = new StringBuilder("select sum(b.dblRoundOff) "
+				    + "from "
+			    + "(select " + roundOffAmount + " "
+			    + "from tblbillhd a "
+			    + "where date(a.dteBillDate) between '" + fromDate + "' and  '" + toDate + "'  ");
+			 if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sqlRoundOff.append("and a.strPOSCode='" + posCode + "' ");
+			    }
+			 if (!shiftNo.equalsIgnoreCase("All"))
+			    {
+				sqlRoundOff.append("and a.intShiftCode='" + shiftNo + "'  ");
+			    }
+			    sqlRoundOff.append("union  "
+				    + "select " + roundOffAmount + " "
+				    + "from tblqbillhd a "
+				    + "where date(a.dteBillDate) between '" + fromDate + "' and  '" + toDate + "'  ");
+			 if (!posCode.equalsIgnoreCase("All"))
+			    {
+				sqlRoundOff.append("and a.strPOSCode='" + posCode + "' ");
+			    }
+			 if (!shiftNo.equalsIgnoreCase("All"))
+			    {
+				sqlRoundOff.append("and a.intShiftCode='" + shiftNo + "'  ");
+			    }
+			    sqlRoundOff.append(") b ");
+			    
+		    list = objBaseService.funGetList(sqlRoundOff, "sql");
+		    if (list!=null && list.size()>0)
+			{
+		    	for(int cnt=0;cnt<list.size();cnt++)
+		    	{
+		    		Object obj=list.get(cnt);
+		    		roundOff=new BigDecimal(obj.toString()).doubleValue() ;
+		    	}
+			}
+			
+
+		    hm.put("RoundOff", roundOff);
+			
+			
 
 			/**
 			 * substract compli qty

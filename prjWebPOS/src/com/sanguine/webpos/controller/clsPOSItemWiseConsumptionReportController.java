@@ -147,7 +147,7 @@ public class clsPOSItemWiseConsumptionReportController {
 		
 		try
 		{
-		String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptItemWiseConsumptionReport1.jrxml");	
+		String reportName ="";	
 		Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 		String strPOSName =objBean.getStrPOSName();
 		String posCode= "ALL";
@@ -173,18 +173,33 @@ public class clsPOSItemWiseConsumptionReportController {
 		}
 		hm.put("costCenterName", strCostCenterName);
 		
+		String reportBy=objBean.getStrViewBy();
 		String printZeroAmountModi = objBean.getStrOperationType();
 		hm.put("PrintZeroAmountModi", printZeroAmountModi);
+		hm.put("isDayEndHappend", "DAY END NOT DONE.");
 		
 		String fromDate = hm.get("fromDate").toString();
 		String toDate = hm.get("toDate").toString();
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
-		String strShiftNo = "1";
+		String strShiftNo = "All";
 		List<clsPOSItemWiseConsumption> list = new ArrayList<clsPOSItemWiseConsumption>();
-		
-		list = objReportService.funProcessItemWiseConsumptionReport(posCode,fromDate,toDate,groupCode,costCenterCode,strShiftNo,printZeroAmountModi);
-        JasperDesign jd = JRXmlLoader.load(reportName);
+		if(reportBy.equalsIgnoreCase("POS Wise Cost Center"))
+		{
+			reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptItemWiseConsumptionReport1.jrxml");	
+			list = objReportService.funProcessItemWiseConsumptionReport(posCode,fromDate,toDate,groupCode,costCenterCode,strShiftNo,printZeroAmountModi);  
+		}
+		else if(reportBy.equalsIgnoreCase("Cost Center"))
+		{
+			reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptItemWiseConsumptionReportCostCenter.jrxml");	
+			list = objReportService.funProcessItemWiseConsumptionCostCenterReport(posCode,fromDate,toDate,groupCode,costCenterCode,strShiftNo,printZeroAmountModi);  
+		}
+		else
+		{
+			reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptItemWiseConsumptionReport2.jrxml");	
+			list = objReportService.funProcessItemWiseConsumptionMenuHeadReport(posCode,fromDate,toDate,groupCode,costCenterCode,strShiftNo,printZeroAmountModi);        
+		}
+		JasperDesign jd = JRXmlLoader.load(reportName);
 		JasperReport jr = JasperCompileManager.compileReport(jd);
 
 		// jp = JasperFillManager.fillReport(jr, hm, new

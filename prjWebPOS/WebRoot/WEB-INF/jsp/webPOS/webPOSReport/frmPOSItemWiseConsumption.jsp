@@ -70,18 +70,6 @@
 				</div>
 			</div>
 			<div class="row" style="background-color: #fff;display: -webkit-box;">
-				<div class="element-input col-lg-6" style="width: 17%;" > 
-    				<label class="title">Report Type</label>
-    			</div>
-    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
-					<s:select id="cmbDocType" path="strDocType">
-				    		<s:option value="PDF">PDF</s:option>
-				    		<s:option value="XLS">EXCEL</s:option>
-				    		
-				    </s:select>
-				</div>
-			</div>
-			<div class="row" style="background-color: #fff;display: -webkit-box;">
 			 		<div class="element-input col-lg-6" style="width: 17%;"> 
     					<label class="title">From Date</label>
 	    			</div>
@@ -105,6 +93,20 @@
 						<s:select id="cmbGroupName" name="cmbGroupName" path="strGroupName" items="${groupList}"/>
 					</div>
 			 </div>
+			 
+			 <div class="row" style="background-color: #fff;display: -webkit-box;">
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">Report Type</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbDocType" path="strDocType">
+				    		<s:option value="PDF">PDF</s:option>
+				    		<s:option value="XLS">EXCEL</s:option>
+				    		
+				    </s:select>
+				</div>
+			</div>
+			 
 			 <div class="row" style="background-color: #fff;display: -webkit-box;">			
 			 		<div class="element-input col-lg-6" style="width: 17%;"> 
     					<label class="title">Print Modifiers</label>
@@ -121,6 +123,20 @@
 						<s:select id="cmbCostCenterName" name="cmbCostCenterName" path="strSGName" items="${costCenterList}"/>
 					</div>
 			 </div>
+			 
+			  <div class="row" style="background-color: #fff;display: -webkit-box;">
+				<div class="element-input col-lg-6" style="width: 17%;" > 
+    				<label class="title">Report By</label>
+    			</div>
+    			<div class="element-input col-lg-6" style="margin-bottom:  10px;width: 30%"> 
+					<s:select id="cmbReportBy" path="strViewBy">
+				    		<s:option value="Menu Head">Menu Head</s:option>
+				    		<s:option value="POS Wise Cost Center">POS Wise Cost Center</s:option>
+				    		<s:option value="Cost Center">Cost Center</s:option>
+				    		
+				    </s:select>
+				</div>
+			</div>
 			
 			</div>
 			

@@ -88,7 +88,8 @@ public class clsPOSReportService {
 	Map<String, Map<String, clsPOSCommonBeanDtl>> mapPOSModifierWiseSales;
 	Map<String, Map<String, clsPOSCommonBeanDtl>> mapPOSMonthWiseSales;
 	Map<String, List<clsPOSOperatorDtl>> mapOperatorDtls;
-	
+	Map<String, String> mapDocCode;
+	Map<String, Double> mapPOSDocSales;
 	@Autowired
 	private clsSetupService objSetupService;
 	
@@ -2635,6 +2636,11 @@ public class clsPOSReportService {
 		StringBuilder sbSqlFilters = new StringBuilder();
 		StringBuilder sqlModLive = new StringBuilder();
 		StringBuilder sqlModQfile = new StringBuilder();
+		DecimalFormat decFormatFor2Decimal = new DecimalFormat("0.00");
+		mapDocCode = new HashMap<String, String>();
+		mapPOSDocSales = new HashMap<String, Double>();
+		mapPOSItemDtl = new LinkedHashMap<>();
+
 
 		LinkedHashMap resMap = new LinkedHashMap();
 		double total = 0.0;
@@ -2643,7 +2649,6 @@ public class clsPOSReportService {
 		List listcol = new ArrayList();
 		List totalList = new ArrayList();
 		totalList.add("Total");
-		totalList.add("");
 		totalList.add("");
 
 		sbSqlLive.setLength(0);
@@ -2654,203 +2659,201 @@ public class clsPOSReportService {
 
 		try {
 			if (strViewType.equalsIgnoreCase("ITEM WISE")) {
-				sbSqlLive.append(
-						"  select a.strItemCode,a.strItemName,c.strPOSName,sum(a.dblQuantity),sum(a.dblTaxAmount) "
-								+ "  ,sum(a.dblAmount)-sum(a.dblDiscountAmt),'SANGUINE' ,sum(a.dblAmount), "
-								+ " sum(a.dblDiscountAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode "
-								+ " from tblbilldtl a,tblbillhd b,tblposmaster c "
-								+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode "
-								+ " and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
-								+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate   ");
-
-				sbSqlQFile.append(
-						" select a.strItemCode,a.strItemName,c.strPOSName,sum(a.dblQuantity),sum(a.dblTaxAmount) "
-								+ " ,sum(a.dblAmount)-sum(a.dblDiscountAmt),'SANGUINE' ,sum(a.dblAmount), "
-								+ " sum(a.dblDiscountAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode "
-								+ " from tblqbilldtl a,tblqbillhd b,tblposmaster c "
-								+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode "
-								+ " and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
-								+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate   ");
-
-				sqlModLive.append(" select a.strItemCode,a.strModifierName,c.strPOSName,sum(a.dblQuantity),'0.0', "
-						+ " sum(a.dblAmount)-sum(a.dblDiscAmt),'SANGUINE' ,sum(a.dblAmount), "
-						+ " sum(a.dblDiscAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode  "
-						+ " from tblbillmodifierdtl a,tblbillhd b,tblposmaster c  "
-						+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode  " + " and a.dblamount>0  "
-						+ " and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
-						+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate  ");
-
-				sqlModQfile.append(" select a.strItemCode,a.strModifierName,c.strPOSName,sum(a.dblQuantity),'0', "
-						+ " sum(a.dblAmount)-sum(a.dblDiscAmt),'SANGUINE' ,sum(a.dblAmount), "
-						+ " sum(a.dblDiscAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode "
-						+ " from tblqbillmodifierdtl a,tblqbillhd b,tblposmaster c,tblitemmaster d "
-						+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode "
-						+ " and a.strItemCode=d.strItemCode and a.dblamount>0 " + " and date( b.dteBillDate ) BETWEEN '"
-						+ fromDate + "' AND '" + toDate + "'   "
-						+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate  ");
-				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
-				if (listSqlLive.size() > 0) {
-					for (int i = 0; i < listSqlLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlLive.get(i);
-						List arrList = new ArrayList();
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[2].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlQFile = objBaseService.funGetList(sbSqlQFile, "sql");
-				if (listSqlQFile.size() > 0) {
-					for (int i = 0; i < listSqlQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlQFile.get(i);
-						List arrList = new ArrayList();
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[2].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModLive = objBaseService.funGetList(sqlModLive, "sql");
-				if (listSqlModLive.size() > 0) {
-					for (int i = 0; i < listSqlModLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlModLive.get(i);
-						List arrList = new ArrayList();
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[2].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModQFile = objBaseService.funGetList(sqlModQfile, "sql");
-				if (listSqlModQFile.size() > 0) {
-					for (int i = 0; i < listSqlModQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlModQFile.get(i);
-						List arrList = new ArrayList();
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[2].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
+				
+				
 				listcol.add("Item Code");
 				listcol.add("Item Name");
-				listcol.add("POS Name");
+				sbSqlLive.append("select strPOSCode,strPOSName from tblposmaster order by strPOSName");
+				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
+				if (listSqlLive.size() > 0) 
+				{
+					for (int i = 0; i < listSqlLive.size(); i++) 
+					{
+						Object[] obj = (Object[]) listSqlLive.get(i);
+						listcol.add(obj[1].toString());
+						totalList.add(0.0);
+					}
+				}
 				listcol.add("Total");
-			} else if (strViewType.equalsIgnoreCase("GROUP WISE")) {
+				sbSqlLive.setLength(0);
+				sbSqlLive.append("  select a.strItemCode,a.strItemName,c.strPOSName,sum(a.dblQuantity),sum(a.dblTaxAmount) "
+					+ " ,sum(a.dblAmount)-sum(a.dblDiscountAmt),'SANGUINE' ,sum(a.dblAmount), "
+					+ " sum(a.dblDiscountAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode "
+					+ " from tblbilldtl a,tblbillhd b,tblposmaster c "
+					+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode "
+					+ " and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
+					+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate   ");
+
+				sbSqlQFile.append(" select a.strItemCode,a.strItemName,c.strPOSName,sum(a.dblQuantity),sum(a.dblTaxAmount) "
+					+ " ,sum(a.dblAmount)-sum(a.dblDiscountAmt),'SANGUINE' ,sum(a.dblAmount), "
+					+ " sum(a.dblDiscountAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode "
+					+ " from tblqbilldtl a,tblqbillhd b,tblposmaster c "
+					+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode "
+					+ " and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
+					+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate   ");
+
+				sqlModLive.append(" select a.strItemCode,a.strModifierName,c.strPOSName,sum(a.dblQuantity),'0.0', "
+					+ " sum(a.dblAmount)-sum(a.dblDiscAmt),'SANGUINE' ,sum(a.dblAmount), "
+					+ " sum(a.dblDiscAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode  "
+					+ " from tblbillmodifierdtl a,tblbillhd b,tblposmaster c  "
+					+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode  " + " and a.dblamount>0  "
+					+ " and date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
+					+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate  ");
+
+				sqlModQfile.append(" select a.strItemCode,a.strModifierName,c.strPOSName,sum(a.dblQuantity),'0', "
+					+ " sum(a.dblAmount)-sum(a.dblDiscAmt),'SANGUINE' ,sum(a.dblAmount), "
+					+ " sum(a.dblDiscAmt),DATE_FORMAT(date(b.dteBillDate),'%d-%m-%Y'),b.strPOSCode "
+					+ " from tblqbillmodifierdtl a,tblqbillhd b,tblposmaster c,tblitemmaster d "
+					+ " where a.strBillNo=b.strBillNo and b.strPOSCode=c.strPosCode "
+					+ " and a.strItemCode=d.strItemCode and a.dblamount>0 " + " and date( b.dteBillDate ) BETWEEN '"
+					+ fromDate + "' AND '" + toDate + "'   "
+					+ " group by a.strItemCode,c.strPOSName  order by b.dteBillDate  ");
+				
+				funGenerateItemWiseSales(sbSqlLive);
+				funGenerateItemWiseSales(sbSqlQFile);
+				funGenerateItemWiseSales(sqlModLive);
+				funGenerateItemWiseSales(sqlModQfile);
+				Iterator<Map.Entry<String, String>> docIterator = mapDocCode.entrySet().iterator();
+				while (docIterator.hasNext())
+				{
+				    Map.Entry entry = docIterator.next();
+				    String docCode = entry.getKey().toString();
+				    String docName = entry.getValue().toString();
+
+				    int colSize = listcol.size()-1;
+				    int lastCol = colSize - 1;
+				    List arrList = new ArrayList();
+					arrList.add(docCode.toString());
+					arrList.add(docName.toString());
+				    int i = 2;
+				    double posWiseTotalSales = 0.00;
+				    for (int col = i; col < colSize; col++)
+				    {
+						double sales = 0.00;
+						if (mapPOSDocSales.containsKey(listcol.get(col).toString() + "!" + docCode))
+						{
+							sales = Double.parseDouble(mapPOSDocSales.get(listcol.get(col).toString() + "!" + docCode).toString());
+						    arrList.add(String.valueOf(decFormatFor2Decimal.format(sales)));
+						    double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+						    totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += sales;
+						    i++;
+						}
+						else
+						{
+							arrList.add("0.0");
+							double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+							totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += 0.00;
+						    i++;
+						}
+				    }
+				    arrList.add(String.valueOf(decFormatFor2Decimal.format(posWiseTotalSales)));
+				    total += posWiseTotalSales;
+					list.add(arrList);
+				}
+				
+			}
+			else if (strViewType.equalsIgnoreCase("GROUP WISE")) 
+			{
 				sbSqlLive.setLength(0);
 				sbSqlQFile.setLength(0);
 				sbSqlFilters.setLength(0);
 				sqlModLive.setLength(0);
 				sqlModQfile.setLength(0);
-
-				sbSqlLive.append(" SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity),"
-						+ " sum( b.dblAmount)-sum(b.dblDiscountAmt) ,f.strPosName, 'SANGUINE',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode "
-						+ " FROM tblbillhd a,tblbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
-						+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode and b.strItemCode=e.strItemCode and c.strGroupCode=d.strGroupCode "
-						+ " and d.strSubGroupCode=e.strSubGroupCode " + " and date( a.dteBillDate ) BETWEEN '"
-						+ fromDate + "' AND '" + toDate + "' "
-						+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode  ");
-
-				sbSqlQFile.append(" SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity),"
-						+ " sum( b.dblAmount)-sum(b.dblDiscountAmt) ,f.strPosName, 'SANGUINE',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode  "
-						+ " FROM tblqbillhd a,tblqbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
-						+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode and b.strItemCode=e.strItemCode and c.strGroupCode=d.strGroupCode "
-						+ " and d.strSubGroupCode=e.strSubGroupCode  " + " and date( a.dteBillDate ) BETWEEN '"
-						+ fromDate + "' AND '" + toDate + "' "
-						+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode   ");
-
-				sqlModLive.append(
-						" select c.strGroupCode,c.strGroupName,sum(b.dblQuantity),sum(b.dblAmount)-sum(b.dblDiscAmt),f.strPOSName,'SANGUINE','0' ,"
-								+ " sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
-								+ " from tblbillmodifierdtl b,tblbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd e,tblgrouphd c  "
-								+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  "
-								+ " and LEFT(b.strItemCode,7)=d.strItemCode  and d.strSubGroupCode=e.strSubGroupCode "
-								+ " and e.strGroupCode=c.strGroupCode  and b.dblamount>0  "
-								+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-								+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode  ");
-
-				sqlModQfile.append(
-						" select c.strGroupCode,c.strGroupName,sum(b.dblQuantity),sum(b.dblAmount)-sum(b.dblDiscAmt),f.strPOSName,'SANGUINE','0' , "
-								+ " sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
-								+ " from tblqbillmodifierdtl b,tblqbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd e,tblgrouphd c  "
-								+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  and LEFT(b.strItemCode,7)=d.strItemCode  "
-								+ " and d.strSubGroupCode=e.strSubGroupCode and e.strGroupCode=c.strGroupCode  and b.dblamount>0  "
-								+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
-								+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode  ");
-				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
-				if (listSqlLive.size() > 0) {
-					for (int i = 0; i < listSqlLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlLive.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlQFile = objBaseService.funGetList(sbSqlQFile, "sql");
-				if (listSqlQFile.size() > 0) {
-					for (int i = 0; i < listSqlQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlQFile.get(i);
-						List arrList = new ArrayList();
-						total += Double.parseDouble(obj[7].toString());
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModLive = objBaseService.funGetList(sqlModLive, "sql");
-				if (listSqlModLive.size() > 0) {
-					for (int i = 0; i < listSqlModLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlModLive.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModQFile = objBaseService.funGetList(sqlModQfile, "sql");
-				if (listSqlModQFile.size() > 0) {
-					for (int i = 0; i < listSqlModQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlModQFile.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
+				
 				listcol.add("Group Code");
 				listcol.add("Group Name");
-				listcol.add("POS Name");
+				sbSqlLive.append("select strPOSCode,strPOSName from tblposmaster order by strPOSName");
+				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
+				if (listSqlLive.size() > 0) 
+				{
+					for (int i = 0; i < listSqlLive.size(); i++) 
+					{
+						Object[] obj = (Object[]) listSqlLive.get(i);
+						listcol.add(obj[1].toString());
+						totalList.add(0.0);
+					}
+				}
 				listcol.add("Total");
+				sbSqlLive.setLength(0);
+
+				sbSqlLive.append(" SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity),"
+					+ " sum( b.dblAmount)-sum(b.dblDiscountAmt) ,f.strPosName, 'SANGUINE',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode "
+					+ " FROM tblbillhd a,tblbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode and b.strItemCode=e.strItemCode and c.strGroupCode=d.strGroupCode "
+					+ " and d.strSubGroupCode=e.strSubGroupCode " + " and date( a.dteBillDate ) BETWEEN '"
+					+ fromDate + "' AND '" + toDate + "' "
+					+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode  ");
+
+				sbSqlQFile.append(" SELECT c.strGroupCode,c.strGroupName,sum( b.dblQuantity),"
+					+ " sum( b.dblAmount)-sum(b.dblDiscountAmt) ,f.strPosName, 'SANGUINE',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode  "
+					+ " FROM tblqbillhd a,tblqbilldtl b,tblgrouphd c,tblsubgrouphd d,tblitemmaster e,tblposmaster f "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode and b.strItemCode=e.strItemCode and c.strGroupCode=d.strGroupCode "
+					+ " and d.strSubGroupCode=e.strSubGroupCode  " + " and date( a.dteBillDate ) BETWEEN '"
+					+ fromDate + "' AND '" + toDate + "' "
+					+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode   ");
+
+				sqlModLive.append(" select c.strGroupCode,c.strGroupName,sum(b.dblQuantity),sum(b.dblAmount)-sum(b.dblDiscAmt),f.strPOSName,'SANGUINE','0' ,"
+					+ " sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
+					+ " from tblbillmodifierdtl b,tblbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd e,tblgrouphd c  "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  "
+					+ " and LEFT(b.strItemCode,7)=d.strItemCode  and d.strSubGroupCode=e.strSubGroupCode "
+					+ " and e.strGroupCode=c.strGroupCode  and b.dblamount>0  "
+					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+					+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode  ");
+
+				sqlModQfile.append(" select c.strGroupCode,c.strGroupName,sum(b.dblQuantity),sum(b.dblAmount)-sum(b.dblDiscAmt),f.strPOSName,'SANGUINE','0' , "
+					+ " sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
+					+ " from tblqbillmodifierdtl b,tblqbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd e,tblgrouphd c  "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  and LEFT(b.strItemCode,7)=d.strItemCode  "
+					+ " and d.strSubGroupCode=e.strSubGroupCode and e.strGroupCode=c.strGroupCode  and b.dblamount>0  "
+					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
+					+ " GROUP BY c.strGroupCode, c.strGroupName, a.strPoscode  ");
+	
+				funGenerateGroupWiseSales(sbSqlLive);
+				funGenerateGroupWiseSales(sbSqlQFile);
+				funGenerateGroupWiseSales(sqlModLive);
+				funGenerateGroupWiseSales(sqlModQfile);
+				Iterator<Map.Entry<String, String>> docIterator = mapDocCode.entrySet().iterator();
+				while (docIterator.hasNext())
+				{
+				    Map.Entry entry = docIterator.next();
+				    String docCode = entry.getKey().toString();
+				    String docName = entry.getValue().toString();
+
+				    int colSize = listcol.size()-1;
+				    int lastCol = colSize - 1;
+				    List arrList = new ArrayList();
+					arrList.add(docCode.toString());
+					arrList.add(docName.toString());
+				    int i = 2;
+				    double posWiseTotalSales = 0.00;
+				    for (int col = i; col < colSize; col++)
+				    {
+						double sales = 0.00;
+						if (mapPOSDocSales.containsKey(listcol.get(col).toString() + "!" + docCode))
+						{
+							sales = Double.parseDouble(mapPOSDocSales.get(listcol.get(col).toString() + "!" + docCode).toString());
+						    arrList.add(String.valueOf(decFormatFor2Decimal.format(sales)));
+						    double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+						    totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += sales;
+						    i++;
+						}
+						else
+						{
+							arrList.add("0.0");
+							double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+							totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += 0.00;
+						    i++;
+						}
+				    }
+				    arrList.add(String.valueOf(decFormatFor2Decimal.format(posWiseTotalSales)));
+				    total += posWiseTotalSales;
+					list.add(arrList);
+				}
 
 			} else if (strViewType.equalsIgnoreCase("SUB GROUP WISE")) {
 				sbSqlLive.setLength(0);
@@ -2858,110 +2861,120 @@ public class clsPOSReportService {
 				sbSqlFilters.setLength(0);
 				sqlModLive.setLength(0);
 				sqlModQfile.setLength(0);
-
-				sbSqlLive.append(
-						" SELECT c.strSubGroupCode, c.strSubGroupName, sum( b.dblQuantity )  , sum( b.dblAmount )-sum(b.dblDiscountAmt), f.strPosName,'SANGUINE',b.dblRate , "
-								+ " sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode "
-								+ " from tblbillhd a,tblbilldtl b,tblsubgrouphd c,tblitemmaster d  ,tblposmaster f  "
-								+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode  "
-								+ " and b.strItemCode=d.strItemCode  and c.strSubGroupCode=d.strSubGroupCode  "
-								+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-								+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode   ");
-
-				sbSqlQFile.append(" SELECT c.strSubGroupCode, c.strSubGroupName, sum( b.dblQuantity )  , "
-						+ " sum( b.dblAmount )-sum(b.dblDiscountAmt), f.strPosName,'SANGUINE',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode "
-						+ " from tblqbillhd a,tblqbilldtl b,tblsubgrouphd c,tblitemmaster d  ,tblposmaster f  "
-						+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode  "
-						+ " and b.strItemCode=d.strItemCode  and c.strSubGroupCode=d.strSubGroupCode "
-						+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-						+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode   ");
-
-				sqlModLive.append(" select c.strSubGroupCode,c.strSubGroupName,sum(b.dblQuantity),"
-						+ " sum(b.dblAmount)-sum(b.dblDiscAmt),f.strPOSName,'SANGUINE','0' ,sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
-						+ " from tblbillmodifierdtl b,tblbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd c "
-						+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  and LEFT(b.strItemCode,7)=d.strItemCode  "
-						+ " and d.strSubGroupCode=c.strSubGroupCode  and b.dblamount>0  "
-						+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
-						+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode  ");
-
-				sqlModQfile.append(
-						" select c.strSubGroupCode,c.strSubGroupName,sum(b.dblQuantity),sum(b.dblAmount)-sum(b.dblDiscAmt),"
-								+ " f.strPOSName,'SANGUINE','0' ,sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
-								+ " from tblqbillmodifierdtl b,tblqbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd c "
-								+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  and LEFT(b.strItemCode,7)=d.strItemCode  "
-								+ " and d.strSubGroupCode=c.strSubGroupCode  and b.dblamount>0  "
-								+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'  "
-								+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode   ");
-
-				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
-				if (listSqlLive.size() > 0) {
-					for (int i = 0; i < listSqlLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlLive.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlQFile = objBaseService.funGetList(sbSqlQFile, "sql");
-				if (listSqlQFile.size() > 0) {
-					for (int i = 0; i < listSqlQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlQFile.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModLive = objBaseService.funGetList(sqlModLive, "sql");
-				if (listSqlModLive.size() > 0) {
-					for (int i = 0; i < listSqlModLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlModLive.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModQFile = objBaseService.funGetList(sqlModQfile, "sql");
-				if (listSqlModQFile.size() > 0) {
-					for (int i = 0; i < listSqlModQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlModQFile.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
+				
 				listcol.add("Sub Group Code");
 				listcol.add("Sub Group Name");
-				listcol.add("POS Name");
+				sbSqlLive.append("select strPOSCode,strPOSName from tblposmaster order by strPOSName");
+				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
+				if (listSqlLive.size() > 0) 
+				{
+					for (int i = 0; i < listSqlLive.size(); i++) 
+					{
+						Object[] obj = (Object[]) listSqlLive.get(i);
+						listcol.add(obj[1].toString());
+						totalList.add(0.0);
+					}
+				}
 				listcol.add("Total");
+				sbSqlLive.setLength(0);
+
+				sbSqlLive.append(" SELECT c.strSubGroupCode, c.strSubGroupName, sum( b.dblQuantity )  , sum( b.dblAmount )-sum(b.dblDiscountAmt), f.strPosName,'SANGUINE',b.dblRate , "
+					+ " sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode "
+					+ " from tblbillhd a,tblbilldtl b,tblsubgrouphd c,tblitemmaster d  ,tblposmaster f  "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode  "
+					+ " and b.strItemCode=d.strItemCode  and c.strSubGroupCode=d.strSubGroupCode  "
+					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+					+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode   ");
+
+				sbSqlQFile.append(" SELECT c.strSubGroupCode, c.strSubGroupName, sum( b.dblQuantity )  , "
+					+ " sum( b.dblAmount )-sum(b.dblDiscountAmt), f.strPosName,'SANGUINE',b.dblRate ,sum(b.dblAmount),sum(b.dblDiscountAmt),a.strPOSCode "
+					+ " from tblqbillhd a,tblqbilldtl b,tblsubgrouphd c,tblitemmaster d  ,tblposmaster f  "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPOSCode  "
+					+ " and b.strItemCode=d.strItemCode  and c.strSubGroupCode=d.strSubGroupCode "
+					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+					+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode   ");
+
+				sqlModLive.append(" select c.strSubGroupCode,c.strSubGroupName,sum(b.dblQuantity),"
+					+ " sum(b.dblAmount)-sum(b.dblDiscAmt),f.strPOSName,'SANGUINE','0' ,sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
+					+ " from tblbillmodifierdtl b,tblbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd c "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  and LEFT(b.strItemCode,7)=d.strItemCode  "
+					+ " and d.strSubGroupCode=c.strSubGroupCode  and b.dblamount>0  "
+					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'   "
+					+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode  ");
+
+				sqlModQfile.append(" select c.strSubGroupCode,c.strSubGroupName,sum(b.dblQuantity),sum(b.dblAmount)-sum(b.dblDiscAmt),"
+					+ " f.strPOSName,'SANGUINE','0' ,sum(b.dblAmount),sum(b.dblDiscAmt),a.strPOSCode  "
+					+ " from tblqbillmodifierdtl b,tblqbillhd a,tblposmaster f,tblitemmaster d,tblsubgrouphd c "
+					+ " where a.strBillNo=b.strBillNo and a.strPOSCode=f.strPosCode  and LEFT(b.strItemCode,7)=d.strItemCode  "
+					+ " and d.strSubGroupCode=c.strSubGroupCode  and b.dblamount>0  "
+					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'  "
+					+ " group by c.strSubGroupCode, c.strSubGroupName, a.strPoscode   ");
+
+				funGenerateGroupWiseSales(sbSqlLive);
+				funGenerateGroupWiseSales(sbSqlQFile);
+				funGenerateGroupWiseSales(sqlModLive);
+				funGenerateGroupWiseSales(sqlModQfile);
+				Iterator<Map.Entry<String, String>> docIterator = mapDocCode.entrySet().iterator();
+				while (docIterator.hasNext())
+				{
+				    Map.Entry entry = docIterator.next();
+				    String docCode = entry.getKey().toString();
+				    String docName = entry.getValue().toString();
+
+				    int colSize = listcol.size()-1;
+				    int lastCol = colSize - 1;
+				    List arrList = new ArrayList();
+					arrList.add(docCode.toString());
+					arrList.add(docName.toString());
+				    int i = 2;
+				    double posWiseTotalSales = 0.00;
+				    for (int col = i; col < colSize; col++)
+				    {
+						double sales = 0.00;
+						if (mapPOSDocSales.containsKey(listcol.get(col).toString() + "!" + docCode))
+						{
+							sales = Double.parseDouble(mapPOSDocSales.get(listcol.get(col).toString() + "!" + docCode).toString());
+						    arrList.add(String.valueOf(decFormatFor2Decimal.format(sales)));
+						    double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+						    totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += sales;
+						    i++;
+						}
+						else
+						{
+							arrList.add("0.0");
+							double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+							totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += 0.00;
+						    i++;
+						}
+				    }
+				    arrList.add(String.valueOf(decFormatFor2Decimal.format(posWiseTotalSales)));
+				    total += posWiseTotalSales;
+					list.add(arrList);
+				}
 			} else if (strViewType.equalsIgnoreCase("MENU HEAD WISE")) {
 				sbSqlLive.setLength(0);
 				sbSqlQFile.setLength(0);
 				sbSqlFilters.setLength(0);
 				sqlModLive.setLength(0);
 				sqlModQfile.setLength(0);
+				
+				listcol.add("Menu Head Code");
+				listcol.add("Menu Head Name");
+				sbSqlLive.append("select strPOSCode,strPOSName from tblposmaster order by strPOSName");
+				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
+				if (listSqlLive.size() > 0) 
+				{
+					for (int i = 0; i < listSqlLive.size(); i++) 
+					{
+						Object[] obj = (Object[]) listSqlLive.get(i);
+						listcol.add(obj[1].toString());
+						totalList.add(0.0);
+					}
+				}
+				listcol.add("Total");
+				sbSqlLive.setLength(0);
 
 				sbSqlLive.append(" SELECT ifnull(d.strMenuCode,'ND'),ifnull(e.strMenuName,'ND'), sum(a.dblQuantity), "
 						+ " sum(a.dblAmount)-sum(a.dblDiscountAmt),f.strPosName,'SANGUINE',a.dblRate  ,sum(a.dblAmount),sum(a.dblDiscountAmt),b.strPOSCode   "
@@ -2996,30 +3009,91 @@ public class clsPOSReportService {
 						+ " and a.dblAmount>0   " + " Group by b.strPoscode, d.strMenuCode,e.strMenuName "
 						+ " order by b.strPoscode, d.strMenuCode,e.strMenuName  ");
 
-				sqlModQfile
-						.append(" SELECT  ifnull(d.strMenuCode,'ND'),ifnull(e.strMenuName,'ND'), sum(a.dblQuantity), "
-								+ " sum(a.dblAmount)-sum(a.dblDiscAmt),f.strPosName,'SANGUINE',a.dblRate ,sum(a.dblAmount),sum(a.dblDiscAmt),b.strPOSCode  "
-								+ " FROM tblqbillmodifierdtl a "
-								+ " left outer join tblqbillhd b on a.strBillNo=b.strBillNo "
-								+ " left outer join tblposmaster f on b.strposcode=f.strposcode "
-								+ " left outer join tblmenuitempricingdtl d on LEFT(a.strItemCode,7)= d.strItemCode "
-								+ " and b.strposcode =d.strposcode and b.strAreaCode= d.strAreaCode "
-								+ " left outer join tblmenuhd e on d.strMenuCode= e.strMenuCode"
-								+ " where date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
-								+ " and a.dblAmount>0    " + " Group by b.strPoscode, d.strMenuCode,e.strMenuName "
-								+ " order by b.strPoscode, d.strMenuCode,e.strMenuName  ");
+				sqlModQfile.append(" SELECT  ifnull(d.strMenuCode,'ND'),ifnull(e.strMenuName,'ND'), sum(a.dblQuantity), "
+					+ " sum(a.dblAmount)-sum(a.dblDiscAmt),f.strPosName,'SANGUINE',a.dblRate ,sum(a.dblAmount),sum(a.dblDiscAmt),b.strPOSCode  "
+					+ " FROM tblqbillmodifierdtl a "
+					+ " left outer join tblqbillhd b on a.strBillNo=b.strBillNo "
+					+ " left outer join tblposmaster f on b.strposcode=f.strposcode "
+					+ " left outer join tblmenuitempricingdtl d on LEFT(a.strItemCode,7)= d.strItemCode "
+					+ " and b.strposcode =d.strposcode and b.strAreaCode= d.strAreaCode "
+					+ " left outer join tblmenuhd e on d.strMenuCode= e.strMenuCode"
+					+ " where date( b.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+					+ " and a.dblAmount>0    " + " Group by b.strPoscode, d.strMenuCode,e.strMenuName "
+					+ " order by b.strPoscode, d.strMenuCode,e.strMenuName  ");
 
+				funGenerateMenuHeadWiseSales(sbSqlLive);
+				funGenerateMenuHeadWiseSales(sbSqlQFile);
+				funGenerateMenuHeadWiseSales(sqlModLive);
+				funGenerateMenuHeadWiseSales(sqlModQfile);
+				Iterator<Map.Entry<String, String>> docIterator = mapDocCode.entrySet().iterator();
+				while (docIterator.hasNext())
+				{
+				    Map.Entry entry = docIterator.next();
+				    String docCode = entry.getKey().toString();
+				    String docName = entry.getValue().toString();
+
+				    int colSize = listcol.size()-1;
+				    int lastCol = colSize - 1;
+				    List arrList = new ArrayList();
+					arrList.add(docCode.toString());
+					arrList.add(docName.toString());
+				    int i = 2;
+				    double posWiseTotalSales = 0.00;
+				    for (int col = i; col < colSize; col++)
+				    {
+						double sales = 0.00;
+						if (mapPOSDocSales.containsKey(listcol.get(col).toString() + "!" + docCode))
+						{
+							sales = Double.parseDouble(mapPOSDocSales.get(listcol.get(col).toString() + "!" + docCode).toString());
+						    arrList.add(String.valueOf(decFormatFor2Decimal.format(sales)));
+						    double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+						    totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += sales;
+						    i++;
+						}
+						else
+						{
+							arrList.add("0.0");
+							double totalPosAmt=Double.valueOf(totalList.get(col).toString());
+							totalList.set(col, String.valueOf(decFormatFor2Decimal.format(totalPosAmt+sales)));
+						    posWiseTotalSales += 0.00;
+						    i++;
+						}
+				    }
+				    arrList.add(String.valueOf(decFormatFor2Decimal.format(posWiseTotalSales)));
+				    total += posWiseTotalSales;
+					list.add(arrList);
+				}
+			}
+			else if (strViewType.equalsIgnoreCase("POS WISE")) {
+				sbSqlLive.setLength(0);
+				sbSqlQFile.setLength(0);
+				sbSqlFilters.setLength(0);
+
+				sbSqlLive.append("select  b.strPosCode,b.strPosName,sum(a.dblGrandTotal) "
+						+ "from tblbillhd a,tblposmaster b "
+						+ "where a.strPOSCode=b.strPosCode "
+						+ "and  date(a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						+ "group by b.strPosCode,b.strPosName "
+						+ "order by b.strPosCode,b.strPosName;   ");
+
+				sbSqlQFile.append("select  b.strPosCode,b.strPosName,sum(a.dblGrandTotal) "
+						+ "from tblqbillhd a,tblposmaster b "
+						+ "where a.strPOSCode=b.strPosCode "
+						+ "and  date(a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' "
+						+ "group by b.strPosCode,b.strPosName "
+						+ "order by b.strPosCode,b.strPosName;   ");
+
+				
 				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
 				if (listSqlLive.size() > 0) {
 					for (int i = 0; i < listSqlLive.size(); i++) {
 						Object[] obj = (Object[]) listSqlLive.get(i);
 						List arrList = new ArrayList();
 
-						arrList.add(obj[0].toString());
 						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
+						arrList.add(decFormatFor2Decimal.format(new BigDecimal(obj[2].toString()).doubleValue()));
+						total += Double.parseDouble(obj[2].toString());
 						list.add(arrList);
 					}
 				}
@@ -3030,51 +3104,18 @@ public class clsPOSReportService {
 						Object[] obj = (Object[]) listSqlQFile.get(i);
 						List arrList = new ArrayList();
 
-						arrList.add(obj[0].toString());
 						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
+						arrList.add(decFormatFor2Decimal.format(new BigDecimal(obj[2].toString()).doubleValue()));
+						total += Double.parseDouble(obj[2].toString());
 						list.add(arrList);
 					}
 				}
 
-				List listSqlModLive = objBaseService.funGetList(sqlModLive, "sql");
-				if (listSqlModLive.size() > 0) {
-					for (int i = 0; i < listSqlModLive.size(); i++) {
-						Object[] obj = (Object[]) listSqlModLive.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-
-				List listSqlModQFile = objBaseService.funGetList(sqlModQfile, "sql");
-				if (listSqlModQFile.size() > 0) {
-					for (int i = 0; i < listSqlModQFile.size(); i++) {
-						Object[] obj = (Object[]) listSqlModQFile.get(i);
-						List arrList = new ArrayList();
-
-						arrList.add(obj[0].toString());
-						arrList.add(obj[1].toString());
-						arrList.add(obj[4].toString());
-						arrList.add(obj[7].toString());
-						total += Double.parseDouble(obj[7].toString());
-						list.add(arrList);
-					}
-				}
-				listcol.add("MENU HEAD  Code");
-				listcol.add("MENU HEAD  Name");
+				
 				listcol.add("POS Name");
-				listcol.add("Total");
-
-			}
-			totalList.add(total);
+				listcol.add("Sale");
+			} 
+			totalList.add(String.valueOf(decFormatFor2Decimal.format(total)));
 
 			resMap.put("List", list);
 			resMap.put("totalList", totalList);
@@ -3086,6 +3127,151 @@ public class clsPOSReportService {
 		return resMap;
 
 	}
+	
+	
+    private void funGenerateItemWiseSales(StringBuilder sbSql)
+    {
+	try
+	{
+		List listSql = objBaseService.funGetList(sbSql, "sql");
+		if (listSql.size() > 0) 
+		{
+			for (int i = 0; i < listSql.size(); i++) 
+			{
+				Object[] obj = (Object[]) listSql.get(i);
+				String itemCode = obj[0].toString();//itemCode
+				String itemName = obj[1].toString();//itemName
+				String posName =  obj[2].toString();//posName
+				double qty = Double.valueOf(obj[3].toString());//qty
+				double salesAmt = Double.valueOf(obj[7].toString());//salesAmount
+				double subTotal = Double.valueOf(obj[5].toString());//sunTotal
+				double discAmt =Double.valueOf(obj[8].toString());//discount
+				String date = obj[9].toString();//date
+				String posCode = obj[10].toString();//posCode
+
+				mapDocCode.put(itemCode, itemName);
+				if (mapPOSDocSales.containsKey(posName + "!" + itemCode))
+				{
+				    double oldSalesAmt = mapPOSDocSales.get(posName + "!" + itemCode);
+				    mapPOSDocSales.put(posName + "!" + itemCode, oldSalesAmt + salesAmt);
+				}
+				else
+				{
+				    mapPOSDocSales.put(posName + "!" + itemCode, salesAmt);
+				}
+
+				if (mapPOSItemDtl.containsKey(posCode))
+				{
+				    Map<String, clsPOSBillItemDtl> mapItemDtl = mapPOSItemDtl.get(posCode);
+				    if (mapItemDtl.containsKey(itemCode))
+				    {
+				    	clsPOSBillItemDtl objItemDtl = mapItemDtl.get(itemCode);
+						objItemDtl.setQuantity(objItemDtl.getQuantity() + qty);
+						objItemDtl.setAmount(objItemDtl.getAmount() + salesAmt);
+						objItemDtl.setSubTotal(objItemDtl.getSubTotal() + subTotal);
+						objItemDtl.setDiscountAmount(objItemDtl.getDiscountAmount() + discAmt);
+				    }
+				    else
+				    {
+				    	clsPOSBillItemDtl objItemDtl = new clsPOSBillItemDtl(date, itemCode, itemName, qty, salesAmt, discAmt, posName, subTotal);
+				    	mapItemDtl.put(itemCode, objItemDtl);
+				    }
+				}
+				else
+				{
+				    Map<String, clsPOSBillItemDtl> mapItemDtl = new LinkedHashMap<>();
+				    clsPOSBillItemDtl objItemDtl = new clsPOSBillItemDtl(date, itemCode, itemName, qty, salesAmt, discAmt, posName, subTotal);
+				    mapItemDtl.put(itemCode, objItemDtl);
+				    mapPOSItemDtl.put(posCode, mapItemDtl);
+				}
+			}
+		}
+		
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+   }
+    
+    private void funGenerateGroupWiseSales(StringBuilder sbSql)
+    {
+		try
+		{
+	
+			List listSql = objBaseService.funGetList(sbSql, "sql");
+			if (listSql.size() > 0) 
+			{
+				for (int i = 0; i < listSql.size(); i++) 
+				{
+					Object[] obj = (Object[]) listSql.get(i);
+					String subGroupCode =obj[0].toString();
+					String subGroupName = obj[1].toString();
+					String posName = obj[4].toString();
+					double salesAmt = Double.valueOf(obj[7].toString());
+					String posCode = obj[9].toString();
+			
+					mapDocCode.put(subGroupCode, subGroupName);
+					if (mapPOSDocSales.containsKey(posName + "!" + subGroupCode))
+					{
+					    double oldSalesAmt = mapPOSDocSales.get(posName + "!" + subGroupCode);
+					    mapPOSDocSales.put(posName + "!" + subGroupCode, oldSalesAmt + salesAmt);
+					}
+					else
+					{
+					    mapPOSDocSales.put(posName + "!" + subGroupCode, salesAmt);
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		}
+   }
+
+    
+    private void funGenerateMenuHeadWiseSales(StringBuilder sbSql)
+    {
+		try
+		{
+			List listSql = objBaseService.funGetList(sbSql, "sql");
+			if (listSql.size() > 0) 
+			{
+				for (int i = 0; i < listSql.size(); i++) 
+				{
+					Object[] obj = (Object[]) listSql.get(i);
+					String posCode = obj[9].toString();//posCode
+					String posName = obj[4].toString();//posName
+					String menuCode = obj[0].toString();//menuCode
+					String menuName = obj[1].toString();//menuName                
+					double qty = Double.valueOf(obj[2].toString());//qty
+					double salesAmt = Double.valueOf(obj[7].toString());//salesAmt
+					double subTotal = Double.valueOf(obj[3].toString());//subTotal
+					double discAmt = Double.valueOf(obj[8].toString());//disc                 
+			
+					mapDocCode.put(menuCode, menuName);
+					if (mapPOSDocSales.containsKey(posName + "!" + menuCode))
+					{
+					    double oldSalesAmt = mapPOSDocSales.get(posName + "!" + menuCode);
+					    mapPOSDocSales.put(posName + "!" + menuCode, oldSalesAmt + salesAmt);
+					}
+					else
+					{
+					    mapPOSDocSales.put(posName + "!" + menuCode, salesAmt);
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		}
+    }
+	
+	
+	
+	
 
 	public List funProcessPosWiseGroupWiseReport(String fromDate, String toDate) {
 		StringBuilder sbSqlLive = new StringBuilder();

@@ -55,7 +55,7 @@
 var date="";
 $(document).ready(function() {
 	
-	var POSDate="${gPOSDate}"
+	/*var POSDate="${gPOSDate}"
 	var startDate="${gPOSDate}";
   	var Date = startDate.split(" ");
 	var arr = Date[0].split("-");
@@ -65,8 +65,18 @@ $(document).ready(function() {
 	$("#txtFromDate" ).datepicker('setDate', Dat);
 	$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
 	$("#txtToDate" ).datepicker('setDate', Dat);
-	var fromDate = date;
-	var toDate = date;
+	*/
+	var POSDate="${POSDate}"
+    var startDate="${POSDate}";
+  	var Date = startDate.split(" ");
+	var arr = Date[0].split("-");
+	Dat=arr[2]+"-"+arr[1]+"-"+arr[0];
+	$("#txtFromDate" ).datepicker({ dateFormat: 'dd-mm-yy' });		
+	$("#txtFromDate" ).datepicker('setDate', Dat); 
+	$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+	$("#txtToDate" ).datepicker('setDate', Dat); 
+	var fromDate = Dat;
+	var toDate = Dat;
 	funLoadTableData(fromDate,toDate);
 	
 });
@@ -199,9 +209,11 @@ function funFetchColNames() {
 				funFillHeaderCol(response.listcol);
 	      
 				
-			$.each(response.List,function(i,item){
+			$.each(response.List,function(i,item)
+				{
 	            	
-					funFillTableCol(item[0],item[1],item[2],item[3]);
+					//funFillTableCol(item[0],item[1],item[2],item[3]);
+					funFillGridCol(item) 
             	});
 				
 				funFillTotalCol(response.totalList);
@@ -219,25 +231,42 @@ function funFetchColNames() {
 	    
 	    for(var i=0;i<rowData.length;i++)
 	    	 {
-	   		
-	 	   			row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" class=\"cell\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
-	   			
-	   		 }
-		
-	  
+		    	if(i==0)
+		    	{
+		    		row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" class=\"cell\" size=\"15%\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
+		    	}	
+		    	else if(i==1)
+		    	{
+		    		row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" class=\"cell\" size=\"25%\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
+		    	}
+		    	else
+		    	{
+		    		row.insertCell(i).innerHTML = "<input type=\"text\" readonly=\"readonly\" class=\"cell\"  name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
+		    	}	
+	   		}
 	}
-
-	function funFillTableCol(item0,item1,item2,item3)
+	
+	function funFillGridCol(item) 
 	{
-	var table = document.getElementById("tblData");
-	var rowCount = table.rows.length;
-	var row = table.insertRow(rowCount);
-
-      
-      row.insertCell(0).innerHTML= "<input  readonly=\"readonly\" class=\"Box \"  id=\"txtDate."+(rowCount)+"\" value='"+item0+"' onclick=\"funGetSelectedRowIndex(this)\"/>"; 
-      row.insertCell(1).innerHTML= "<input  readonly=\"readonly\" class=\"Box \"  id=\"txtDate."+(rowCount)+"\" value='"+item1+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-      row.insertCell(2).innerHTML= "<input  readonly=\"readonly\" class=\"Box \"  id=\"txtCompStk."+(rowCount)+"\" value='"+item2+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-      row.insertCell(3).innerHTML= "<input  readonly=\"readonly\" class=\"Box \"  id=\"txtPhyStk."+(rowCount)+"\" value='"+item3+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+		var table = document.getElementById("tblData");
+	    var rowCount = table.rows.length;
+	    var row = table.insertRow(rowCount);
+	    
+	    for(var i=0;i<item.length;i++)
+    	 {
+	    	if(i==0)
+	    	{
+	    		row.insertCell(i).innerHTML = "<input readonly=\"readonly\" class=\"Box \"  size=\"15%\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+item[i]+"' />";
+	    	}	
+	    	else if(i>1)
+	    	{
+	    		row.insertCell(i).innerHTML = "<input readonly=\"readonly\" class=\"Box \" style=\"text-align:right;\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+item[i]+"' />";
+	    	}
+	    	else
+	    	{
+	    		row.insertCell(i).innerHTML = "<input readonly=\"readonly\" class=\"Box \"  size=\"25%\" id=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+item[i]+"' />";
+	    	}	
+   		}
 	}
 	
 	function funFillTotalCol(rowData) 
@@ -248,23 +277,20 @@ function funFetchColNames() {
 	    
 	    for(var i=0;i<rowData.length;i++)
 	    	 {
-	   		
-	 	   		
-	 	   		if(i==0){
-	    			 row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px \" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value=\"Total \" />";
+	   			if(i==0){
+	    			 row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" size=\"15%\" style=\" border:none;border-radius:0px;color:black;font;font-weight: bold; \" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value=\"Total \" />";
 	    		 }
-		    	else if(i==1){
-	    			 row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px \" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value=\" \" />";
-	    		 }
-		    	else if(i==2){
-	    			 row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px \" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value=\" \" />";
-	    		 }
-		    	else {
-		    			row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px \" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";
-		    			
-		    		}
+	   			else if(i==1)
+	   			{
+	   				row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" size=\"25%\" style=\" border:none;border-radius:0px \" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value=\" \" />";
+	   			}	
+		    	else
+		    	{
+		    	   row.insertCell(i).innerHTML= "<input type=\"text\" readonly=\"readonly\" style=\" border:none;border-radius:0px;text-align:right ;color:black;font;font-weight: bold;\" class=\"header\" name=\"rowList["+(rowCount)+"].strCol"+(i)+"\" value='"+rowData[i]+"' />";		
+		    	}
+	   			
+	   			
 	   		 }
-		
 	  
 	}
 
@@ -296,6 +322,7 @@ function funFetchColNames() {
 									<s:option value="GROUP WISE">GROUP WISE</s:option>
 									<s:option value="SUB GROUP WISE">SUB GROUP WISE</s:option>
 									<s:option value="MENU HEAD WISE">MENU HEAD WISE</s:option>
+									<s:option value="POS WISE">POS WISE</s:option>
 								</s:select>
 							</div>
 							<div class="element-input col-lg-6" style="width: 15%;">

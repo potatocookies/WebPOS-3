@@ -17,6 +17,10 @@
 	<parameter name="fromDateToDisplay" class="java.lang.String"/>
 	<parameter name="toDateToDisplay" class="java.lang.String"/>
 	<parameter name="shiftNo" class="java.lang.String"/>
+	<parameter name="decimalFormaterForDoubleValue" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="decimalFormaterForIntegerValue" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -202,6 +206,7 @@
 					<font fontName="Trebuchet MS" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dblAmt}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement uuid="f55baf25-b5c2-4a0f-9d73-fc1f2e6ddfd5" style="Detail" x="490" y="0" width="60" height="15"/>
@@ -209,6 +214,7 @@
 					<font fontName="Trebuchet MS" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dblSubTotal}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement uuid="256b515a-0b35-4590-b30f-1f7618aa7c0c" style="Detail" x="430" y="0" width="50" height="15"/>
@@ -216,6 +222,7 @@
 					<font fontName="Trebuchet MS" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dblDiscAmt}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 			</textField>
 		</band>
 	</detail>
@@ -281,6 +288,7 @@
 					<font fontName="Trebuchet MS" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{vAmtTotal}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement uuid="871bcfb3-ed3e-4298-a8b0-b67148c7b43c" x="490" y="8" width="60" height="20"/>
@@ -288,6 +296,7 @@
 					<font fontName="Trebuchet MS" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{vSubTotal}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement uuid="5327c14b-5db2-4183-9b53-4219f16db194" x="430" y="8" width="50" height="20"/>
@@ -295,6 +304,7 @@
 					<font fontName="Trebuchet MS" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{vDiscTotal}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 			</textField>
 		</band>
 	</lastPageFooter>

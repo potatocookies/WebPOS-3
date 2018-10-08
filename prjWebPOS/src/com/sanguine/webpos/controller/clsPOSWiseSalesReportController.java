@@ -91,7 +91,8 @@ public class clsPOSWiseSalesReportController {
 		}
 		model.put("posList",poslist);
 		
-		
+		String posDate = request.getSession().getAttribute("gPOSDate").toString();
+		request.setAttribute("POSDate", posDate);
 		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSWiseSalesReport_1","command", new clsPOSReportBean());

@@ -78,7 +78,8 @@ public class clsPOSItemMasterListingReport {
 			}
 		}
 		model.put("posList",poslist);
-		
+		String posDate = request.getSession().getAttribute("gPOSDate").toString();
+		request.setAttribute("POSDate", posDate);
 		
 		
 		if("2".equalsIgnoreCase(urlHits)){

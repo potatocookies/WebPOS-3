@@ -31,12 +31,6 @@
 /*On form Load It Reset form :Ritesh 22 Nov 2014*/
  $(function() 
 	{		
-		/*$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-		$("#txtFromDate" ).datepicker('setDate', 'today');
-		$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-		$("#txtToDate" ).datepicker('setDate', 'today');
-		*/
-		
 		var POSDate="${POSDate}"
 	    var startDate="${POSDate}";
 	  	var Date = startDate.split(" ");
@@ -118,49 +112,7 @@
 					 
 			</div>
 		
-		
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<table class="masterTable"> -->
 
-<!-- 			<tr> -->
-<!-- 				<td width="140px">POS Name</td> -->
-<%-- 				<td colspan="3"><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" > --%>
-					
-<%-- 				 </s:select></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>From Date</label></td> -->
-<%-- 				<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr> -->
-<!-- 				<td><label>To Date</label></td> -->
-<%-- 				<td><s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td> --%>
-<!-- 			</tr> -->
-<!-- 			<tr>				 -->
-<!-- 				<td><label>Report Type</label></td> -->
-<!-- 				<td > -->
-<%-- 						<s:select id="cmbDocType" path="strDocType" cssClass="BoxW124px"> --%>
-<%-- 				    		<s:option value="PDF">PDF</s:option> --%>
-<%-- 				    		<s:option value="XLS">EXCEL</s:option> --%>
-				    		
-<%-- 				    	</s:select> --%>
-<!-- 					</td> -->
-<!-- 				</tr> -->
-			
-<!-- 			<tr> -->
-			
-				
-<!-- 			</tr> -->
-			
-			
-<!-- 		</table> -->
-<!-- 		<br /> -->
-<!-- 		<br /> -->
-<!-- 		<p align="center"> -->
-<!-- 			<input type="submit" value="Submit" tabindex="3" class="form_button"/>  -->
-<!-- 			<input type="reset" value="Reset" class="form_button" onclick="funResetFields()"/> -->
-<!-- 		</p> -->
 	</s:form>
 
 </body>

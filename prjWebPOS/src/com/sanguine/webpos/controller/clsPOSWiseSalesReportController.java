@@ -152,7 +152,7 @@ public class clsPOSWiseSalesReportController {
 		  LinkedHashMap resMap = new LinkedHashMap();
 		     
 	        
-		  String clientCode=req.getSession().getAttribute("gClientCode").toString();
+		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
 	       
 		    String fromDate=req.getParameter("fromDate");
 		 
@@ -174,15 +174,11 @@ public class clsPOSWiseSalesReportController {
 		 
 			  LinkedHashMap resMap = new LinkedHashMap();
 		     
-		        String fromDate1=fromDate.split("-")[2]+"-"+fromDate.split("-")[1]+"-"+fromDate.split("-")[0];
+		       String fromDate1=fromDate.split("-")[2]+"-"+fromDate.split("-")[1]+"-"+fromDate.split("-")[0];
 				
-				String toDate1=toDate.split("-")[2]+"-"+toDate.split("-")[1]+"-"+toDate.split("-")[0];
-				double total=0.0;
-				
-//	            String sqlPos = "select strPOSCode,strPOSName from tblposmaster "
-//	                    + "order by strPOSName";
-	           
-	            resMap = objReportService.funProcessPosWiseSalesReport(fromDate1,toDate1,strViewType);
+			   String toDate1=toDate.split("-")[2]+"-"+toDate.split("-")[1]+"-"+toDate.split("-")[0];
+
+	          resMap = objReportService.funProcessPosWiseSalesReport(fromDate1,toDate1,strViewType);
 	            
 		  return resMap;
 	  }

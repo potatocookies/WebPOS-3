@@ -2657,10 +2657,10 @@ public class clsPOSReportService {
 		sqlModLive.setLength(0);
 		sqlModQfile.setLength(0);
 
-		try {
-			if (strViewType.equalsIgnoreCase("ITEM WISE")) {
-				
-				
+		try 
+		{
+			if (strViewType.equalsIgnoreCase("ITEM WISE")) 
+			{
 				listcol.add("Item Code");
 				listcol.add("Item Name");
 				sbSqlLive.append("select strPOSCode,strPOSName from tblposmaster order by strPOSName");
@@ -2719,7 +2719,6 @@ public class clsPOSReportService {
 				    Map.Entry entry = docIterator.next();
 				    String docCode = entry.getKey().toString();
 				    String docName = entry.getValue().toString();
-
 				    int colSize = listcol.size()-1;
 				    int lastCol = colSize - 1;
 				    List arrList = new ArrayList();

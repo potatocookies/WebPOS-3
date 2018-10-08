@@ -55,17 +55,6 @@
 var date="";
 $(document).ready(function() {
 	
-	/*var POSDate="${gPOSDate}"
-	var startDate="${gPOSDate}";
-  	var Date = startDate.split(" ");
-	var arr = Date[0].split("-");
-	Dat=arr[0]+"-"+arr[1]+"-"+arr[2];
-	date = arr[2]+"-"+arr[1]+"-"+arr[0];
-	$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-	$("#txtFromDate" ).datepicker('setDate', Dat);
-	$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-	$("#txtToDate" ).datepicker('setDate', Dat);
-	*/
 	var POSDate="${POSDate}"
     var startDate="${POSDate}";
   	var Date = startDate.split(" ");

@@ -118,7 +118,8 @@ public class clsPOSItemMasterListingReport {
 		String toDate = hm.get("toDate").toString();
 		String strUserCode = hm.get("userName").toString();
 		String strPOSCode = posCode;
-		String strShiftNo = "1";
+		String strShiftNo = "All";
+		hm.put("shiftNo", "All");
 		List<clsPOSBillDtl> listOfItemMasterListing = new ArrayList<>();
 		
 		listOfItemMasterListing = objReportService.funProcessItemMasterListing();

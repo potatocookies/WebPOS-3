@@ -3086,14 +3086,25 @@ public class clsPOSReportService {
 				
 				List listSqlLive = objBaseService.funGetList(sbSqlLive, "sql");
 				if (listSqlLive.size() > 0) {
-					for (int i = 0; i < listSqlLive.size(); i++) {
+					for (int i = 0; i < listSqlLive.size(); i++) 
+					{
 						Object[] obj = (Object[]) listSqlLive.get(i);
-						List arrList = new ArrayList();
+						/*List arrList = new ArrayList();
 
 						arrList.add(obj[1].toString());
 						arrList.add(decFormatFor2Decimal.format(new BigDecimal(obj[2].toString()).doubleValue()));
 						total += Double.parseDouble(obj[2].toString());
 						list.add(arrList);
+						*/
+						if (mapPOSDocSales.containsKey(obj[1].toString()))
+						{
+						    double oldSalesAmt = mapPOSDocSales.get(obj[1].toString());
+						    mapPOSDocSales.put(obj[1].toString(), oldSalesAmt + new BigDecimal(obj[2].toString()).doubleValue());
+						}
+						else
+						{
+						    mapPOSDocSales.put(obj[1].toString(),new BigDecimal(obj[2].toString()).doubleValue());
+						}
 					}
 				}
 
@@ -3101,15 +3112,36 @@ public class clsPOSReportService {
 				if (listSqlQFile.size() > 0) {
 					for (int i = 0; i < listSqlQFile.size(); i++) {
 						Object[] obj = (Object[]) listSqlQFile.get(i);
-						List arrList = new ArrayList();
+						/*List arrList = new ArrayList();
 
 						arrList.add(obj[1].toString());
 						arrList.add(decFormatFor2Decimal.format(new BigDecimal(obj[2].toString()).doubleValue()));
 						total += Double.parseDouble(obj[2].toString());
 						list.add(arrList);
+						*/
+						if (mapPOSDocSales.containsKey(obj[1].toString()))
+						{
+						    double oldSalesAmt = mapPOSDocSales.get(obj[1].toString());
+						    mapPOSDocSales.put(obj[1].toString(), oldSalesAmt + new BigDecimal(obj[2].toString()).doubleValue());
+						}
+						else
+						{
+						    mapPOSDocSales.put(obj[1].toString(),new BigDecimal(obj[2].toString()).doubleValue());
+						}
 					}
 				}
+				
+				Iterator<Map.Entry<String, Double>> docIterator = mapPOSDocSales.entrySet().iterator();
+				while (docIterator.hasNext())
+				{
+				    Map.Entry entry = docIterator.next();
+				    List arrList = new ArrayList();
+					arrList.add(entry.getKey().toString());
+					arrList.add(decFormatFor2Decimal.format(entry.getValue()));
+					total += Double.parseDouble(entry.getValue().toString());
+					list.add(arrList);
 
+				}
 				
 				listcol.add("POS Name");
 				listcol.add("Sale");

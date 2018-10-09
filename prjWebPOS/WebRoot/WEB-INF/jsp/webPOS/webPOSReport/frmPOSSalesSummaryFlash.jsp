@@ -87,6 +87,7 @@ $(document).ready(function() {
 		 var posName = $('#cmbPOSName').val();
 		 var reportType=$('#cmbDocType').val();
 		 $('#tblsalesSumFlash tbody').empty();		 
+		 $('#tblTotal tbody').empty();
 		 funFillTableData(fromDate,toDate,payMode,posName,reportType); 
 		 
 	 }
@@ -166,49 +167,29 @@ $(document).ready(function() {
 		    		var table = document.getElementById("tblsalesSumFlash");
 		    	 	var rowCount = table.rows.length;
 		        	
-		        	$.each(response.List,function(i,item){
+		        	$.each(response.List,function(i,item)
+		        	{
 		              row = table.insertRow(rowCount);
 		  		 	  for(var i=0;i<colCount;i++)
 		  		 	  {
 		  		 		  if(i>2)
 		  		 		  {
-		  		 			row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";
+		  		 			row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"text-align:right;\" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";
 		  		 		  }
 		  		 		  else
 		  		 		  {
 		  		 			row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";  
 		  		 		  }	
 		  		 	  }
-		  		 	 rowCount++;
-		  		 	 i--;
- 		            	});
+			  		 	 rowCount++;
+			  		 	 i--;
+ 		            });
 		        	
-		        	var table = document.getElementById("tblsalesSumFlash");
-		    		var col=table.rows[0].cells.length;
-		    	 	var rowCoun = table.rows.length;
-		    	 	var row1 = table.insertRow(rowCoun);
-		    	 	row1.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(j)+"\" value='"+ +"'>";
-		    		row1.insertCell(1).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\""+(j)+"\" value='"+ +"'>";
-		    		row1.insertCell(2).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"font-weight: bold;color:black\" size=\"15%\" id=\""+(j)+"\" value='Total'>";
-		    	 	for(var j=3;j<col;j++)
-		    		{
-		    			var amount=0.0;
-		    			
-		    		   for(var i=1;i<rowCoun;i++)
-		    		   {
-		    			 
-		    				  var description=table.rows[i].cells[j].innerHTML;
-		    				  var data=description.split('value');
-		    				  var dblAount=data[1].split('=');
-		    				  var amountData=parseFloat(dblAount[1].substring(1,dblAount[1].length-2));
-		    				  amount=amount+amountData;
-		    		   }
-		    		   row1.insertCell(j).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"font-weight: bold;color:black\"size=\"15%\" id=\""+(j)+"\" value='"+amount+"'>";
-		    		}
+		        	
+		        	funFillTotalCol(response.totalList); 
+		        
 		    
-		            },
-		            
-		      
+		        },
 		        error: function(jqXHR, exception)
 		        {
 		            if (jqXHR.status === 0) {
@@ -229,6 +210,35 @@ $(document).ready(function() {
 		        }
 	 });
 	 }
+	 
+	 function funFillTotalCol(rowData) 
+		{
+		 	var table = document.getElementById("tblTotal");
+		    var rowCount = table.rows.length;
+		    var row = table.insertRow(rowCount);
+		    
+		    for(var i=0;i<rowData.length;i++)
+	    	 {
+	   		    if(i==0)
+	   			{
+	   				row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \"  style=\"border:none;border-radius:0px; text-align:left;color:black;font;font-weight: bold;\" size=\"18%\" id=\""+(i)+"\" value='Total'>";
+	   			}
+	   			else if(i==1)
+	   			{
+	   				row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \"  style=\"border:none;border-radius:0px; text-align:left;color:black;font;font-weight: bold;\" size=\"18%\" id=\""+(i)+"\" value=''>";
+	   			}
+	   			else if(i==2)
+	   			{
+	   				row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \"  style=\"border:none;border-radius:0px; text-align:left;color:black;font;font-weight: bold;\" size=\"18%\" id=\""+(i)+"\" value=''>";
+	   			}
+	   			else
+	   			{
+		 			row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \"  style=\"border:none;border-radius:0px; text-align:right;color:black;font;font-weight: bold;\" size=\"19%\" id=\""+(i)+"\" value='"+rowData[i]+"'>";
+		 		}	
+	   			
+	   		 }
+		}
+	 
 // 	 function funfillRowData(dteBillDate,strPosName,strSettelmentDesc,strPOSCode,dblSettlementAmt)
  function funfillRowData(data)
 	 {
@@ -361,6 +371,17 @@ $(document).ready(function() {
 								
 							</div>
 					</div>
+					
+					<div class="row" style="background-color: #fff; display: -webkit-box; margin-bottom: 10px; margin-left: 0px;">
+							<div style="border: 1px solid #ccc; display: block; height: 50px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+						
+								<table id="tblTotal" style="width: 100%; text-align: center !important;">
+									<tbody style="border-top: none;border-bottom: 1px solid #ccc;">
+									</tbody>
+								</table>
+								
+							</div>
+					</div>	
 					
 					<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 100%; margin-left: 10%;">
 					

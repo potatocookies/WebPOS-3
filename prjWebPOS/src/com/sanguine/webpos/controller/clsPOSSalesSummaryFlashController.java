@@ -256,6 +256,7 @@ public class clsPOSSalesSummaryFlashController {
         List totalList=new ArrayList();
         totalList.add("Total");
         totalList.add(" ");
+        totalList.add(" ");
 		List listData = new ArrayList();
 		Map hmSettelmentDesc=new HashMap();
 		if(strReportType.equalsIgnoreCase("Daily"))
@@ -274,6 +275,9 @@ public class clsPOSSalesSummaryFlashController {
 	  	    {
 	  	    	list =new ArrayList();
 	  	    	List arrList =null;
+	  	    	listcol.add("PosCode");
+				listcol.add("PosName");
+				listcol.add("PosDate");
 	  	    	for(int i=0;i<listData.size();i++)
 	  	    	{
 	  	    		Object[] obj = (Object[]) listData.get(i);
@@ -283,30 +287,49 @@ public class clsPOSSalesSummaryFlashController {
 	  	    		arrList.add(obj[0].toString());
 	  	    		arrList.add(obj[1].toString());
 	  	    		arrList.add(obj[2].toString());
-					listcol.add("PosCode");
-					listcol.add("PosName");
-					listcol.add("PosDate");
+					
 										
 					if(listPayMode.size()>0)
 					{
 						double total=0.00;
+						int pos=2;
 						for(j=0;j<listPayMode.size();j++)
 						{
-						Object objData = (Object) listPayMode.get(j);
-						String settlementName = objData.toString();
-						if(hmSettelmentDesc.containsKey(settlementName))
-						{
-							double settleAmt=Double.valueOf(hmSettelmentDesc.get(settlementName).toString());
-							arrList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
-							totalList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
-						}else{
-							arrList.add("0");
-							totalList.add(0);
-						}
-						listcol.add(listPayMode.get(j));
-						
-						
-						
+							Object objData = (Object) listPayMode.get(j);
+							String settlementName = objData.toString();
+							if(hmSettelmentDesc.containsKey(settlementName))
+							{
+								double settleAmt=Double.valueOf(hmSettelmentDesc.get(settlementName).toString());
+								arrList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
+								if(i>0)
+								{
+									String amt=totalList.get(pos+1).toString();
+									totalList.set(pos+1,String.valueOf(decimalFormtFor2DecPoint.format(settleAmt+Double.valueOf(amt))));
+								}
+								else
+								{
+									totalList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
+								}
+							}
+							else
+							{
+								arrList.add("0.00");
+								if(i>0)
+								{
+									String amt=totalList.get(pos+1).toString();
+									totalList.set(pos+1,String.valueOf(decimalFormtFor2DecPoint.format(0+Double.valueOf(amt))));
+								}
+								else
+								{
+									totalList.add("0");
+								}
+							}
+							
+							if(i==0)
+							{
+								listcol.add(listPayMode.get(j));
+							}
+							pos++;
 						}
 					}
 //					list.add(arrList);
@@ -332,6 +355,9 @@ public class clsPOSSalesSummaryFlashController {
 				int j=0;
 				list =new ArrayList();
 				List arrList =null;
+				listcol.add("PosName");
+				listcol.add("Month");
+				listcol.add("Year");
 				for(int i=0;i<listData.size();i++)
 	  	    	{
 					Object[] obj = (Object[]) listData.get(i);
@@ -342,27 +368,49 @@ public class clsPOSSalesSummaryFlashController {
 	  	    		arrList.add(obj[1].toString());
 	  	    		arrList.add(obj[2].toString());
 	  	    		arrList.add(obj[3].toString());
-					listcol.add("PosName");
-					listcol.add("Month");
-					listcol.add("Year");
+					
 					
 					if(listPayMode.size()>0)
 					{
 						double total=0.00;
+						int pos=2;
 						for(j=0;j<listPayMode.size();j++)
 						{
-						Object objData = (Object) listPayMode.get(j);
-						String settlementName = objData.toString();
-						if(hmSettelmentDesc.containsKey(settlementName))
-						{
-							double settleAmt=Double.valueOf(hmSettelmentDesc.get(settlementName).toString());
-							arrList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
-							totalList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
-						}else{
-							arrList.add("0");
-							totalList.add(0);
-						}
-						listcol.add(listPayMode.get(j));
+							Object objData = (Object) listPayMode.get(j);
+							String settlementName = objData.toString();
+							if(hmSettelmentDesc.containsKey(settlementName))
+							{
+								double settleAmt=Double.valueOf(hmSettelmentDesc.get(settlementName).toString());
+								arrList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
+								if(i>0)
+								{
+									String amt=totalList.get(pos+1).toString();
+									totalList.set(pos+1,String.valueOf(decimalFormtFor2DecPoint.format(settleAmt+Double.valueOf(amt))));
+								}
+								else
+								{
+									totalList.add(String.valueOf(decimalFormtFor2DecPoint.format(settleAmt)));
+								}
+							}
+							else
+							{
+								arrList.add("0.00");
+								if(i>0)
+								{
+									String amt=totalList.get(pos+1).toString();
+									totalList.set(pos+1,String.valueOf(decimalFormtFor2DecPoint.format(0+Double.valueOf(amt))));
+								}
+								else
+								{
+									totalList.add("0");
+								}
+							}
+							
+							if(i==0)
+							{
+								listcol.add(listPayMode.get(j));
+							}
+							pos++;
 						}
 					}
 					list.add(arrList);

@@ -1175,8 +1175,13 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 		 
 			
 				
-		/* var custcode=$("#hidCustomerCode").val();
-   		var custName=$("#hidCustomerName").val();	 */
+		 var custcode=$("#hidCustomerCode").val();
+   		var custName=$("#hidCustomerName").val();	 
+   		//Error while on click done button  
+   		if(custcode==null || custName==null){
+   			custcode="";
+   			custName="";
+   		}
 		var searchurl=getContextPath()+"/saveKOT.html?ncKot="+ncKot+"&takeAway="+gTakeAway+"&globalDebitCardNo="+globalDebitCardNo+"&cmsMemCode="+cmsMemCode+"&cmsMemName="+cmsMemName+"&reasonCode="+reasonCode+"&homeDeliveryForTax="+homeDeliveryForTax+
 				"&arrListHomeDelDetails="+arrListHomeDelDetails+"&total="+total+"&custcode="+custcode+"&custName="+custName;
 		$.ajax({

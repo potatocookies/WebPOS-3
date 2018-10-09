@@ -524,14 +524,14 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSDayEndFlashReport.jsp"></put-attribute>
 	</definition>
 	
-	<definition name="frmPOSAvgPerCoverReport" extends="base.definition6">
+	<definition name="frmPOSAPC" extends="base.definition6">
 		<put-attribute name="title" value="Aveage Per Cover Report"></put-attribute>
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAvgPerCoverReport.jsp"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAPC.jsp"></put-attribute>
 	</definition>
 	
-	<definition name="frmPOSAvgTicketValueReport" extends="base.definition6">
+	<definition name="frmPOSATV" extends="base.definition6">
 		<put-attribute name="title" value="Aveage Ticket Value Report"></put-attribute>
-		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSAvgTicketValueReport.jsp"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSATV.jsp"></put-attribute>
 	</definition>
 
 	<definition name="frmPOSDebitCardFlashReport" extends="base.definition6">

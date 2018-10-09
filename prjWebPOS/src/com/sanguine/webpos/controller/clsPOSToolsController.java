@@ -399,6 +399,8 @@ public class clsPOSToolsController {
 
 		String result="";
 		hmRet=objPOSToolsService.funDBBackup(hmDtl);
+		if(hmRet.size()>0 && hmRet.containsKey("return"))
+		{	
 		if(hmRet.get("return").toString().equalsIgnoreCase("true"))
 		{
 			result="Database Backup Successfully..";
@@ -407,7 +409,7 @@ public class clsPOSToolsController {
 		{
 			result="Failed To Database Backup";
 		}
-	     
+		} 
 		return result;
 	}	
 }

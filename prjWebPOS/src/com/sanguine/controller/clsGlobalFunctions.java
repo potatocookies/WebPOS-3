@@ -121,7 +121,10 @@ public class clsGlobalFunctions
 			// load a properties file
 			prop.load(input);
 			// get the property value and print it out
-			conUrl = prop.getProperty("database.urlWebStocks");
+			//conUrl = prop.getProperty("database.urlWebStocks");
+			
+			//changed for WebPOS connection
+			conUrl = prop.getProperty("database.urlWebPOS");
 			urluser = prop.getProperty("database.user");
 			urlPassword = prop.getProperty("database.password");
 			

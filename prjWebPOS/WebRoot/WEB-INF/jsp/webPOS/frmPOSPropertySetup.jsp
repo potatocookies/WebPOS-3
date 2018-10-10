@@ -2211,6 +2211,71 @@ ul.tab li.active {
 	}
 	
 	
+	function funCheckEmailSendingStatus()
+	{
+		if ($("#txtSenderEmailId").val()=='')
+		{
+		    alert("Please Enter Sender Email Id.");
+		    return;
+		}	
+	  if ($("#txtReceiverEmailId").val()=='')
+		{
+		    alert("Please Enter Receiver Email Id");
+		    return;
+		}
+	  if ($("#txtEmailConfirmPassword").val()=='')
+		{
+		    alert("Please Enter Confirmed Password.");
+		    return;
+		}
+	  if ($("#txtEmailPassword").val()=='')
+		{
+		    alert("Please Enter Password.");
+		    return;
+		}
+	  if ($("#txtBodyPart").val()=='')
+		{
+		    alert("Please Add some message to send mail.");
+		    return;
+		}
+
+	  var receiverMailId=$("#txtReceiverEmailId").val();
+	  var senderMailId=$("#txtSenderEmailId").val();
+	  var password=$("#txtEmailPassword").val();
+	  var confirmedPassword=$("#txtEmailConfirmPassword").val();
+	  var mailBody=$("#txtBodyPart").val();
+		
+		var searchurl=getContextPath()+"/testSendEmail.html?receiverEmailId="+receiverMailId+ "&senderEmailId=" + senderMailId+ "&emailPassword=" + password+ "&confirmedPassword=" + confirmedPassword+ "&mailBody=" + mailBody ;
+		$.ajax({
+			type : "GET",
+			url : searchurl,
+			dataType : "json",
+			success : function(response)
+			{ 
+				alert(response.Status);
+				$("#txtAreaSMSApi").val("");
+			},
+			error : function(e){
+				if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }
+			}
+		});
+	}
+	
+	
 	
 </script>
 </head>
@@ -3520,20 +3585,29 @@ ul.tab li.active {
 			<tr>
 			<td><label>Receiver Email Id</label></td>
 				
-			 <td><s:input type="text" id="txtReceiverEmailId" 
-						path="strReceiverEmailId" 
-				 cssClass="longTextBox"  /></td>
-						
+			 <td><s:input type="text" id="txtReceiverEmailId" path="strReceiverEmailId" cssClass="longTextBox"  /></td>
 				
-		     
 			</tr>
 			
 			<tr>
-			<td><label>Mail Body</label></td>
+			<td><label>DB Backup Receiver</label></td>
+				
+			 <td><s:input type="text" id="txtDBBackupReceiverEmailId" path="strReceiverEmailId" cssClass="longTextBox"  /></td>
+				
+			</tr>
+			
+			<tr>
+			<td rowspan="3"><label>Mail Body</label></td>
 			<td  rowspan="3"><s:textarea  id="txtBodyPart" 
 						path="strBodyPart"  style="height:100px"
 						 cssClass="longTextBox"  />
 		       </td>
+			</tr>
+			
+			<tr>
+			    <td>
+			         <input id="btnSendTestSMS" type="button" class="smallButton" value="Send Test Email" onclick="funCheckEmailSendingStatus();"></input>
+			    </td>
 			</tr>
 			
 			</table>

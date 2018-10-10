@@ -19,6 +19,7 @@ import java.net.URLConnection;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,7 +29,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -8079,6 +8092,116 @@ public class clsPOSUtilityController
 		{
 		    result = false;
 		    e.printStackTrace();
+		}
+		return result;
+    }
+
+    
+    
+    public String funTestEmailSetup(String receiverEmailId,String senderEmailId,String emailPassword,String confirmedPassword,String mailBody)
+    {
+    	String emailStatus="Failed";
+		try
+		{
+		    String to = receiverEmailId;
+		    final String from = senderEmailId;
+		    final String emailPassord;
+		    if (!(from.trim().isEmpty()) && !(to.trim().isEmpty()))
+		    {
+			if (funIsValidEmailAddress(from) && funIsValidEmailAddress(to))
+			{
+			    if (emailPassword.equals(confirmedPassword))
+			    {
+				emailPassord = String.valueOf(emailPassword);
+				Properties props = new Properties();
+				props.put("mail.smtp.host", "smtp.gmail.com");
+				props.put("mail.smtp.socketFactory.port", "465");
+				props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+				props.put("mail.smtp.auth", "true");
+				props.put("mail.smtp.port", "465");
+	
+				Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator()
+				{
+				    protected PasswordAuthentication getPasswordAuthentication()
+				    {
+					return new PasswordAuthentication(from, emailPassord);//change accordingly
+				    }
+				});
+	
+				MimeMessage message = new MimeMessage(session);
+				message.setFrom(new InternetAddress(from));//change accordingly
+	
+				String emails[] = to.split(",");
+				for (int i = 0; i < emails.length; i++)
+				{
+				    message.addRecipient(Message.RecipientType.TO, new InternetAddress(emails[i]));
+				}
+	
+				message.setSubject("Test mail");
+				BodyPart messageBodyPart = new MimeBodyPart();
+				String data = "";
+	
+				data = mailBody;
+				data += "\n\n\n\n\n\n\n\n";
+				data += "\nThank You,";
+				data += "\nTeam SANGUINE";
+	
+				// Fill the message
+				messageBodyPart.setText(data);
+				Multipart multipart = new MimeMultipart();
+				multipart.addBodyPart(messageBodyPart);
+				// Send the complete message parts
+				message.setContent(multipart);
+				if (to.length() > 0)
+				{
+				    //send message  
+				    Transport.send(message);
+				    emailStatus="Email sent successfully";
+				    System.out.println("message sent successfully");
+				}
+	
+			    }
+			    else
+			    {
+			    	emailStatus="Password does not match.";
+			    }
+			}
+			else
+			{
+				emailStatus="Email id not Valid.";
+			}
+		    }
+		    else
+		    {
+		    	emailStatus="Enter  Email Id.";
+		    }
+		}
+		catch (Exception e)
+		{
+			emailStatus="Mail Sending Failed";// gmail Acc need  allow to access low secure apps
+		    e.printStackTrace();
+	
+		}
+        return emailStatus;
+    }
+    
+    public boolean funIsValidEmailAddress(String email)
+    {
+		boolean result = true;
+		try
+		{
+	
+		    String emails[] = email.split(",");
+		    for (int i = 0; i < emails.length; i++)
+		    {
+			InternetAddress emailAddr = new InternetAddress(emails[i]);
+			emailAddr.validate();
+		    }
+	
+		}
+		catch (AddressException ex)
+		{
+		    result = false;
 		}
 		return result;
     }

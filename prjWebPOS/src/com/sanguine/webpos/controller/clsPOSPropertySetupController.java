@@ -1864,5 +1864,15 @@ public class clsPOSPropertySetupController {
 			return hmStatus;
 		}
 	  
+	    @RequestMapping(value = "/testSendEmail", method = RequestMethod.GET)
+		public @ResponseBody Map  funTestSendEmailStatus(@RequestParam("receiverEmailId") String receiverEmailId,@RequestParam("senderEmailId") String senderEmailId,@RequestParam("emailPassword") String emailPassword,@RequestParam("confirmedPassword") String confirmedPassword,@RequestParam("mailBody") String mailBody,HttpServletRequest req) throws Exception
+		{
+			String posCode=req.getSession().getAttribute("loginPOS").toString();
+			String clientCode=req.getSession().getAttribute("gClientCode").toString();
+			String status=obUtilityController.funTestEmailSetup(receiverEmailId,senderEmailId,emailPassword,confirmedPassword,mailBody);
+			Map hmStatus=new HashMap();
+			hmStatus.put("Status", status);
+			return hmStatus;
+		}
 	 
 }

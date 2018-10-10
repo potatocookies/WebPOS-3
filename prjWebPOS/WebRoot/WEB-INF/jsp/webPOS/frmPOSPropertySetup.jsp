@@ -94,6 +94,14 @@ ul.tab li.active {
 			    funSetSaveUpdateBtn();
 			 
 		   });
+		 
+
+		$("#cmbConsolidatedKOTPrinterPort").change(function()
+		   {
+			 var printer=$('#cmbConsolidatedKOTPrinterPort').val();
+			 $("#txtConsolidatedKOTPrinterPort").val($("#cmbConsolidatedKOTPrinterPort").val());
+		   });
+			
 		  
 		   $("#cmbSelectedType").change(function() {
 			   funFillSelectedTypeDtlTable();
@@ -975,6 +983,12 @@ ul.tab li.active {
 					        			$("txtWeraAuthenticationAPIKey").val(response.strWeraAuthenticationAPIKey);
 					        			$("txtWeraMerchantOutletId").val(response.strWeraMerchantOutletId);
 					        			$("cmbPostMMSSalesEffectCostOrLoc").val(response.strPostMMSSalesEffectCostOrLoc);
+					        			if(response.chkEnableNFCInterface=='Y')
+					        			{
+					        			$("#chkEnableNFCInterface").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkEnableNFCInterface").prop('checked',false);
 					        			
 					        			funLoadPrinterDtl();
 				        				//funSetSelectedBillSeries();
@@ -1687,6 +1701,12 @@ ul.tab li.active {
 					        			$("txtWeraAuthenticationAPIKey").val(response.strWeraAuthenticationAPIKey);
 					        			$("txtWeraMerchantOutletId").val(response.strWeraMerchantOutletId);
 					        			$("cmbPostMMSSalesEffectCostOrLoc").val(response.strPostMMSSalesEffectCostOrLoc);
+					        			if(response.chkEnableNFCInterface=='Y')
+					        			{
+					        			$("#chkEnableNFCInterface").prop('checked',true);
+					        			}
+					        			else
+							        		$("#chkEnableNFCInterface").prop('checked',false);
 					        			
 					        			funLoadPrinterDtl();
 				        				//funSetSelectedBillSeries();
@@ -2096,6 +2116,102 @@ ul.tab li.active {
 			
 		 }
 	 }
+	
+	function funTestPrinterStatus()
+	{
+		if ($("#txtConsolidatedKOTPrinterPort").val()=='')
+		{
+		    alert("Please Select Printer Name.");
+		    return;
+		}	
+		
+	  var PrinterName=$("#txtConsolidatedKOTPrinterPort").val();
+	  var searchurl=getContextPath()+"/testPrinterStatus.html?PrinterName="+PrinterName ;
+		$.ajax({
+			type : "GET",
+			url : searchurl,
+			dataType : "json",
+			success : function(response)
+			{ 
+				alert(response.Status);
+			},
+			error : function(e){
+				if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }
+			}
+		});
+	}
+	
+	
+	
+	function funCheckSMSSendingStatus()
+	{
+	  if ($("#txtAreaSMSApi").val()=='')
+		{
+		    alert("Please Enter SMS API.");
+		    return;
+		}
+	  if ($("#txtSMSMobileNo").val()=='')
+		{
+		    alert("Please Enter Mobile No.");
+		    return;
+		}
+
+		var  mobileNos = $("#txtSMSMobileNo").val().split(",");
+		for (var i = 0; i < mobileNos.length; i++)
+		{
+		    if (mobileNos[i].length>10 || mobileNos[i].length<10)
+		       {
+		    	alert("Please Enter Valid Mobile Number.");
+			    return; 
+		       }
+		}
+		
+		var searchurl=getContextPath()+"/testSendSMS.html?testMobileNo="+mobileNos ;
+		$.ajax({
+			type : "GET",
+			url : searchurl,
+			dataType : "json",
+			success : function(response)
+			{ 
+				alert(response.Status);
+				$("#txtAreaSMSApi").val("");
+			},
+			error : function(e){
+				if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }
+			}
+		});
+	}
+	
+	
+	
 </script>
 </head>
 
@@ -2141,7 +2257,7 @@ ul.tab li.active {
 								<li data-state="tab13" style="border: 1px solid black; width: 100%;">Printer Setup</li>
 								<li data-state="tab14" style="border: 1px solid black; width: 100%;">Debit Card Setup</li>
 								<li data-state="tab15" style="border: 1px solid black; width: 100%;">Inresto Integration</li>
-								<li data-state="tab16" style="border: 1px solid black; width: 100%;">Jio Integration</li>
+								<li data-state="tab16" style="border: 1px solid black; width: 100%;">Jio Money Integration</li>
 								<li data-state="tab17" style="border: 1px solid black; width: 100%;">Benow Integration</li>
 								<li data-state="tab18" style="border: 1px solid black; width: 100%;">WERA Online Order Integration</li>
 				
@@ -3567,80 +3683,94 @@ ul.tab li.active {
 	    <br><br>
 		  <table  class="masterTable">
 			<tr>
-				
-				<td><label>SMS Type</label></td>
+				<td>
+				    <label>SMS Type</label>
+				</td>
 				<td><s:select id="cmbSMSType" path="strSMSType" cssClass="BoxW124px" >
-				<option value="SINFINI">SINFINI</option>
-				 <option value="CELLX">CELLX</option>
-				 	 <option value="INFYFLYER">INFYFLYER</option>
- 				
+				   <option value="SINFINI">SINFINI</option>
+				   <option value="CELLX">CELLX</option>
+				   <option value="INFYFLYER">INFYFLYER</option>
 				 </s:select> 
 		       </td>	
 			</tr>
 					
-				<tr>
-				<td><label>SMS API</label></td>
-				<td><s:textarea  id="txtAreaSMSApi" 
-							path="strAreaSMSApi"  style="height:30px"
-							 cssClass="longTextBox"  />
+			<tr>
+				<td>
+				    <label>SMS API</label>
+			    </td>
+				<td>
+				   <s:textarea  id="txtAreaSMSApi" path="strAreaSMSApi"  style="height:30px" cssClass="longTextBox"  />
 			    </td>
 			</tr>
-		<tr>
-			<td>
-			<div >
+			<tr>
+			     <td><label>Mobile Nos.</label></td>
+				
+			     <td><s:input type="text" id="txtSMSMobileNo" path="" cssClass="longTextBox"  /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				  <input id="btnSendTestSMS" type="button" class="smallButton" value="Send Test SMS" onclick="funCheckSMSSendingStatus();"></input>
+				</td>
+			</tr>
+		    <tr>
+			   <td>
+					<div>
+					  <label>Home Delivery SMS</label> 
+					  <s:checkbox element="li" id="chkHomeDelSMS" path="chkHomeDelSMS" value="Yes" /><br>
+					  <s:select id="cmbSendHomeDelivery" path="" cssClass="BoxW124px" >
+						 <option value="BILL NO">BILL NO</option>
+						 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
+						 <option value="DATE">DATE</option>
+			 			 <option value="DELIVERY BOY">DELIVERY BOY</option>
+						 <option value="ITEMS">ITEMS</option>
+						 <option value="BILL AMT">BILL AMT</option>
+			 			 <option value="USER">USER</option>
+						 <option value="TIME">TIME</option>
+						 </s:select> <br><br>
+						 <input id="btnAddDelSMS" type="button" class="smallButton" value=">>" onclick="return btnAddDelSMS_onclick();"></input>
+					</div>
+			    </td>
+			
+			  <td>
+			     <s:textarea  id="txtAreaSendHomeDeliverySMS" path="strAreaSendHomeDeliverySMS"  style="height:100px" cssClass="longTextBox"  />
+			  </td>
+		 </tr>
 		
-			<label>Home Delivery SMS</label> 
-			<s:checkbox element="li" id="chkHomeDelSMS" path="chkHomeDelSMS" value="Yes" /><br>
-			<s:select id="cmbSendHomeDelivery" path="" cssClass="BoxW124px" >
+		 <tr>
+			<td>
+			  <div>
+				<label>Bill Settlement SMS</label> 
+				<s:checkbox element="li" id="chkBillSettlementSMS" path="chkBillSettlementSMS" value="Yes" /><br>
+				<s:select id="cmbBillSettlement" path="" cssClass="BoxW124px" >
 					<option value="BILL NO">BILL NO</option>
-					 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
-					 	 <option value="DATE">DATE</option>
-	 				<option value="DELIVERY BOY">DELIVERY BOY</option>
-					 <option value="ITEMS">ITEMS</option>
-					 	 <option value="BILL AMT">BILL AMT</option>
-	 				<option value="USER">USER</option>
-					 <option value="TIME">TIME</option>
-					 	
-					 </s:select> <br><br>
-					  <input id="btnAddDelSMS" type="button" class="smallButton" value=">>" onclick="return btnAddDelSMS_onclick();"></input>
-			</div>
+					<option value="CUSTOMER NAME">CUSTOMER NAME</option>
+					<option value="DATE">DATE</option>
+		 			<option value="DELIVERY BOY">DELIVERY BOY</option>
+					<option value="ITEMS">ITEMS</option>
+					<option value="BILL AMT">BILL AMT</option>
+		 			<option value="USER">USER</option>
+					<option value="TIME">TIME</option>
+						 	
+				</s:select> <br><br>
+				<input id="btnAddSettleSMS" type="button" class="smallButton" value=">>" onclick="return btnAddSettleSMS_onclick();"></input>
+			  </div>
 			</td>
 			
 			<td>
-			<s:textarea  id="txtAreaSendHomeDeliverySMS" 
-							path="strAreaSendHomeDeliverySMS"  style="height:100px"
-							 cssClass="longTextBox"  />
-			
+			    <s:textarea  id="txtAreaBillSettlementSMS" path="strAreaBillSettlementSMS" style="height:100px" cssClass="longTextBox"  />
 			</td>
 		</tr>
 		
 		<tr>
-			<td>
-			<div >
-		
-			<label>Bill Settlement SMS</label> 
-			<s:checkbox element="li" id="chkBillSettlementSMS" path="chkBillSettlementSMS" value="Yes" /><br>
-			<s:select id="cmbBillSettlement" path="" cssClass="BoxW124px" >
-					<option value="BILL NO">BILL NO</option>
-					 <option value="CUSTOMER NAME">CUSTOMER NAME</option>
-					 	 <option value="DATE">DATE</option>
-	 				<option value="DELIVERY BOY">DELIVERY BOY</option>
-					 <option value="ITEMS">ITEMS</option>
-					 	 <option value="BILL AMT">BILL AMT</option>
-	 				<option value="USER">USER</option>
-					 <option value="TIME">TIME</option>
-					 	
-					 </s:select> <br><br>
-					  <input id="btnAddSettleSMS" type="button" class="smallButton" value=">>" onclick="return btnAddSettleSMS_onclick();"></input>
-			</div>
-			</td>
+		     <td><label>Audit SMS</label></td>
 			
-			<td>
-			<s:textarea  id="txtAreaBillSettlementSMS" 
-							path="strAreaBillSettlementSMS" style="height:100px"
-							 cssClass="longTextBox"  />
-			
-			</td>
+		     <td>
+		         <label>Day End</label> 
+				 <s:checkbox element="li" id="chkDayEndSMSYN" path="chkDayEndSMSYN" value="Yes" />
+				 <label>Void KOT</label> 
+				 <s:checkbox element="li" id="chkVoidKOTSMSYN" path="chkVoidKOTSMSYN" value="Yes" />
+				 <label>NC KOT</label> 
+				 <s:checkbox element="li" id="chkNCKOTSMSYN" path="chkNCKOTSMSYN" value="Yes" />
+				 <label>Void Advance Order</label> 
+				 <s:checkbox element="li" id="chkVoidAdvOrderSMSYN" path="chkVoidAdvOrderSMSYN" value="Yes" />
+		    </td>
 		</tr>
 			
 	  </table>
@@ -3767,8 +3897,23 @@ ul.tab li.active {
 			
 	<!-- 	Start of Printer Setup tab -->
 			
-	<div id="tab13" class="tab_content">
+  <div id="tab13" class="tab_content">
 	    <br>
+	    
+	        <table  class="masterTable">
+																		
+			   <tr>
+			       <td><label>Consolidated KOT Printer</label></td>
+					<td >
+					     <s:select id="cmbConsolidatedKOTPrinterPort" name="cmbConsolidatedKOTPrinterPort" path="strConsolidatedKOTPrinterPort" cssClass="BoxW124px" items="${printerList}" />
+					     <s:input type="text" id="txtConsolidatedKOTPrinterPort" path="" cssClass="longTextBox"  /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					     <input id="btnTestConsolidatedKOTPrinter" type="button" class="smallButton" value="Test" onclick="funTestPrinterStatus();"></input>
+					</td>
+		      </tr>	
+		      </table>	
+		      <br>
+		   
+	    
 			<table border="1" class="myTable" style="width:80%;margin: auto;"  >
 					
 					<tr>
@@ -3782,16 +3927,19 @@ ul.tab li.active {
 					<div style="background-color: #a4d7ff;border: 1px solid #ccc;display: block; height: 380px;
 		    				margin:auto;overflow-x: hidden; overflow-y: scroll;width: 80%;">
 								<table id="tblPrinterDtl" class="transTablex col5-center" style="width:100%;">
-								<tbody>   
-								<col style="width:0%"><!--  COl1   --> 
-										<col style="width:30%"><!--  COl1   -->
-										<col style="width:25%"><!--  COl2   -->
-										<col style="width:25%"><!--  COl2   -->
-										<col style="width:20%"><!--  COl3   -->
-																		
-								</tbody>							
+									<tbody>   
+									<col style="width:0%"><!--  COl1   --> 
+											<col style="width:30%"><!--  COl1   -->
+											<col style="width:25%"><!--  COl2   -->
+											<col style="width:25%"><!--  COl2   -->
+											<col style="width:20%"><!--  COl3   -->
+																			
+									</tbody>							
 								</table>
+								
 					</div>
+					
+			
 			
 	</div>
 	<!-- 	End of Printer Setup tab -->
@@ -3804,10 +3952,17 @@ ul.tab li.active {
 	<br><br>
 		<table  class="masterTable">
 																		
-		  <tr>
+		   <tr>
 		       <td><label>Last POS Day For Day End</label></td>
 				<td ><s:select id="cmbPOSForDayEnd" name="cmbPOSForDayEnd" path="strPOSForDayEnd" items="${posListForDayEnd}" cssClass="BoxW124px" />
 				</td>
+		    
+	      </tr>
+	      
+	       <tr>
+		       <td><label>Enable NFC Interface</label></td>
+				<td><s:checkbox element="li" id="chkEnableNFCInterface" path="chkEnableNFCInterface" value="Yes" />
+			    </td>
 		    
 	      </tr>
 	  </table>
@@ -3907,7 +4062,7 @@ ul.tab li.active {
 						path="strJioActivationCode"
 				 cssClass="longTextBox"  /></td>
 			</tr>
-				<tr>
+			<tr>
 			<td><label>Device ID </label></td>
 				
 			 <td><s:input type="text" id="txtJioDeviceID" 

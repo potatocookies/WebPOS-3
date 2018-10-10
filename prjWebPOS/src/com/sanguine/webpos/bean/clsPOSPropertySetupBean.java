@@ -409,6 +409,20 @@ public class clsPOSPropertySetupBean {
 	
 	private String strPostMMSSalesEffectCostOrLoc;
 	
+	private String strSMSMobileNo;
+	
+	private String chkDayEndSMSYN;
+	
+	private String chkVoidKOTSMSYN;
+	
+	private String chkNCKOTSMSYN;
+	
+	private String chkVoidAdvOrderSMSYN;
+	
+	private String chkEnableNFCInterface;
+	
+	private String strConsolidatedKOTPrinterPort;
+	
 	
 	private List<clsPOSBillSeriesDtlBean> listBillSeriesDtl;
 	
@@ -2134,8 +2148,75 @@ public class clsPOSPropertySetupBean {
 		this.strPostMMSSalesEffectCostOrLoc = strPostMMSSalesEffectCostOrLoc;
 	}
 
-	
-	
-	
+	public String getStrSMSMobileNo()
+	{
+		return strSMSMobileNo;
+	}
+
+	public void setStrSMSMobileNo(String strSMSMobileNo)
+	{
+		this.strSMSMobileNo = strSMSMobileNo;
+	}
+
+	public String getChkDayEndSMSYN()
+	{
+		return chkDayEndSMSYN;
+	}
+
+	public void setChkDayEndSMSYN(String chkDayEndSMSYN)
+	{
+		this.chkDayEndSMSYN = chkDayEndSMSYN;
+	}
+
+	public String getChkVoidKOTSMSYN()
+	{
+		return chkVoidKOTSMSYN;
+	}
+
+	public void setChkVoidKOTSMSYN(String chkVoidKOTSMSYN)
+	{
+		this.chkVoidKOTSMSYN = chkVoidKOTSMSYN;
+	}
+
+	public String getChkNCKOTSMSYN()
+	{
+		return chkNCKOTSMSYN;
+	}
+
+	public void setChkNCKOTSMSYN(String chkNCKOTSMSYN)
+	{
+		this.chkNCKOTSMSYN = chkNCKOTSMSYN;
+	}
+
+	public String getChkVoidAdvOrderSMSYN()
+	{
+		return chkVoidAdvOrderSMSYN;
+	}
+
+	public void setChkVoidAdvOrderSMSYN(String chkVoidAdvOrderSMSYN)
+	{
+		this.chkVoidAdvOrderSMSYN = chkVoidAdvOrderSMSYN;
+	}
+
+	public String getChkEnableNFCInterface()
+	{
+		return chkEnableNFCInterface;
+	}
+
+	public void setChkEnableNFCInterface(String chkEnableNFCInterface)
+	{
+		this.chkEnableNFCInterface = chkEnableNFCInterface;
+	}
+
+	public String getStrConsolidatedKOTPrinterPort()
+	{
+		return strConsolidatedKOTPrinterPort;
+	}
+
+	public void setStrConsolidatedKOTPrinterPort(String strConsolidatedKOTPrinterPort)
+	{
+		this.strConsolidatedKOTPrinterPort = strConsolidatedKOTPrinterPort;
+	}
+
 
 }

@@ -669,6 +669,10 @@ public class clsSetupHdModel extends clsBaseModel implements Serializable
 	@Column(name="strWERAAuthenticationAPIKey")
 	private String strWERAAuthenticationAPIKey;
 	
+	@Column(name="strEnableNFCInterface")
+	private String strEnableNFCInterface;
+	
+	
 	
 	
 //Setter-Getter Methods
@@ -2744,6 +2748,16 @@ public class clsSetupHdModel extends clsBaseModel implements Serializable
 	public void setStrWERAAuthenticationAPIKey(String strWERAAuthenticationAPIKey)
 	{
 		this.strWERAAuthenticationAPIKey = strWERAAuthenticationAPIKey;
+	}
+
+	public String getStrEnableNFCInterface()
+	{
+		return strEnableNFCInterface;
+	}
+
+	public void setStrEnableNFCInterface(String strEnableNFCInterface)
+	{
+		this.strEnableNFCInterface = strEnableNFCInterface;
 	}
 
 	

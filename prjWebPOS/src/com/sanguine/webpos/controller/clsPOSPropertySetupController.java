@@ -18,10 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import javax.persistence.Column;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,9 +35,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSBillSeriesDtlBean;
+import com.sanguine.webpos.bean.clsPOSCreditBillReceiptBean;
 import com.sanguine.webpos.bean.clsPOSPropertySetupBean;
 import com.sanguine.webpos.bean.clsPOSPrinterSetupBean;
 import com.sanguine.webpos.bean.clsPOSSettlementDetailsBean;
@@ -105,6 +109,12 @@ public class clsPOSPropertySetupController {
 		model.put("areaList",mapArea);
 		mapTax=funLoadTaxList();
 		model.put("taxList",mapTax);
+		
+		Map mapOfPrinterList = new HashMap();
+		List<String> printerList=new ArrayList<String>();
+		mapOfPrinterList = obUtilityController.funGetPrinterList();
+		printerList =(ArrayList) mapOfPrinterList.get("printerList");
+		model.put("printerList", printerList);
 		
 		   
      return new ModelAndView("frmPOSPropertySetup");
@@ -345,6 +355,7 @@ public class clsPOSPropertySetupController {
 					objBean.setStrWeraMerchantOutletId (objSetupHdModel.getStrWERAMerchantOutletId());
 					objBean.setStrWeraAuthenticationAPIKey (objSetupHdModel.getStrWERAAuthenticationAPIKey());
 					objBean.setStrPostMMSSalesEffectCostOrLoc(objSetupHdModel.getStrPostSalesCostOrLoc());
+					objBean.setChkEnableNFCInterface(objSetupHdModel.getStrEnableNFCInterface());
 					dteEndDate=objSetupHdModel.getDteEndDate();
 				}
 				
@@ -610,7 +621,7 @@ public class clsPOSPropertySetupController {
 			objBean.setStrWeraMerchantOutletId (objSetupHdModel.getStrWERAMerchantOutletId());
 			objBean.setStrWeraAuthenticationAPIKey (objSetupHdModel.getStrWERAAuthenticationAPIKey());
 			objBean.setStrPostMMSSalesEffectCostOrLoc(objSetupHdModel.getStrPostSalesCostOrLoc());
-			
+			objBean.setChkEnableNFCInterface(objSetupHdModel.getStrEnableNFCInterface());
 			dteEndDate=objSetupHdModel.getDteEndDate();
 
 		}catch(Exception e){
@@ -1011,6 +1022,7 @@ public class clsPOSPropertySetupController {
 			    objModel.setDteDateEdited(dateTime);		 
 			    objModel.setStrUserCreated(webStockUserCode);
 			    objModel.setStrUserEdited(webStockUserCode);
+			    objModel.setStrEnableNFCInterface(objGlobal.funIfNull( objBean.getChkEnableNFCInterface(),"N","Y"));
 			    
 			    funSaveUpdatePropertySetup(objModel);
 			    
@@ -1825,6 +1837,31 @@ public class clsPOSPropertySetupController {
 				ex.printStackTrace();
 			}
 			return mapTax;
+		}
+	    
+	    
+	    @RequestMapping(value = "/testPrinterStatus", method = RequestMethod.GET)
+		public @ResponseBody Map  funTestPrinterStatus(@RequestParam("PrinterName") String printerName,HttpServletRequest req) throws Exception
+		{
+			String posCode=req.getSession().getAttribute("loginPOS").toString();
+			String userCode=req.getSession().getAttribute("gUserCode").toString();
+			String status=obUtilityController.funTestPrint(printerName,userCode,posCode);
+			Map hmStatus=new HashMap();
+			hmStatus.put("Status", status);
+			return hmStatus;
+		}
+	    
+	    
+	    
+	    @RequestMapping(value = "/testSendSMS", method = RequestMethod.GET)
+		public @ResponseBody Map  funTestSendSMSStatus(@RequestParam("testMobileNo") String testMobileNumber,HttpServletRequest req) throws Exception
+		{
+			String posCode=req.getSession().getAttribute("loginPOS").toString();
+			String clientCode=req.getSession().getAttribute("gClientCode").toString();
+			String status=obUtilityController.funSendTestSMS(testMobileNumber,"Test SMS",clientCode,posCode);
+			Map hmStatus=new HashMap();
+			hmStatus.put("Status", status);
+			return hmStatus;
 		}
 	  
 	 

@@ -1,12 +1,21 @@
 package com.sanguine.webpos.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,16 +29,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.print.Doc;
 import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
+import javax.print.attribute.Attribute;
+import javax.print.attribute.DocAttributeSet;
+import javax.print.attribute.HashDocAttributeSet;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.PrintServiceAttributeSet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import com.POSLicence.controller.clsClientDetails;
+import com.POSLicence.controller.clsEncryptDecryptClientCode;
+import com.POSLicence.controller.clsSMSPackDtl;
 import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
@@ -44,6 +63,7 @@ import com.sanguine.webpos.bean.clsPOSItemDtlForTax;
 import com.sanguine.webpos.bean.clsPOSPromotionItems;
 import com.sanguine.webpos.bean.clsPOSTaxCalculationBean;
 import com.sanguine.webpos.bean.clsPOSTaxCalculationDtls;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 @Controller
 public class clsPOSUtilityController
@@ -7735,6 +7755,334 @@ public class clsPOSUtilityController
 	    e.printStackTrace();
 	}
     }
+	
+	
+
+    public String funTestPrint(String printerName,String userName,String posName)
+    {
+    	String status="Failed";
+		funCreateTempFolder();
+		String filePath = System.getProperty("user.dir");
+		String filename = (filePath + "/Temp/TestCCPrinter.txt");
+		try
+		{
+		    File file = new File(filename);
+		    funCreateTestTextFile(file, printerName,userName,posName);
+		    //clsPrintingUtility objPrintingUtility = new clsPrintingUtility();
+		    //objPrintingUtility.funShowTextFile(file, "", "");
+	
+		    int printerIndex = 0;
+		    String printerStatus = "Not Found";
+	
+		    PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+		    DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
+		    printerName = printerName.replaceAll("#", "\\\\");
+	
+		    PrintService printService[] = PrintServiceLookup.lookupPrintServices(flavor, pras);
+		    for (int i = 0; i < printService.length; i++)
+		    {
+				String printerServiceName = printService[i].getName();
+				if (printerName.equalsIgnoreCase(printerServiceName))
+				{
+				    System.out.println("Printer=" + printerName);
+				    printerIndex = i;
+				    printerStatus = "Found";
+				    break;
+				}
+		    }
+	
+		    if (printerStatus.equals("Found"))
+		    {
+				DocPrintJob job = printService[printerIndex].createPrintJob();
+				FileInputStream fis = new FileInputStream(filename);
+				DocAttributeSet das = new HashDocAttributeSet();
+				Doc doc = new SimpleDoc(fis, flavor, das);
+				job.print(doc, pras);
+		
+				PrintServiceAttributeSet att = printService[printerIndex].getAttributes();
+				for (Attribute a : att.toArray())
+				{
+				    String attributeName;
+				    String attributeValue;
+				    attributeName = a.getName();
+				    attributeValue = att.get(a.getClass()).toString();
+				    if (attributeName.trim().equalsIgnoreCase("queued-job-count"))
+				    {
+					System.out.println(attributeName + " : " + attributeValue);
+				    }
+				}
+				
+				status="Printer Found";
+		    }
+		    else
+		    {
+			   //JOptionPane.showMessageDialog(null, printerName + " Printer Not Found");
+			   status="Printer Not Found";
+		    }
+	
+		}
+		catch (Exception e)
+		{
+	
+		    e.printStackTrace();
+		    status="Failed to Print";
+		    //JOptionPane.showMessageDialog(null, e.getMessage(), "Error Code - TFG 01", JOptionPane.ERROR_MESSAGE);
+		}
+		return status;
+    }
+    
+    
+    private void funCreateTestTextFile(File file, String printerName,String userName,String posName)
+    {
+		BufferedWriter fileWriter = null;
+		try
+		{
+		    //File file=new File(filename);
+		    fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
+	
+		    String fileHeader = "----------Print Testing------------";
+		    String dottedLine = "-----------------------------------";
+		    String newLine = "\n";
+		    String blankLine = "                                   ";
+	
+		    fileWriter.write(fileHeader);
+		    fileWriter.newLine();
+		    fileWriter.write(dottedLine);
+		    fileWriter.newLine();
+		    fileWriter.write("User Name    : " + userName);
+		    fileWriter.newLine();
+		    fileWriter.write("POS Name     : " + posName);
+		    fileWriter.newLine();
+		    fileWriter.write("Printer Name : " + printerName);
+		    fileWriter.newLine();
+	
+		    fileWriter.write(dottedLine);
+	
+		}
+		catch (FileNotFoundException ex)
+		{
+		    ex.printStackTrace();
+		}
+		catch (UnsupportedEncodingException ex)
+		{
+		    ex.printStackTrace();
+		}
+		catch (IOException ex)
+		{
+		    ex.printStackTrace();
+		}
+		finally
+		{
+		    try
+		    {
+			fileWriter.close();
+		    }
+		    catch (IOException ex)
+		    {
+			ex.printStackTrace();
+		    }
+		}
+
+    }
+    
+    
+    
+    public String funSendTestSMS(String testMobileNumber, String testSMS,String clientCode,String posCode)
+    {
+    	String smsStatus="Failed";
+		try
+		{
+		    ArrayList<String> mobileNumberList = new ArrayList<String>();
+	
+		    String[] mobileNos = testMobileNumber.split(",");
+		    for (int i = 0; i < mobileNos.length; i++)
+		    {
+			  mobileNumberList.add(mobileNos[i]);
+		    }
+	
+		    boolean isSend = funSendBulkSMS(mobileNumberList, testSMS,clientCode,posCode);
+		    if (isSend)
+		    {
+		    	smsStatus="Test SMS Sent To :" + testMobileNumber + ".";
+		    }
+		    else
+		    {
+		    	smsStatus="Unable To Send SMS To :" + testMobileNumber + ".";
+		    }
+	
+		}
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		}
+		return smsStatus;
+    }
+
+
+    public boolean funSendBulkSMS(ArrayList<String> mobileNumberList, String testSMS,String clientCode,String posCode)
+    {
+		boolean result = false;
+		try
+		{
+			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gSMSType");
+			String smsType=objSetupParameter.get("gSMSType").toString();
+			
+			objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gSMSApi");
+			String SMSApi=objSetupParameter.get("gSMSApi").toString();
+			
+			objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gClientTelNo");
+			String clientTelNo=objSetupParameter.get("gClientTelNo").toString();
+			
+		    if (mobileNumberList.size() < 1 || testSMS.length() < 1)
+		    {
+			return result;
+		    }
+	
+		    String fromTelNo = clientTelNo;
+		    String[] sp = fromTelNo.split(",");
+		    if (sp.length > 0)
+		    {
+			  fromTelNo = sp[0];
+		    }
+	
+		    if (smsType.equalsIgnoreCase("Sanguine"))
+		    {
+			clsClientDetails objClientDetails = clsClientDetails.hmClientDtl.get(clientCode);
+			clsSMSPackDtl objSMSPackDtl = objClientDetails.getObjSMSPackDtl();
+	
+			String userId = clsEncryptDecryptClientCode.funDecryptClientCode(objSMSPackDtl.getStrUserId());
+			String password = clsEncryptDecryptClientCode.funDecryptClientCode(objSMSPackDtl.getStrPassword());
+			String smsPack = clsEncryptDecryptClientCode.funDecryptClientCode(objSMSPackDtl.getStrSMSPack());
+			String senderId = clsEncryptDecryptClientCode.funDecryptClientCode(objSMSPackDtl.getStrSenderId());
+	
+			if (smsPack.equalsIgnoreCase("NOSMSPACK") || senderId.isEmpty())
+			{
+			    return result;
+			}
+	
+			int noOfPhones = 100;
+			if (mobileNumberList.size() < noOfPhones)
+			{
+			    noOfPhones = mobileNumberList.size();
+			}
+			StringBuilder mobileNoBuilder = new StringBuilder();
+			int noOfSMSSends = noOfPhones;
+			for (int i = 0; i < mobileNumberList.size();)
+			{
+			    boolean isFirstMobileNo = true;
+			    for (int j = 0; j < noOfPhones && i < mobileNumberList.size(); j++, i++)
+			    {
+				String mobileNo = mobileNumberList.get(i);
+				if (mobileNo.matches("\\d{10}"))
+				{
+				    if (isFirstMobileNo)
+				    {
+					mobileNoBuilder.append(mobileNo);
+					isFirstMobileNo = false;
+				    }
+				    else
+				    {
+					mobileNoBuilder.append(",").append(mobileNo);
+				    }
+				}
+				else
+				{
+				    System.out.println("Invalid mobile number-->" + mobileNo);
+				}
+			    }
+			    if (mobileNoBuilder.length() > 0)
+			    {
+				String smsURL = SMSApi.replace("<USERNAME>", userId).replace("<PASSWORD>", password).replace("<SENDERID>", senderId).replace("<PHONE>", mobileNoBuilder.toString()).replace("<MSG>", testSMS).replaceAll(" ", "%20").replaceAll("\n", "%20");
+				mobileNoBuilder.setLength(0);
+				result = funSendSMS(smsURL);
+				if (result)
+				{
+				    System.out.println("No of SMS sent-->" + noOfSMSSends);
+				    noOfSMSSends = noOfSMSSends + noOfPhones;
+				}
+			    }
+			}
+	
+			return result;
+		    }
+		    else if (smsType.equalsIgnoreCase("Cellx"))
+		    {
+			for (int i = 0; i < mobileNumberList.size(); i++)
+			{
+			    if ((!mobileNumberList.get(i).isEmpty()))
+			    {
+				String smsURL = SMSApi.replace("<to>", mobileNumberList.get(i)).replace("<from>", fromTelNo).replace("<MSG>", testSMS).replaceAll(" ", "%20");
+				result = funSendSMS(smsURL);
+			    }
+			}
+	
+			return result;
+		    }
+		    else if (smsType.equalsIgnoreCase("Sinfini"))
+		    {
+			for (int i = 0; i < mobileNumberList.size(); i++)
+			{
+			    if (!mobileNumberList.get(i).isEmpty())
+			    {
+				String smsURL = SMSApi.replace("<PHONE>", mobileNumberList.get(i)).replace("<MSG>", testSMS).replaceAll(" ", "%20");
+				result = funSendSMS(smsURL);
+			    }
+			}
+	
+			return result;
+		    }
+		    else if (smsType.equalsIgnoreCase("Infyflyer"))
+		    {
+	
+			for (int i = 0; i < mobileNumberList.size(); i++)
+			{
+			    if (!mobileNumberList.get(i).isEmpty())
+			    {
+				String smsURL = SMSApi.replace("<PHONE>", mobileNumberList.get(i)).replace("<MSG>", testSMS).replaceAll(" ", "%20");
+				result = funSendSMS(smsURL);
+			    }
+			}
+	
+			return result;
+		    }
+		}
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		    return result;
+		}
+	
+		return result;
+    }
+
+    
+    
+    private Boolean funSendSMS(String url)
+    {
+		boolean result = false;
+		StringBuilder output = new StringBuilder();
+		try
+		{
+		    URL hp = new URL(url);
+		    //System.out.println(url);
+		    URLConnection hpCon = hp.openConnection();
+		    BufferedReader in = new BufferedReader(new InputStreamReader(hpCon.getInputStream()));
+		    String inputLine;
+		    while ((inputLine = in.readLine()) != null)
+		    {
+			output.append(inputLine);
+			result = true;
+		    }
+		    in.close();
+		}
+		catch (Exception e)
+		{
+		    result = false;
+		    e.printStackTrace();
+		}
+		return result;
+    }
+
 	
 	
 

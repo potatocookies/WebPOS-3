@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -3844,6 +3845,8 @@ public class clsPOSUtilityController
 		Map hmRet = new HashMap();
 		List listData = new ArrayList();
 		StringBuilder sql = new StringBuilder();
+		DecimalFormat decimalFormtFor2DecPoint = new DecimalFormat("0.00");
+		
 		try
 		{
 			Map mapData = new HashMap();
@@ -3856,29 +3859,14 @@ public class clsPOSUtilityController
 			sql.append("select  a.strPOSCode,b.strPosName,date(a.dtePOSDate),time(a.dteDayEndDateTime),a.dblTotalSale,\n" + "a.dblFloat,a.dblCash,a.dblAdvance,  a.dblTransferIn,a.dblTotalReceipt,a.dblPayments,\n" + "a.dblWithDrawal,a.dblTransferOut,a.dblTotalPay,  a.dblCashInHand,a.dblHDAmt,\n" + "a.dblDiningAmt,a.dblTakeAway,a.dblNoOfBill,a.dblNoOfVoidedBill,\n" + "a.dblNoOfModifyBill,a.dblRefund  ,a.dblTotalDiscount,\n" + "a.intTotalPax,a.intNoOfTakeAway,a.intNoOfHomeDelivery,\n" + "a.strUserCreated,a.strUserEdited, a.intNoOfNCKOT,a.intNoOfComplimentaryKOT,a.intNoOfVoidKOT from tbldayendprocess a ,  " + " tblposmaster b where b.strPosCode=a.strPosCode " + " and a.strPOSCode='" + posCode + "' and date(a.dtePOSDate)='" + billDate + "'");
 
 			List listDayend = objBaseService.funGetList(sql, "sql");
-			String posCode1, posDate,
-					posName, dayEndBy;
+			String posCode1,posDate,posName, dayEndBy;
 			BigDecimal homeDelivery;
-			BigDecimal dining, takeAway,
-					totalSales;
-			BigDecimal discount,
-					floatval, cash,
-					advance, transferIn,
-					totalReceipt;
-			BigDecimal payment,
-					withdrawal,
-					transferOut, refund,
-					totalPayments;
+			BigDecimal dining, takeAway,totalSales;
+			BigDecimal discount,floatval, cash,advance, transferIn,totalReceipt;
+			BigDecimal payment,withdrawal,transferOut, refund,totalPayments;
 			BigDecimal cashInHand;
-			BigDecimal noOfBills,
-					noOfVoidedBills,
-					noOfModifiedBills;
-			int noOfPax;
-			int noOfHomeDel;
-			int noOfNcKot;
-			int noOfTakeAway;
-			int noOfComplimentaryBills;
-			int noOfVoidKot;
+			BigDecimal noOfBills,noOfVoidedBills,noOfModifiedBills;
+			int noOfPax,noOfHomeDel,noOfNcKot,noOfTakeAway,noOfComplimentaryBills,noOfVoidKot;
 			SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy hh:mm a ");
 			SimpleDateFormat ft1 = new SimpleDateFormat("hh:mm a ");
 			if (listDayend != null)
@@ -3897,61 +3885,61 @@ public class clsPOSUtilityController
 					mapData.put("posDate", posDate);
 
 					totalSales = (BigDecimal) Array.get(obj, 4);
-					mapData.put("totalSales", totalSales);
+					mapData.put("totalSales", String.valueOf(decimalFormtFor2DecPoint.format(totalSales.doubleValue())));
 
 					floatval = (BigDecimal) Array.get(obj, 5);
-					mapData.put("floatval", floatval);
+					mapData.put("floatval",String.valueOf(decimalFormtFor2DecPoint.format(floatval.doubleValue())));
 
 					cash = (BigDecimal) Array.get(obj, 6);
-					mapData.put("cash", cash);
+					mapData.put("cash", String.valueOf(decimalFormtFor2DecPoint.format(cash.doubleValue())));
 
 					advance = (BigDecimal) Array.get(obj, 7);
-					mapData.put("advance", advance);
+					mapData.put("advance", String.valueOf(decimalFormtFor2DecPoint.format(advance.doubleValue())));
 
 					transferIn = (BigDecimal) Array.get(obj, 8);
-					mapData.put("transferIn", transferIn);
+					mapData.put("transferIn", String.valueOf(decimalFormtFor2DecPoint.format(transferIn.doubleValue())));
 
 					totalReceipt = (BigDecimal) Array.get(obj, 9);
-					mapData.put("totalReceipt", totalReceipt);
+					mapData.put("totalReceipt", String.valueOf(decimalFormtFor2DecPoint.format(totalReceipt.doubleValue())));
 
 					payment = (BigDecimal) Array.get(obj, 10);
-					mapData.put("payment", payment);
+					mapData.put("payment", String.valueOf(decimalFormtFor2DecPoint.format(payment.doubleValue())));
 
 					withdrawal = (BigDecimal) Array.get(obj, 11);
-					mapData.put("withdrawal", withdrawal);
+					mapData.put("withdrawal", String.valueOf(decimalFormtFor2DecPoint.format(withdrawal.doubleValue())));
 
 					transferOut = (BigDecimal) Array.get(obj, 12);
-					mapData.put("transferOut", transferOut);
+					mapData.put("transferOut", String.valueOf(decimalFormtFor2DecPoint.format(transferOut.doubleValue())));
 
 					totalPayments = (BigDecimal) Array.get(obj, 13);
-					mapData.put("totalPayments", totalPayments);
+					mapData.put("totalPayments", String.valueOf(decimalFormtFor2DecPoint.format(totalPayments.doubleValue())));
 
 					cashInHand = (BigDecimal) Array.get(obj, 14);
-					mapData.put("cashInHand", cashInHand);
+					mapData.put("cashInHand", String.valueOf(decimalFormtFor2DecPoint.format(cashInHand.doubleValue())));
 
 					homeDelivery = (BigDecimal) Array.get(obj, 15);
-					mapData.put("homeDelivery", homeDelivery);
+					mapData.put("homeDelivery", String.valueOf(decimalFormtFor2DecPoint.format(homeDelivery.doubleValue())));
 
 					dining = (BigDecimal) Array.get(obj, 16);
-					mapData.put("dining", dining);
+					mapData.put("dining", String.valueOf(decimalFormtFor2DecPoint.format(dining.doubleValue())));
 
 					takeAway = (BigDecimal) Array.get(obj, 17);
-					mapData.put("takeAway", takeAway);
+					mapData.put("takeAway", String.valueOf(decimalFormtFor2DecPoint.format(takeAway.doubleValue())));
 
 					noOfBills = (BigDecimal) Array.get(obj, 18);
-					mapData.put("noOfBills", noOfBills);
+					mapData.put("noOfBills", String.valueOf(decimalFormtFor2DecPoint.format(noOfBills.doubleValue())));
 
 					noOfVoidedBills = (BigDecimal) Array.get(obj, 19);
-					mapData.put("noOfVoidedBills", noOfVoidedBills);
+					mapData.put("noOfVoidedBills", String.valueOf(decimalFormtFor2DecPoint.format(noOfVoidedBills.doubleValue())));
 
 					noOfModifiedBills = (BigDecimal) Array.get(obj, 20);
-					mapData.put("noOfModifiedBills", noOfModifiedBills);
+					mapData.put("noOfModifiedBills", String.valueOf(decimalFormtFor2DecPoint.format(noOfModifiedBills.doubleValue())));
 
 					refund = (BigDecimal) Array.get(obj, 21);
-					mapData.put("refund", refund);
+					mapData.put("refund", String.valueOf(decimalFormtFor2DecPoint.format(refund.doubleValue())));
 
 					discount = (BigDecimal) Array.get(obj, 22);
-					mapData.put("discount", discount);
+					mapData.put("discount", String.valueOf(decimalFormtFor2DecPoint.format(discount.doubleValue())));
 
 					noOfPax = (int) Array.get(obj, 23);
 					mapData.put("noOfPax", noOfPax);

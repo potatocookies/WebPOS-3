@@ -2,6 +2,7 @@ package com.sanguine.webpos.controller;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -803,7 +804,7 @@ public class clsPOSReprintController
 			}
 			else
 			{
-				listMain = (List) mapViewData.get("jArr");
+				listMain = (List) mapViewData.get("listData");
 				
 				String reportHeading="",duplicate="",discount="",posCode1="",POSName="",POSDt="",totalSales="",floatval="";
 				String cash="",advance="",transferIn="",totalReceipt="",payment="",withdrawal="",transferOut="";
@@ -876,36 +877,42 @@ public class clsPOSReprintController
 						
 						reportHeading = mapTemp.get("reportHeading").toString();
 						duplicate = mapTemp.get("duplicate").toString();
-						posCode = mapTemp.get("posCode1").toString();
-						posName = mapTemp.get("posName").toString();
-						posDate = mapTemp.get("posDate").toString();
-						totalSales=mapTemp.get("totalSales").toString();
-						floatval=mapTemp.get("floatval").toString();
-						cash=mapTemp.get("cash").toString();
-						advance=mapTemp.get("advance").toString();
-						transferIn=mapTemp.get("transferIn").toString(); 
-						totalReceipt=mapTemp.get("totalReceipt").toString();
-						payment=mapTemp.get("payment").toString();
-						withdrawal=mapTemp.get("withdrawal").toString();
-						transferOut=mapTemp.get("transferOut").toString();
-						totalPayments = mapTemp.get("totalPayments").toString();
-						cashInHand = mapTemp.get("cashInHand").toString();
-						homeDelivery = mapTemp.get("homeDelivery").toString();
-						dining = mapTemp.get("dining").toString();
-						takeAway = mapTemp.get("takeAway").toString();
-						noOfBills = mapTemp.get("noOfBills").toString();
-						noOfVoidedBills = mapTemp.get("noOfVoidedBills").toString();
-						noOfModifiedBills = mapTemp.get("noOfModifiedBills").toString();
-						refund = mapTemp.get("refund").toString();
-						discount = mapTemp.get("discount").toString();
-						noOfPax = mapTemp.get("noOfPax").toString();
-						noOfTakeAway = mapTemp.get("noOfTakeAway").toString();
-						noOfHomeDel = mapTemp.get("noOfHomeDel").toString();
-						dayEndBy = mapTemp.get("dayEndBy").toString();
-						noOfNcKot = mapTemp.get("noOfNcKot").toString();
-						noOfComplimentaryBills = mapTemp.get("noOfComplimentaryBills").toString();
-						noOfVoidKot = mapTemp.get("noOfVoidKot").toString();
-						Total = mapTemp.get("Total").toString();
+					
+						posDate=code.split("-")[2]+"-"+code.split("-")[1]+"-"+code.split("-")[0];
+						if(mapTemp.containsKey("posCode1"))
+						{
+							posCode = mapTemp.get("posCode1").toString();
+							posName = mapTemp.get("posName").toString();
+							posDate = mapTemp.get("posDate").toString();
+							totalSales=mapTemp.get("totalSales").toString();
+							floatval=mapTemp.get("floatval").toString();
+							cash=mapTemp.get("cash").toString();
+							advance=mapTemp.get("advance").toString();
+							transferIn=mapTemp.get("transferIn").toString(); 
+							totalReceipt=mapTemp.get("totalReceipt").toString();
+							payment=mapTemp.get("payment").toString();
+							withdrawal=mapTemp.get("withdrawal").toString();
+							transferOut=mapTemp.get("transferOut").toString();
+							totalPayments = mapTemp.get("totalPayments").toString();
+							cashInHand = mapTemp.get("cashInHand").toString();
+							homeDelivery = mapTemp.get("homeDelivery").toString();
+							dining = mapTemp.get("dining").toString();
+							takeAway = mapTemp.get("takeAway").toString();
+							noOfBills = mapTemp.get("noOfBills").toString();
+							noOfVoidedBills = mapTemp.get("noOfVoidedBills").toString();
+							noOfModifiedBills = mapTemp.get("noOfModifiedBills").toString();
+							refund = mapTemp.get("refund").toString();
+							discount = mapTemp.get("discount").toString();
+							noOfPax = mapTemp.get("noOfPax").toString();
+							noOfTakeAway = mapTemp.get("noOfTakeAway").toString();
+							noOfHomeDel = mapTemp.get("noOfHomeDel").toString();
+							dayEndBy = mapTemp.get("dayEndBy").toString();
+							noOfNcKot = mapTemp.get("noOfNcKot").toString();
+							noOfComplimentaryBills = mapTemp.get("noOfComplimentaryBills").toString();
+							noOfVoidKot = mapTemp.get("noOfVoidKot").toString();
+							Total = mapTemp.get("Total").toString();
+						}
+						
 						
 					} 
 				}
@@ -955,7 +962,7 @@ public class clsPOSReprintController
 			}
 			
 			   List<JasperPrint> jprintlist =new ArrayList<JasperPrint>();
-	
+				
 	            
 			   JasperDesign jd = JRXmlLoader.load(reportName);
 	    	   JasperReport jr = JasperCompileManager.compileReport(jd);
@@ -997,6 +1004,7 @@ public class clsPOSReprintController
 			    	resp.getWriter().append("No Record Found");
 			 		
 			    }
+			  
 		}
 		catch(Exception ex)
 		{

@@ -16231,7 +16231,7 @@ public class clsPOSReportService {
 				 }
 				 else
 				 {
-					 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
+				 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
 				 }
                  */
         	 hmData = objUtilityController.funPrintBill(code.trim(), POSDate, true, posCode,clientCode,posName,webStockUserCode,PrintVatNoPOS,vatNo,printServiceTaxNo,serviceTaxNo);
@@ -16243,7 +16243,7 @@ public class clsPOSReportService {
              try
              {
 
-                 if (objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
+                /* if (objSetupParameter.get("gPrintType").toString().equalsIgnoreCase("Text File"))
                  {
                 	// jObj1 = objUtilityFunctions.funGenerateTextDayEndReportPreview(code, POSDate, "reprint");
                  }
@@ -16251,6 +16251,8 @@ public class clsPOSReportService {
                  {
                 	 hmData = objUtilityController.funGenerateTextDayEndReportPreview(posCode, code, "reprint",clientCode,gDayEndReportForm,webStockUserCode);
                  }
+                 */
+                 hmData = objUtilityController.funGenerateTextDayEndReportPreview(posCode, code, "reprint",clientCode,gDayEndReportForm,webStockUserCode);
              }
              catch (Exception e)
              {

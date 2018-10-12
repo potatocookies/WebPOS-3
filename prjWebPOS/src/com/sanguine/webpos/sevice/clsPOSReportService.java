@@ -3068,6 +3068,8 @@ public class clsPOSReportService {
 				sbSqlLive.setLength(0);
 				sbSqlQFile.setLength(0);
 				sbSqlFilters.setLength(0);
+				totalList = new ArrayList();
+				totalList.add("Total");
 
 				sbSqlLive.append("select  b.strPosCode,b.strPosName,sum(a.dblGrandTotal) "
 						+ "from tblbillhd a,tblposmaster b "

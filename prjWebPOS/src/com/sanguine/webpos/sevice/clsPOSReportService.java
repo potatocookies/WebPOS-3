@@ -19618,7 +19618,7 @@ public class clsPOSReportService {
 			sqlBuilder.append(" order by e.strPosName,d.strWShortName,b.strItemName ");
 		   }
 
-			List listSqlLiveWaiterWiseItemSales = objBaseService.funGetList(sqlQBuilder, "sql");
+			List listSqlLiveWaiterWiseItemSales = objBaseService.funGetList(sqlBuilder, "sql");
 			if (listSqlLiveWaiterWiseItemSales.size() > 0) 
 			{
 				for (int i = 0; i < listSqlLiveWaiterWiseItemSales.size(); i++) {
@@ -20108,7 +20108,7 @@ public class clsPOSReportService {
 		    }
 		    sbSqlMod.append(sbFilters);  
 		    
-		    listSqlLive = objBaseService.funGetList(sbSql, "sql");
+		    listSqlLive = objBaseService.funGetList(sbSqlMod, "sql");
 		    if (listSqlLive.size() > 0) 
 			{
 				for (int i = 0; i < listSqlLive.size(); i++) 

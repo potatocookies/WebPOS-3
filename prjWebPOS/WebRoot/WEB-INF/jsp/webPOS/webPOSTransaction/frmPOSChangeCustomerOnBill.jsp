@@ -119,8 +119,7 @@
 						                     $('#lblCustNameValue').text(cmsMemName);
 						        
 						                 }
-						        	
-						        	}	
+						        	}
 								},
 								error: function(jqXHR, exception) {
 						            if (jqXHR.status === 0) {
@@ -186,13 +185,14 @@
 				                     $('#lblCustCodeValue').val(response.strCustomerCode);
 				                     $('#lblCustName').val("Customer Name");
 				                     $('#lblCustNameValue').val(response.strCustomerName);
-					        		 
-					        		 
 					             }	
 					        	 else
-					        		 {
-					        		 funCustomerMaster(strMobNo);
-					        		 }
+					        	 {
+					        		 //funCustomerMaster(strMobNo);
+					        		 //window.location.href=getContextPath()+"/frmCustomerMasterForNewCustomer.html?mobileNo="+strMobNo;
+					        		 window.open(getContextPath()+"/frmCustomerMasterForNewCustomer.html?mobileNo="+strMobNo);
+					        		// window.open("frmPOSCustomerMaster.html?mobileNo="+strMobNo,"","dialogHeight:600px;dialogWidth:600px;dialogLeft:400px;");
+					        	 }
 							},
 							error: function(jqXHR, exception) {
 					            if (jqXHR.status === 0) {

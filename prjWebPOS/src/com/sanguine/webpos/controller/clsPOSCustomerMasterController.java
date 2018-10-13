@@ -90,7 +90,7 @@ public class clsPOSCustomerMasterController
 			model.put("cityName", cityName);
 			model.put("stateName", stateName);
 			model.put("customerType", customerType);
-
+			model.put("mobileNoForNewCust", "NoFound");
 		
 		if ("2".equalsIgnoreCase(urlHits))
 		{
@@ -106,6 +106,76 @@ public class clsPOSCustomerMasterController
 		}
 
 	}
+	
+	
+	// Open POSCustomerMaster
+		@RequestMapping(value = "/frmCustomerMasterForNewCustomer", method = RequestMethod.GET)
+		public ModelAndView funOpenCustomerMasterFormForNewCustomet(Map<String, Object> model, HttpServletRequest request)throws Exception
+		{
+			String urlHits = "1";
+
+			String mobileNo=request.getParameter("mobileNo").toString();
+			request.setAttribute("mobileNo", mobileNo);
+			clsPOSCustomerMasterBean objCustomerMasterBean = new clsPOSCustomerMasterBean();
+
+			if (request.getParameter("intlongMobileNo") != null)
+			{
+				objCustomerMasterBean.setIntlongMobileNo(request.getParameter("intlongMobileNo").toString());
+			}
+
+			String clientCode = request.getSession().getAttribute("gClientCode").toString();
+			List cityCode = new ArrayList();
+			List cityName = new ArrayList();
+			List stateName = new ArrayList();
+			List customerType = new ArrayList();
+			JSONArray jObj, jObj1, jObj2;
+			JSONArray jArryList, jArryList1, jArryList2;
+
+			try {
+				urlHits = request.getParameter("saddr").toString();
+			} catch (NullPointerException e) {
+				urlHits = "1";
+			}
+			model.put("urlHits", urlHits);
+
+				List list = objMasterService.funFillCityCombo(clientCode);
+				for (int cnt = 0; cnt < list.size(); cnt++)
+				{
+					Object obj = list.get(cnt);
+					cityName.add(Array.get(obj, 0));
+					stateName.add(Array.get(obj, 1));
+				}
+
+				clsCustomerTypeMasterModel objModel = new clsCustomerTypeMasterModel();
+				List<clsCustomerTypeMasterModel> listOfCustomerType = objMasterService.funFillCustomerTypeCombo(clientCode);
+				for (int cnt = 0; cnt < listOfCustomerType.size(); cnt++)
+				{
+					objModel = listOfCustomerType.get(cnt);
+
+					customerType.add(objModel.getStrCustType());
+				}
+				model.put("cityName", cityName);
+				model.put("stateName", stateName);
+				model.put("customerType", customerType);
+				model.put("mobileNoForNewCust", mobileNo);
+			
+			if ("2".equalsIgnoreCase(urlHits))
+			{
+				return new ModelAndView("frmPOSCustomerMaster_1", "command", objCustomerMasterBean);
+			}
+			else if ("1".equalsIgnoreCase(urlHits))
+			{
+				return new ModelAndView("frmPOSCustomerMaster", "command", objCustomerMasterBean);
+			}
+			else
+			{
+				return null;
+			}
+
+		}
+	
+		
+	
 
 	@RequestMapping(value = "/checkExternalNo", method = RequestMethod.GET)
 	public @ResponseBody boolean funCheckAreaName(@RequestParam("strMobileNo") String strMobileNo, @RequestParam("strCustCode") String strCustCode, HttpServletRequest req)

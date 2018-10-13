@@ -194,6 +194,10 @@ public class clsPOSTableReservationController {
 		
 			String MM=time[1];
 		
+			if(Integer.parseInt(HH)>=12)
+			{
+				HH="0"+String.valueOf(Integer.parseInt(HH)-12);
+			}
 			objPOSReservationBean.setStrHH(HH);
 			objPOSReservationBean.setStrMM(MM);
 			objPOSReservationBean.setIntPax(Long.parseLong(listResDtl.get(10).toString()));

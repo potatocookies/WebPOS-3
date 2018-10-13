@@ -328,6 +328,10 @@ public class clsPOSSetupUtility
 			case "gNoOfDecimalPlace":
 				columnName = "dblNoOfDecimalPlace";
 				break;
+				
+			case "gShowItemDetailsGrid":
+				columnName = "strShowItemDetailsGrid";
+				break;
 
 			}
 

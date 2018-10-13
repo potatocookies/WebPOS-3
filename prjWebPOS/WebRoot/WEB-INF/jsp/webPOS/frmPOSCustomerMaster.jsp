@@ -40,13 +40,25 @@
 		});  
  	 
  	 // Calender Date Picker
- 	 $(function() {
+ 	 $(function() 
+ 	  {
          $( "#txtAnniversary" ).datepicker();   
-         $( "#txtDOB" ).datepicker();   
+         $( "#txtDOB" ).datepicker(); 
+         if("${mobileNoForNewCust}"=='NoFound')
+         {
+        	 
+         }
+         else
+         {
+        	 var mobileNo=${mobileNoForNewCust};
+        	 $("#txtMobileNo").val(mobileNo);  
+         }	 
+         
+         
          
     }); 
-		
- 	
+ 	 
+ 
 		// Success Message After Saving Record
 		$(document).ready(function()
 		{
@@ -59,6 +71,7 @@
 				    <%
 				    session.removeAttribute("successMessage");
 				}
+				
 				boolean test = ((Boolean) session.getAttribute("success")).booleanValue();
 				session.removeAttribute("success");
 				
@@ -76,6 +89,7 @@
 						funPreviousForm(message);
 		           <% }
 				}
+				
 			}%>
 			
 
@@ -95,6 +109,11 @@
 				});
 		});
  	
+		
+		
+
+		
+		
 		function mobilenumber() 
 		{
 			var flg=true;

@@ -690,7 +690,7 @@ $(document).ready(function()
 	    				<div class="element-input col-lg-6" style="width: 20%;"> 
 							<s:input type="text" id="txtReservationCode" readonly="true" path="strReservationCode" ondblclick="funHelp('POSTableReservation')" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 17%;"> 
+						<div class="element-input col-lg-6" style="width: 17%; margin-left: 1%"> 
 	    					<label class="title">Contact No</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="width: 20%;"> 
@@ -706,7 +706,7 @@ $(document).ready(function()
 							<s:input type="text" id="txtCustName" path="strCustName" />
 							<s:input type="hidden" id="txtCustCode" path="strCustCode" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 17%;"> 
+						<div class="element-input col-lg-6" style="width: 17%;margin-left: 1%""> 
 	    					<label class="title">Smoking</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="width: 20%;"> 
@@ -721,7 +721,7 @@ $(document).ready(function()
 						<div class="element-input col-lg-6" style="width: 15%;"> 
 	    					<label class="title">Area/City</label>
 	    				</div>
-	    				<div class="element-input col-lg-6" style="width: 20%;"> 
+	    				<div class="element-input col-lg-6" style="width: 20%; margin-left: 1%""> 
 							<s:input type="text" id="txtBldgCode" path="strBldgCode" readonly="true" ondblclick="funHelp('POSCustomerAreaMaster')" />
 						</div>
 	    				<div class="element-input col-lg-6" style="width: 19%;"> 
@@ -769,7 +769,7 @@ $(document).ready(function()
 	    				<div class="element-input col-lg-6" style="width: 20%;"> 
 							<s:input id="txtdteDate" name="txtdteDate" path="dteDate" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 7%;"> 
+						<div class="element-input col-lg-6" style="width: 7%;margin-left: 1%""> 
 	    					<label class="title">Time</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="width: 10%;"> 
@@ -829,7 +829,7 @@ $(document).ready(function()
 							<s:input type="text" id="txtTableName" readonly="true" path="strTableName" ondblclick="funHelp('POSTableReserveMaster')" />
 							<s:input type="hidden" id="txtTableNo" path="strTableNo" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 7%;"> 
+						<div class="element-input col-lg-6" style="width: 7%;margin-left: 1%""> 
 	    					<label class="title">Pax</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="width: 20%;"> 

@@ -335,7 +335,7 @@
                 	settlementName = "Complementry";
                     amountBox = "PaidAmount";
                     settleMode = true;
-                    $("#txtRemark").focus();
+                    $("#txtRemarks").focus();
                     document.getElementById("divCustomer").style.display='none';
 	                document.all["lblCard"].style.display='none';
 	                document.all["lblCardBalance"].style.display='none';
@@ -352,7 +352,7 @@
 	                document.getElementById("divRoomSettlement").style.display='none';
 	                document.getElementById("divJioMoneySettlement").style.display='none';
 	                document.getElementById("divRemarks").style.display='block';
-	                document.getElementById("divRemarks").style.top='145px';
+	                document.getElementById("divRemarks").style.top='225px';
 	                document.getElementById("divRemarks").style.left='415px';
                    break;
 
@@ -1088,24 +1088,24 @@
 	
 		                 case "Complementary":
 	
-		                     if (hmSettlemetnOptions.size() > 0)
+		                     if (hmSettlemetnOptions.size > 0)
 		                     {
 		                    	 alert("Coplimentary Settlement is Not Allowed In MultiSettlement!!!");
 		                         return;
 		                     }
-		                     if ($("#txtRemark").val().length == 0)
+		                     if ($("#txtRemarks").val().length == 0)
 		                     {
 		                    	 alert("Please Enter Remarks");
 		                         return;
 		                     }
-		                     if (arrObjReasonCode.length==0) 
+		                     /* if (arrObjReasonCode.length==0) 
 		                     {
 		                    	 alert("No complementary reasons are created");
 		                         return;
 		                     }
 		                     else
 		                     {
-		                        var selectedReason= prompt("Please Select Reason?",arrObjReasonName);
+		                         var selectedReason= prompt("Please Select Reason?",arrObjReasonName);
 		                        if (null == selectedReason)
 		                         {
 		                             alert("Please Select Reason");
@@ -1140,8 +1140,30 @@
 			                		 
 			                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
 			                         
-		                         }
-		                     }
+		                         } 
+		                     } */
+		                     
+		                     
+		                     refundAmount = 0.00;
+                             balanceAmount = 0.00;
+                             
+                             var arrSettleOptions=new Array();
+	                    	 arrSettleOptions[0]=settleName;
+	                		 arrSettleOptions[1]=settlementCode;
+	                		 arrSettleOptions[2]=dblSettlementAmount;
+	                		 arrSettleOptions[3]=paidAmount;
+	                		 arrSettleOptions[4]=finalGrandTotal;
+	                		 arrSettleOptions[5]=refundAmount;
+	                		 arrSettleOptions[6]=settelmentDesc;
+	                		 arrSettleOptions[7]=settleType;
+	                		 arrSettleOptions[8]=expiryDate;
+	                		 arrSettleOptions[9]="";
+	                		 arrSettleOptions[10]=$("#txtRemarks").val();
+	                		 arrSettleOptions[11]="";
+	                		 
+	                         hmSettlemetnOptions.set(settleName,arrSettleOptions);
+		                     
+		                     
 		                     break;
 		                     
 		                 case "Credit":
@@ -1468,7 +1490,7 @@
 		    col3.innerHTML = "<input readonly=\"readonly\" size=\"10px\"   class=\"dblSettlementAmt\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblSettlementAmt\" id=\"dblSettlementAmt."+(rowCount)+"\" value='"+paidAmount+"'/>";
 		    col4.innerHTML = "<input readonly=\"readonly\"  size=\"1px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
 		    col5.innerHTML = "<input readonly=\"readonly\"  size=\"1px\"      style=\"text-align: right; color:blue; height:20px;\"  />";
-		    col6.innerHTML = "<input type=\"hidden\"  size=\"0px\"   class=\"strSettelmentType\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentType\" id=\"strSettelmentType."+(rowCount)+"\" value='"+settleName+"' />";
+		    col6.innerHTML = "<input type=\"hidden\"  size=\"0px\"   class=\"strSettelmentType\"      style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentType\" id=\"strSettelmentType."+(rowCount)+"\" value='"+settleType+"' />";
 		    col7.innerHTML = "<input type=\"hidden\" size=\"0px\" class=\"dblPaidAmt\"     style=\"text-align: right; color:blue; height:20px;\"   name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblPaidAmt\" id=\"dblPaidAmt."+(rowCount)+"\" value="+paidAmount+" />";
 		    col8.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"dblRefundAmt\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].dblRefundAmt\" id=\"dblRefundAmt."+(rowCount)+"\" value="+refundAmount+" />";
 		    col9.innerHTML = "<input type=\"hidden\" size=\"0px\"   class=\"strSettelmentCode\"  style=\"text-align: right; color:blue; height:20px;\"  name=\"listSettlementDtlOnBill["+(rowCountSettle)+"].strSettelmentCode\" id=\"strSettelmentCode."+(rowCount)+"\" value='"+settlementCode+"'/>";
@@ -1731,8 +1753,9 @@
 
 		  	if(balanceAmount>0)
 		  	{
-		  		 alert("Balance is not zero.")
-		  		 return;
+		  		 alert("Balance is not zero.");
+		  		 
+		  		 return false;
 		  	}
 		  
 		  
@@ -1749,7 +1772,7 @@
 					}
 					else
 					{
-						
+						 return false;
 					}		 		   
 			 }
 			 else if(operationType=="DineIn" && transactionType=="Make Bill" )
@@ -1765,7 +1788,7 @@
 					}
 					else
 					{
-						
+						 return false;
 					}		 		   
 			 } 
 				 
@@ -1807,7 +1830,7 @@
 					}
 					else
 					{
-						
+						 return false;
 					}		 		   
 			 }
 			 else if((operationType=="DineIn" || operationType=="HomeDelivery" || operationType=="TakeAway" ) && transactionType=="Settle Bill" )
@@ -1824,7 +1847,7 @@
 					}
 					else
 					{
-						
+						 return false;
 					}		 		   
 			 }
 			 
@@ -2383,7 +2406,7 @@ function funDiscOkClicked()
 					 	</tr>
 				 		<tr>
 					 		<td>
-					 		<s:textarea colspan="10" rowspan="5"  id="txtRemark" path="" style="height:70px;width:200px" cssClass="longTextBox"  /> 
+					 		<s:textarea colspan="10" rowspan="5"  id="txtRemarks" path="" style="height:70px;width:200px" cssClass="longTextBox"  /> 
 					 		</td>
 				 		</tr>
 					</table>

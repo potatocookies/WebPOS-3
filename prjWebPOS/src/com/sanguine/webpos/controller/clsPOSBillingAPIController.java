@@ -1365,6 +1365,12 @@ public class clsPOSBillingAPIController
 			}
 
 			List<clsBillSettlementDtlModel> listOfBillSettlementToBeSave = new ArrayList<clsBillSettlementDtlModel>();
+			
+			boolean isComplementarySettle = false;
+			if (listObjBillSettlementDtl.size() == 1 && listObjBillSettlementDtl.get(0).getStrSettelmentType().equalsIgnoreCase("Complementary"))
+			{
+				isComplementarySettle = true;
+			}
 
 			if (isBillSeries && !billSeriesPrefix.isEmpty())
 			{
@@ -1377,15 +1383,41 @@ public class clsPOSBillingAPIController
 					clsBillSettlementDtlModel objSettleModel = new clsBillSettlementDtlModel();
 
 					objSettleModel.setStrSettlementCode(objBillSettlementDtl.getStrSettelmentCode());
-					objSettleModel.setDblSettlementAmt(settleAmt);
-					objSettleModel.setDblPaidAmt(objBillSettlementDtl.getDblPaidAmt());
+					
+					if (isComplementarySettle)
+					{
+						objSettleModel.setDblSettlementAmt(0.00);
+						objSettleModel.setDblPaidAmt(0.00);
+						
+						objSettleModel.setDblActualAmt(0.00);
+						objSettleModel.setDblRefundAmt(0.00);
+						
+						objBillHd.setDblDeliveryCharges(0.00);
+						objBillHd.setDblDiscountAmt(0);
+						objBillHd.setDblDiscountPer(0);
+						objBillHd.setDblGrandTotal(0);
+						objBillHd.setDblRoundOff(0);
+						objBillHd.setDblSubTotal(0);
+						objBillHd.setDblTaxAmt(0);
+						objBillHd.setDblTipAmount(0);
+						
+					}
+					else
+					{
+						objSettleModel.setDblSettlementAmt(settleAmt);
+						objSettleModel.setDblPaidAmt(objBillSettlementDtl.getDblPaidAmt());
+						
+						objSettleModel.setDblActualAmt(objBillSettlementDtl.getDblActualAmt());
+						objSettleModel.setDblRefundAmt(objBillSettlementDtl.getDblRefundAmt());
+					}
+					
+					
 					objSettleModel.setStrExpiryDate("");
 					objSettleModel.setStrCardName("");
 					objSettleModel.setStrRemark("");
 
 					objSettleModel.setStrCustomerCode("");
-					objSettleModel.setDblActualAmt(objBillSettlementDtl.getDblActualAmt());
-					objSettleModel.setDblRefundAmt(objBillSettlementDtl.getDblRefundAmt());
+					
 					objSettleModel.setStrGiftVoucherCode("");
 					objSettleModel.setStrDataPostFlag("");
 

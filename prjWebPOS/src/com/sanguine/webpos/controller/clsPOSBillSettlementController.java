@@ -48,11 +48,10 @@ public class clsPOSBillSettlementController
 
 	@Autowired
 	private intfBaseService objBaseService;
-	
+
 	@Autowired
 	clsBaseServiceImpl objBaseServiceImpl;
-	
-	
+
 	@Autowired
 	clsPOSBillingAPIController objBillingAPI;
 
@@ -66,13 +65,12 @@ public class clsPOSBillSettlementController
 		{
 
 			String clientCode = request.getSession().getAttribute("gClientCode").toString();
-			String  posClientCode = request.getSession().getAttribute("gPOSCode").toString();
-			String  posCode = request.getSession().getAttribute("gPOSCode").toString();
+			String posClientCode = request.getSession().getAttribute("gPOSCode").toString();
+			String posCode = request.getSession().getAttribute("gPOSCode").toString();
 			String posDate = request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
 			String userCode = request.getSession().getAttribute("gUserCode").toString();
-			
+
 			urlHits = request.getParameter("saddr").toString();
-			
 
 			String usertype = request.getSession().getAttribute("gUserType").toString();
 			boolean isSuperUser = false;
@@ -84,17 +82,11 @@ public class clsPOSBillSettlementController
 			{
 				isSuperUser = false;
 			}
-			
-			
-			
-			
 
 			/* Filling model attribute values */
 			model.put("urlHits", urlHits);
 			String formToBeOpen = "Settle Bill";
 			model.put("formToBeOpen", formToBeOpen);
-
-			
 
 			List listSettlementObject = new ArrayList<clsPOSSettelementOptions>();
 
@@ -121,7 +113,7 @@ public class clsPOSBillSettlementController
 				jArr.add(listSettlementObject.get(j));
 			}
 			model.put("ObSettleObject", jsSettle);
-			
+
 			objBillSettlementBean.setJsonArrForSettleButtons(jArr);
 
 			objBillSettlementBean.setDteExpiryDate(posDate);
@@ -177,7 +169,7 @@ public class clsPOSBillSettlementController
 					setFillGrid.add(hmtemp.get("strCustomerName").toString());
 					setFillGrid.add(hmtemp.get("dteBillDate").toString());
 					setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
-					
+
 					listUnsettlebill.add(setFillGrid);
 				}
 				else
@@ -189,7 +181,7 @@ public class clsPOSBillSettlementController
 					setFillGrid.add(hmtemp.get("strDPName").toString());
 					setFillGrid.add(hmtemp.get("dteBillDate").toString());
 					setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
-					
+
 					listUnsettlebill.add(setFillGrid);
 
 				}
@@ -340,7 +332,7 @@ public class clsPOSBillSettlementController
 		}
 		return hmReturn;
 	}
-	
+
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/actionBillSettle", method = RequestMethod.POST)
 	public ModelAndView printBill(@ModelAttribute("command") clsPOSBillSettlementBean objBean, BindingResult result, HttpServletRequest request) throws Exception
@@ -349,11 +341,11 @@ public class clsPOSBillSettlementController
 		{
 			String clientCode = "",
 					POSCode = "",
-							posDate = "",
+					posDate = "",
 					userCode = "",
 					posClientCode = "";
-			
-			StringBuilder hqlBuilder=new StringBuilder();
+
+			StringBuilder hqlBuilder = new StringBuilder();
 
 			clientCode = request.getSession().getAttribute("gClientCode").toString();
 			POSCode = request.getSession().getAttribute("gPOSCode").toString();
@@ -362,7 +354,6 @@ public class clsPOSBillSettlementController
 
 			String split = posDate;
 			String billDateTime = split;
-			
 
 			Date dt = new Date();
 			String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dt);
@@ -371,37 +362,68 @@ public class clsPOSBillSettlementController
 			StringBuilder sbSql = new StringBuilder();
 			sbSql.setLength(0);
 
-			
-			String billNo=objBean.getStrBillNo();
-			
+			String billNo = objBean.getStrBillNo();
+
 			hqlBuilder.setLength(0);
-			hqlBuilder.append(" from clsBillHdModel where strBillNo='"+billNo+"' and strClientCode='"+clientCode+"' and dtBillDate='"+posDate+"'  ");
-			List<clsBillHdModel> listOfHd=objBaseService.funGetList(hqlBuilder, "hql");
-			
-			clsBillHdModel objBillHdModel=listOfHd.get(0);
-			List<clsBillDtlModel>listBillDtlModel=objBillHdModel.getListBillDtlModel();
-			
-			objBillHdModel.setStrTransactionType(objBillHdModel.getStrTransactionType()+","+"Settle Bill");
-			
+			hqlBuilder.append(" from clsBillHdModel where strBillNo='" + billNo + "' and strClientCode='" + clientCode + "' and dtBillDate='" + posDate + "'  ");
+			List<clsBillHdModel> listOfHd = objBaseService.funGetList(hqlBuilder, "hql");
+
+			clsBillHdModel objBillHdModel = listOfHd.get(0);
+			List<clsBillDtlModel> listBillDtlModel = objBillHdModel.getListBillDtlModel();
+
+			objBillHdModel.setStrTransactionType(objBillHdModel.getStrTransactionType() + "," + "Settle Bill");
+
 			/* Save bill settlement data */
 			List<clsPOSSettlementDtlsOnBill> listObjBillSettlementDtl = objBean.getListSettlementDtlOnBill();
-			
+
 			List<clsBillSettlementDtlModel> listBillSettlementDtlModel = new ArrayList<clsBillSettlementDtlModel>();
+
+			boolean isComplementarySettle = false;
+			if (listObjBillSettlementDtl.size() == 1 && listObjBillSettlementDtl.get(0).getStrSettelmentType().equalsIgnoreCase("Complementary"))
+			{
+				isComplementarySettle = true;
+			}
 
 			for (clsPOSSettlementDtlsOnBill objBillSettlementDtl : listObjBillSettlementDtl)
 			{
 				clsBillSettlementDtlModel objSettleModel = new clsBillSettlementDtlModel();
 
 				objSettleModel.setStrSettlementCode(objBillSettlementDtl.getStrSettelmentCode());
-				objSettleModel.setDblSettlementAmt(objBillSettlementDtl.getDblSettlementAmt());
-				objSettleModel.setDblPaidAmt(objBillSettlementDtl.getDblPaidAmt());
+				if (isComplementarySettle)
+				{
+					objSettleModel.setDblSettlementAmt(0.00);
+					objSettleModel.setDblPaidAmt(0.00);
+					
+					objSettleModel.setDblActualAmt(0.00);
+					objSettleModel.setDblRefundAmt(0.00);
+					
+					objBillHdModel.setDblDeliveryCharges(0.00);
+					objBillHdModel.setDblDiscountAmt(0);
+					objBillHdModel.setDblDiscountPer(0);
+					objBillHdModel.setDblGrandTotal(0);
+					objBillHdModel.setDblRoundOff(0);
+					objBillHdModel.setDblSubTotal(0);
+					objBillHdModel.setDblTaxAmt(0);
+					objBillHdModel.setDblTipAmount(0);
+					
+				}
+				else
+				{
+					objSettleModel.setDblSettlementAmt(objBillSettlementDtl.getDblSettlementAmt());
+					objSettleModel.setDblPaidAmt(objBillSettlementDtl.getDblPaidAmt());
+					
+					objSettleModel.setDblActualAmt(objBillSettlementDtl.getDblActualAmt());
+					objSettleModel.setDblRefundAmt(objBillSettlementDtl.getDblRefundAmt());
+				}
+				
+				
+				
 				objSettleModel.setStrExpiryDate("");
 				objSettleModel.setStrCardName("");
 				objSettleModel.setStrRemark("");
 
 				objSettleModel.setStrCustomerCode("");
-				objSettleModel.setDblActualAmt(objBillSettlementDtl.getDblActualAmt());
-				objSettleModel.setDblRefundAmt(objBillSettlementDtl.getDblRefundAmt());
+				
 				objSettleModel.setStrGiftVoucherCode("");
 				objSettleModel.setStrDataPostFlag("");
 
@@ -411,7 +433,7 @@ public class clsPOSBillSettlementController
 				listBillSettlementDtlModel.add(objSettleModel);
 
 			}
-			
+
 			objBillHdModel.setStrSettelmentMode("");
 
 			if (listObjBillSettlementDtl != null && listObjBillSettlementDtl.size() == 0)
@@ -426,21 +448,20 @@ public class clsPOSBillSettlementController
 			{
 				objBillHdModel.setStrSettelmentMode("MultiSettle");
 			}
-			
+
 			objBillHdModel.setListBillSettlementDtlModel(listBillSettlementDtlModel);
-			
+
 			/* Save Bill HD */
 			objBaseServiceImpl.funSave(objBillHdModel);
-			
-			
+
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 		finally
 		{
-			return  new ModelAndView("redirect:/frmPOSRestaurantDtl.html?saddr=1");
+			return new ModelAndView("redirect:/frmPOSRestaurantDtl.html?saddr=1");
 		}
 	}
 

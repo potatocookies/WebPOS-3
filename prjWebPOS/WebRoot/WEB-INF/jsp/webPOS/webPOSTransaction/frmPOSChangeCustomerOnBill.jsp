@@ -154,7 +154,12 @@
 						 {	 
 						 funSetCustMobileNo(strMobNo);
 						 }
+						 else
+						 {
+							 funHelp1('POSCustomerMaster');
+						 }
 					 }
+					 	 
 		       	
 			}
 			
@@ -471,43 +476,44 @@
 	<s:form name="Customer Change On Bill" method="POST" action="saveChangeCustomerOnBill.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 	   
 	   <div class="title">
-	   
-	   		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-					<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >Bill No.</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;">
-	    				<s:input  type="text" path="strBillNo" id="lblBillNo" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >User Created</label>
-	    			</div>
-	   				<div class="element-input col-lg-6" style="width: 15%;">
-	    				<input  type="text"  id="lblUserCreated" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >Date & Time</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;">
-	    				<input  type="text"  id="lblDateTime" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-	    			</div>
+	       <div>
+		   		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+						<div class="element-input col-lg-6" style="width: 15%;"> 
+		    				<label class="title" >Bill No.</label>
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;">
+		    				<s:input  type="text" path="strBillNo" id="lblBillNo" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;"> 
+		    				<label class="title" >User Created</label>
+		    			</div>
+		   				<div class="element-input col-lg-6" style="width: 15%;">
+		    				<input  type="text"  id="lblUserCreated" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;"> 
+		    				<label class="title" >Date & Time</label>
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;">
+		    				<input  type="text"  id="lblDateTime" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
+		    			</div>
+		    	</div>
 	    	</div>
-	    	
-	    	<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-					<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >Customer Code</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;">
-	    				<s:input  type="text" path="strCustomerCode" id="lblCustCodeValue" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;"> 
-	    				<label class="title" >Customer Name</label>
-	    			</div>
-	    			<div class="element-input col-lg-6" style="width: 15%;">
-	    			<input type="text" id="lblCustNameValue" readonly="true" style="text-transform: uppercase; width:356px; height:25px;" />
-	    			</div>
-	    	</div>
-	   			
+	    	<div>
+		    	<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+						<div class="element-input col-lg-6" style="width: 15%;"> 
+		    				<label class="title" >Customer Code</label>
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;">
+		    				<s:input  type="text" path="strCustomerCode" id="lblCustCodeValue" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;"> 
+		    				<label class="title" >Customer Name</label>
+		    			</div>
+		    			<div class="element-input col-lg-6" style="width: 15%;">
+		    			<input type="text" id="lblCustNameValue" readonly="true" style="text-transform: uppercase; width:356px; height:25px;" />
+		    			</div>
+		    	</div>
+	   		</div>	
 	
 			<div style=" width: 50%; height: 500px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				
@@ -541,7 +547,6 @@
 				</div>
 				
 				<div style="margin-top: 195px;">	
-						<hr>
 						<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
 							<div class="element-input col-lg-6" style="width: 50%;"> 
 			    				<label class="title" >SubTotal</label>
@@ -550,22 +555,26 @@
 			    				<input  type="text"  id="lblSubTotlal" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
 			    			</div>
 			    		</div>
-			    		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 50%;"> 
-			    				<label class="title" >Tax</label>
-			    			</div>
-			    			<div class="element-input col-lg-6">
-			    				<input  type="text"  id="lblTax" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-			    			</div>
+			    		<div >	
+				      		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+								<div class="element-input col-lg-6" style="width: 50%;"> 
+				    				<label class="title" >Tax</label>
+				    			</div>
+				    			<div class="element-input col-lg-6">
+				    				<input  type="text"  id="lblTax" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
+				    			</div>
+				    		</div>
 			    		</div>
-			    		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 50%;"> 
-			    				<label class="title" >TOtal</label>
-			    			</div>
-			    			<div class="element-input col-lg-6">
-			    				<input  type="text"  id="lblTotal" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
-			    			</div>
-			    		</div>
+			    		<div >	
+				      		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+								<div class="element-input col-lg-6" style="width: 50%;"> 
+				    				<label class="title" >TOtal</label>
+				    			</div>
+				    			<div class="element-input col-lg-6">
+				    				<input  type="text"  id="lblTotal" readonly="true" style="text-transform: uppercase; width:100px; height:25px;" />
+				    			</div>
+				    		</div>
+				    	</div>	
 				</div>
 			
 			</div>
@@ -581,37 +590,41 @@
 		    				<input type="text"  id="txtItemSearch" path="" style="width: 100px; height: 25px;"/>
 		    			</div>
 		    		</div>	
-		    		<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-						<div class="col-lg-10 col-sm-10 col-xs-10">
-				     		  <p align="center">
-				            		<div class="submit col-lg-4 col-sm-4 col-xs-4">
-				            			<input id="btnSearch" type="button" value="Search" onclick="searchTable();"></input>
-				            		</div>
-				            		<div class="submit col-lg-4 col-sm-4 col-xs-4">
-				            			<input id="btnCustomer" type="button" value="Customer" onclick="funCustomerBtnClicked();"></input>
-				            		</div>
-				            		<div class="submit col-lg-4 col-sm-4 col-xs-4">
-				            			<input id="btnClose" type="button" value="Close" onclick="funPOSHome();"></input>
-				            		</div>
-				     		  </p>
-	   		 			</div>
-   		 		 	</div>
-   		 		
+		    		
+		    		<div>	
+				       <div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+							<div class="col-lg-10 col-sm-10 col-xs-10">
+					     		  <p align="center">
+					            		<div class="submit col-lg-4 col-sm-4 col-xs-4">
+					            			<input id="btnSearch" type="button" value="Search" onclick="searchTable();"></input>
+					            		</div>
+					            		<div class="submit col-lg-4 col-sm-4 col-xs-4">
+					            			<input id="btnCustomer" type="button" value="Customer" onclick="funCustomerBtnClicked();"></input>
+					            		</div>
+					            		<div class="submit col-lg-4 col-sm-4 col-xs-4">
+					            			<input id="btnClose" type="button" value="Close" onclick="funPOSHome();"></input>
+					            		</div>
+					     		  </p>
+		   		 			</div>
+	   		 		 	</div>
+   		 		      </div>
    		 			<table id="tblDataFillGrid" style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll">
 							
 					</table>
    		 			
 			</div>
-			<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
-						<div class="col-lg-10 col-sm-10 col-xs-10">
-				     		  <p align="center">
-				     		  <div class="submit col-lg-4 col-sm-4 col-xs-4">
-				            			<input id="btnSave" type="submit" value="Save"></input>
-				              </div>
-				     		  </p>
-	   		 			</div>
-   		 		 	</div>
-			
+			<div style="margin-top: 60%;">	
+				<hr>
+				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+							<div class="col-lg-10 col-sm-10 col-xs-10">
+					     		  <p align="center">
+					     		  <div class="submit col-lg-4 col-sm-4 col-xs-4">
+					            			<input id="btnSave" type="submit" value="Save"></input>
+					              </div>
+					     		  </p>
+		   		 			</div>
+	   		 	</div>
+		   </div>
 	</div>
 
 	</s:form> 

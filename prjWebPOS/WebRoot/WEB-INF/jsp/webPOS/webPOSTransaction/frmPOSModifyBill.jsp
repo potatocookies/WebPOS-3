@@ -238,7 +238,7 @@ var selectedRowIndex="";
 		 	 $("#txtDeliveryCharge").val(finalDelCharges);
 		 	 
 		 	 var listItmeDtl=[];	   
-		 	 var hmItempMap=new Map();
+// 		 	 var hmItempMap=new Map();
 		 	 
 		 	 
 		 	/*Loading bill items  */

@@ -352,7 +352,8 @@ var selectedRowIndex="";
 	</table>
 	
 	<p align="center">
-	
+	<s:input  type="text"  id="txtTotalBillAmount" path="" cssStyle="width:120px;" cssClass="longTextBox jQKeyboard form-control"  />
+	</p>
 </div>
 
 	</s:form>

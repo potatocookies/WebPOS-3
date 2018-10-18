@@ -1631,7 +1631,10 @@
 	}
 	function funTotalDiscClicked()
 	{
-		 document.all["cmbItemCategary"].style.display = 'none';
+		disountType="";
+		disountType="Total"; 
+		document.all["cmbItemCategary"].style.display = 'none';
+		 
 	}
 	function funCardNo()
 	{

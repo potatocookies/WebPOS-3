@@ -91,6 +91,7 @@
 		  $('input#txtItemSearch').mlKeyboard({layout: 'en_US'});
 		  
 		  $('input#Customer').mlKeyboard({layout: 'en_US'});
+		  
 	});
 	
 	

@@ -1061,6 +1061,22 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmKDSFlash.jsp" />
 	</definition>
 	
+	<definition name="frmPOSCreditReport" extends="base.definition6">
+		<put-attribute name="title" value="Credit Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmCreditReport.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmCustomerLedger" extends="base.definition6">
+		<put-attribute name="title" value="Customer Ledger"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmCustomerLedger.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="frmGrossSalesSummary" extends="base.definition6">
+		<put-attribute name="title" value="Gross Sales Summary"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSGrossSalesSummaryReport.jsp"></put-attribute>
+	</definition>
+
+	
 <!-- 	End Of WebPOS Tiles Entry -->
 
 

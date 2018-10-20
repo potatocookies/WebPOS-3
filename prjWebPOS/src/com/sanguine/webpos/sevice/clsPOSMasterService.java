@@ -856,7 +856,13 @@ public class clsPOSMasterService {
 			return list;
 		}
 	 
-	
+	 public List<clsCustomerMasterModel> funLoadAllCustomerModel(String strClientCode)throws Exception
+		{
+			List<clsCustomerMasterModel> list=null;
+			list=obBaseService.funLoadAll(new clsCustomerMasterModel(),strClientCode);
+			return list;
+			
+		}
 	 
 }
 

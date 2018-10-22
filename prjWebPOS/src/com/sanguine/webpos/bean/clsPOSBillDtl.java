@@ -101,7 +101,7 @@ public class clsPOSBillDtl implements  Serializable
     String strWeightedAvgTarTme;
     String strWeightedAvgActualTme;
     int intPAXBillSeriesNo;
-
+    double dblAmt;
     
     private boolean isModifier;
 
@@ -849,6 +849,16 @@ public class clsPOSBillDtl implements  Serializable
 	public static long getSerialversionuid()
 	{
 		return serialVersionUID;
+	}
+
+	public double getDblAmt()
+	{
+		return dblAmt;
+	}
+
+	public void setDblAmt(double dblAmt)
+	{
+		this.dblAmt = dblAmt;
 	}
     
    

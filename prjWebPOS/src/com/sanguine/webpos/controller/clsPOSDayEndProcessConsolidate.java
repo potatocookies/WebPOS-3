@@ -219,7 +219,7 @@ public class clsPOSDayEndProcessConsolidate {
                     + "FROM tblbillhd a,tblbillsettlementdtl b,tblsettelmenthd c "
                     + "Where a.strBillNo = b.strBillNo and b.strSettlementCode = c.strSettelmentCode "
                     + " and date(a.dteBillDate ) ='" + strPOSDate + "' "
-                    + " and c.strSettelmentType='Cash' and a.intShiftCode=" + shiftNo + " GROUP BY c.strSettelmentDesc");
+                    + " and c.strSettelmentType='Cash' and a.intShiftCode=" + strShiftNo + " GROUP BY c.strSettelmentDesc");
 		 listSql = objBaseService.funGetList(sql, "sql");
 	    	if (listSql.size() > 0) 
 			{
@@ -387,7 +387,7 @@ public class clsPOSDayEndProcessConsolidate {
 						}
 					}
 		
-			    	sql.setLength(0);sql.append("select sum(intPaxNo) from tblbillhd where intShiftCode=" + shiftNo + " "
+			    	sql.setLength(0);sql.append("select sum(intPaxNo) from tblbillhd where intShiftCode=" + strShiftNo + " "
 			                 + "and date(dteBillDate ) ='" + strPOSDate + "'");// + "and strPOSCode='" + strPOSCode + "'";
 			         //System.out.println(sql);
 			    	 String totalPax="";
@@ -453,7 +453,7 @@ public class clsPOSDayEndProcessConsolidate {
 	                + "FROM tblbillhd a, tblbillsettlementdtl b"
 	                + ", tblsettelmenthd c Where a.strBillNo = b.strBillNo and b.strSettlementCode = c.strSettelmentCode "
 	                + " and date(a.dteBillDate ) ='" + strPOSDate + "' "
-	                + " and intShiftCode=" + shiftNo
+	                + " and intShiftCode=" + strShiftNo
 	                + " GROUP BY c.strSettelmentDesc,a.strPosCode");
 	        //System.out.println(sql);
 	          List listSettlementSale =objBaseService.funGetList(sql, "sql");
@@ -892,7 +892,6 @@ public class clsPOSDayEndProcessConsolidate {
 		                sql.setLength(0);
 		                sql.append("delete from tblitemrtemp where strTableNo='null'");
 		                objBaseService.funExecuteUpdate(sql.toString(),"sql");
-		                
 		                //clsGlobalVarClass.gDayEndReportForm = "DayEndReport";
 		                clsPOSDayEndProcess.gDayEndReportForm = "DayEndReport";
 		                jsonConsolidateDayEndReturn.put("gDayEndReportForm","DayEndReport");

@@ -142,6 +142,7 @@ public class clsPOSCreditBillOutstandingReportController
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String reportType=objBean.getStrReportType();
+			String strReportType=objBean.getStrDocType();
 			String posCode = "ALL";
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{

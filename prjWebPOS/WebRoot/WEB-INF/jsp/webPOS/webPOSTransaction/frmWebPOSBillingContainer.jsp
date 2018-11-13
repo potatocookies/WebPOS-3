@@ -154,7 +154,14 @@ $(document).ready(function()
 		
 	});
 
-	  
+	gDayEnd = "${gDayEnd}";  
+	gShiftEnd = "${gShiftEnd}";
+	if(gShiftEnd=="" && gDayEnd=="N")
+	{
+		alert("Please Start Day");
+		funPOSHome();
+	}
+	
 });
 
 

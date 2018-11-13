@@ -1076,6 +1076,10 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmPOSGrossSalesSummaryReport.jsp"></put-attribute>
 	</definition>
 
+	<definition name="frmAreaWiseGroupWiseSales" extends="base.definition6">
+		<put-attribute name="title" value="Area Wise Group Wise Sales"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/jsp/webPOS/webPOSReport/frmAreaWiseGroupWiseSales.jsp"></put-attribute>
+	</definition>
 	
 <!-- 	End Of WebPOS Tiles Entry -->
 

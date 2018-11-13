@@ -2837,7 +2837,8 @@ public class clsGlobalFunctions
 		String imagePath = servletContext.getRealPath("/resources/images/company_Logo.png");
 		String fromDateToDisplay = objBean.getFromDate();
 		String toDateToDisplay = objBean.getToDate();
-
+		String shiftNo = "ALL";
+		shiftNo = req.getSession().getAttribute("gShiftNo").toString();
 		String fromDate = objBean.getFromDate().split("-")[2] + "-" + objBean.getFromDate().split("-")[1] + "-" + objBean.getFromDate().split("-")[0];
 
 		String toDate = objBean.getToDate().split("-")[2] + "-" + objBean.getToDate().split("-")[1] + "-" + objBean.getToDate().split("-")[0];
@@ -2855,7 +2856,7 @@ public class clsGlobalFunctions
 
 		hm.put("fromDateToDisplay", fromDateToDisplay);
 		hm.put("toDateToDisplay", toDateToDisplay);
-		hm.put("shiftNo", "1");
+		hm.put("shiftNo", shiftNo);
 		hm.put("userName", userCode);
 		hm.put("type", type);
 		hm.put("decimalFormaterForDoubleValue", gDecimalFormatString);

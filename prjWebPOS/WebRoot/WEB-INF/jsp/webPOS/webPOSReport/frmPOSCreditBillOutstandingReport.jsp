@@ -99,6 +99,16 @@
 					<!-- <td></td> -->
 				</tr>
 			<tr>
+				<td>&emsp;&ensp;&emsp;&ensp;
+					<label>Report Type</label></td>
+					<td >
+						<s:select id="cmbDocType" path="strReportType" cssClass="BoxW124px">
+				    		<s:option value="Summary">Summary</s:option>
+				    		<s:option value="Detail">Detail</s:option>
+				    	</s:select>
+					</td>
+					<td></td>
+					<!-- <td></td> -->
 			</tr>
 			
 			

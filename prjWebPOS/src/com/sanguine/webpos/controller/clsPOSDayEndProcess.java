@@ -676,7 +676,7 @@ public class clsPOSDayEndProcess {
 	
 		try{
 			String gShifts=req.getSession().getAttribute("gShifts").toString();
-			strPOSCode=req.getSession().getAttribute("gShifts").toString();
+			strPOSCode=req.getSession().getAttribute("loginPOS").toString();
 			if (gShifts.equalsIgnoreCase("true"))
 			{
 			    sql =new StringBuilder("update tbldayendprocess set strShiftEnd='N' "

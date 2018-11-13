@@ -7092,7 +7092,7 @@ public class clsPOSReportService {
 				sqlBuilder.append(
 						"select a.strBillNo,DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y') as dteBillDate ,b.strPosName, "
 								+ "ifnull(d.strSettelmentDesc,'') as strSettelmentMode,a.dblDiscountAmt,a.dblTaxAmt  "
-								+ ",sum(c.dblSettlementAmt) as dblSettlementAmt,a.dblSubTotal,a.strSettelmentMode,intBillSeriesPaxNo "
+								+ ",sum(c.dblSettlementAmt) as dblSettlementAmt,a.dblSubTotal,a.strSettelmentMode as settlementType,intBillSeriesPaxNo "
 								+ "from  tblbillhd a,tblposmaster b,tblbillsettlementdtl c,tblsettelmenthd d "
 								+ "where date(a.dteBillDate) between '" + fromDate + "' and  '" + toDate + "' "
 								+ "and a.strPOSCode=b.strPOSCode " + "and a.strBillNo=c.strBillNo "
@@ -7115,7 +7115,7 @@ public class clsPOSReportService {
 				sqlBuilder.append(
 						"select a.strBillNo,DATE_FORMAT(date(a.dteBillDate),'%d-%m-%Y') as dteBillDate ,b.strPosName, "
 								+ "ifnull(d.strSettelmentDesc,'') as strSettelmentMode,a.dblDiscountAmt,a.dblTaxAmt   "
-								+ ",sum(c.dblSettlementAmt) as dblSettlementAmt,a.dblSubTotal,a.strSettelmentMode,intBillSeriesPaxNo "
+								+ ",sum(c.dblSettlementAmt) as dblSettlementAmt,a.dblSubTotal,a.strSettelmentMode as settlementType,intBillSeriesPaxNo "
 								+ "from  tblqbillhd a,tblposmaster b,tblqbillsettlementdtl c,tblsettelmenthd d "
 								+ "where date(a.dteBillDate) between '" + fromDate + "' and  '" + toDate + "' "
 								+ "and a.strPOSCode=b.strPOSCode " + "and a.strBillNo=c.strBillNo "

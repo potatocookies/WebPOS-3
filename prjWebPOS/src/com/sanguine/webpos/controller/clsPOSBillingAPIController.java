@@ -922,6 +922,7 @@ public class clsPOSBillingAPIController
 			POSCode = request.getSession().getAttribute("gPOSCode").toString();
 			POSDate = request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
 			userCode = request.getSession().getAttribute("gUserCode").toString();
+			int shiftCode = Integer.parseInt(request.getSession().getAttribute("gShiftNo").toString());
 
 			String split = POSDate;
 			String billDateTime = split;
@@ -1290,7 +1291,7 @@ public class clsPOSBillingAPIController
 			objBillHd.setStrWaiterNo(rootBeanObjectForReference.getStrWaiter());
 			objBillHd.setStrCustomerCode(rootBeanObjectForReference.getStrCustomerCode());
 			objBillHd.setStrManualBillNo("");
-			objBillHd.setIntShiftCode(0);// /////////////////////////
+			objBillHd.setIntShiftCode(shiftCode);// /////////////////////////
 			objBillHd.setIntPaxNo(rootBeanObjectForReference.getIntPaxNo());
 			objBillHd.setStrDataPostFlag("N");
 			objBillHd.setStrReasonCode("");

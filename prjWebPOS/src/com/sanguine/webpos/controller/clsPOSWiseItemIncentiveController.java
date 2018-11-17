@@ -95,8 +95,12 @@ public class clsPOSWiseItemIncentiveController {
 				String strItemName =obj.getStrItemName();
 				String strIncentiveType = obj.getStrIncentiveType();;
 				double strIncentiveValue = Double.parseDouble(obj.getStrIncentiveValue());
-				String strPOSCode = obj.getStrPOSCode();
-				    
+				String strPOSName = obj.getStrPOSName();
+				String strPOSCode="";
+				if(map.containsKey(strPOSName))
+				{
+					strPOSCode = (String) map.get(strPOSName);
+				}
 				    
 				  clsPOSWiseItemIncentiveModel objModel = new clsPOSWiseItemIncentiveModel(new clsPOSWiseItemIncentiveModel_ID(strPOSCode,strItemCode,clientCode));
 				   

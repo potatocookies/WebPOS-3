@@ -15,6 +15,8 @@ public class clsPOSWiseItemIncentiveDtlBean {
 	private String strGroupName;
 	
 	private String strSubGroupName;
+	
+	private String strPOSName;
 
 	public String getStrGroupName() {
 		return strGroupName;
@@ -70,6 +72,16 @@ public class clsPOSWiseItemIncentiveDtlBean {
 
 	public void setStrPOSCode(String strPOSCode) {
 		this.strPOSCode = strPOSCode;
+	}
+
+	public String getStrPOSName()
+	{
+		return strPOSName;
+	}
+
+	public void setStrPOSName(String strPOSName)
+	{
+		this.strPOSName = strPOSName;
 	}
 	
 		

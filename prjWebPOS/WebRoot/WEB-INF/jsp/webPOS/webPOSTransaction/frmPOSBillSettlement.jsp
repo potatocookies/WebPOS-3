@@ -1167,8 +1167,10 @@
 		                     break;
 		                     
 		                 case "Credit":
-	
-		                     if (gCustomerCode=="")
+	                         // this code is commented b'coz of if settlement= credit & then customer selected 
+	                         // after clicked on Enter btn customer name not set in Customer TextBox
+// 		                     if (gCustomerCode=="")
+							 if(hidCustomerName=="")
 		                     {
 		                    	 alert("Please Select Customer!!!");
 		                         return;

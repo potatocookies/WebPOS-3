@@ -38,6 +38,8 @@ public class clsPOSReportBean {
 	
 	private String strReportType;
 	
+	private String mailReport;
+	
 	private String strPSPCode;
 	
 	private String dteDate;
@@ -150,6 +152,8 @@ public class clsPOSReportBean {
     
     private String strSettlementName;
     
+    private String strSettleCode;
+    
    
     private double dblTotal;
     
@@ -160,6 +164,12 @@ public class clsPOSReportBean {
     private String strAreaCode;
     
     private String strShiftCode;
+    
+    private String dblTaxableAmount;
+    
+    private String strShowStock;
+    
+    private String strShowBalStock;
     
     public String getStrShiftCode()
 	{
@@ -818,6 +828,56 @@ public class clsPOSReportBean {
 
 	public void setStrSort(String strSort) {
 		this.strSort = strSort;
+	}
+
+	public String getMailReport()
+	{
+		return mailReport;
+	}
+
+	public void setMailReport(String mailReport)
+	{
+		this.mailReport = mailReport;
+	}
+
+	public String getStrSettleCode()
+	{
+		return strSettleCode;
+	}
+
+	public void setStrSettleCode(String strSettleCode)
+	{
+		this.strSettleCode = strSettleCode;
+	}
+
+	public String getDblTaxableAmount()
+	{
+		return dblTaxableAmount;
+	}
+
+	public void setDblTaxableAmount(String dblTaxableAmount)
+	{
+		this.dblTaxableAmount = dblTaxableAmount;
+	}
+
+	public String getStrShowStock()
+	{
+		return strShowStock;
+	}
+
+	public void setStrShowStock(String strShowStock)
+	{
+		this.strShowStock = strShowStock;
+	}
+
+	public String getStrShowBalStock()
+	{
+		return strShowBalStock;
+	}
+
+	public void setStrShowBalStock(String strShowBalStock)
+	{
+		this.strShowBalStock = strShowBalStock;
 	}
 
 

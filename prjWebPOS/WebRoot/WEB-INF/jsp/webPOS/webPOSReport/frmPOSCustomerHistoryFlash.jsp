@@ -23,6 +23,21 @@
 * html .ui-autocomplete {
 	height: 200px;
 }
+
+.button {
+    background-color: #2FABE9; /* Blue*/
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    cursor: pointer;
+    height: 24px;
+    width: 100px;
+}
+
+.button2 {background-color: #2FABE9; } /* Blue */
 </style>
 <script type="text/javascript">
 
@@ -95,7 +110,7 @@
 	    	txtVal=activeTab;
 
 				
-				 if(txtVal=="tab2")
+				if(txtVal=="tab2")
 				{
 
 					selectedTab="Top Spenders";
@@ -113,14 +128,15 @@
 				}
 				else
 					{
+					selectedTab="Customer Wise";
+					reportType=$('#cmbReportType :selected').text();
 					if ($("#txtCustCode").val().length == 0) 
 					{
-	                    alert("Please Select Customer");
-	                   
+	                    funFillCustomerWiseTables(selectedTab,reportType,fromDate,toDate);
 	                }
 					else
 					{	
-					selectedTab="Customer Wise";
+						selectedTab="Customer Wise";
 						reportType=$('#cmbReportType :selected').text();
 						
 						funFillCustomerWiseTables(selectedTab,reportType,fromDate,toDate);
@@ -247,14 +263,13 @@ function funFillCustomerWiseTables(selectedTab,reportType,fromDate,toDate)
  			    		funRemoveTableRows("tblTotalBillWise");
 		        		$.each(response.CustomerWiseTblData, function(i, item) 
 		    		    {
+		        			funFillCustomerWiseTable(item[0],item[1],item[2],item[3],item[4],item[5]);
 		        			
-		        			funFillCustomerWiseTable(item.billNo,item.billDate,item.dblDateCreated,item.posName,item.settelmentDesc,item.dblSubTotal,
-			        				item.dblDiscountPer,item.dblDiscountAmt,item.dblTaxAmt,item.dblSettlementAmt,item.strRemark);
 		    		    });
 		        		$.each(response.TotalTblData, function(i, item) 
 				    	{
 				        			
-		        			funFillTotalBillWiseTable(item.Total,item.totalSubTotal,item.blank,item.totalDiscAmt,item.totalTaxAmt,item.totalSettleAmt,item.totalTipAmt);
+		        			funFillTotalBillWiseTable(item.Total,item.TotalGrandTotal);
 				    	});
 		        	}
 		        	}
@@ -312,32 +327,26 @@ function funRemoveTableRows(tableId)
 		rowCount--;
 	}
 }
-function funFillCustomerWiseTable(billNo,billDate,dblDateCreated,posName,settelmentDesc,dblSubTotal,
-		dblDiscountPer,dblDiscountAmt,dblTaxAmt,dblSettlementAmt,strRemark)
+function funFillCustomerWiseTable(billNo,billDate,dblDateCreated,posName,settelmentDesc,dblSubTotal)
 {
 	var table = document.getElementById("tblBillWise");
 	var rowCount = table.rows.length;
 	var row = table.insertRow(rowCount);
 
-	row.insertCell(0).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billNo\" readonly=\"readonly\" class=\"Box \" size=\"13%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+billNo+"'  >";
-	row.insertCell(1).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billDate\" readonly=\"readonly\" class=\"Box \" size=\"11%\" id=\"txtTime."+(rowCount)+"\" value='"+billDate+"' >";
-	row.insertCell(2).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblDateCreated\" readonly=\"readonly\" class=\"Box \" size=\"11%\" id=\"txtWaiterName."+(rowCount)+"\" value='"+dblDateCreated+"' >";
-	row.insertCell(3).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].posName\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtTableName."+(rowCount)+"\" value='"+posName+"' >";	  
-	row.insertCell(4).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].settelmentDesc\" readonly=\"readonly\" class=\"Box \" size=\"10%\" id=\"txtPaxNo."+(rowCount)+"\" value='"+settelmentDesc+"' >";
-	row.insertCell(5).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblSubTotal\" readonly=\"readonly\" class=\"Box \" size=\"16%\" id=\"txtUserCreated."+(rowCount)+"\" value='"+dblSubTotal+"' >";
-	row.insertCell(6).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblDiscountPer\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtAmount."+(rowCount)+"\" value='"+dblDiscountPer+"' >";
-	row.insertCell(7).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblDiscountAmt\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtdblDiscountAmt."+(rowCount)+"\" value='"+dblDiscountAmt+"'  >";
-	
-	row.insertCell(8).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblSettlementAmt\" readonly=\"readonly\" class=\"Box \" size=\"20%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblSettlementAmt+"' >";
-	row.insertCell(9).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].strRemark\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtstrRemark."+(rowCount)+"\" value='"+strRemark+"' >";	  
-	}
+	row.insertCell(0).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billNo\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+billNo+"'  >";
+	row.insertCell(1).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billDate\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtTime."+(rowCount)+"\" value='"+billDate+"' >";
+	row.insertCell(2).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblDateCreated\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtWaiterName."+(rowCount)+"\" value='"+dblDateCreated+"' >";
+	row.insertCell(3).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].posName\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+posName+"' >";
+	row.insertCell(4).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].settelmentDesc\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+settelmentDesc+"' >";
+	row.insertCell(5).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblSubTotal\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblSubTotal+"' >";
+}
 function funFillCustomerWiseItemTable(billNo,billDate,customerCode,customerName,itemName,dblQuantity,dblAmount)
 {
 	var table = document.getElementById("tblItemWise");
 	var rowCount = table.rows.length;
 	var row = table.insertRow(rowCount);
 
-	row.insertCell(0).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billNo\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+billNo+"'  >";
+	row.insertCell(0).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billNo\" readonly=\"readonly\" style=\"text-align: center\"class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+billNo+"'  >";
 	row.insertCell(1).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billDate\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtTime."+(rowCount)+"\" value='"+billDate+"' >";
 	row.insertCell(2).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].itemName\" readonly=\"readonly\" class=\"Box \" size=\"40%\" id=\"txtitemName."+(rowCount)+"\" value='"+itemName+"' >";
 	row.insertCell(3).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblQuantity\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtdblQuantity."+(rowCount)+"\" value='"+dblQuantity+"' >";
@@ -391,21 +400,15 @@ function funFillTotalTopSpendersTable(Total,totalSettleAmt)
 	
 }
 
-function funFillTotalBillWiseTable(Total,totalSubTotal,blank,totalDiscAmt,totalTaxAmt,totalSettleAmt,totalTipAmt)
+function funFillTotalBillWiseTable(Total,TotalGrandTotal)
 {
 	var table = document.getElementById("tblTotalBillWise");
 	var rowCount = table.rows.length;
 	var row = table.insertRow(rowCount);
 
-	row.insertCell(0).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].Total\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtTotal."+(rowCount)+"\" value='"+Total+"'  >";
-	row.insertCell(1).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totalSubTotal\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txttotalSubTotal."+(rowCount)+"\" value='"+totalSubTotal+"' >";
-	row.insertCell(2).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].blank\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtblank."+(rowCount)+"\" value='"+blank+"'  >";
-	row.insertCell(3).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totalDiscAmt\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txttotalDiscAmt."+(rowCount)+"\" value='"+totalDiscAmt+"' >";
-	row.insertCell(4).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totalTaxAmt\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txttotalTaxAmt."+(rowCount)+"\" value='"+totalTaxAmt+"'  >";
-	row.insertCell(5).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totalSettleAmt\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txttotalSettleAmt."+(rowCount)+"\" value='"+totalSettleAmt+"' >";
-	row.insertCell(6).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totalTipAmt\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txttotalTipAmt."+(rowCount)+"\" value='"+totalTipAmt+"'  >";
-	
-}
+	row.insertCell(0).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].Total\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"Total."+(rowCount)+"\" value='"+Total+"'  >";
+	row.insertCell(1).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].TotalGrandTotal\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"TotalGrandTotal."+(rowCount)+"\" value='"+TotalGrandTotal+"' >";
+} 
 
 
 /**
@@ -498,6 +501,11 @@ function isNumber(evt) {
     return true;
 }
 
+function funResetFields()
+{
+	$('#tblNonSpenders tbody').empty();
+}
+
 
 </script>
 <script type="text/javascript">
@@ -515,7 +523,7 @@ function isNumber(evt) {
 		action="rptPOSCustomerHistoryFlash.html?saddr=${urlHits}"
 		target="_blank">
 		<br />
-		<table class="masterTable" style="width: 85%;">
+		<table class="masterTable" style="width: 85%; height: 30px;">
 
 			<tr>
 				<td><label>POS Name</label> <s:input type="hidden"
@@ -532,33 +540,28 @@ function isNumber(evt) {
 						name="txtdteToDate" path="dteToDate" cssClass="calenderTextBox" />
 				</td>
 
-				<td><input id="execute" type="button" value="Execute"
-					tabindex="3" class="form_button" /></td>
-
-				<td><input type="submit" onclick="onClickExport()"
-					value="Export" class="form_button" /></td>
+				<td><input id="execute" type="button" value="Execute" class="button button2"/></td>
+				<td><input type="submit" onclick="onClickExport()" value="Export" class="button button2" /></td>
 			</tr>
 
 		</table>
 
 
-		<table
-			style="border: 0px solid black; width: 85%; height: 130%; margin-left: auto; margin-right: auto; background-color: #C0E4FF;">
+		<table style="border: 0px solid black; width: 85%; height: 130%; margin-left: auto; margin-right: auto; background-color: #C0E4FF;">
 			<tr>
 				<td>
 					<div id="tab_container" style="overflow: hidden; height: 600px;">
-						<ul class="tabs" id="MyTab">
-							<li class="active" data-state="tab1">Customer Wise</li>
-							<li data-state="tab2">Top Spenders</li>
-							<li data-state="tab3">Non Spenders</li>
-
+						<ul class="tabs" id="MyTab" style="height: 20px; ">
+							<li class="active" data-state="tab1" style="height: 25px;">Customer Wise</li>
+							<li data-state="tab2" style="height: 25px;">Top Spenders</li>
+							<li data-state="tab3" style="height: 25px;">Non Spenders</li>
 						</ul>
-						<br /> <br />
+						<br />
 
 						<!--  Start of Generals tab-->
 
 						<div id="tab1" class="tab_content">
-							<table class="masterTable">
+							<table class="masterTable" style="width: 1000px; margin-top: 7px;">
 								<tr>
 									<td><label>Customer Code</label> <s:input type="text"
 											id="txtCustCode" path="strCustCode" cssClass="searchTextBox"
@@ -570,31 +573,27 @@ function isNumber(evt) {
 											items="${mapReportType}" cssClass="BoxW124px" /></td>
 								</tr>
 							</table>
-							<div id="divBillWise"
-								style="width: 100%; margin-bottom: 5px; display: block; overflow-x: hidden; float: right; margin-right: 4px; height: 600px; border: 0px solid">
+							<div id="divBillWise" style="margin-bottom: 5px; display: block; overflow-x: hidden; float: left; 
+								margin-left: 40px; height: 600px; border: 0px solid black; width: 1000px;">
 
 								<table border="1" class="myTable"
-									style="width: 80%; margin: auto;">
+									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
 
 											<th style="width: 12%">Bill No</th>
 											<th style="width: 11%">Bill Date</th>
 											<th style="width: 11%">Bill Time</th>
-											<th style="width: 12%">POS Name</th>
-											<th style="width: 10%">Pay Mode</th>
-											<th style="width: 16%">Sub Total</th>
-											<th style="width: 7%">Disc %</th>
-											<th style="width: 7%">Disc Amount</th>
-											<th style="width: 20%">Sales Amount</th>
-											<th style="width: 7%">Remarks</th>
+											<th style="width: 18%">Bill Amount</th>
+											<th style="width: 15%">Contact </th>
+											<th style="width: 28%">Name</th>
 											<!-- 											<input type="checkbox" id="chkALL" onclick="funfillSettlementDetail()" /></th>	 -->
 										</tr>
 
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block;; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%; height: 400px;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; overflow-x: hidden; overflow-y: scroll; width: 100%; height: 400px;">
 									<table id="tblBillWise" class="transTablex col5-center"
 										style="width: 100%;">
 										<tbody>
@@ -604,7 +603,7 @@ function isNumber(evt) {
 										<!--  COl2   -->
 										<col style="width: 15%">
 										<!--  COl3   -->
-										<col style="width: 16%">
+										<col style="width: 11%">
 										<!--  COl4  -->
 										<col style="width: 13%">
 										<!--  COl5   -->
@@ -623,72 +622,46 @@ function isNumber(evt) {
 
 
 								</div>
-								<table border="0" class="myTable"
-									style="width: 80%; margin: auto;">
+								<!-- <table id="totalTable" border="0" class="myTable" style="width: 100%; float: left;">
 									<thead>
-										<tr>
-
-											<th style="width: 12%"></th>
-											<th style="width: 12%">SubTotal</th>
-											<th style="width: 12%"></th>
-											<th style="width: 12%">Disc</th>
-											<th style="width: 12%">Tax Total</th>
-											<th style="width: 12%">Sales Amount</th>
-											<th style="width: 12%">Tip Amount</th>
-
+										<tr >
+											<td><th style="width: 35%; text-align:right; padding-right:10px; ">Total </th></td>
+											<td><th style="width: 65%;"></th></td>
 										</tr>
 
 									</thead>
-								</table>
-								<div
-									style="background-color: #a4d7ff; display: block;; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%; height: 50px;">
+								</table> -->
+								<div style="background-color: #a4d7ff; display: block; overflow-x: hidden; overflow-y: scroll; width: 100%; height: 50px;">
 									<table id="tblTotalBillWise" class="transTablex col5-center"
 										style="width: 100%;">
 										<tbody>
-										<col style="width: 12%;">
-										<!--  COl1   -->
-										<col style="width: 12%">
-										<!--  COl2   -->
-										<col style="width: 12%;">
-										<!--  COl3   -->
-										<col style="width: 12%">
-										<!--  COl4  -->
-										<col style="width: 12%;">
-										<!--  COl5   -->
-										<col style="width: 12%">
-										<!--  COl6  -->
-										<col style="width: 12%;">
-										<!--  COl7   -->
-
-
+											<col style="width: 12%;">
+											<!--  COl1   -->
+											<col style="width: 12%">
+											<!--  COl2   -->
 										</tbody>
 									</table>
-
-
 								</div>
 
 
 							</div>
-							<div id="divItemWise"
-								style="width: 100%; margin-bottom: 5px; display: none; overflow-x: hidden; float: right; margin-right: 4px; height: 600px; border: 0px solid">
+							<div id="divItemWise" style="width: 1000px; margin-bottom: 5px; display: none; overflow-x: hidden; float: left; margin-left: 43px; height: 600px; border: 0px solid">
 
 								<table border="1" class="myTable"
-									style="width: 80%; margin: auto;">
+									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
-
 											<th style="width: 10%">Bill No</th>
 											<th style="width: 10%">Bill Date</th>
 											<th style="width: 40%">Item Name</th>
 											<th style="width: 7%">Quantity</th>
 											<th style="width: 20%">Amount</th>
-
 										</tr>
 
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 100%;">
 									<table id="tblItemWise" class="transTablex col5-center"
 										style="width: 100%;">
 										<tbody>
@@ -708,22 +681,18 @@ function isNumber(evt) {
 
 								</div>
 								<table border="1" class="myTable"
-									style="width: 80%; margin: auto;">
+									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
-
 											<th style="width: 12%"></th>
 											<th style="width: 12%">Sales Amount</th>
-
-
 										</tr>
 
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block;; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%; height: 100px;">
-									<table id="tblTotalItem" class="transTablex col5-center"
-										style="width: 100%;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 100%; height: 50px;">
+									<table id="tblTotalItem" class="transTablex col5-center" style="width: 100%;">
 										<tbody>
 										<col style="width: 12%;">
 										<!--  COl1   -->
@@ -732,8 +701,6 @@ function isNumber(evt) {
 
 										</tbody>
 									</table>
-
-
 								</div>
 							</div>
 						</div>
@@ -743,7 +710,7 @@ function isNumber(evt) {
 						<!-- Start of Top Spenders tab -->
 
 						<div id="tab2" class="tab_content">
-							<table class="masterTable">
+							<table class="masterTable" style=" width: 90%; ">
 								<tr>
 									<td><label>Amount</label></td>
 									<td><s:select id="cmbAmount" name="cmbAmount"
@@ -757,27 +724,24 @@ function isNumber(evt) {
 
 
 							</table>
-							<div id="divTopSpenders"
-								style="width: 100%; margin-bottom: 5px; display: block; overflow-x: hidden; float: right; margin-right: 4px; height: 600px; border: 0px solid">
+							<div id="divTopSpenders" style="width: 90%; margin-bottom: 5px; margin-left:55px; 
+							display: block; overflow-x: hidden; float: left; height: 600px;">
 
 								<table border="1" class="myTable"
-									style="width: 80%; margin: auto;">
+									style="width: 100%; margin: auto; ">
 									<thead>
 										<tr>
-
-											<th style="width: 20%">Mobile Number</th>
-											<th style="width: 40%">Customer Name</th>
-											<th style="width: 12%">No. Of Bills</th>
-											<th style="width: 40%">Sales Amount</th>
-
+											<th style="width: 20%"> Mobile Number</th>
+											<th style="width: 40%"> Customer Name</th>
+											<th style="width: 12%"> No. Of Bills</th>
+											<th style="width: 40%"> Sales Amount</th>
 										</tr>
 
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%;">
-									<table id="tblTopSpenders" class="transTablex col5-center"
-										style="width: 100%;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 100%;">
+									<table id="tblTopSpenders" class="transTablex col5-center" style="width: 100%;">
 										<tbody>
 										<col style="width: 20%;">
 										<!--  COl1   -->
@@ -794,7 +758,7 @@ function isNumber(evt) {
 								</div>
 
 								<table border="1" class="myTable"
-									style="width: 80%; margin: auto;">
+									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
 
@@ -807,7 +771,7 @@ function isNumber(evt) {
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block;; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%; height: 50px;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block;; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 100%; height: 50px;">
 									<table id="tblTotalTopSpenders" class="transTablex col5-center"
 										style="width: 100%;">
 										<tbody>
@@ -832,7 +796,7 @@ function isNumber(evt) {
 						<div id="tab3" class="tab_content">
 
 							<div id="divNonSpenders"
-								style="width: 100%; margin-bottom: 5px; display: block; overflow-x: hidden; float: right; margin-right: 4px; height: 600px; border: 0px solid">
+								style="width: 90%; margin-bottom: 5px; display: block; overflow-x: hidden; float: left; margin-left: 50px; height: 540px; border: 0px solid">
 
 								<table border="1" class="myTable"
 									style="width: 100%; margin: auto;">
@@ -865,19 +829,15 @@ function isNumber(evt) {
 						</div>
 
 						<!-- End of Non Spenders tab -->
-
 					</div>
 		</table>
 		<br />
 		<br />
 		<br />
 		<p align="center">
-			<input type="reset" value="Reset" class="form_button"
-				onclick="funResetFields()" /> <input type="button" value="Close"
-				tabindex="3" class="form_button" />
-
+			<input type="button" value="Reset" class="button button2" onclick="funResetFields()" style="margin-right: 10px;" /> 
+				<input type="button" value="Close" tabindex="3" class="button button2" />
 		</p>
-
 	</s:form>
 
 </body>

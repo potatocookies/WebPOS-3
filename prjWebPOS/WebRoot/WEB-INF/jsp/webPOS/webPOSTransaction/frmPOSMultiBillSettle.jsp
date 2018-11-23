@@ -102,7 +102,7 @@ $(document).ready(function()
 
 	function funLoadSettleBillDtlData() {
 
-		var searchurl = getContextPath() + "/LoadUnsettleBillDtlData.html";
+		var searchurl = getContextPath() + "/loadUnsettleBillDtlData.html";
 		$.ajax({
 			type : "GET",
 			url : searchurl,
@@ -231,12 +231,41 @@ $(document).ready(function()
 	<div id="formHeading">
 		<label>Multiple Bill Settle In Cash</label>
 	</div>
+	
+	
+	
 	<s:form name="MultiBillSettle" method="POST"
 		action="settlePOSMultiBill.html?saddr=${urlHits}">
 
+
+
+
 		<table border="1" class="myTable" style="width: 80%; margin: auto;">
 			<thead>
-				<tr>
+			
+								
+			
+			
+			
+			<td width="30%"><label>Table</label>&emsp;&ensp; <s:select
+									id="cmbPOSName" name="cmbPOSName" path=""
+									cssClass="BoxW124px" items="${Table}">
+								</s:select></td>
+								
+			
+			
+			
+			<td  width="30%"><label>Settlement Mode</label>&emsp;&ensp; <s:select
+									id="cmbPOSName" name="cmbPOSName" path=""
+									cssClass="BoxW124px" items="${PayMode}">
+								</s:select></td>
+								
+			<td ></td>
+			<td ></td>
+			<td ></td>	<td ></td>	
+			<td ></td>
+			<td ></td>	
+								<tr>
 
 					<c:forEach items="${tblheader}" var="heder">
 						<th style="width: 13%;">${heder}
@@ -249,12 +278,20 @@ $(document).ready(function()
 			</thead>
 		</table>
 		<div
+			
+		
 			style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 300px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 80%;">
+
+
+					
+
+
 
 			<table id="tblBillSettle" class="transTablex col5-center"
 				style="width: 100%;">
 
 				<c:forEach items="${details}" var="SB" varStatus="status">
+				
 					<tr>
 						<td style="width: 13%; height: 12px;"><input size="12%"
 							class="Box" readonly="readonly" id="txtBillNo.[${status.index}]"
@@ -301,6 +338,7 @@ $(document).ready(function()
 
 
 		</div>
+
 
 		<div>
 			<br> <br>

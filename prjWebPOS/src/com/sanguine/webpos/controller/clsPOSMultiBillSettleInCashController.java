@@ -16,10 +16,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSAssignHomeDeliveryBean;
 import com.sanguine.webpos.bean.clsPOSMultiBillSettleInCashBean;
+import com.sanguine.webpos.model.clsSettlementMasterModel;
+import com.sanguine.webpos.model.clsTableMasterModel;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSTransactionService;
 
 @Controller
@@ -34,10 +39,13 @@ public class clsPOSMultiBillSettleInCashController {
 	@Autowired
 	private clsPOSTransactionService objTransactionService;
 	
+	@Autowired
+	clsPOSMasterService objMasterService;
+	
 	Map map=new HashMap();
 
 	@RequestMapping(value = "/frmPOSMultiBillSettle", method = RequestMethod.GET)
-	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSAssignHomeDeliveryBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request)
+	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSAssignHomeDeliveryBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request) throws Exception
 	{
 		String urlHits="1";
 		try{
@@ -48,9 +56,50 @@ public class clsPOSMultiBillSettleInCashController {
 		
 		model.put("urlHits",urlHits);
 		List list =funLoadUnsettleBillDtlData( request);
-		
+		String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
 		model.put("tblheader",list.get(0));
 		model.put("details",list.get(1));
+		
+		Map hmPayMode = new HashMap();
+		List listPayMode = new ArrayList();
+		list=objMasterService.funLoadSettlementDtl(strClientCode);
+		listPayMode.add("All");
+		hmPayMode.put("All", "All");
+		clsSettlementMasterModel objModel = null;
+		for(int cnt=0;cnt<list.size();cnt++)
+		{
+			objModel = (clsSettlementMasterModel) list.get(cnt);
+			listPayMode.add(objModel.getStrSettelmentDesc());
+			hmPayMode.put(objModel.getStrSettelmentCode(), objModel.getStrSettelmentDesc());
+		}
+		model.put("PayMode",listPayMode);	
+		
+		
+		Map hmTableName = new HashMap();
+		List listTableName = new ArrayList();
+		list=objMasterService.funGetTableList(strClientCode);
+		listPayMode.add("All");
+		hmTableName.put("All", "All");
+		List tmpList = new ArrayList();
+		for(int i=0;i<list.size();i++)
+		{
+			clsTableMasterModel obj = new clsTableMasterModel();
+			obj = (clsTableMasterModel)list.get(i);
+			hmTableName.put(obj.getStrTableNo(), obj.getStrTableName());
+			
+
+		}
+		/*for(int cnt=0;cnt<list.size();cnt++)
+		{
+			objModel = (clsSettlementMasterModel) list.get(cnt);
+			listPayMode.add(objModel.getStrSettelmentDesc());
+			hmTableName.put(objModel.getStrSettelmentCode(), objModel.getStrSettelmentDesc());
+		}*/
+		model.put("Table",hmTableName);	
+
+		
+		
+		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSMultiBillSettle_1");
 		}else if("1".equalsIgnoreCase(urlHits)){
@@ -61,7 +110,7 @@ public class clsPOSMultiBillSettleInCashController {
 	}
 	
 	@RequestMapping(value = "/loadUnsettleBillDtlData", method = RequestMethod.GET)
-	public List  funLoadUnsettleBillDtlData(HttpServletRequest req)
+	public @ResponseBody List  funLoadUnsettleBillDtlData(HttpServletRequest req)
 	{
 		List listmain =new ArrayList();
 		String clientCode=req.getSession().getAttribute("gClientCode").toString();
@@ -146,7 +195,8 @@ public class clsPOSMultiBillSettleInCashController {
 					objUnsettleBillDtl.setStrBuildingName((String)jobj.get("strBuildingName"));
 					objUnsettleBillDtl.setStrDPName((String)jobj.get("strDPName"));
 					objUnsettleBillDtl.setDteBillDate((String)jobj.get("dteBillDate"));
-					objUnsettleBillDtl.setDblGrandTotal((long)jobj.get("dblGrandTotal"));
+					System.out.println((String)jobj.get("strBillNo")+" "+jobj.get("dblGrandTotal") );
+					objUnsettleBillDtl.setDblGrandTotal(Double.parseDouble(jobj.get("dblGrandTotal").toString()));
 					
 					listMenuHedaData.add(objUnsettleBillDtl);
 				}

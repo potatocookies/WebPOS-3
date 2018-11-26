@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class clsPOSSettlementWiseReportController {
 	@Autowired
 	private clsPOSReportService objReportService;
 	
-	 Map<String,String> hmPOSData;
+	 Map<String,String> hmPOSData=new HashMap<String, String>();
 	 
 	 @RequestMapping(value = "/frmPOSSettlementWiseReport", method = RequestMethod.GET)
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
@@ -78,8 +79,7 @@ public class clsPOSSettlementWiseReportController {
 			List poslist = new ArrayList();
 			poslist.add("ALL");
 			
-			hmPOSData=new HashMap<String, String>();
-			List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 			if(listOfPos!=null)
 			{
 				for(int i =0 ;i<listOfPos.size();i++)
@@ -104,16 +104,25 @@ public class clsPOSSettlementWiseReportController {
 	 
 		@SuppressWarnings("rawtypes")
 		@RequestMapping(value = "/rptPOSSettlementWiseSales", method = RequestMethod.POST)	
-		private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+		public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 		{
 			
 			try
 			{
 				String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptSettelementWiseSalesReport.jrxml");
-
+				String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 				Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 				String strPOSName = objBean.getStrPOSName();
 				String posCode = "ALL";
+				List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+				if(listOfPos!=null)
+				{
+					for(int i =0 ;i<listOfPos.size();i++)
+					{
+						Object[] obj = (Object[]) listOfPos.get(i);
+						hmPOSData.put( obj[1].toString(), obj[0].toString());
+					}
+				}
 				if (!strPOSName.equalsIgnoreCase("ALL"))
 				{
 					posCode = (String) hmPOSData.get(strPOSName);
@@ -239,7 +248,15 @@ public class clsPOSSettlementWiseReportController {
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfSettlementData);
 				JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 				jprintlist.add(print);
-
+				String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+				String extension=".pdf";
+				if (!objBean.getStrDocType().equals("PDF"))
+				{
+					objBean.setStrDocType("EXCEL");
+					extension=".xls";
+				}	
+				String fileName = "SettlementWiseReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+				filePath=filePath+"/"+fileName;
 				if (jprintlist.size() > 0)
 				{
 					ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -261,6 +278,8 @@ public class clsPOSSettlementWiseReportController {
 						resp.setContentType("application/xlsx");
 						exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+						if(null!=source && source.equals("DayEndMail"))
+							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 						exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 						resp.setHeader("Content-Disposition", "inline;filename=SettlementWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 						exporter.exportReport();

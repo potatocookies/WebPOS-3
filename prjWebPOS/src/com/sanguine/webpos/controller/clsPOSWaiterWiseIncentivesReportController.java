@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public class clsPOSWaiterWiseIncentivesReportController {
 	@Autowired
 	private clsSetupService objSetupService;
 	
-	 Map<String,String> hmPOSData;
+	 Map<String,String> hmPOSData=new HashMap<String, String>();
 	
 	 @RequestMapping(value = "/frmPOSWaiterWiseIncentiveReport", method = RequestMethod.GET)
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
@@ -73,8 +74,7 @@ public class clsPOSWaiterWiseIncentivesReportController {
 			List poslist = new ArrayList();
 			poslist.add("All");
 			
-			hmPOSData=new HashMap<String, String>();
-			List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 			if(listOfPos!=null)
 			{
 				for(int i =0 ;i<listOfPos.size();i++)
@@ -120,18 +120,28 @@ public class clsPOSWaiterWiseIncentivesReportController {
 	 
 	 @SuppressWarnings("rawtypes")
 		@RequestMapping(value = "/rptWaiterWiseIncentivesReport", method = RequestMethod.POST)	
-		private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+		public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 		{
 			try
 			{
 			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
-			String reportType = objBean.getStrType();
+			String reportType = objBean.getStrDocType();
+			String strType=objBean.getStrType();
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					hmPOSData.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
-				posCode = (String) hmPOSData.get(strPOSName);
+				posCode = hmPOSData.get(strPOSName).toString();
 			}
 			hm.put("posCode", posCode);
 			
@@ -139,32 +149,36 @@ public class clsPOSWaiterWiseIncentivesReportController {
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
 			String strPOSCode = posCode;
-			String strShiftNo = "ALL";	
+			String shiftCode = "ALL";	
 			Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(strClientCode, posCode, "gEnableShiftYN");
 			if(objSetupParameter.get("gEnableShiftYN").toString().equals("Y"))
 			{
-				strShiftNo=objBean.getStrShiftCode();
+				shiftCode=objBean.getStrShiftCode();
 			}
-			hm.remove("shiftNo");
-			hm.put("shiftNo", strShiftNo);
+			hm.remove("shiftCode");
+			hm.put("shiftCode", shiftCode);
 			List<clsPOSBillDtl> listOfWaiterWiseItemSales = new ArrayList<>();
-            if(reportType.equalsIgnoreCase("Summary"))
+            if(strType.equalsIgnoreCase("Summary"))
             {
             	String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptWaiterWiseIncentivesSummaryReport.jrxml");
             	
-            	listOfWaiterWiseItemSales = objReportService.funProcessWaiterWiseIncentivesSummaryReport(posCode,fromDate,toDate,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
+            	listOfWaiterWiseItemSales = objReportService.funProcessWaiterWiseIncentivesSummaryReport(posCode,fromDate,toDate,shiftCode,objSetupParameter.get("gEnableShiftYN").toString());
                 
             	JasperDesign jd = JRXmlLoader.load(reportName);
     			JasperReport jr = JasperCompileManager.compileReport(jd);
-
-    			// jp = JasperFillManager.fillReport(jr, hm, new
-    			// JREmptyDataSource());
-
     			List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
     			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfWaiterWiseItemSales);
     			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
     			jprintlist.add(print);
-
+    			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+    			String extension=".pdf";
+    			if (!objBean.getStrDocType().equals("PDF"))
+    			{
+    				objBean.setStrDocType("EXCEL");
+    				extension=".xls";
+    			}	
+    			String fileName = "WaiterWiseIncentiveSummaryReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+    			filePath=filePath+"/"+fileName;
     			if (jprintlist.size() > 0)
     			{
     				ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -186,6 +200,8 @@ public class clsPOSWaiterWiseIncentivesReportController {
     					resp.setContentType("application/xlsx");
     					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
     					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+    					if(null!=source && source.equals("DayEndMail"))
+    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
     					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
     					resp.setHeader("Content-Disposition", "inline;filename=WaiterWiseIncentiveSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
     					exporter.exportReport();
@@ -199,27 +215,27 @@ public class clsPOSWaiterWiseIncentivesReportController {
     				resp.getWriter().append("No Record Found");
 
     			}
-    		
-    			
             }
             else
             {
             	String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptWaiterWiseIncentivesDetailsReport.jrxml");
             	
-            	listOfWaiterWiseItemSales = objReportService.funProcessWaiterWiseIncentivesDetailReport(posCode,fromDate,toDate,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
-            	
-            	
-                JasperDesign jd = JRXmlLoader.load(reportName);
+            	listOfWaiterWiseItemSales = objReportService.funProcessWaiterWiseIncentivesDetailReport(posCode,fromDate,toDate,shiftCode,objSetupParameter.get("gEnableShiftYN").toString());
+            	JasperDesign jd = JRXmlLoader.load(reportName);
     			JasperReport jr = JasperCompileManager.compileReport(jd);
-
-    			// jp = JasperFillManager.fillReport(jr, hm, new
-    			// JREmptyDataSource());
-
     			List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
     			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfWaiterWiseItemSales);
     			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
     			jprintlist.add(print);
-
+    			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+    			String extension=".pdf";
+    			if (!objBean.getStrDocType().equals("PDF"))
+    			{
+    				objBean.setStrDocType("EXCEL");
+    				extension=".xls";
+    			}	
+    			String fileName = "WaiterWiseIncentiveDetailReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+    			filePath=filePath+"/"+fileName;
     			if (jprintlist.size() > 0)
     			{
     				ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -241,6 +257,8 @@ public class clsPOSWaiterWiseIncentivesReportController {
     					resp.setContentType("application/xlsx");
     					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
     					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+    					if(null!=source && source.equals("DayEndMail"))
+    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
     					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
     					resp.setHeader("Content-Disposition", "inline;filename=WaiterWiseIncentiveDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
     					exporter.exportReport();
@@ -252,7 +270,6 @@ public class clsPOSWaiterWiseIncentivesReportController {
     			{
     				resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
     				resp.getWriter().append("No Record Found");
-
     			}
     		
             }

@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,7 +125,7 @@ public class clsPOSWaiterWiseItemReportController {
 	 
 	 @SuppressWarnings("rawtypes")
 		@RequestMapping(value = "/rptWaiterWiseItemReport", method = RequestMethod.POST)	
-		private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+		public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 		{
 			
 			try
@@ -159,15 +160,19 @@ public class clsPOSWaiterWiseItemReportController {
 				
 	            JasperDesign jd = JRXmlLoader.load(reportName);
 				JasperReport jr = JasperCompileManager.compileReport(jd);
-
-				// jp = JasperFillManager.fillReport(jr, hm, new
-				// JREmptyDataSource());
-
 				List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfWaiterWiseItemSales);
 				JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 				jprintlist.add(print);
-
+				String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+				String extension=".pdf";
+				if (!objBean.getStrDocType().equals("PDF"))
+				{
+					objBean.setStrDocType("EXCEL");
+					extension=".xls";
+				}	
+				String fileName = "WaiterWiseItemReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+				filePath=filePath+"/"+fileName;
 				if (jprintlist.size() > 0)
 				{
 					ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -189,6 +194,8 @@ public class clsPOSWaiterWiseItemReportController {
 						resp.setContentType("application/xlsx");
 						exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+						if(null!=source && source.equals("DayEndMail"))
+							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 						exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 						resp.setHeader("Content-Disposition", "inline;filename=WaiterWiseItemReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 						exporter.exportReport();

@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class clsPOSItemWiseReportController
 		model.put("urlHits", urlHits);
 		List poslist = new ArrayList();
 		poslist.add("All");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -117,7 +118,7 @@ public class clsPOSItemWiseReportController
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptPOSItemWiseSales", method = RequestMethod.POST)
-	private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req)
+	public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req,String source)
 	{
 		try
 		{
@@ -128,6 +129,15 @@ public class clsPOSItemWiseReportController
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					hmPOSData.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
 				posCode = hmPOSData.get(strPOSName).toString();
@@ -554,6 +564,17 @@ public class clsPOSItemWiseReportController
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfItemData);
 			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 			jprintlist.add(print);
+			
+			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+			String extension=".pdf";
+			if (!objBean.getStrDocType().equals("PDF"))
+         	{
+				objBean.setStrDocType("EXCEL");
+				extension=".xls";
+         	}	
+			String fileName = "ItemWiseSalesReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+			filePath=filePath+"/"+fileName;
+			
 
 			if (jprintlist.size() > 0)
 			{
@@ -576,6 +597,8 @@ public class clsPOSItemWiseReportController
 					resp.setContentType("application/xlsx");
 					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+					if(null!=source && source.equals("DayEndMail"))
+						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 					resp.setHeader("Content-Disposition", "inline;filename=ItemWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 					exporter.exportReport();

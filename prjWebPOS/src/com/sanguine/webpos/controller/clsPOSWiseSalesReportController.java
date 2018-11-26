@@ -47,6 +47,7 @@ import com.sanguine.webpos.bean.clsPOSWiseSalesReportBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.util.clsExportToExcel;
 import com.sanguine.webpos.util.clsPOSGroupWiseComparator;
 
 @Controller
@@ -63,6 +64,9 @@ public class clsPOSWiseSalesReportController {
 	
 	@Autowired
 	private clsPOSReportService objReportService;
+	
+	@Autowired
+	private clsExportToExcel objExportToExcel;
 	
 	Map map=new HashMap();
 	
@@ -105,8 +109,23 @@ public class clsPOSWiseSalesReportController {
 	
 	
 	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/processPOSWiseSalesReport1", method = RequestMethod.POST)	
+	public ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
+	{
+		List exportList=funGetReportData(req, objBean);
+		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+	}
+	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/processPOSWiseSalesReport", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
+	{
+		List exportList=funGetReportData(req, objBean);
+		objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+		return true;
+	}
+	
+	private List funGetReportData(HttpServletRequest req, clsPOSReportBean objBean) throws Exception
 	{
 		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		    String fromDate=objBean.getFromDate();
@@ -127,20 +146,19 @@ public class clsPOSWiseSalesReportController {
 		
 			String[] headerList = new String[List.size()];
 			for(int i = 0; i < List.size(); i++){
-			headerList[i]=(String)List.get(i);
+				headerList[i]=(String)List.get(i);
 			}
 		
 			exportList.add(headerList);
 		
-		List dataList=(List)resMap.get("List");
-		List totalList=(List)resMap.get("totalList");
+			List dataList=(List)resMap.get("List");
+			List totalList=(List)resMap.get("totalList");
 		
-		dataList.add(totalList);
+			dataList.add(totalList);
 				
-		exportList.add(dataList);
-		
+			exportList.add(dataList);
 			
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+			return exportList;	
 	}
 	
 		    

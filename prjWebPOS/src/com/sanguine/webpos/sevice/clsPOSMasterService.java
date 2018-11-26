@@ -864,5 +864,13 @@ public class clsPOSMasterService {
 			
 		}
 	 
+	 public List funFillAllRevenuHeadCombo()throws Exception
+		{
+			List list = null;
+			StringBuilder sqlBuilder = new StringBuilder("select distinct(strRevenueHead) from tblitemmaster order by strRevenueHead; ");
+			list=obBaseService.funGetList(sqlBuilder, "sql");
+			return list;
+		}
+	 
 }
 

@@ -27,6 +27,7 @@ import com.sanguine.webpos.model.clsReasonMasterModel;
 import com.sanguine.webpos.model.clsUserHdModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.util.clsExportToExcel;
 
 
 
@@ -37,7 +38,10 @@ public class clsPOSAuditFlashController {
 	 
 	 @Autowired
 	 private clsPOSMasterService objMasterService;
-	
+	 
+	 @Autowired
+	 private clsExportToExcel objExportToExcel;
+	 
 	 Map posMap=new HashMap();
 	 Map userMap=new HashMap();
 	 Map reasonMap = new HashMap<>();
@@ -117,16 +121,28 @@ public class clsPOSAuditFlashController {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/processAuditFlash", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	@RequestMapping(value = "/processAuditFlash1", method = RequestMethod.POST)	
+	public ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
 	{
-	    String clientCode=req.getSession().getAttribute("gClientCode").toString();
-       
-	    String fromDate=objBean.getFromDate();
-	 
-		String toDate=objBean.getToDate();
+		List exportList=funGetReportData(req, objBean);
+		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+	}
 	
-		String strReportType=objBean.getStrReportType();
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/processAuditFlash", method = RequestMethod.POST)	
+	public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
+	{
+		List exportList=funGetReportData(req, objBean);
+		objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+		return true;
+	}
+	
+	private List funGetReportData(HttpServletRequest req, clsPOSReportBean objBean) throws Exception
+	{
+		String clientCode=req.getSession().getAttribute("gClientCode").toString();
+	    String fromDate=objBean.getFromDate();
+	    String toDate=objBean.getToDate();
+	    String strReportType=objBean.getStrReportType();
 		String strUserName=objBean.getStrSGName();
 		String userCode= "ALL";
 		if (!strUserName.equalsIgnoreCase("ALL"))
@@ -186,7 +202,7 @@ public class clsPOSAuditFlashController {
 		dataList.add(totalList);
 		
 		exportList.add(dataList);
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+		return exportList;	
 	}
 	
 	

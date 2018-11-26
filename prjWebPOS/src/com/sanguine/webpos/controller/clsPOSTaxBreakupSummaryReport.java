@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class clsPOSTaxBreakupSummaryReport {
 	@Autowired
 	private clsPOSReportService objReportService;
 	
-	Map<String,String> hmPOSData;
+	Map<String,String> hmPOSData=new HashMap<String, String>();;
 	 
 	 @RequestMapping(value = "/funPOSTaxBreakupSummaryReport", method = RequestMethod.GET)
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
@@ -81,8 +82,7 @@ public class clsPOSTaxBreakupSummaryReport {
 			List poslist = new ArrayList();
 			poslist.add("All");
 			
-			hmPOSData=new HashMap<String, String>();
-			List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 			if(listOfPos!=null)
 			{
 				for(int i =0 ;i<listOfPos.size();i++)
@@ -109,7 +109,7 @@ public class clsPOSTaxBreakupSummaryReport {
 	 
 		@SuppressWarnings("rawtypes")
 		@RequestMapping(value = "/rptTaxBreakupSummaryReport", method = RequestMethod.POST)	
-		private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+		public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 		{
 			//objGlobal=new clsGlobalFunctions();
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
@@ -120,7 +120,17 @@ public class clsPOSTaxBreakupSummaryReport {
 
 				Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 				String strPOSName = objBean.getStrPOSName();
+				String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 				String posCode = "ALL";
+				List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+				if(listOfPos!=null)
+				{
+					for(int i =0 ;i<listOfPos.size();i++)
+					{
+						Object[] obj = (Object[]) listOfPos.get(i);
+						hmPOSData.put( obj[1].toString(), obj[0].toString());
+					}
+				}
 				if (!strPOSName.equalsIgnoreCase("ALL"))
 				{
 					posCode = (String) hmPOSData.get(strPOSName);
@@ -138,17 +148,20 @@ public class clsPOSTaxBreakupSummaryReport {
 				
 	            JasperDesign jd = JRXmlLoader.load(reportName);
 				JasperReport jr = JasperCompileManager.compileReport(jd);
-
-				// jp = JasperFillManager.fillReport(jr, hm, new
-				// JREmptyDataSource());
-
 				String strDocType = objBean.getStrDocType();
 				List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfTaxDtl);
-				
 				JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 				jprintlist.add(print);
-
+				String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+				String extension=".pdf";
+				if (!objBean.getStrDocType().equals("PDF"))
+				{
+					objBean.setStrDocType("EXCEL");
+					extension=".xls";
+				}	
+				String fileName = "TaxBreakupSummaryReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+				filePath=filePath+"/"+fileName;
 				if (jprintlist.size() > 0)
 				{
 					ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -159,7 +172,7 @@ public class clsPOSTaxBreakupSummaryReport {
 						exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
 						exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
 						exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-						resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+						resp.setHeader("Content-Disposition", "inline;filename=TaxBreakupSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
 						exporter.exportReport();
 						servletOutputStream.flush();
 						servletOutputStream.close();
@@ -170,8 +183,10 @@ public class clsPOSTaxBreakupSummaryReport {
 						resp.setContentType("application/xlsx");
 						exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+						if(null!=source && source.equals("DayEndMail"))
+							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 						exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-						resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+						resp.setHeader("Content-Disposition", "inline;filename=TaxBreakupSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 						exporter.exportReport();
 						servletOutputStream.flush();
 						servletOutputStream.close();
@@ -183,8 +198,6 @@ public class clsPOSTaxBreakupSummaryReport {
 					resp.getWriter().append("No Record Found");
 
 				}
-
-	            
 			}
 			catch(Exception ex)
 			{
@@ -193,5 +206,4 @@ public class clsPOSTaxBreakupSummaryReport {
 		    
 			System.out.println("Hi");
 		}
-
 }

@@ -8194,7 +8194,38 @@ public class clsPOSUtilityController
 		return result;
     }
 
-	
+    public void funCreateReportFolder(String reportFolderName)
+    {
+        try
+        {
+            String filePath = System.getProperty("user.dir");
+            File file = new File(filePath + "/"+reportFolderName);
+
+            System.out.println("reports path=" + file.toPath());
+            if (file.exists())
+            {
+                // Get all files in the folder
+                File[] files = file.listFiles();
+
+                for (int i = 0; i < files.length; i++)
+                {
+                    // Delete each file in the folder
+                    files[i].delete();
+                }
+                // Delete the folder
+                // file.delete();
+            }
+            else
+            {
+                file.mkdir();
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 	
 
 }

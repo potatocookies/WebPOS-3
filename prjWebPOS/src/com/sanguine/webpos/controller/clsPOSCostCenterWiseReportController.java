@@ -2,6 +2,7 @@
 
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -74,7 +75,7 @@ public class clsPOSCostCenterWiseReportController {
 		List poslist = new ArrayList();
 		poslist.add("ALL");
 		
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -110,17 +111,25 @@ public class clsPOSCostCenterWiseReportController {
 		 
 	}
 	
-	
-	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptPOSCostCenterWiseReport", method = RequestMethod.POST)	
-	private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 	{
 		try
 		{
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					posMap.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
 				posCode = (String) posMap.get(strPOSName);
@@ -154,7 +163,15 @@ public class clsPOSCostCenterWiseReportController {
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfCostCenterDtl);
 				JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 				jprintlist.add(print);
-
+				String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+				String extension=".pdf";
+				if (!objBean.getStrDocType().equals("PDF"))
+				{
+					objBean.setStrDocType("EXCEL");
+					extension=".xls";
+				}	
+				String fileName = "CostCenterWiseSummaryReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+				filePath=filePath+"/"+fileName;
 				if (jprintlist.size() > 0)
 				{
 					ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -176,6 +193,8 @@ public class clsPOSCostCenterWiseReportController {
 						resp.setContentType("application/xlsx");
 						exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+						if(null!=source && source.equals("DayEndMail"))
+							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 						exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 						resp.setHeader("Content-Disposition", "inline;filename=CostCenterWiseSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 						exporter.exportReport();
@@ -202,7 +221,15 @@ public class clsPOSCostCenterWiseReportController {
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfCostCenterDtl);
 				JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 				jprintlist.add(print);
-
+				String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+				String extension=".pdf";
+				if (!objBean.getStrDocType().equals("PDF"))
+				{
+					objBean.setStrDocType("EXCEL");
+					extension=".xls";
+				}	
+				String fileName = "CostCenterWiseDetailReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+				filePath=filePath+"/"+fileName;
 				if (jprintlist.size() > 0)
 				{
 					ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -224,6 +251,8 @@ public class clsPOSCostCenterWiseReportController {
 						resp.setContentType("application/xlsx");
 						exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+						if(null!=source && source.equals("DayEndMail"))
+							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 						exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 						resp.setHeader("Content-Disposition", "inline;filename=CostCenterWiseDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 						exporter.exportReport();

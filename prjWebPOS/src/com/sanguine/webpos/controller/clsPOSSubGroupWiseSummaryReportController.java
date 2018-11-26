@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class clsPOSSubGroupWiseSummaryReportController {
 	private clsSetupService objSetupService;
 
 	
-	 Map<String,String> hmPOSData;
+	 Map<String,String> hmPOSData=new HashMap<String, String>();;
 	 
 	 @RequestMapping(value = "/frmPOSSubGroupWiseSummaryReport", method = RequestMethod.GET)
 		public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
@@ -76,8 +77,7 @@ public class clsPOSSubGroupWiseSummaryReportController {
 			List poslist = new ArrayList();
 			poslist.add("ALL");
 			
-			hmPOSData=new HashMap<String, String>();
-			List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 			if(listOfPos!=null)
 			{
 				for(int i =0 ;i<listOfPos.size();i++)
@@ -119,16 +119,25 @@ public class clsPOSSubGroupWiseSummaryReportController {
 		
 		@SuppressWarnings("rawtypes")
 		@RequestMapping(value = "/rptPOSSubGroupWiseSummary", method = RequestMethod.POST)	
-		private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+		public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 		{
 			try
 			{
 			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			String POSCode=req.getSession().getAttribute("loginPOS").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
-			String reportType = objBean.getStrViewType();
+			//String reportType = objBean.getStrViewType();
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					hmPOSData.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
 				posCode = (String) hmPOSData.get(strPOSName);
@@ -163,10 +172,17 @@ public class clsPOSSubGroupWiseSummaryReportController {
 			JasperDesign jd = JRXmlLoader.load(reportName);
     		JasperReport jr = JasperCompileManager.compileReport(jd);
             List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
-
             JasperPrint print = JasperFillManager.fillReport(jr, hm, new JREmptyDataSource());
             jprintlist.add(print);
-
+            String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+			String extension=".pdf";
+			if (!objBean.getStrDocType().equals("PDF"))
+			{
+				objBean.setStrDocType("EXCEL");
+				extension=".xls";
+			}	
+			String fileName = "SubGroupWiseSummaryReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+			filePath=filePath+"/"+fileName;
     		if (jprintlist.size() > 0)
     		{
     			ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -177,7 +193,7 @@ public class clsPOSSubGroupWiseSummaryReportController {
     				exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
     				exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
     				exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-    				resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+    				resp.setHeader("Content-Disposition", "inline;filename=SubGroupWiseSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
     				exporter.exportReport();
     				servletOutputStream.flush();
     				servletOutputStream.close();
@@ -188,8 +204,10 @@ public class clsPOSSubGroupWiseSummaryReportController {
     				resp.setContentType("application/xlsx");
     				exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
     				exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+    				if(null!=source && source.equals("DayEndMail"))
+						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
     				exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-    				resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+    				resp.setHeader("Content-Disposition", "inline;filename=SubGroupWiseSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
     				exporter.exportReport();
     				servletOutputStream.flush();
     				servletOutputStream.close();
@@ -199,7 +217,6 @@ public class clsPOSSubGroupWiseSummaryReportController {
     		{
     			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
     			resp.getWriter().append("No Record Found");
-
     		}
 			}
 			catch(Exception ex)

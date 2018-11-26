@@ -46,6 +46,7 @@ import com.sanguine.webpos.bean.clsPOSTaxWaiseBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.util.clsExportToExcel;
 import com.sanguine.webpos.util.clsPOSGroupWiseComparator;
 
 @Controller
@@ -62,6 +63,9 @@ public class clsPOSDayEndFlashReportController {
 		 
 		 @Autowired
 		 private clsPOSReportService objReportService;
+		 
+		 @Autowired
+		 private clsExportToExcel objExportToExcel;
 		
 		 Map map=new HashMap();
 		
@@ -100,10 +104,24 @@ public class clsPOSDayEndFlashReportController {
 		}
 
 		@SuppressWarnings("rawtypes")
-		@RequestMapping(value = "/processDayEndFlashReport", method = RequestMethod.POST)	
-		private ModelAndView funProcessDayEndFlashReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+		@RequestMapping(value = "/processDayEndFlashReport1", method = RequestMethod.POST)	
+		public ModelAndView funProcessDayEndFlashReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
 		{
-			
+			List exportList=funGetReportData(req, objBean);
+			return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+		}	
+		
+		@SuppressWarnings("rawtypes")
+		@RequestMapping(value = "/processDayEndFlashReport", method = RequestMethod.POST)	
+		public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
+		{
+			List exportList=funGetReportData(req, objBean);
+			objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+			return true;
+		}	
+		
+		private List funGetReportData(HttpServletRequest req, clsPOSReportBean objBean) throws Exception
+		{
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
 			String strPOSName =objBean.getStrPOSName();
 			
@@ -136,7 +154,7 @@ public class clsPOSDayEndFlashReportController {
 				
 			exportList.add(dataList);
 		
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+			return exportList;	
 	}
 		
 		
@@ -163,7 +181,7 @@ public class clsPOSDayEndFlashReportController {
 			
 		@SuppressWarnings({ "unchecked" })
 		private LinkedHashMap funGetData(String clientCode,String strFromdate,String strToDate,String strPOSName)
-				  {									
+		{									
 						  LinkedHashMap resMap = new LinkedHashMap();
 						  String posCode="All";
 						  StringBuilder sbSql = new StringBuilder();  	

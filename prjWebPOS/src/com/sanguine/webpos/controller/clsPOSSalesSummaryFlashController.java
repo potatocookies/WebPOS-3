@@ -42,6 +42,7 @@ import com.sanguine.webpos.bean.clsPOSBillReportBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.util.clsExportToExcel;
 
 @Controller
 public class clsPOSSalesSummaryFlashController {
@@ -63,6 +64,9 @@ public class clsPOSSalesSummaryFlashController {
 	
 	@Autowired
 	private clsPOSReportService objReportService;
+	
+	@Autowired
+	private clsExportToExcel objExportToExcel;
 	
 	Map<String,String> mapPos = new HashMap<String,String>();
 
@@ -135,10 +139,25 @@ public class clsPOSSalesSummaryFlashController {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/processSalesSummeryFlash", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	@RequestMapping(value = "/processSalesSummeryFlash1", method = RequestMethod.POST)	
+	public ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
 	{
-		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
+		List exportList=funGetReportData(req, objBean);
+		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/processSalesSummeryFlash", method = RequestMethod.POST)	
+	public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
+	{
+		List exportList=funGetReportData(req, objBean);
+		objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+		return true;
+	}
+	
+	private List funGetReportData(HttpServletRequest req, clsPOSReportBean objBean) throws Exception
+	{
+			String clientCode=req.getSession().getAttribute("gClientCode").toString();
 		    String posName=objBean.getStrPOSName();
 			String strFromdate=objBean.getFromDate();
 		    String strToDate=objBean.getToDate();
@@ -193,7 +212,7 @@ public class clsPOSSalesSummaryFlashController {
 				
 			exportList.add(dataList);
 		
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+		return exportList;	
 	}
 	
 	
@@ -238,10 +257,10 @@ public class clsPOSSalesSummaryFlashController {
 			resMap = funGetData(strReportType,payCode,strFromdate,strToDate,posCode,listPayMode);
 						
 				
-	}catch(Exception ex)
-	 {
-		ex.printStackTrace();
-	 }
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return resMap;
 	
 	}

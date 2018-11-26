@@ -3,6 +3,7 @@
 
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,7 +90,7 @@ public class clsPOSOperatorWiseReportController {
 		
 		
 		 posMap.put("All","All");
-		 List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		 List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 			if(listOfPos!=null)
 			{
 				for(int i =0 ;i<listOfPos.size();i++)
@@ -156,25 +157,30 @@ public class clsPOSOperatorWiseReportController {
 		 
 	}
 	
-	
-	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptPOSOperatorWiseReport", method = RequestMethod.POST)	
-	private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 	{
-		
-		
 		try
 		{
 			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
-			String reportType = objBean.getStrViewType();
+			//String reportType = objBean.getStrViewType();
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					posMap.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
-				posCode = (String) posMap.get(strPOSName);
+				posCode = posMap.get(strPOSName).toString();
 			}
 			hm.put("posCode", posCode);
 			String settleCode = "ALL";
@@ -399,7 +405,15 @@ public class clsPOSOperatorWiseReportController {
     		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfOperatorWiseSettlementDtl);
     		JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
     		jprintlist.add(print);
-
+    		String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+			String extension=".pdf";
+			if (!objBean.getStrDocType().equals("PDF"))
+			{
+				objBean.setStrDocType("EXCEL");
+				extension=".xls";
+			}	
+			String fileName = "OperatorWiseReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+			filePath=filePath+"/"+fileName;
     		if (jprintlist.size() > 0)
     		{
     			ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -421,6 +435,8 @@ public class clsPOSOperatorWiseReportController {
     				resp.setContentType("application/xlsx");
     				exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
     				exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+    				if(null!=source && source.equals("DayEndMail"))
+						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
     				exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
     				resp.setHeader("Content-Disposition", "inline;filename=OperatorWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
     				exporter.exportReport();

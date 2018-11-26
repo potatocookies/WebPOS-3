@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -153,7 +154,7 @@ public class clsPOSAveragePerCoverReportController
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptPOSAvgPerCover", method = RequestMethod.POST)
-	private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req)
+	public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req,String source)
 	{
 		try
 		{
@@ -204,10 +205,17 @@ public class clsPOSAveragePerCoverReportController
 					JasperDesign jd = JRXmlLoader.load(reportName);
 		    		JasperReport jr = JasperCompileManager.compileReport(jd);
 		            List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
-
 		            JasperPrint print = JasperFillManager.fillReport(jr, hm, new JREmptyDataSource());
 		            jprintlist.add(print);
-
+		            String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+					String extension=".pdf";
+					if (!objBean.getStrDocType().equals("PDF"))
+					{
+						objBean.setStrDocType("EXCEL");
+						extension=".xls";
+					}	
+					String fileName = "AvgPerCoverSummaryReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+					filePath=filePath+"/"+fileName;
 					if (jprintlist.size() > 0)
 					{
 						ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -218,7 +226,7 @@ public class clsPOSAveragePerCoverReportController
 							exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
 							exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
 							exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-							resp.setHeader("Content-Disposition", "inline;filename=BillWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+							resp.setHeader("Content-Disposition", "inline;filename=AvgPerCoverSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
 							exporter.exportReport();
 							servletOutputStream.flush();
 							servletOutputStream.close();
@@ -229,8 +237,10 @@ public class clsPOSAveragePerCoverReportController
 							resp.setContentType("application/xlsx");
 							exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+							if(null!=source && source.equals("DayEndMail"))
+								exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 							exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-							resp.setHeader("Content-Disposition", "inline;filename=BillWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+							resp.setHeader("Content-Disposition", "inline;filename=AvgPerCoverSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 							exporter.exportReport();
 							servletOutputStream.flush();
 							servletOutputStream.close();
@@ -243,17 +253,12 @@ public class clsPOSAveragePerCoverReportController
 
 					}
 				}
-//				else
-//				{
-//				    funInsertDataForSummary(fromDate,toDate,strPOSCode,strPOSWise,strDateWise,strWShortName,strAPCOn,strPOSName);
-//				    funGenerateExcelSheetOfReport();
-//				}
 			}
 			else //for detail
 			{
 				
 					String shiftNo = "All", shiftCode = "All";
-
+					hm.put("strDateWise",strDateWise );
 					hm.put("shiftNo", shiftNo);
 					hm.put("shiftCode", shiftCode);
 					if (strWShortName.equalsIgnoreCase("Yes"))
@@ -261,7 +266,6 @@ public class clsPOSAveragePerCoverReportController
 					    hm.put("waiter", "Waiter Name");
 					}
 					
-
 					hm.put("decimalFormaterForDoubleValue", "0.00");
 					StringBuilder decimalFormatBuilderForDoubleValue = new StringBuilder("0");
 					final String gDecimalFormatString = objGlobalFun.funGetGlobalDecimalFormatString(strClientCode,POSCode);
@@ -274,15 +278,19 @@ public class clsPOSAveragePerCoverReportController
 				    
 				    JasperDesign jd = JRXmlLoader.load(reportName);
 					JasperReport jr = JasperCompileManager.compileReport(jd);
-
-					// jp = JasperFillManager.fillReport(jr, hm, new
-					// JREmptyDataSource());
-
 					List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
 					JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDtl);
 					JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 					jprintlist.add(print);
-
+					String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+					String extension=".pdf";
+					if (!objBean.getStrDocType().equals("PDF"))
+					{
+						objBean.setStrDocType("EXCEL");
+						extension=".xls";
+					}	
+					String fileName = "AvgPerCoverDetailReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+					filePath=filePath+"/"+fileName;
 					if (jprintlist.size() > 0)
 					{
 						ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -293,7 +301,7 @@ public class clsPOSAveragePerCoverReportController
 							exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
 							exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
 							exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-							resp.setHeader("Content-Disposition", "inline;filename=BillWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+							resp.setHeader("Content-Disposition", "inline;filename=AvgPerCoverDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
 							exporter.exportReport();
 							servletOutputStream.flush();
 							servletOutputStream.close();
@@ -304,8 +312,10 @@ public class clsPOSAveragePerCoverReportController
 							resp.setContentType("application/xlsx");
 							exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+							if(null!=source && source.equals("DayEndMail"))
+								exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 							exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-							resp.setHeader("Content-Disposition", "inline;filename=BillWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+							resp.setHeader("Content-Disposition", "inline;filename=AvgPerCoverDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 							exporter.exportReport();
 							servletOutputStream.flush();
 							servletOutputStream.close();
@@ -317,15 +327,7 @@ public class clsPOSAveragePerCoverReportController
 						resp.getWriter().append("No Record Found");
 
 					}
-				
-//				else
-//				{
-//				    funInsertDataForDetailAPC();
-//				    funGenerateExcelSheetOfReport();
-//				}
-			}
-			
-			
+			}	
 		}
 		catch (Exception ex)
 		{
@@ -387,7 +389,7 @@ public class clsPOSAveragePerCoverReportController
 
 		if (!strPOSCode.equalsIgnoreCase("All"))
 		{
-		    sqlFilter.append("and a.strPOSCode='" + strPOSName + "' ");
+		    sqlFilter.append("and a.strPOSCode='" + strPOSCode + "' ");
 		}
 
 		if (strPOSWise.equalsIgnoreCase("Yes") || strDateWise.equalsIgnoreCase("Yes"))

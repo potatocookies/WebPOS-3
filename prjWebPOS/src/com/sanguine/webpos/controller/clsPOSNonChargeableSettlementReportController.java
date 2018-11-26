@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,7 @@ public class clsPOSNonChargeableSettlementReportController
 		model.put("urlHits", urlHits);
 		List poslist = new ArrayList();
 		poslist.add("ALL");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -115,22 +116,30 @@ public class clsPOSNonChargeableSettlementReportController
 		{
 			return null;
 		}
-
 	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptNonChargeableSettlementReport", method = RequestMethod.POST)
-	private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req)
+	public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req,String source)
 	{
 
 		try
 		{
 			List<clsPOSBillDtl> listOfNCKOTData = new ArrayList<clsPOSBillDtl>();
 			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptNonChargableKOTReport.jrxml");
-
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					hmPOSData.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
 				posCode = hmPOSData.get(strPOSName).toString();
@@ -164,7 +173,15 @@ public class clsPOSNonChargeableSettlementReportController
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfNCKOTData);
 			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 			jprintlist.add(print);
-
+			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+			String extension=".pdf";
+			if (!objBean.getStrDocType().equals("PDF"))
+			{
+				objBean.setStrDocType("EXCEL");
+				extension=".xls";
+			}	
+			String fileName = "NonChargeableKOTReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+			filePath=filePath+"/"+fileName;
 			if (jprintlist.size() > 0)
 			{
 				ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -186,6 +203,8 @@ public class clsPOSNonChargeableSettlementReportController
 					resp.setContentType("application/xlsx");
 					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+					if(null!=source && source.equals("DayEndMail"))
+						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 					resp.setHeader("Content-Disposition", "inline;filename=NonChargeableKOTReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 					exporter.exportReport();

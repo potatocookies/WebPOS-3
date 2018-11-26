@@ -43,6 +43,8 @@ import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
 import com.sanguine.webpos.bean.clsPOSCashManagementDtlBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
+import com.sanguine.webpos.util.clsExportToExcel;
+
 
 
 @Controller
@@ -63,7 +65,11 @@ public class clsPOSCashManagementFlashController
 	@Autowired
 	clsBaseServiceImpl objBaseService;
 	
+	@Autowired
+	private clsExportToExcel objExportToExcel;
+	
 	Map mapPOS=new TreeMap();
+	
 	@RequestMapping(value = "/frmPOSCashMgmtReport", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String,Object> model, HttpServletRequest request, Object objMasterService)throws Exception
 	{
@@ -120,8 +126,6 @@ public class clsPOSCashManagementFlashController
 		}
 		 
 	}
-	
-	
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/getCashManagementDetailReport", method = RequestMethod.GET)	
@@ -649,8 +653,23 @@ public class clsPOSCashManagementFlashController
   //rptPOSSalesReport
  	
  	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/exportCashManagement1", method = RequestMethod.POST)	
+	public ModelAndView funReport(@ModelAttribute("command") clsPOSCashManagementDtlBean objBean, HttpServletResponse resp,HttpServletRequest req,String source) throws Exception
+	{
+ 		List exportList=funGetReportData(req,objBean);
+		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+	}
+ 	
+ 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/exportCashManagement", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSCashManagementDtlBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSCashManagementDtlBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
+	{
+ 		List exportList=funGetReportData(req,objBean);
+		objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+		return true;
+	}
+ 	
+ 	private List funGetReportData(HttpServletRequest req, clsPOSCashManagementDtlBean objBean) throws Exception
 	{
  		String fromDate= objBean.getFromDate();
 		String toDate= objBean.getToDate();
@@ -659,7 +678,7 @@ public class clsPOSCashManagementFlashController
 		String transType= objBean.getUserName();
  		
 	    Map resMap = new LinkedHashMap();
-		resMap=FunGetData(fromDate,toDate,strReportType,posCode,transType);
+		resMap=funGetData(fromDate,toDate,strReportType,posCode,transType);
         List exportList=new ArrayList();	
 	
 		String dteFromDate=objBean.getFromDate();
@@ -694,13 +713,11 @@ public class clsPOSCashManagementFlashController
 			
 			exportList.add(dataList);	
 		}
-			
-		
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+		return  exportList;
 	}
-	
- 	 private LinkedHashMap FunGetData(String fromDate,String toDate,String strReportType,String posCode,String transType)
-		{
+ 	
+ 	private LinkedHashMap funGetData(String fromDate,String toDate,String strReportType,String posCode,String transType)
+	{
  		  LinkedHashMap resMap = new LinkedHashMap();
 		  List listArrColHeader = new ArrayList();
 		  List totalList = new ArrayList();

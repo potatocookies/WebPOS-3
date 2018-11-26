@@ -24,6 +24,7 @@ import com.sanguine.webpos.model.clsGroupMasterModel;
 import com.sanguine.webpos.model.clsSettlementMasterModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.util.clsExportToExcel;
 
 
 
@@ -39,6 +40,9 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 	 
 	 @Autowired
 	 private clsPOSMasterService objMasterService;
+	 
+	 @Autowired
+	 private clsExportToExcel objExportToExcel;
 	
 	 Map posMap=new HashMap();
 	 Map settlementMap=new HashMap();
@@ -107,33 +111,45 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/processDayWiseSalesSummeryFlash", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+	@RequestMapping(value = "/processDayWiseSalesSummeryFlash1", method = RequestMethod.POST)	
+	public ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
 	{
-		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
-	       
-		    String fromDate=objBean.getFromDate();
-		 
-			String toDate=objBean.getToDate();
+		List exportList=funGetReportData(req, objBean);
+		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+	}	
 		
-			String operationType=objBean.getStrOperationType();
-			String posName=objBean.getStrPOSName();
-			String settlementName=objBean.getStrSettlementName();
-			String viewBy=objBean.getStrViewBy();
-			String groupName = objBean.getStrGroupName();
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/processDayWiseSalesSummeryFlash", method = RequestMethod.POST)	
+	public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)throws Exception
+	{
+		List exportList=funGetReportData(req, objBean);
+		objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+		return true;
+	}
+	
+	private List funGetReportData(HttpServletRequest req, clsPOSReportBean objBean) throws Exception
+	{
+		String clientCode=req.getSession().getAttribute("gClientCode").toString();
+		String fromDate=objBean.getFromDate();
+		String toDate=objBean.getToDate();
+		String operationType=objBean.getStrOperationType();
+		String posName=objBean.getStrPOSName();
+		String settlementName=objBean.getStrSettlementName();
+		String viewBy=objBean.getStrViewBy();
+		String groupName = objBean.getStrGroupName();
 			
-			String withDiscount=objGlobalFunctions.funIfNull(objBean.getStrWithDiscount(),"N","Y");
-			Map resMap = new LinkedHashMap();
+		String withDiscount=objGlobalFunctions.funIfNull(objBean.getStrWithDiscount(),"N","Y");
+		Map resMap = new LinkedHashMap();
 			
-			resMap=funGetData(clientCode,withDiscount,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName);
+		resMap=funGetData(clientCode,withDiscount,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName);
 		
-			List exportList=new ArrayList();	
+		List exportList=new ArrayList();	
 		
-			String dteFromDate=objBean.getFromDate();
-			String dteToDate=objBean.getToDate();
-			String FileName="DayWiseSalesSummeryFlash_"+dteFromDate+"_To_"+dteToDate;
+		String dteFromDate=objBean.getFromDate();
+		String dteToDate=objBean.getToDate();
+		String FileName="DayWiseSalesSummeryFlash_"+dteFromDate+"_To_"+dteToDate;
 		
-			exportList.add(FileName);
+		exportList.add(FileName);
 		long rowCount=(int)resMap.get("Row Count");
 		long colCount=(int)resMap.get("Col Count");					
 		List List=(List)resMap.get("Col Header");
@@ -148,13 +164,9 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 		{
 			if(i<rowCount)
 			{	
-			List ob=(List)resMap.get(""+i);
-			
-			rowlist.add(ob);
-			
-			
+				List ob=(List)resMap.get(""+i);
+				rowlist.add(ob);
 			}
-		
 		}
 		for(int i=0;i<2;i++)
 		{
@@ -183,7 +195,7 @@ public class clsPOSDayWiseSalesSummaryFlashController {
 		rowlist.add(totalList);
 		
 		exportList.add(rowlist);
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+		return exportList;	
 	}
 	
 	

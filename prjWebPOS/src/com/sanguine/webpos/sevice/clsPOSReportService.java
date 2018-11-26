@@ -8643,7 +8643,7 @@ public class clsPOSReportService {
 				sbSqlQFileDisc.setLength(0);
 				sbSqlQFileDisc.append(
 						"select d.strPosName,date(a.dteBillDate),a.strBillNo,b.dblDiscPer,b.dblDiscAmt,b.dblDiscOnAmt,b.strDiscOnType,b.strDiscOnValue "
-								+ " ,c.strReasonName,b.strDiscRemarks,a.dblSubTotal,a.dblGrandTotal,b.strUserEdited "
+								+ " ,IFNULL(c.strReasonName,'') as strReasonName,b.strDiscRemarks,a.dblSubTotal,a.dblGrandTotal,b.strUserEdited "
 								+ " from \n" + " tblqbillhd a\n"
 								+ " left outer join tblqbilldiscdtl b on b.strBillNo=a.strBillNo and date(a.dteBillDate)=date(b.dteBillDate) \n"
 								+ " left outer join tblreasonmaster c on c.strReasonCode=b.strDiscReasonCode\n"

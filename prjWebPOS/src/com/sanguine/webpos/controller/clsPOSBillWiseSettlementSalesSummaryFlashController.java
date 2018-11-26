@@ -25,6 +25,7 @@ import com.sanguine.webpos.model.clsGroupMasterModel;
 import com.sanguine.webpos.model.clsSettlementMasterModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.sevice.clsPOSReportService;
+import com.sanguine.webpos.util.clsExportToExcel;
 
 
 @Controller
@@ -42,6 +43,9 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 	 
 	@Autowired
 	private clsPOSReportService objReportService;
+	
+	@Autowired
+	private clsExportToExcel objExportToExcel;
 	 
 	Map posMap=new HashMap();
 	Map settlementMap=new HashMap();
@@ -59,7 +63,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 		model.put("urlHits",urlHits);
 		List poslist = new ArrayList();
 		poslist.add("ALL");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -109,31 +113,44 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/processPOSBillWiseSettlementSalesSummeryFlash", method = RequestMethod.POST)	
-	private ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
+	@RequestMapping(value = "/processPOSBillWiseSettlementSalesSummeryFlash1", method = RequestMethod.POST)	
+	public ModelAndView funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
 	{
-		    String clientCode=req.getSession().getAttribute("gClientCode").toString();
-		    String userCode=req.getSession().getAttribute("gUserCode").toString();
-		    String fromDate=objBean.getFromDate();
-		 
-			String toDate=objBean.getToDate();
-		
-			String operationType=objBean.getStrOperationType();
-			String settlementName=objBean.getStrSettlementName();
-			String posName=objBean.getStrPOSName();
-			String viewBy=objBean.getStrViewBy();
-			String groupName = objBean.getStrGroupName();
-			Map resMap = new LinkedHashMap();
+		List exportList=funGetReportData(req, objBean);
+		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/processPOSBillWiseSettlementSalesSummeryFlash", method = RequestMethod.POST)	
+	public boolean funExportReportForDayEndMail(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req) throws Exception
+	{
+		List exportList=funGetReportData(req, objBean);
+		objExportToExcel.funGenerateExcelFile(exportList, req, resp,"xls");
+		return true;
+	}
+	
+	private List funGetReportData(HttpServletRequest req, clsPOSReportBean objBean) throws Exception
+	{
+		String clientCode=req.getSession().getAttribute("gClientCode").toString();
+		String userCode=req.getSession().getAttribute("gUserCode").toString();
+		String fromDate=objBean.getFromDate();
+		String toDate=objBean.getToDate();
+		String operationType=objBean.getStrOperationType();
+		String settlementName=objBean.getStrSettlementName();
+		String posName=objBean.getStrPOSName();
+		String viewBy=objBean.getStrViewBy();
+		String groupName = objBean.getStrGroupName();
+		Map resMap = new LinkedHashMap();
 			
-			resMap=funGetData(clientCode,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName,userCode);
+		resMap=funGetData(clientCode,fromDate,toDate,operationType,settlementName,posName,viewBy,groupName,userCode);
 		
-			List exportList=new ArrayList();	
+		List exportList=new ArrayList();	
 		
-			String dteFromDate=objBean.getFromDate();
-			String dteToDate=objBean.getToDate();
-			String FileName="BillWiseSettlementSalesSummeryFlash_"+dteFromDate+"_To_"+dteToDate;
+		String dteFromDate=objBean.getFromDate();
+		String dteToDate=objBean.getToDate();
+		String FileName="BillWiseSettlementSalesSummeryFlash_"+dteFromDate+"_To_"+dteToDate;
 		
-			exportList.add(FileName);
+		exportList.add(FileName);
 		int rowCount=(int)resMap.get("RowCount");
 		int colCount=(int)resMap.get("ColCount");					
 		List List=(List)resMap.get("Header");
@@ -150,13 +167,9 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 		
 			if(i<rowCount)
 			{	
-			List ob=(List)resMap.get(""+i);
-			
-			rowlist.add(ob);
-			
-			
+				List ob=(List)resMap.get(""+i);
+				rowlist.add(ob);
 			}
-		
 		}
 		for(int i=0;i<2;i++)
 		{
@@ -190,7 +203,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 		rowlist.add(totalList);
 		
 		exportList.add(rowlist);
-		return new ModelAndView("excelViewWithReportName", "listWithReportName", exportList);	
+		return exportList;	
 	}
 	
 	
@@ -263,7 +276,7 @@ public class clsPOSBillWiseSettlementSalesSummaryFlashController {
 				}
 			    else
 			    {	
-			    resMap = objReportService.funGetBillWiseSettlementSalesSummary(fromDate1,toDate1,viewBy,operationType,settlementCode,posCode,posName,groupName);
+			    	resMap = objReportService.funGetBillWiseSettlementSalesSummary(fromDate1,toDate1,viewBy,operationType,settlementCode,posCode,posName,groupName);
 			    }
 			    
 			    List listTot = new ArrayList();

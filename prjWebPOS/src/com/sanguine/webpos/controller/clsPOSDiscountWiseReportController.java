@@ -1,5 +1,6 @@
 package com.sanguine.webpos.controller;
 
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +82,7 @@ public class clsPOSDiscountWiseReportController
 		model.put("urlHits", urlHits);
 		List poslist = new ArrayList();
 		poslist.add("ALL");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -110,7 +111,7 @@ public class clsPOSDiscountWiseReportController
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptPOSDiscountWiseSales", method = RequestMethod.POST)
-	private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req)
+	public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp, HttpServletRequest req,String source)
 	{
 		
 		try
@@ -119,9 +120,19 @@ public class clsPOSDiscountWiseReportController
 			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			String reportName;
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
-			String reportType = objBean.getStrViewType();
+			String reportType = objBean.getStrDocType();
+			String reportViewType = objBean.getStrViewType();
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
+			List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+			if(listOfPos!=null)
+			{
+				for(int i =0 ;i<listOfPos.size();i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					map.put( obj[1].toString(), obj[0].toString());
+				}
+			}
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
 				posCode = (String) map.get(strPOSName);
@@ -139,7 +150,7 @@ public class clsPOSDiscountWiseReportController
 				strShiftNo=objBean.getStrShiftCode();
 			}
 			
-			if(reportType.equalsIgnoreCase("Summary"))
+			if(reportViewType.equalsIgnoreCase("Summary"))
 			{
 				reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptBillDiscountReport.jrxml");
 				List<clsPOSBillItemDtlBean> listOfBillItemDtl = new ArrayList<>();
@@ -151,7 +162,15 @@ public class clsPOSDiscountWiseReportController
         		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfBillItemDtl);
         		JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
         		jprintlist.add(print);
-
+        		String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+    			String extension=".pdf";
+    			if (!objBean.getStrDocType().equals("PDF"))
+    			{
+    				objBean.setStrDocType("EXCEL");
+    				extension=".xls";
+    			}	
+    			String fileName = "DiscountWiseReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+    			filePath=filePath+"/"+fileName;
         		if (jprintlist.size() > 0)
         		{
         			ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -162,7 +181,7 @@ public class clsPOSDiscountWiseReportController
         				exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
         				exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
         				exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-        				resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+        				resp.setHeader("Content-Disposition", "inline;filename=DiscountWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
         				exporter.exportReport();
         				servletOutputStream.flush();
         				servletOutputStream.close();
@@ -173,8 +192,10 @@ public class clsPOSDiscountWiseReportController
         				resp.setContentType("application/xlsx");
         				exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
         				exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+        				if(null!=source && source.equals("DayEndMail"))
+    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
         				exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-        				resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+        				resp.setHeader("Content-Disposition", "inline;filename=DiscountWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
         				exporter.exportReport();
         				servletOutputStream.flush();
         				servletOutputStream.close();
@@ -198,7 +219,6 @@ public class clsPOSDiscountWiseReportController
                 List listLiveGross = objReportService.funProcessDiscountWiseReport(strPOSCode, fromDate, toDate, "Detail","liveGross",strUserCode,strShiftNo,objSetupParameter.get("gEnableShiftYN").toString());
                 if (listLiveGross.size()>0)
                 {
-                	
                 	BigDecimal settleAmt = (BigDecimal) listLiveGross.get(0);	
                     totalGrossSales += settleAmt.doubleValue();
                 	
@@ -404,15 +424,19 @@ public class clsPOSDiscountWiseReportController
                 
                 JasperDesign jd = JRXmlLoader.load(reportName);
         		JasperReport jr = JasperCompileManager.compileReport(jd);
-
-        		// jp = JasperFillManager.fillReport(jr, hm, new
-        		// JREmptyDataSource());
-
         		List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
         		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfBillItemDtl);
         		JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
         		jprintlist.add(print);
-
+        		String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+    			String extension=".pdf";
+    			if (!objBean.getStrDocType().equals("PDF"))
+    			{
+    				objBean.setStrDocType("EXCEL");
+    				extension=".xls";
+    			}	
+    			String fileName = "DiscountWiseReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+    			filePath=filePath+"/"+fileName;
         		if (jprintlist.size() > 0)
         		{
         			ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -423,7 +447,7 @@ public class clsPOSDiscountWiseReportController
         				exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
         				exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
         				exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-        				resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+        				resp.setHeader("Content-Disposition", "inline;filename=DiscountWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
         				exporter.exportReport();
         				servletOutputStream.flush();
         				servletOutputStream.close();
@@ -434,8 +458,10 @@ public class clsPOSDiscountWiseReportController
         				resp.setContentType("application/xlsx");
         				exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
         				exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+        				if(null!=source && source.equals("DayEndMail"))
+    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
         				exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-        				resp.setHeader("Content-Disposition", "inline;filename=DailyCollectionReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+        				resp.setHeader("Content-Disposition", "inline;filename=DiscountWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
         				exporter.exportReport();
         				servletOutputStream.flush();
         				servletOutputStream.close();

@@ -1,4 +1,5 @@
 	package com.sanguine.webpos.controller;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,87 +48,85 @@ import com.sanguine.webpos.util.clsPOSGroupWiseComparator;
 
 
 @Controller
-public class clsPOSComplimentarySettlementReportController {
-
-	
-	        @Autowired
-			private clsGlobalFunctions objGlobalFunctions;
+public class clsPOSComplimentarySettlementReportController 
+{
+	@Autowired
+	private clsGlobalFunctions objGlobalFunctions;
 			
-			 @Autowired
-			 private ServletContext servletContext;
+	@Autowired
+	private ServletContext servletContext;
 			 
-			 @Autowired
-			 clsPOSGlobalFunctionsController objPOSGlobalFunctionsController;
+	@Autowired
+	clsPOSGlobalFunctionsController objPOSGlobalFunctionsController;
 				
-			 @Autowired
-			 clsPOSMasterService objMasterService;
+	@Autowired
+	clsPOSMasterService objMasterService;
 			 
-			 @Autowired
-			 clsPOSReportService objReportService;
+	@Autowired
+	clsPOSReportService objReportService;
 			 
-			 Map mapReason=new TreeMap();
-			 Map map=new TreeMap();
+	Map mapReason=new TreeMap();
+	Map map=new TreeMap();
 			
-			@RequestMapping(value = "/frmPOSComplimentarySettlement.html", method = RequestMethod.GET)
-			public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
+	@RequestMapping(value = "/frmPOSComplimentarySettlement.html", method = RequestMethod.GET)
+	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
+	{
+		String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
+		String urlHits="1";
+		try
+		{
+			urlHits=request.getParameter("saddr").toString();
+		}catch(NullPointerException e){
+			urlHits="1";
+		}
+		model.put("urlHits",urlHits);
+		List poslist = new ArrayList();
+		poslist.add("ALL");
+				
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+		if(listOfPos!=null)
+		{
+			for(int i =0 ;i<listOfPos.size();i++)
 			{
-				String strClientCode=request.getSession().getAttribute("gClientCode").toString();	
-				String urlHits="1";
-				try{
-					urlHits=request.getParameter("saddr").toString();
-				}catch(NullPointerException e){
-					urlHits="1";
-				}
-				model.put("urlHits",urlHits);
-				List poslist = new ArrayList();
-				poslist.add("ALL");
-				
-				List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
-				if(listOfPos!=null)
-				{
-					for(int i =0 ;i<listOfPos.size();i++)
-					{
-						Object[] obj = (Object[]) listOfPos.get(i);
-						poslist.add( obj[1].toString());
-						map.put( obj[1].toString(), obj[0].toString());
-					}
-				}
-				model.put("posList",poslist);
+				Object[] obj = (Object[]) listOfPos.get(i);
+				poslist.add( obj[1].toString());
+				map.put( obj[1].toString(), obj[0].toString());
+			}
+		}
+		model.put("posList",poslist);
 				
 				//area list
 				
-				List reasonList= new ArrayList();
-				reasonList.add("ALL");
-			   	List listOfReasons = objMasterService.funGetAllReasonMaster(strClientCode);
-				for(int i =0 ;i<listOfReasons.size();i++)
-							{
-								clsReasonMasterModel objModel = (clsReasonMasterModel) listOfReasons.get(i);
-								reasonList.add(objModel.getStrReasonName());
-								mapReason.put(objModel.getStrReasonName(),objModel.getStrReasonCode());
-							}
+		List reasonList= new ArrayList();
+		reasonList.add("ALL");
+		List listOfReasons = objMasterService.funGetAllReasonMaster(strClientCode);
+		for(int i =0 ;i<listOfReasons.size();i++)
+		{
+			clsReasonMasterModel objModel = (clsReasonMasterModel) listOfReasons.get(i);
+			reasonList.add(objModel.getStrReasonName());
+			mapReason.put(objModel.getStrReasonName(),objModel.getStrReasonCode());
+		}
 							
-							model.put("reasonList",reasonList);
+		model.put("reasonList",reasonList);
 				
-				if("2".equalsIgnoreCase(urlHits)){
-					return new ModelAndView("frmPOSComplimentarySettlementReport_1","command", new clsPOSReportBean());
-				}else if("1".equalsIgnoreCase(urlHits)){
-					return new ModelAndView("frmPOSComplimentarySettlementReport","command", new clsPOSReportBean());
-				}else {
-					return null;
-				}
-				 
-			}
+		if("2".equalsIgnoreCase(urlHits)){
+			return new ModelAndView("frmPOSComplimentarySettlementReport_1","command", new clsPOSReportBean());
+		}else if("1".equalsIgnoreCase(urlHits)){
+			return new ModelAndView("frmPOSComplimentarySettlementReport","command", new clsPOSReportBean());
+		}else {
+			return null;
+		}
+	}
 			
 			
 			
 			@SuppressWarnings("rawtypes")
 			@RequestMapping(value = "/rptPOSComplimentarySettlement", method = RequestMethod.POST)	
-			private void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req)
+			public void funReport(@ModelAttribute("command") clsPOSReportBean objBean, HttpServletResponse resp,HttpServletRequest req,String source)
 			{
 				
 				try
 				{
-
 					List listLive = null;
 					List listQFile = null;
 					List listModLive = null;
@@ -137,10 +136,19 @@ public class clsPOSComplimentarySettlementReportController {
 					Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 					String type=objBean.getStrDocType();
 					String strReasonName=objBean.getStrReasonCode();
-					String strViewType =objBean.getStrViewType();
 					String strPOSName =objBean.getStrPOSName();
 					String reportViewType = objBean.getStrViewType();
+					String strClientCode=req.getSession().getAttribute("gClientCode").toString();
 					String posCode= "ALL";
+					List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
+					if(listOfPos!=null)
+					{
+						for(int i =0 ;i<listOfPos.size();i++)
+						{
+							Object[] obj = (Object[]) listOfPos.get(i);
+							map.put( obj[1].toString(), obj[0].toString());
+						}
+					}
 					if (!strPOSName.equalsIgnoreCase("ALL"))
 					{
 						posCode = (String) map.get(strPOSName);
@@ -172,15 +180,19 @@ public class clsPOSComplimentarySettlementReportController {
 		                listOfCompliItemDtl = objReportService.funProcessComplimentaryDetailReport(posCode,fromDate,toDate,strReasonCode,strShiftNo);		                
 		                JasperDesign jd = JRXmlLoader.load(reportName);
 		    			JasperReport jr = JasperCompileManager.compileReport(jd);
-
-		    			// jp = JasperFillManager.fillReport(jr, hm, new
-		    			// JREmptyDataSource());
-
 		    			List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
 		    			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfCompliItemDtl);
 		    			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 		    			jprintlist.add(print);
-
+		    			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+		    			String extension=".pdf";
+		    			if (!objBean.getStrDocType().equals("PDF"))
+		    			{
+		    				objBean.setStrDocType("EXCEL");
+		    				extension=".xls";
+		    			}	
+		    			String fileName = "ComplimentarySettlementDetailReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+		    			filePath=filePath+"/"+fileName;
 		    			if (jprintlist.size() > 0)
 		    			{
 		    				ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -202,6 +214,8 @@ public class clsPOSComplimentarySettlementReportController {
 		    					resp.setContentType("application/xlsx");
 		    					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 		    					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+		    					if(null!=source && source.equals("DayEndMail"))
+		    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 		    					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 		    					resp.setHeader("Content-Disposition", "inline;filename=ComplimentarySettlementDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 		    					exporter.exportReport();
@@ -225,15 +239,19 @@ public class clsPOSComplimentarySettlementReportController {
 		                
 		                JasperDesign jd = JRXmlLoader.load(reportName);
 		    			JasperReport jr = JasperCompileManager.compileReport(jd);
-
-		    			// jp = JasperFillManager.fillReport(jr, hm, new
-		    			// JREmptyDataSource());
-
 		    			List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
 		    			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfCompliItemDtl);
 		    			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 		    			jprintlist.add(print);
-
+		    			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+		    			String extension=".pdf";
+		    			if (!objBean.getStrDocType().equals("PDF"))
+		    			{
+		    				objBean.setStrDocType("EXCEL");
+		    				extension=".xls";
+		    			}	
+		    			String fileName = "ComplimentarySettlementSummaryReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+		    			filePath=filePath+"/"+fileName;
 		    			if (jprintlist.size() > 0)
 		    			{
 		    				ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -255,6 +273,8 @@ public class clsPOSComplimentarySettlementReportController {
 		    					resp.setContentType("application/xlsx");
 		    					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 		    					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+		    					if(null!=source && source.equals("DayEndMail"))
+		    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 		    					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 		    					resp.setHeader("Content-Disposition", "inline;filename=ComplimentarySettlementSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 		    					exporter.exportReport();
@@ -276,15 +296,19 @@ public class clsPOSComplimentarySettlementReportController {
 		                listOfCompliItemDtl = objReportService.funProcessComplimentaryGroupWiseReport(posCode,fromDate,toDate,strReasonCode,strShiftNo);		                
 		                JasperDesign jd = JRXmlLoader.load(reportName);
 		    			JasperReport jr = JasperCompileManager.compileReport(jd);
-
-		    			// jp = JasperFillManager.fillReport(jr, hm, new
-		    			// JREmptyDataSource());
-
 		    			List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
 		    			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfCompliItemDtl);
 		    			JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 		    			jprintlist.add(print);
-
+		    			String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
+		    			String extension=".pdf";
+		    			if (!objBean.getStrDocType().equals("PDF"))
+		    			{
+		    				objBean.setStrDocType("EXCEL");
+		    				extension=".xls";
+		    			}	
+		    			String fileName = "ComplimentarySettlementGroupWiseReport_"+ fromDate + "_To_" + toDate + "_" + strUserCode + extension;
+		    			filePath=filePath+"/"+fileName;
 		    			if (jprintlist.size() > 0)
 		    			{
 		    				ServletOutputStream servletOutputStream = resp.getOutputStream();
@@ -306,6 +330,8 @@ public class clsPOSComplimentarySettlementReportController {
 		    					resp.setContentType("application/xlsx");
 		    					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 		    					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
+		    					if(null!=source && source.equals("DayEndMail"))
+		    						exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
 		    					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 		    					resp.setHeader("Content-Disposition", "inline;filename=ComplimentarySettlementGroupWiseReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 		    					exporter.exportReport();

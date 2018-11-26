@@ -263,10 +263,4 @@ public class clsPOSGroupWiseReportController
 		System.out.println("Hi");
 
 	}
-
-
-	
-
-	
-
 }

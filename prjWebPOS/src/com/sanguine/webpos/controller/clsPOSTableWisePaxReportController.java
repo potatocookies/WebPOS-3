@@ -307,7 +307,4 @@ public class clsPOSTableWisePaxReportController
 		System.out.println("Hi");
 
 	}
-
-	
-
 }

@@ -227,5 +227,4 @@ public class clsPOSNonChargeableSettlementReportController
 		System.out.println("Hi");
 
 	}
-
 }

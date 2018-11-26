@@ -874,6 +874,4 @@ public class clsPOSAuditorReportController
 
 	}
 
-	
-
 }

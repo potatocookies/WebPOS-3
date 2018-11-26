@@ -413,8 +413,6 @@ public class clsPOSAverageTicketValueReportController
 		sb.setLength(0);
 		sb.append("update tblatvreport set dblDiningAvg=  dblDiningAmt/dblDiningNoBill, dblHDAvg= dblHDAmt/dblHDNoBill, dblTAAvg= dblTAAmt/dblTANoBill");
 		 objBaseService.funExecuteUpdate(sb.toString(),"sql");
-
-	}
-		
+	}	
 		
 }

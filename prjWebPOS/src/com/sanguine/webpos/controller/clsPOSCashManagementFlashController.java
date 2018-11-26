@@ -900,6 +900,7 @@ public class clsPOSCashManagementFlashController
     	this.amount = amount;
         }
 	
+        
     }
 
 	

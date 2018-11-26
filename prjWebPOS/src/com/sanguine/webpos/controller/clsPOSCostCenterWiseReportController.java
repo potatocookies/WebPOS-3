@@ -280,10 +280,4 @@ public class clsPOSCostCenterWiseReportController {
 			
 	}
 	
-	
-	
-	
-	
-	
-
 }

@@ -272,6 +272,4 @@ public class clsPOSGroupSubGroupWiseReportController {
 		System.out.println("Hi");
 			
 	}
-	
-	
 }

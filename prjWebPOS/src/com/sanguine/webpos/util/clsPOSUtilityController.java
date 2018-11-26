@@ -8226,6 +8226,4 @@ public class clsPOSUtilityController
             e.printStackTrace();
         }
     }
-	
-
 }

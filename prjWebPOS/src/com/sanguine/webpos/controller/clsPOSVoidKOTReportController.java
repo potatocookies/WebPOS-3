@@ -464,10 +464,6 @@ public class clsPOSVoidKOTReportController {
 		{
 			ex.printStackTrace();
 		}
-	            
-		
-		System.out.println("Hi");
-			
+		System.out.println("Hi");		
 	}
-	
 }

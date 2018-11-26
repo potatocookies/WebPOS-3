@@ -261,7 +261,4 @@ public class clsPOSItemWiseConsumptionReportController {
 		System.out.println("Hi");
 			
 	}
-	
-	
-	
 }

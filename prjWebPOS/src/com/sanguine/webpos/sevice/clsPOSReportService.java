@@ -20632,11 +20632,5 @@ public class clsPOSReportService {
 			e.printStackTrace();
 		}
 		return list;
-	}
-
-	
-
-	
-	
-	
+	}	
 }

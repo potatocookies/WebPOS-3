@@ -192,8 +192,6 @@ public class clsPOSTaxWiseReportController {
 	            
 		
 		System.out.println("Hi");
-			
-	}
-		 
+	}	 
 }
 	

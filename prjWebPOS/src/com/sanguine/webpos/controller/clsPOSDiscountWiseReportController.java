@@ -486,4 +486,5 @@ public class clsPOSDiscountWiseReportController
 		System.out.println("Hi");
 
 	}
+	
 }

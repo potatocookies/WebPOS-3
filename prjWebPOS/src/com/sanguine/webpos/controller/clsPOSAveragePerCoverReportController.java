@@ -1108,6 +1108,4 @@ public class clsPOSAveragePerCoverReportController
 		return dinningAmt;
 
 	    }
-	
-
 }

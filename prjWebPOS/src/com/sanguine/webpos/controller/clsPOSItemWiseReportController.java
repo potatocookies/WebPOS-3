@@ -621,5 +621,4 @@ public class clsPOSItemWiseReportController
 		System.out.println("Hi");
 
 	}
-
 }

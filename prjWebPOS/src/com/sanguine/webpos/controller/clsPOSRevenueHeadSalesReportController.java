@@ -462,7 +462,4 @@ public class clsPOSRevenueHeadSalesReportController {
 		return jOBjRet;
 
 	}
-
-
-
 }

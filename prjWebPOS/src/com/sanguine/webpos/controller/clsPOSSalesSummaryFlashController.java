@@ -471,9 +471,4 @@ public class clsPOSSalesSummaryFlashController {
 		hmPayData.put("payCode", hmPayCode);
 		return hmPayData;
 	}
-	
-	
-	
-	
-		
 }

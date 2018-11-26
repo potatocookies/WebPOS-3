@@ -871,6 +871,5 @@ public class clsPOSMasterService {
 			list=obBaseService.funGetList(sqlBuilder, "sql");
 			return list;
 		}
-	 
 }
 

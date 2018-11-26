@@ -209,6 +209,4 @@ public class clsPOSWaiterMasterController
 					return true;
 				
 			}
-			
-	
 }

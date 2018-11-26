@@ -223,5 +223,4 @@ public class clsPOSSubGroupWiseReportController {
 		System.out.println("Hi");
 			
 	}
-	
 }

@@ -51,4 +51,5 @@ public class clsRevenueHeadWiseSalesReportBean {
 		this.dblAmount = dblAmount;
 	}
     
+	
 }

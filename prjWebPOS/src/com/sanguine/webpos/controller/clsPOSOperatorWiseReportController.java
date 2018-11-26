@@ -460,12 +460,4 @@ public class clsPOSOperatorWiseReportController {
 		System.out.println("Hi");
 			
 	}
-	
-	
-	
-	
-	
-	
-	
-
 }

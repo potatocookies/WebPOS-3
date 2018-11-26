@@ -302,5 +302,4 @@ public class clsPOSSettlementWiseReportController {
 			System.out.println("Hi");
 				
 		}
-	 
 }

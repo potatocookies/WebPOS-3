@@ -78,7 +78,6 @@ public class clsPOSCustomerHistoryFlashController
 		model.put("mapAmount",mapAmount);
 		
 		Map mapReportType = new HashMap<>();
-		
 		mapReportType.put("Bill Wise", "Bill Wise");
 		mapReportType.put("Item Wise", "Item Wise");
 		

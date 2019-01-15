@@ -84,7 +84,10 @@ public class clsPOSPricingMasterController
 		{
 		for (int cnt = 0; cnt < list1.size(); cnt++)
 		{
-			clsMenuHeadMasterModel objMenuHeadModel = (clsMenuHeadMasterModel) list1.get(cnt);
+			Object obj[]=(Object[])list1.get(cnt);
+			clsMenuHeadMasterModel objMenuHeadModel = new clsMenuHeadMasterModel();
+			objMenuHeadModel.setStrMenuCode(obj[0].toString());
+			objMenuHeadModel.setStrMenuName(obj[1].toString());
 			mapMenuHeadName.put(objMenuHeadModel.getStrMenuCode(), objMenuHeadModel.getStrMenuName());
 		}
 		}
@@ -207,8 +210,8 @@ public class clsPOSPricingMasterController
 			objPricingMasterBean.setStrPriceSaturday(Double.parseDouble(objPricingMasterModel.getStrPriceSaturday()));
 			objPricingMasterBean.setStrPriceSunday(Double.parseDouble(objPricingMasterModel.getStrPriceSunday()));
 
-			objPricingMasterBean.setDteFromDate(objPricingMasterModel.getDteFromDate());
-			objPricingMasterBean.setDteToDate(objPricingMasterModel.getDteToDate());
+			objPricingMasterBean.setDteFromDate(objGlobal.funGetDate("dd-MM-yyyy",objPricingMasterModel.getDteFromDate()));
+			objPricingMasterBean.setDteToDate(objGlobal.funGetDate("dd-MM-yyyy",objPricingMasterModel.getDteToDate()));
 
 			objPricingMasterBean.setTmeTimeFrom(objPricingMasterModel.getTmeTimeFrom());
 			objPricingMasterBean.setStrAMPMFrom(objPricingMasterModel.getStrAMPMFrom());
@@ -299,8 +302,9 @@ public class clsPOSPricingMasterController
 				objModel.setStrPriceFriday(String.valueOf(objBean.getStrPriceFriday()));
 				objModel.setStrPriceSaturday(String.valueOf(objBean.getStrPriceSaturday()));
 				objModel.setStrPriceSunday(String.valueOf(objBean.getStrPriceSunday()));			
-				objModel.setDteFromDate(objBean.getDteFromDate());
-				objModel.setDteToDate(objBean.getDteToDate());
+				
+				objModel.setDteFromDate(objGlobal.funGetDate("yyyy-MM-dd",objBean.getDteFromDate()));
+				objModel.setDteToDate(objGlobal.funGetDate("yyyy-MM-dd",objBean.getDteToDate()));
 				if (objBean.getStrHourlyPricing() && objBean.getTmeTimeFrom() != null)
 				{
 					String arrFromTime[] = objBean.getTmeTimeFrom().split(":");

@@ -6,11 +6,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Stock Flash Report</title>
 <style>
+.ui-autocomplete {
+	max-height: 200px;
+	overflow-y: auto;
+	/* prevent horizontal scrollbar */
+	overflow-x: hidden;
+	/* add padding to account for vertical scrollbar */
+	padding-right: 20px;
+}
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ui-autocomplete {
+	height: 200px;
+}
+
 .disabled_button{
     background:url(../images/big1.png) no-repeat;
    background-size: 96px 24px;
@@ -21,6 +34,29 @@
     color: #fff;
     font-weight: normal;
     background-color: #c0c0c0;
+}
+
+.cell {
+	background: inherit;
+	border: 0 solid #060006;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	outline: 0 none;
+	font-weight: bold;
+	padding-left: 0;
+	width: 80%
+}
+
+.header {
+	border: #c0c0c0 1px solid;
+	background: #78BEF9;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	outline: 0 none;
+	padding-left: 0;
+	width: 100%;
+	height:100%
 }
 </style>
 <script type="text/javascript">
@@ -142,7 +178,10 @@ $(document).ready(function()
 function funLoadTableData()
 {
 	var callingTime="first";
-	funSetDate();
+	var posdate="${gPOSDate}"
+	$("#txtFromDate").val(posdate);
+ 	$("#txtToDate").val(posdate);
+ 	
 	var fromDate =$('#txtFromDate');
 	var toDate =$('#txtToDate').val();
 	var data= $("#txtFromDate").val();
@@ -167,8 +206,6 @@ function funDeleteTableAllRows()
 		return false;
 	}
 }
-
-
 
 function funGenerateProductionEntry()
 {
@@ -199,7 +236,6 @@ function funGenerateProductionEntry()
 	      });
 
 }
-
 
 function funFillheaderCol(rowData,reportType) 
 {
@@ -232,45 +268,6 @@ function funFillheaderCol(rowData,reportType)
   
 }
 
-function funSetDate()
-{
-	
-	var searchurl=getContextPath()+"/getPOSDate.html";
-	 $.ajax({
-		        type: "GET",
-		        url: searchurl,
-		        dataType: "json",
-		        success: function(response)
-		        {
-		       
-		        var date = new Date(response.POSDate);
-		        var	dateTime=date.getDate()  + '-' + (date.getMonth() + 1)+ '-' +  date.getFullYear();
-		        var posDate=dateTime.split(" ");
-		        $("#txtFromDate").val(posDate[0]);
-	        	$("#txtToDate").val(posDate[0]);
-	        	
-		        },
-		        error: function(jqXHR, exception)
-		        {
-		            if (jqXHR.status === 0) {
-		                alert('Not connect.n Verify Network.');
-		            } else if (jqXHR.status == 404) {
-		                alert('Requested page not found. [404]');
-		            } else if (jqXHR.status == 500) {
-		                alert('Internal Server Error [500].');
-		            } else if (exception === 'parsererror') {
-		                alert('Requested JSON parse failed.');
-		            } else if (exception === 'timeout') {
-		                alert('Time out error.');
-		            } else if (exception === 'abort') {
-		                alert('Ajax request aborted.');
-		            } else {
-		                alert('Uncaught Error.n' + jqXHR.responseText);
-		            }		            
-		        }
-	 });
-	 
-}
 
 function CalculateDateDiff(fromDate,toDate) {
 
@@ -288,17 +285,15 @@ function CalculateDateDiff(fromDate,toDate) {
     	 alert("Please Check From Date And To Date");
     	 return false;
      }
-}
-
-		
+}		
 
 function funFetchColNames(callingTime) {
 	var posName=$('#cmbPOSName').val();
 	var type=$('#cmbType').val();
 	var reportType=$('#cmbReportType').val();
-	var groupwise=$('#cmbGroupwise').val();
-	var showStockWith=$('#cmbViewWith').val();
-	var showZeroBalYN=$('#cmbShowZeroBal').val();		 
+	var groupwise=$('#cmbGroupName').val();
+	var showStockWith=$('#cmbShowStock').val();
+	var showZeroBalYN=$('#cmbShowBalStock').val();		 
 	var gurl = getContextPath()+"/loadPOSStockFlash.html";
 	var abc;
 	
@@ -411,22 +406,12 @@ function funFetchColNames(callingTime) {
 					 if(response.listDetails.length>0)
 					  {
 						 funFillTotalCol(totalRow,"Not Stock");
-					  }
-					 
-					 
-				}	
-				
-			   
-				
+					  } 
+				}
 			}
-			
 		}
 });
 }
-
-		
-	
-		
 
 		 	function funFillStockTableCol(item0,item1,item2,item3,item4,item5,item6,item7)
 			{
@@ -489,124 +474,162 @@ function funFetchColNames(callingTime) {
 				}
 			    else
 			    {
-			    	    row.insertCell(0).innerHTML= "<input readonly=\"readonly\" class=\"Box \"  size=\"25%\" id=\"txtDate."+(rowCount)+"\" value='"+rowItem[0]+"' onclick=\"funGetSelectedRowIndex(this)\"/>"; 
-					    row.insertCell(1).innerHTML= "<input readonly=\"readonly\" class=\"Box \"  style=\"text-align: right\" size=\"16%\" id=\"txtDate."+(rowCount)+"\" value='"+rowItem[1]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-					    row.insertCell(2).innerHTML= "<input name=\"listPSPDtl["+(rowCount)+"].strItemName\" readonly=\"readonly\" class=\"Box \"  style=\"text-align: right\" size=\"16%\" id=\"txtCompStk."+(rowCount)+"\" value='"+rowItem[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-					    row.insertCell(3).innerHTML= "<input readonly=\"readonly\" class=\"Box \" style=\"text-align: right\" size=\"16%\" id=\"txtPhyStk."+(rowCount)+"\" value='"+rowItem[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-					    row.insertCell(4).innerHTML= "<input readonly=\"readonly\" class=\"Box \" style=\"text-align: right\" size=\"16%\" id=\"txtVariance."+(rowCount)+"\" value='"+rowItem[4]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
-					    row.insertCell(5).innerHTML= "<input readonly=\"readonly\" class=\"Box \" style=\"text-align: right\" size=\"16%\" id=\"txtDate."+(rowCount)+"\" value='"+rowItem[5]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+			    	    row.insertCell(0).innerHTML= "<input readonly=\"readonly\" class=\"Box \"  style=\"text-align: left\" size=\"45%\" id=\"txtDate."+(rowCount)+"\" value='"+rowItem[0]+"' onclick=\"funGetSelectedRowIndex(this)\"/>"; 
+					    row.insertCell(1).innerHTML= "<input readonly=\"readonly\" class=\"Box \"  style=\"text-align: center\" size=\"25%\" id=\"txtDate."+(rowCount)+"\" value='"+rowItem[1]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+					    row.insertCell(2).innerHTML= "<input name=\"listPSPDtl["+(rowCount)+"].strItemName\" readonly=\"readonly\" class=\"Box \"  style=\"text-align: center\" size=\"20%\" id=\"txtCompStk."+(rowCount)+"\" value='"+rowItem[2]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+					    row.insertCell(3).innerHTML= "<input readonly=\"readonly\" class=\"Box \" style=\"text-align: center\" size=\"20%\" id=\"txtPhyStk."+(rowCount)+"\" value='"+rowItem[3]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+					    row.insertCell(4).innerHTML= "<input readonly=\"readonly\" class=\"Box \" style=\"text-align: center\" size=\"20%\" id=\"txtVariance."+(rowCount)+"\" value='"+rowItem[4]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+					    row.insertCell(5).innerHTML= "<input readonly=\"readonly\" class=\"Box \" style=\"text-align: center\" size=\"20%\" id=\"txtVariance."+(rowCount)+"\" value='"+rowItem[5]+"' onclick=\"funGetSelectedRowIndex(this)\"/>";
+						
+
 					   
 			    }	
 			    
 			}
-			
-
+		 	
+		 	function funResetFields(){
+		 		$('#tblStockFlashReport tbody').empty();	
+		 		$('#tblStockFlashHeader tbody').empty();	
+		 		$('#tblTotal tbody').empty();
+		 	}
+		 	
 </script>
-
-
 </head>
 
-<body onload="funLoadTableData()">
+<body>
 	<div id="formHeading">
 		<label>Stock Flash Report</label>
 	</div>
 	<br />
-	<br />
-	<s:form name="POSStockFlashReport" method="POST" action="rptPOSStockFlashReport.html?saddr=${urlHits}" target="_blank">
-		<div>
-			<div>
-
-				<table class="masterTable" style="margin-left: 130px;">
-                 <tr>
-					<td >POS Name</td>
-					<td ><s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" cssClass="BoxW124px" items="${posList}" >
-					
-					 </s:select></td>
+	<s:form name="POSStockFlashReport" method="POST" action="rptPOSStockFlashReport.html?saddr=${urlHits}" target="_blank" 
+			class="formoid-default-skyblue"
+			style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
+		<div class="title" >
 				
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
+							<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 10%;"> 
+		    					<label class="title">POS Name</label>
+		    				</div>
+		    				<div class="element-input  col-lg-3 col-sm-3 col-xs-3" style="width: 15%;"> 
+								<s:select id="cmbPOSName" name="cmbPOSName" path="strPOSName" items="${posList}" >
+				 				</s:select>
+							</div>
+							<div class="element-input  col-lg-3 col-sm-3 col-xs-3" style="width: 10%;"> 
+		    					<label class="title">From Date</label>
+		    				</div>
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
+								<s:input  id="txtFromDate" required="required" path="fromDate" pattern="\d{4}-\d{1,2}-\d{1,2}" style="width: 100%;"/>
+							</div>
+							<div class="element-input col-lg-6" style="width: 8%;"> 
+		    					<label class="title">To Date</label>
+		    				</div>
+		    				<div class="element-input col-lg-6" style="width: 17%;"> 
+								<s:input id="txtToDate" required="required" path="toDate" pattern="\d{4}-\d{1,2}-\d{1,2}"  style="width: 100%;"/>	
+							</div>
+							<div class="element-input col-lg-6" style="width: 8%;"> 
+		    					<label class="title">Type</label>
+		    				</div>
+		    				<div class="element-input col-lg-6" style="width: 15%;"> 
+								<s:select id="cmbType" path="strType" items="${typeList}" >
+				    				<s:option value="Raw Material">Raw Material</s:option>
+				    				<s:option value="Menu Item">Menu Item</s:option>
+				    				<s:option value="Both">Both</s:option>
+				    			</s:select>
+							</div>
+					</div>
+					
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px;">
+							
+							<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 10%;"> 
+		    					<label class="title">Report Type</label>
+		    				</div>
+		    				<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 15%;"> 
+								<s:select id="cmbReportType" path="strReportType"  items="${reportTypeList}">
+				    				<s:option value="Stock">Stock</s:option>
+				    				<s:option value="Reorder">Reorder</s:option>
+				    			</s:select>
+							</div>
+							<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 10%;"> 
+		    					<label class="title">Group Wise</label>
+		    				</div>
+		    				<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 15%;"> 
+								<s:select id="cmbGroupName" path="strGroupName" items="${groupMap}">
+				    				<s:option value="All">ALL</s:option>
+				    				<s:option value="Beverages">BEVERAGES</s:option>
+				    				<s:option value="Food">FOOD</s:option>
+				    				<s:option value="Liquer">LIQUER</s:option>
+				    			</s:select>
+							</div>
+							<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 11%;"> 
+		    					<label class="title">Show Stock With</label>
+		    				</div>
+		    				<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 14%;"> 
+								<s:select id="cmbShowStock" path="strShowStock" items="${viewByList}">
+				    				<s:option value="Both">Both</s:option>
+				    				<s:option value="Positive">Positive</s:option>
+				    				<s:option value="Negative">Negative</s:option>
+				    			</s:select>
+							</div>
+							<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 12%;"> 
+		    					<label class="title">Show 0 Bal Stock </label>
+		    				</div>
+		    				<div class="element-input col-lg-3 col-sm-3 col-xs-3" style="width: 10%;"> 
+								<s:select id="cmbShowBalStock" path="strShowBalStock" items="${showZeroBalList}">
+				    				<s:option value="Yes">Yes</s:option>
+				    				<s:option value="No">No</s:option>
+				    			</s:select>
+							</div>
+					</div>
+					
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
+							<div style="border: 1px solid #ccc; display: block; height: 500px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 						
-						<td><label>From Date</label></td>
-						<td><s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}"
-								cssClass="calenderTextBox" /></td>
-
-						<td><label>To Date</label></td>
-						<td><s:input id="txtToDate" required="required" path="toDate"
-								pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox" /></td>
+								<table id="tblStockFlashHeader" class="transTablex"
+										style="width: 100%; text-align: center !important; ">
+					
+					    		</table>
 								
-						<td width="80px">Type</td>
-					    <td colspan="3"><s:select id="cmbType" name="cmbType" path="strType" cssClass="BoxW124px" items="${typeList}" ></s:select>
-					    </td>		
-
-					</tr>
+								
+								<table id="tblStockFlashReport" class="transTablex" 
+											style="width: 100%; text-align: center !important;">
+								</table>
+								
+								
+							</div>
+					</div>
 					
-					 <tr>
-					    <td width="80px">Report Type</td>
-					    <td colspan="3"><s:select id="cmbReportType" name="cmbReportType" path="strReportType" cssClass="BoxW124px" items="${reportTypeList}" >
-					    </s:select></td>
+					<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 0px;">
+							<div style="border: 1px solid #ccc; display: block; height: 60px; margin:auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
+						
+								<table id="tblTotal" class="transTablex" bstyle="width: 100%; text-align:">
+					    				<col style="width:60%"><!--  COl1   -->
+					   			</table>
+							</div>
+					</div>
+		    		
+		    		<div class="row" style="background-color: #fff; display: block; margin-bottom: 10px; margin-left: 280px;">
+		    				
+		    				<div class="col-lg-4 col-sm-4 col-xs-4" style="width: 100%;">
+					  		
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="View" id="view" onClick="funLoadTableData()" /> </div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Print" id="print" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="submit" value="Export" id=export" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Production" id="production" /></div>
+								<div class="submit col-lg-4 col-sm-4 col-xs-4" style="width: 10%;"><input type="button" value="Reset" id="reset" onClick="funResetFields()" /></div>
+								
+			  		  		</div>
+			  		  </div>
 				
-					    <td >Group Wise</td>
-					    <td ><s:select id="cmbGroupwise" name="cmbGroupwise" path="strGroupName" cssClass="BoxW124px" items="${groupList}" >
-					    </s:select></td>
-					    
-					    <td >Show Stock With</td>
-					    <td ><s:select id="cmbViewWith" name="cmbViewWith" path="strViewBy" cssClass="BoxW124px" items="${viewByList}" >
-					    </s:select></td>
-					     		
-						<td width="80px">Show 0 Bal Stock</td>
-					    <td colspan="3"><s:select id="cmbShowZeroBal" name="cmbShowZeroBal" path="strDocType" cssClass="BoxW124px" items="${showZeroBalList}" ></s:select>
-					    <br>
-					    <br>
-					    </td>	
-					    	
-
-					</tr>
-			
-
-				</table>
-			</div>
-			
-			
-				 <div style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 500px; margin-left: 130px; overflow-x: scroll; overflow-y: scroll; width: 80%;">
-				
-				
-						<table id="tblStockFlashHeader" class="transTablex"
-							style="width: 100%; text-align: center !important; ">
+			  		  
+			  		  <div class="row" style="background-color: #fff; display:block; margin-bottom: 10px;">
+							<div class="element-input col-lg-6" style="width: 15%;"> 
+			  		  			<s:input type="hidden" id="txtAuditType" name="txtAuditType" path="strPSPCode" />
+							</div>
+					  </div>			
 					
-					    </table>
-						
-						<table id="tblStockFlashReport" class="transTablex"
-							style="width: 100%; text-align: center !important;">
-						</table>
-				
-				  </div>	
-			
-			    <div style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 70px; margin-left: 130px; overflow-x: scroll; overflow-y: hidden; width: 80%;">
-				
-						<table id="tblTotal" class="transTablex"
-						   style="width: 100%; text-align:">
-					    <col style="width:60%"><!--  COl1   -->
-					   </table>
-				
-			   </div>
-						
-	
-			
-		</div>
-
-		<br />
-		<br />
-		<p align="center">
-			    <input type="button" value="View" class="form_button"id="view" /> 
-			    <input type="button" value="Print" class="form_button"id="print" /> 
-				<input type="submit" value="Export"	class="form_button"  id="export" /> 
-				<input type=button value="Production" class="form_button"   id="production"/> 
-				<input type="reset" value="Reset"class="form_button" id="reset" />
-
-		</p>
-		<div id="wait"
-			style="display: none; width: 60px; height: 60px; border: 0px solid black; position: absolute; top: 60%; left: 40%; padding: 2px;">
-			<img
-				src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif"
-				width="60px" height="60px" />
+					<div id="wait" style="display: none; width: 60px; height: 60px; border: 0px solid black; position: absolute; top: 50%; left: 50%; padding: 2px;">
+							<img src="../${pageContext.request.contextPath}/resources/images/ajax-loader-light.gif" width="60px" height="60px" />
+					</div>
 		</div>
 
 	</s:form>

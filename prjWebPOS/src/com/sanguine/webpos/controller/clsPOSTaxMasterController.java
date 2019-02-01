@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSAreaMasterBean;
 import com.sanguine.webpos.bean.clsPOSGroupMasterBean;
@@ -55,6 +56,9 @@ public class clsPOSTaxMasterController{
 	
 	@Autowired
 	clsPOSUtilityController objUtility;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	private Map<String,String> hmPOSData=new HashMap<String, String>(); 
 	private Map<String,String> hmAreaData=new HashMap<String, String>(); 
@@ -301,6 +305,9 @@ public class clsPOSTaxMasterController{
 		    objMasterService.funSaveTaxMaster(objModel);				
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+taxCode);
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Tax' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmPOSTaxMaster.html?saddr="+urlHits);
 			

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSReasonMasterBean;
 import com.sanguine.webpos.model.clsReasonMasterModel;
@@ -34,9 +35,11 @@ public class clsPOSReasonMasterController {
 	@Autowired
 	private clsPOSUtilityController obUtilityController;
 	
-	
 	@Autowired
 	private clsPOSMasterService obMasterService;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	@RequestMapping(value = "/frmPOSReasonMaster", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)
@@ -142,10 +145,11 @@ public class clsPOSReasonMasterController {
 			objModel.setStrOperational(objGlobal.funIfNull(objBean.getStrOperational(),"N","Y"));
 		    obMasterService.funSaveReasonMaster(objModel);
 			
-			
-						
-			req.getSession().setAttribute("success", true);
+		    req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+reasonCode);
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Reason' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmPOSReasonMaster.html?saddr="+urlHits);
 		}

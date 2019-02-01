@@ -56,7 +56,7 @@ public class clsPOSWiseItemIncentiveController {
 		List poslist = new ArrayList();
 		map1.put("ALL","ALL");
 		
-		list = objMasterService.funFillPOSCombo(clientCode);
+		list = objMasterService.funFullPOSCombo(clientCode);
 		for(int i =0 ;i<list.size();i++)
 		{
 			Object[] obj = (Object[]) list.get(i);
@@ -94,7 +94,11 @@ public class clsPOSWiseItemIncentiveController {
 				String strItemCode = obj.getStrItemCode();
 				String strItemName =obj.getStrItemName();
 				String strIncentiveType = obj.getStrIncentiveType();;
-				double strIncentiveValue = Double.parseDouble(obj.getStrIncentiveValue());
+				String strIncentiveValue = obj.getStrIncentiveValue();
+				if(strIncentiveValue==null)
+				{
+					strIncentiveValue="0.0";
+				}	
 				String strPOSName = obj.getStrPOSName();
 				String strPOSCode="";
 				if(map.containsKey(strPOSName))
@@ -103,18 +107,18 @@ public class clsPOSWiseItemIncentiveController {
 				}
 				    
 				  clsPOSWiseItemIncentiveModel objModel = new clsPOSWiseItemIncentiveModel(new clsPOSWiseItemIncentiveModel_ID(strPOSCode,strItemCode,clientCode));
-				   
+				  double dblIncentiveValue= Double.parseDouble(strIncentiveValue);
 				  objModel.setStrPOSCode(strPOSCode);
-			        objModel.setStrItemCode(strItemCode);
-				    objModel.setStrItemName(strItemName);
-				    objModel.setStrIncentiveType(strIncentiveType);
-				    objModel.setDblIncentiveValue(strIncentiveValue);
-				    objModel.setStrClientCode(clientCode);
-				    objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-				    objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-				    objModel.setStrDataPostFlag("N");
+			          objModel.setStrItemCode(strItemCode);
+				  objModel.setStrItemName(strItemName);
+				  objModel.setStrIncentiveType(strIncentiveType);
+				  objModel.setDblIncentiveValue(dblIncentiveValue);
+				  objModel.setStrClientCode(clientCode);
+				  objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				  objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				  objModel.setStrDataPostFlag("N");
 			    
-				    objMasterService.funSaveUpdatePOSWiseItemIncentive(objModel);
+				  objMasterService.funSaveUpdatePOSWiseItemIncentive(objModel);
 				    
 			    }
 			req.getSession().setAttribute("success", true);

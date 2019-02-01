@@ -9,7 +9,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>GROUP MASTER</title>
+<title>ADVANCE ORDER TYPE MASTER</title>
 <style>
 .ui-autocomplete {
     max-height: 200px;

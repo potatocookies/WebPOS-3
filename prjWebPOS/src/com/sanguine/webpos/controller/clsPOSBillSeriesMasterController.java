@@ -33,6 +33,7 @@ import com.sanguine.webpos.sevice.clsPOSMasterService;
 public class clsPOSBillSeriesMasterController {
 	@Autowired
 	private clsGlobalFunctions objGlobal;
+	
 	@Autowired
 	private clsBaseServiceImpl objBaseServiceImpl;
 
@@ -376,11 +377,11 @@ public class clsPOSBillSeriesMasterController {
 					objModel.setStrPrintGTOfOtherBills(printGTOfOtherBill);
 					objModel.setStrPrintInclusiveOfTaxOnBill(printInclusiveOfAllTaxesOnBill);
 					objBaseServiceImpl.funSave(objModel);
-				
-
 					req.getSession().setAttribute("success", true);
-
 					req.getSession().setAttribute("successMessage", " ");
+					
+					String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='BillSeries' ";
+					objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 				}
 			}
 

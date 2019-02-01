@@ -1085,214 +1085,6 @@ public class clsPOSTransactionService
 			}
 	}
 	
-	
-	
-	public void funSettleBills(Map mapSettleBills)
-	{
-	 try	
-	 {
-		Map hmCashSettlementDtl;
-		String billNo="";
-		String dblSettleAmt="";
-		String tableName="";
-		String tableNo="";
-			
-		String posDate = mapSettleBills.get("POSDate").toString();
-		String clientCode = mapSettleBills.get("ClientCode").toString();
-		String userCode = mapSettleBills.get("User").toString();
-		String posCode = mapSettleBills.get("POSCode").toString();
-		
-		List unsettleBillDtl=(List)mapSettleBills.get("UnsettleBillDetails");
-        for (int i = 0; i < unsettleBillDtl.size(); i++) 
-        { 
-        	Map childJSONObject = (Map) unsettleBillDtl.get(i);
-        	billNo= childJSONObject.get("BillNo").toString();
-        	dblSettleAmt=childJSONObject.get("dblSettleAmt").toString();
-        	tableName=childJSONObject.get("TableName").toString();
-        	tableNo=childJSONObject.get("TableNo").toString();
-        }
-	     
-        StringBuilder sbSql=new StringBuilder();
-			
-        sbSql.append("select a.strSettelmentCode,a.strSettelmentDesc,a.strBillPrintOnSettlement "
-                + "from tblsettelmenthd a "
-                + "where a.strSettelmentType='Cash' "
-                + "limit 1;");
-		//Query rsCashSttlementDtl1 = webPOSSessionFactory.getCurrentSession().createSQLQuery(rsCashSttlementDtl);
-		//List list = rsCashSttlementDtl1.list();
-		List list = objBaseService.funGetList(sbSql, "sql");
-		String cashSettlementCode=null;
-		String strExpiryDate="";
-		String strCardName="";
-		String strRemark="Multi Bill Settle";
-		String strCustomerCode="";
-		String dblRefundAmt="0.00";
-		String strGiftVoucherCode="";
-		String strDataPostFlag="N";
-		if (list!=null)
-		{
-			for(int i=0; i<list.size(); i++)
-			{
-				Object[] obj = (Object[]) list.get(i);
-				cashSettlementCode = obj[0].toString();
-				String strBillPrintOnSettlement = obj[2].toString();
-				
-				 hmCashSettlementDtl=new HashMap<>();	
-				
-				hmCashSettlementDtl.put("cashSettlementCode",Array.get(obj, 0));
-				hmCashSettlementDtl.put("cashSettlementName",Array.get(obj, 1));
-				if (strBillPrintOnSettlement.toString().equalsIgnoreCase("Y"))
-                {
-                    billPrintOnSettlement = true;
-                }
-                else
-                {
-                    billPrintOnSettlement = false;
-                }
-        }
-		}
-		String sqlDelete = "delete from tblbillsettlementdtl where strBillNo='" + billNo + "'";
-		//Query q1 = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlDelete);
-		
-		objBaseService.funExecuteUpdate(sqlDelete, "sql");
-       
-        String sqlInsertBillSettlementDtl = "insert into tblbillsettlementdtl"
-                + "(strBillNo,strSettlementCode,dblSettlementAmt,dblPaidAmt,strExpiryDate"
-                + ",strCardName,strRemark,strClientCode,strCustomerCode,dblActualAmt"
-                + ",dblRefundAmt,strGiftVoucherCode,strDataPostFlag,dteBillDate) "
-                + "values ";
-        if(list!=null)
-        {
-        	for (int i = 0; i < list.size(); i++) 
-        	{
-        		sqlInsertBillSettlementDtl += "('" + billNo + "'"
-                        + ",'" + cashSettlementCode + "'," + dblSettleAmt + ""
-                        + "," + dblSettleAmt + ",'" + strExpiryDate + "'"
-                        + ",'" + strCardName + "','" + strRemark + "'"
-                        + ",'" + clientCode + "','" + strCustomerCode + "'"
-                        + "," + dblSettleAmt + "," + dblRefundAmt + ""
-                        + ",'" + strGiftVoucherCode + "','" + strDataPostFlag + "','"+posDate+"'),";
-       	}
-		}
-        StringBuilder sb1 = new StringBuilder(sqlInsertBillSettlementDtl);
-        int index1 = sb1.lastIndexOf(",");
-        sqlInsertBillSettlementDtl = sb1.delete(index1, sb1.length()).toString();
-        //Query q2 = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlInsertBillSettlementDtl);
-        //q2.executeUpdate();
-        objBaseService.funExecuteUpdate(sqlInsertBillSettlementDtl, "sql");
-        
-        String sql = "update tblbillhd set strSettelmentMode='CASH' "
-                + ",strUserEdited='" + userCode + "', dteSettleDate='" + posDate + "' "
-                + ",strRemarks='Multi Bill Settle' "
-                + "where strBillNo='" + billNo + "'";
-       // Query qUpdate = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql);
-       // qUpdate.executeUpdate();
-        objBaseService.funExecuteUpdate(sql, "sql");
-        
-        if (!tableNo.isEmpty() && !tableName.isEmpty())
-        {
-        	String tableStatus = "Normal";
-        	 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss a");
-        	 sbSql.setLength(0);
-        	 sbSql.append("select a.strCustomerCode,CONCAT(a.tmeResTime,' ',a.strAMPM) as reservationtime from tblreservation a "
-	                    + " where a.strTableNo='" + tableNo + "' "
-	                    + " and date(a.dteResDate)='" + posDate + "' "
-	                    + " order by a.strResCode desc "
-	                    + " limit 1 ");
-	                   //Query rsReserve = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlDate) ;
-	            	   //List listReserve = rsReserve.list();
-        	 
-        	 			List listReserve = objBaseService.funGetList(sbSql, "sql");
-	            		
-	            		if(listReserve!=null)
-	                    {
-	                    	for (int i = 0; i < listReserve.size(); i++) 
-	                    	{
-	                    		Object[] obj = (Object[]) list.get(i);
-	                    		 hmCashSettlementDtl=new HashMap<>();	
-	                    		 String res=(String) listReserve.get(1);
-	                    		 Date reservationDateTime = simpleDateFormat.parse(res);
-	                             Date posDateTime = new Date();
-	                             String strPOSTime = String.format("%tr", posDateTime);
-	                             posDateTime = simpleDateFormat.parse(strPOSTime);
-
-	                             if (posDateTime.getTime() > reservationDateTime.getTime())
-	                             {
-	                                 tableStatus = "Normal";
-	                             }
-	                             else
-	                             {
-	                                 tableStatus = "Reserve";
-	                             }
-		                    }
-		                }
-	            		 Query rsCount =null;
-	            		String sql_updateTableStatus = "";
-	            		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gInrestoPOSIntegrationYN"); 
-	  	        	    if(objSetupParameter.get("gInrestoPOSIntegrationYN").equals("Y"))
-	  	        	    {
-	                         if (tableStatus.equalsIgnoreCase("Reserve"))
-	                         {
-	                        	 tableStatus = "Normal";
-	                         }
-	                     }
-	  	        	  if ("Normal".equalsIgnoreCase(tableStatus))
-	  	              {
-	  	                sql_updateTableStatus = "select count(*) from tblitemrtemp where strTableNo='" + tableNo + "';";
-	  	               // rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
-	  	                objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
-	  	                List listCount = rsCount.list();
-	  	                BigInteger cnt = (BigInteger) listCount.get(0);
-	  	                int count = cnt.intValue();
-	  	                if (count == 0)
-	  	                {
-	  	                    // no table present in tblitemrtemp so update it to normal
-	  	                    sql_updateTableStatus = "update tbltablemaster set strStatus='" + tableStatus + "',intPaxNo=0 where strTableNo='" + tableNo + "'";
-	  	                    //rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
-	  	                    objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
-	  	                }
-	  	                else
-	  	                {
-	  	                	tableStatus = "Occupied";
-	  	                    sql_updateTableStatus = "update tbltablemaster set strStatus='" + tableStatus + "' where strTableNo='" + tableNo + "'";
-	  	                    //rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
-	  	                    objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
-	  	                }
-	  	            }
-	  	        	else
-	  	            {
-	  	                sql_updateTableStatus = "update tbltablemaster set strStatus='" + tableStatus + "',intPaxNo=0 where strTableNo='" + tableNo + "'";
-	  	                //rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
-	  	                objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
-	  	            }
-	  	        	if(objSetupParameter.get("gInrestoPOSIntegrationYN").toString().equalsIgnoreCase("Y"))
-	  	            {
-	  	                //objUtility.funUpdateTableStatusToInrestoApp(tableNo, tableName, tableStatus,clientCode,posCode);
-	  	            }
-
-	        }
-        Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gBillSettleSMSYN"); 
-  	    
-        if (objSetupParameter.get("gBillSettleSMSYN").toString().equalsIgnoreCase("Y"))
-        {
-        	String billSettleSMS=(String) objSetupParameter.get("gBillSettleSMSYN");
-           // objUtility.funSendSMS(billNo, billSettleSMS, "",clientCode,posCode);
-        }
-
-		}
-		catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		finally
-		{
-//			return jObjAssignHomeDeliveryMaster;
-		}	
-	}
-	
-	
-	
-	
 	   public Map<String,List<clsPOSBillDtl>> funExecute(String posCode,String operationType,String kotFor)
 	   	{
 	    	Map<String,List<clsPOSBillDtl>> hmReprintDtl=new HashMap();
@@ -1504,5 +1296,252 @@ public class clsPOSTransactionService
 	   		{
 	   			return strCustomerCode;
 	   		}
-	 }   
+	 }
+	 
+	 public void funSettleBills(Map mapSettleBills)
+	 {
+		 try	
+		 {
+			Map hmCashSettlementDtl;
+			String billNo="";
+			String dblSettleAmt="";
+			String tableName="";
+			String tableNo="";
+				
+			String posDate = mapSettleBills.get("POSDate").toString();
+			String clientCode = mapSettleBills.get("ClientCode").toString();
+			String userCode = mapSettleBills.get("User").toString();
+			String posCode = mapSettleBills.get("POSCode").toString();
+			
+			List unsettleBillDtl=(List)mapSettleBills.get("UnsettleBillDetails");
+			List <String> settleBill=new ArrayList<String>();
+	        for (int i = 0; i < unsettleBillDtl.size(); i++) 
+	        { 
+	        	Map childJSONObject = (Map) unsettleBillDtl.get(i);
+	        	billNo= childJSONObject.get("BillNo").toString();
+	        	dblSettleAmt=childJSONObject.get("dblSettleAmt").toString();
+	        	tableName=childJSONObject.get("TableName").toString();
+	        	tableNo=childJSONObject.get("TableNo").toString();
+	        	settleBill.add(billNo);
+	        }
+		     
+	        
+	        StringBuilder sbSql=new StringBuilder();
+				
+	        sbSql.append("select a.strSettelmentCode,a.strSettelmentDesc,a.strBillPrintOnSettlement "
+	                + "from tblsettelmenthd a "
+	                + "where a.strSettelmentType='Cash' "
+	                + "limit 1;");
+			//Query rsCashSttlementDtl1 = webPOSSessionFactory.getCurrentSession().createSQLQuery(rsCashSttlementDtl);
+			//List list = rsCashSttlementDtl1.list();
+			List list = objBaseService.funGetList(sbSql, "sql");
+			String cashSettlementCode=null;
+			String strExpiryDate="";
+			String strCardName="";
+			String strRemark="Multi Bill Settle";
+			String strCustomerCode="";
+			String dblRefundAmt="0.00";
+			String strGiftVoucherCode="";
+			String strDataPostFlag="N";
+			if (list!=null)
+			{
+				for(int i=0; i<list.size(); i++)
+				{
+					Object[] obj = (Object[]) list.get(i);
+					cashSettlementCode = obj[0].toString();
+					String strBillPrintOnSettlement = obj[2].toString();
+					
+					 hmCashSettlementDtl=new HashMap<>();	
+					
+					hmCashSettlementDtl.put("cashSettlementCode",Array.get(obj, 0));
+					hmCashSettlementDtl.put("cashSettlementName",Array.get(obj, 1));
+					if (strBillPrintOnSettlement.toString().equalsIgnoreCase("Y"))
+	                {
+	                    billPrintOnSettlement = true;
+	                }
+	                else
+	                {
+	                    billPrintOnSettlement = false;
+	                }
+				}
+			}
+			/*String sqlDelete = "delete from tblbillsettlementdtl where strBillNo='" + billNo + "'";
+			//Query q1 = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlDelete);
+			
+			objBaseService.funExecuteUpdate(sqlDelete, "sql");
+	       
+	        String sqlInsertBillSettlementDtl = "insert into tblbillsettlementdtl"
+	                + "(strBillNo,strSettlementCode,dblSettlementAmt,dblPaidAmt,strExpiryDate"
+	                + ",strCardName,strRemark,strClientCode,strCustomerCode,dblActualAmt"
+	                + ",dblRefundAmt,strGiftVoucherCode,strDataPostFlag,dteBillDate) "
+	                + "values ";
+	        if(list!=null)
+	        {
+	        	for (int i = 0; i < list.size(); i++) 
+	        	{
+	        		sqlInsertBillSettlementDtl += "('" + billNo + "'"
+	                        + ",'" + cashSettlementCode + "'," + dblSettleAmt + ""
+	                        + "," + dblSettleAmt + ",'" + strExpiryDate + "'"
+	                        + ",'" + strCardName + "','" + strRemark + "'"
+	                        + ",'" + clientCode + "','" + strCustomerCode + "'"
+	                        + "," + dblSettleAmt + "," + dblRefundAmt + ""
+	                        + ",'" + strGiftVoucherCode + "','" + strDataPostFlag + "','"+posDate+"'),";
+	        	}
+			 }
+	        StringBuilder sb1 = new StringBuilder(sqlInsertBillSettlementDtl);
+	        int index1 = sb1.lastIndexOf(",");
+	        sqlInsertBillSettlementDtl = sb1.delete(index1, sb1.length()).toString();
+	        //Query q2 = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlInsertBillSettlementDtl);
+	        //q2.executeUpdate();
+	        objBaseService.funExecuteUpdate(sqlInsertBillSettlementDtl, "sql");*/
+			
+			
+			//Edited By Pratiksha
+			
+			if(settleBill!=null)
+			{
+				for(int i=0;i<settleBill.size();i++)
+				{
+					String strBillNo = settleBill.get(i);
+					String sqlDelete = "delete from tblbillsettlementdtl where strBillNo='" + strBillNo + "'";
+					//Query q1 = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlDelete);
+					
+					objBaseService.funExecuteUpdate(sqlDelete, "sql");
+			       
+			        String sqlInsertBillSettlementDtl = "insert into tblbillsettlementdtl"
+			                + "(strBillNo,strSettlementCode,dblSettlementAmt,dblPaidAmt,strExpiryDate"
+			                + ",strCardName,strRemark,strClientCode,strCustomerCode,dblActualAmt"
+			                + ",dblRefundAmt,strGiftVoucherCode,strDataPostFlag,dteBillDate) "
+			                + "values ";
+			        
+	        		sqlInsertBillSettlementDtl += "('" + strBillNo + "'"
+	                        + ",'" + cashSettlementCode + "'," + dblSettleAmt + ""
+	                        + "," + dblSettleAmt + ",'" + strExpiryDate + "'"
+	                        + ",'" + strCardName + "','" + strRemark + "'"
+	                        + ",'" + clientCode + "','" + strCustomerCode + "'"
+	                        + "," + dblSettleAmt + "," + dblRefundAmt + ""
+	                        + ",'" + strGiftVoucherCode + "','" + strDataPostFlag + "','"+posDate+"'),";
+			         
+			        StringBuilder sb1 = new StringBuilder(sqlInsertBillSettlementDtl);
+			        int index1 = sb1.lastIndexOf(",");
+			        sqlInsertBillSettlementDtl = sb1.delete(index1, sb1.length()).toString();
+			        //Query q2 = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlInsertBillSettlementDtl);
+			        //q2.executeUpdate();
+			        objBaseService.funExecuteUpdate(sqlInsertBillSettlementDtl, "sql");
+				}
+				
+			}
+			
+			
+			
+	        
+	        String sql = "update tblbillhd set strSettelmentMode='CASH' "
+	                + ",strUserEdited='" + userCode + "', dteSettleDate='" + posDate + "' "
+	                + ",strRemarks='Multi Bill Settle' "
+	                + "where strBillNo='" + billNo + "'";
+	       // Query qUpdate = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql);
+	       // qUpdate.executeUpdate();
+	        objBaseService.funExecuteUpdate(sql, "sql");
+	        
+	        if (!tableNo.isEmpty() && !tableName.isEmpty())
+	        {
+	        	String tableStatus = "Normal";
+	        	 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss a");
+	        	 sbSql.setLength(0);
+	        	 sbSql.append("select a.strCustomerCode,CONCAT(a.tmeResTime,' ',a.strAMPM) as reservationtime from tblreservation a "
+		                    + " where a.strTableNo='" + tableNo + "' "
+		                    + " and date(a.dteResDate)='" + posDate + "' "
+		                    + " order by a.strResCode desc "
+		                    + " limit 1 ");
+		                   //Query rsReserve = webPOSSessionFactory.getCurrentSession().createSQLQuery(sqlDate) ;
+		            	   //List listReserve = rsReserve.list();
+	        	 
+	        	 			List listReserve = objBaseService.funGetList(sbSql, "sql");
+		            		
+		            		if(listReserve!=null)
+		                    {
+		                    	for (int i = 0; i < listReserve.size(); i++) 
+		                    	{
+		                    		Object[] obj = (Object[]) list.get(i);
+		                    		 hmCashSettlementDtl=new HashMap<>();	
+		                    		 String res=(String) listReserve.get(1);
+		                    		 Date reservationDateTime = simpleDateFormat.parse(res);
+		                             Date posDateTime = new Date();
+		                             String strPOSTime = String.format("%tr", posDateTime);
+		                             posDateTime = simpleDateFormat.parse(strPOSTime);
+
+		                             if (posDateTime.getTime() > reservationDateTime.getTime())
+		                             {
+		                                 tableStatus = "Normal";
+		                             }
+		                             else
+		                             {
+		                                 tableStatus = "Reserve";
+		                             }
+			                    }
+			                }
+		            		 Query rsCount =null;
+		            		String sql_updateTableStatus = "";
+		            		Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gInrestoPOSIntegrationYN"); 
+		  	        	    if(objSetupParameter.get("gInrestoPOSIntegrationYN").equals("Y"))
+		  	        	    {
+		                         if (tableStatus.equalsIgnoreCase("Reserve"))
+		                         {
+		                        	 tableStatus = "Normal";
+		                         }
+		                     }
+		  	        	  if ("Normal".equalsIgnoreCase(tableStatus))
+		  	              {
+		  	                sql_updateTableStatus = "select count(*) from tblitemrtemp where strTableNo='" + tableNo + "';";
+		  	               // rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
+		  	                objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
+		  	                List listCount = rsCount.list();
+		  	                BigInteger cnt = (BigInteger) listCount.get(0);
+		  	                int count = cnt.intValue();
+		  	                if (count == 0)
+		  	                {
+		  	                    // no table present in tblitemrtemp so update it to normal
+		  	                    sql_updateTableStatus = "update tbltablemaster set strStatus='" + tableStatus + "',intPaxNo=0 where strTableNo='" + tableNo + "'";
+		  	                    //rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
+		  	                    objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
+		  	                }
+		  	                else
+		  	                {
+		  	                	tableStatus = "Occupied";
+		  	                    sql_updateTableStatus = "update tbltablemaster set strStatus='" + tableStatus + "' where strTableNo='" + tableNo + "'";
+		  	                    //rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
+		  	                    objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
+		  	                }
+		  	            }
+		  	        	else
+		  	            {
+		  	                sql_updateTableStatus = "update tbltablemaster set strStatus='" + tableStatus + "',intPaxNo=0 where strTableNo='" + tableNo + "'";
+		  	                //rsCount = webPOSSessionFactory.getCurrentSession().createSQLQuery(sql_updateTableStatus) ;
+		  	                objBaseService.funExecuteUpdate(sql_updateTableStatus, "sql");
+		  	            }
+		  	        	if(objSetupParameter.get("gInrestoPOSIntegrationYN").toString().equalsIgnoreCase("Y"))
+		  	            {
+		  	                //objUtility.funUpdateTableStatusToInrestoApp(tableNo, tableName, tableStatus,clientCode,posCode);
+		  	            }
+
+		        }
+	        Map objSetupParameter=objSetupService.funGetParameterValuePOSWise(clientCode, posCode, "gBillSettleSMSYN"); 
+	  	    
+	        if (objSetupParameter.get("gBillSettleSMSYN").toString().equalsIgnoreCase("Y"))
+	        {
+	        	String billSettleSMS=(String) objSetupParameter.get("gBillSettleSMSYN");
+	           // objUtility.funSendSMS(billNo, billSettleSMS, "",clientCode,posCode);
+	        }
+
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			finally
+			{
+//				return jObjAssignHomeDeliveryMaster;
+			}	
+		}
+		
 }

@@ -268,7 +268,7 @@
 								
 						<table id="tblDayEnd" style="width: 100%;  table-layout: fixed; overflow: scroll">
 							<tbody style="border-top: none;">
-								<c:forEach var="objCon"  items="${command.jArrDayEnd}" varStatus="">
+								<c:forEach var="objCon"  items="${command.listDayEnd}" varStatus="">
 									<tr>
 										<c:forEach var="obCon" items="${objCon}" varStatus="">
 											<td align ="right">${obCon}</td> 
@@ -291,7 +291,7 @@
 								
 						<table id="tblDayEndTotal" style="width: 100%; height: 50%;table-layout: fixed; overflow: scroll">
 							<tbody style="border-top: none;">
-								<c:forEach var="objCon1"  items="${command.jArrDayEndTotal}" varStatus="">
+								<c:forEach var="objCon1"  items="${command.listDayEndTotal}" varStatus="">
 									<tr>
 										<c:forEach var="obCon1"  items="${objCon1}" varStatus="">
 											<td align ="right">${obCon1}</td>
@@ -324,7 +324,7 @@
 						 <div style="border: 1px solid #ccc; height: 80px; margin: auto; 
 									overflow-x: hidden; overflow-y: scroll; width: 99.80%;">
 								<table id="tblSettlement" style="width: 100%; table-layout: fixed; overflow: scroll">
-									   <c:forEach var="objCon2"  items="${command.jArrSettlement}" varStatus="">
+									   <c:forEach var="objCon2"  items="${command.listSettlement}" varStatus="">
 											<tr>
 												<c:forEach var="obCon2"  items="${objCon2}" varStatus="">
 													<td align ="right">${obCon2}</td>
@@ -349,7 +349,7 @@
 					 	<div id="divSettlementTotal" style="width: 100%; height: 97px;border: 1px solid #ccc;">
 							<table id="tblSettlementTotal" style="width: 100%; table-layout: fixed; overflow: scroll">
 								<tbody style="border-top: none;">
-										<c:forEach var="objCon3"  items="${command.jArrSettlementTotal}" varStatus="">
+										<c:forEach var="objCon3"  items="${command.listSettlementTotal}" varStatus="">
 											<tr>
 												<c:forEach var="obCon3"  items="${objCon3}" varStatus="">
 													<td align ="right">${obCon3}</td>
@@ -385,7 +385,7 @@
 								
 								<table id="tblSalesUP" style="width: 100%; table-layout: fixed; overflow: scroll">
 									<tbody style="border-top: none;">
-										<c:forEach var="objCon4"  items="${command.jArrSalesInProg}" varStatus="">
+										<c:forEach var="objCon4"  items="${command.listSalesInProg}" varStatus="">
 											<tr>
 												<c:forEach var="obCon4"  items="${objCon4}" varStatus="">
 													<td align ="right">${obCon4}</td>
@@ -433,7 +433,7 @@
 						
 							<table id="tblUnsettleBill" style="width: 100%; table-layout: fixed; overflow: scroll">
 								<tbody style="border-top: none;">
-									<c:forEach var="objCon5"  items="${command.jArrUnSettlebill}" varStatus="">
+									<c:forEach var="objCon5"  items="${command.listUnSettlebill}" varStatus="">
 										<tr>
 											<c:forEach var="obCon5"  items="${objCon5}" varStatus="">
 												<td align ="right">${obCon5}</td>

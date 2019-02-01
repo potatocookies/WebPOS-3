@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSTableMasterBean;
@@ -30,13 +31,11 @@ import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.util.clsPOSUtilityController;
 
 @Controller
-public class clsPOSTableMasterController{
-	
-
-	
-	
+public class clsPOSTableMasterController
+{
 	@Autowired
 	private clsGlobalFunctions objGlobal;
+	
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
 	
@@ -48,6 +47,9 @@ public class clsPOSTableMasterController{
 	
 	@Autowired
 	intfBaseService obBaseService;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	//Open POSTableMaster
 		@RequestMapping(value = "/frmPOSTableMaster", method = RequestMethod.GET)
@@ -170,33 +172,35 @@ public class clsPOSTableMasterController{
 				    }
 				 
 				 clsTableMasterModel objModel=new clsTableMasterModel(new clsTableMasterModel_ID(tableCode, clientCode));
-				    objModel.setIntSequence(intSeq);
-				    objModel.setStrTableName( objBean.getStrTableName());
-				    objModel.setStrWaiterNo( objBean.getStrWaiterName());
-				    objModel.setStrPOSCode(objBean.getStrPOSCode());
-				    objModel.setIntPaxNo(objBean.getIntPaxCapacity());
-				    objModel.setStrOperational(objGlobal.funIfNull(objBean.getStrOperational(),"N","Y"));
-				    objModel.setStrAreaCode(objBean.getStrAreaName());
-				    objModel.setStrStatus("Normal");
-				    objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-				    objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-				    objModel.setStrDataPostFlag("N");
-				    objModel.setStrUserCreated(userCode);
-				    objModel.setStrUserEdited(userCode);
-				    objModel.setStrClientCode(clientCode);
-				    if(objBean.getStrNCTable().equalsIgnoreCase("No"))
-				    {
+				 objModel.setIntSequence(intSeq);
+				 objModel.setStrTableName( objBean.getStrTableName());
+				 objModel.setStrWaiterNo( objBean.getStrWaiterName());
+				 objModel.setStrPOSCode(objBean.getStrPOSCode());
+				 objModel.setIntPaxNo(objBean.getIntPaxCapacity());
+				 objModel.setStrOperational(objGlobal.funIfNull(objBean.getStrOperational(),"N","Y"));
+				 objModel.setStrAreaCode(objBean.getStrAreaName());
+				 objModel.setStrStatus("Normal");
+				 objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				 objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				 objModel.setStrDataPostFlag("N");
+				 objModel.setStrUserCreated(userCode);
+				 objModel.setStrUserEdited(userCode);
+				 objModel.setStrClientCode(clientCode);
+				 if(objBean.getStrNCTable().equalsIgnoreCase("No"))
+				 {
 				    objModel.setStrNCTable("N");
-				    }
-				    else
-				    {
+				 }
+				 else
+				 {
 				    objModel.setStrNCTable("Y");	
-				    }
-				    objMasterService.funSaveTableMaster(objModel);
+				 }
+				 objMasterService.funSaveTableMaster(objModel);
 			
-							
-				req.getSession().setAttribute("success", true);
-				req.getSession().setAttribute("successMessage"," "+tableCode);
+				 req.getSession().setAttribute("success", true);
+				 req.getSession().setAttribute("successMessage"," "+tableCode);
+				
+				 String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Table' ";
+				 objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 										
 				return new ModelAndView("redirect:/frmPOSTableMaster.html");
 			}

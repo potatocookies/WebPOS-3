@@ -10,6 +10,8 @@ public class clsPOSBillItemDtl {
 	   
 	   	private String dteBillDate;
 	   	
+	   	private String dteDateCreated;
+	   	
 	    private String strItemCode;
 	    
 	    private String strItemName;
@@ -55,6 +57,17 @@ public class clsPOSBillItemDtl {
 	    
 	    private boolean isModifier;
 
+	    private String settelmentDesc;
+	    
+	    private double settlementAmt;
+	    
+	    private String remark;
+	    
+	    private double tipAmount;
+	    
+	    private String discountRemark;
+	    
+	    private String reason;
 	    
 	    public String getStrBillNo() {
 			return strBillNo;
@@ -340,6 +353,76 @@ public class clsPOSBillItemDtl {
 	    {
 	        this.isModifier = isModifier;
 	    }
+
+		public String getDteDateCreated()
+		{
+			return dteDateCreated;
+		}
+
+		public void setDteDateCreated(String dteDateCreated)
+		{
+			this.dteDateCreated = dteDateCreated;
+		}
+
+		public String getSettelmentDesc()
+		{
+			return settelmentDesc;
+		}
+
+		public void setSettelmentDesc(String settelmentDesc)
+		{
+			this.settelmentDesc = settelmentDesc;
+		}
+
+		public double getSettlementAmt()
+		{
+			return settlementAmt;
+		}
+
+		public void setSettlementAmt(double settlementAmt)
+		{
+			this.settlementAmt = settlementAmt;
+		}
+
+		public String getRemark()
+		{
+			return remark;
+		}
+
+		public void setRemark(String remark)
+		{
+			this.remark = remark;
+		}
+
+		public double getTipAmount()
+		{
+			return tipAmount;
+		}
+
+		public void setTipAmount(double tipAmount)
+		{
+			this.tipAmount = tipAmount;
+		}
+
+		public String getDiscountRemark()
+		{
+			return discountRemark;
+		}
+
+		public void setDiscountRemark(String discountRemark)
+		{
+			this.discountRemark = discountRemark;
+		}
+
+		public String getReason()
+		{
+			return reason;
+		}
+
+		public void setReason(String reason)
+		{
+			this.reason = reason;
+		}
 	    
 	    
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSDeliveryBoyChargesBean;
 import com.sanguine.webpos.bean.clsPOSDeliveryBoyMasterBean;
@@ -32,12 +33,18 @@ public class clsPOSDeliveryBoyMasterController {
 
 	@Autowired
 	private clsGlobalFunctions objGlobal;
+	
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
+	
 	@Autowired
 	private clsPOSUtilityController objUtilityController;
+	
 	@Autowired
 	clsPOSMasterService objMasterService;
+	
+	@Autowired 
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	
 	Map map=new HashMap();
@@ -147,33 +154,34 @@ public class clsPOSDeliveryBoyMasterController {
 			List<clsDeliveryBoyChargesModel> listDeliveryChargesDtl = new ArrayList<clsDeliveryBoyChargesModel>();
 		    if(null!=list)
 		    {
-		    for(int i=0; i<list.size(); i++)
-		    {
-		    	clsDeliveryBoyChargesModel objDelChargesModel = new clsDeliveryBoyChargesModel();
-		    	clsPOSDeliveryBoyChargesBean obj= new clsPOSDeliveryBoyChargesBean();
-		    	obj=(clsPOSDeliveryBoyChargesBean)list.get(i);
-		    	
+			    for(int i=0; i<list.size(); i++)
+			    {
+			    	clsDeliveryBoyChargesModel objDelChargesModel = new clsDeliveryBoyChargesModel();
+			    	clsPOSDeliveryBoyChargesBean obj= new clsPOSDeliveryBoyChargesBean();
+			    	obj=(clsPOSDeliveryBoyChargesBean)list.get(i);
+			    	
 		    		if(null!=obj.getStrAreaCode())
 		    		{
-		    		objDelChargesModel.setStrCustAreaCode(obj.getStrAreaCode());
-		    		objDelChargesModel.setDblValue(obj.getDblIncentives());
-		    		objDelChargesModel.setStrUserCreated(webStockUserCode);
-			    	objDelChargesModel.setStrUserEdited(webStockUserCode);
-			    	objDelChargesModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-			    	objDelChargesModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-			    	objDelChargesModel.setStrDataPostFlag("Y");
-			    	listDeliveryChargesDtl.add(objDelChargesModel);
-		    		map.put(obj.getStrAreaCode(), obj.getStrAreaName());
+			    		objDelChargesModel.setStrCustAreaCode(obj.getStrAreaCode());
+			    		objDelChargesModel.setDblValue(obj.getDblIncentives());
+			    		objDelChargesModel.setStrUserCreated(webStockUserCode);
+				    	objDelChargesModel.setStrUserEdited(webStockUserCode);
+				    	objDelChargesModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				    	objDelChargesModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				    	objDelChargesModel.setStrDataPostFlag("Y");
+				    	listDeliveryChargesDtl.add(objDelChargesModel);
+			    		map.put(obj.getStrAreaCode(), obj.getStrAreaName());
 		    		}
+			    }
 		    }
-		    }
-		    
-		    
 		    objModel.setListDeliveryChargesDtl(listDeliveryChargesDtl);
 		    objMasterService.funSaveUpdateDeliverPersonMaster(objModel);
 						
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+dpCode);
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='DeliveryBoy' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmPOSDeliveryPersonMaster.html?saddr="+urlHits);
 		}

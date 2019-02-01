@@ -37,6 +37,9 @@
 				$("#txtFromDate" ).datepicker('setDate', Dat); 
 				$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
 				$("#txtToDate" ).datepicker('setDate', Dat);  
+				
+				var POSName="${gPOSName}"
+				$('#lblPOSName').html(POSName);
 		});
 			
 	function funLoadAllReports()
@@ -125,20 +128,47 @@
         	 //document.getElementById("mailReport").value = "false";
          }
 	 }
+	 
+	 function funSelectAllChkBox()
+	 {
+		var table = document.getElementById("tblDayEndEmailRpt");
+		var rowCount = table.rows.length;
+		if($("#chkReportAllCheck").is(':checked'))
+		{
+			for(i=0; i<rowCount; i++)
+			$("#tblDayEndEmailRpt tr:eq("+i+") td:eq(1) input:checkbox").prop("checked", true);
+		 	$("#tblDayEndEmailRpt tr:eq("+this.rowIndex+") td:eq(1) input:checkbox").prop("value", true);
+		}
+		else{
+	 		 	for(i=0; i<rowCount; i++)
+				$("#tblDayEndEmailRpt tr:eq("+i+") td:eq(1) input:checkbox").prop("checked", false);		
+	 		 	$("#tblDayEndEmailRpt tr:eq("+this.rowIndex+") td:eq(1) input:checkbox").prop("value", false);
+		 	}
+	 }
+	 
+	 function getContextPath() 
+	 {
+	    return window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+	 }
 </script>
 <body onload="funLoadAllReports()">
 <br>
 <br>
 	<s:form name="frmMailDayEndReport" id="frmMailDayEndReport" method="POST" action ="MailDayEndReport.html">
 	<table class="masterTable">
-	<tr><td></td><td></td></tr>
+	
 	<tr>
 	<td><label>From Date</label>&emsp;&ensp;&emsp;&ensp;
 	<s:input id="txtFromDate" required="required" path="fromDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/>
 	</td>
 	 <td><label>To Date</label>&emsp;&ensp;&emsp;&ensp;
 		<s:input id="txtToDate" required="required" path="toDate" pattern="\d{1,2}-\d{1,2}-\d{4}" cssClass="calenderTextBox"/></td>
-	<tr><td></td><td></td></tr>
+	<tr>
+		<td style="width: 67%;"><label>POS Name : </label><label id="lblPOSName" /></td>
+		<td>
+			<label style="font-size:11px;font-weight: bold;">SELECT ALL  </label>
+			<s:input  type="checkBox" id="chkReportAllCheck" path="strReportName" onclick="funSelectAllChkBox()"/></td>
+	</tr>
 	<tr>
 			<td colspan="2">
 			<div id="divReportTables" style="width: 100%; height: 500px;">

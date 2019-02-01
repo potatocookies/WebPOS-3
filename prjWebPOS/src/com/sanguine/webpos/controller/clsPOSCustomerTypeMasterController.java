@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSCustomerTypeMasterBean;
 import com.sanguine.webpos.model.clsCustomerTypeMasterModel;
@@ -36,6 +37,9 @@ public class clsPOSCustomerTypeMasterController {
 	
 	@Autowired
 	clsPOSMasterService objMasterService;
+	
+	@Autowired 
+	private clsBaseServiceImpl objBaseServiceImpl;
 
 	@RequestMapping(value = "/frmPOSCustomerTypeMaster", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model,HttpServletRequest request)throws Exception
@@ -106,11 +110,13 @@ public class clsPOSCustomerTypeMasterController {
 			    objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			    objModel.setStrDataPostFlag("N");
 			    objMasterService.funSaveUpdateCustomerTypeMaster(objModel);
-			
-			req.getSession().setAttribute("success", true);
-		
-			req.getSession().setAttribute("successMessage"," "+customerTypeMasterCode);
-									
+				
+				req.getSession().setAttribute("success", true);
+				req.getSession().setAttribute("successMessage"," "+customerTypeMasterCode);
+				
+				String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='CustomerType' ";
+				objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+				
 			return new ModelAndView("redirect:/frmPOSCustomerTypeMaster.html?saddr="+urlHits);
 		}
 		catch(Exception ex)

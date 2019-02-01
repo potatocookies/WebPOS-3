@@ -1096,7 +1096,7 @@ function funPrintKOT(costCenterCode,costCenterName,areaCode,tableNo,kotNo)
 			{
 				var itemName=tblBillItemDtl.rows[i].cells[0].children[0].value;
 				var itemQty=tblBillItemDtl.rows[i].cells[1].children[0].value;
-				alert(itemQty);
+				
 				if(itemQty!="0" )
 				{
 					var itemAmt=tblBillItemDtl.rows[i].cells[2].children[0].value;

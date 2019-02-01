@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSMenuItemMasterBean;
 import com.sanguine.webpos.model.clsMenuItemMasterModel;
@@ -40,6 +41,9 @@ public class clsPOSMenuItemMasterController{
 	
 	@Autowired
 	private clsPOSUtilityController objUtilityController;
+	
+	@Autowired 
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	@Autowired
 	clsPOSMasterService objMasterService;
@@ -247,6 +251,9 @@ public class clsPOSMenuItemMasterController{
 						
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+itemCode);
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='MenuItem' ";
+			objBaseServiceImpl.funExecuteUpdate(sql, "sql");
 									
 			return new ModelAndView("redirect:/frmPOSMenuItem.html?saddr="+urlHits);
 		}

@@ -242,8 +242,8 @@ public class clsPOSAveragePerCoverReportController
 							exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 							resp.setHeader("Content-Disposition", "inline;filename=AvgPerCoverSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 							exporter.exportReport();
-							servletOutputStream.flush();
-							servletOutputStream.close();
+							/*servletOutputStream.flush();
+							servletOutputStream.close();*/
 						}
 					}
 					else

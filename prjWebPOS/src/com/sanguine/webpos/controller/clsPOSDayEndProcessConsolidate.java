@@ -1,6 +1,7 @@
 package com.sanguine.webpos.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class clsPOSDayEndProcessConsolidate {
 	 @Autowired 
 	 clsPOSDayEndUtility objPOSDayEndUtility;
 	 public static String loginPOS;
-	 public static JSONObject jsonConsolidateDayEndReturn=new JSONObject();
+	 public static Map mapConsolidateDayEndReturn=new HashMap();
 		
 	 String strPOSCode="",strPOSName="",strPOSDate="",strClientCode="",userCode="",strShiftNo="";
 
@@ -63,8 +64,8 @@ public class clsPOSDayEndProcessConsolidate {
 	{
 		
 		clsPOSDayEndProcessBean objDayEndProcessBean= new clsPOSDayEndProcessBean();
-	 	JSONArray jArrDayEnd=new JSONArray();
-	 	JSONObject DayEndProcessData= new JSONObject();
+	 	List listDayEnd=new ArrayList();
+	 	Map DayEndProcessData= new HashMap();
 	 	strPOSCode=request.getSession().getAttribute("loginPOS").toString();
 	 	loginPOS=strPOSCode;
 	 	String urlHits="1";
@@ -96,78 +97,72 @@ public class clsPOSDayEndProcessConsolidate {
 		    	
 		    }
 		
-		JSONObject jsDayEnd= new JSONObject();
-		JSONObject jsSettlement= new JSONObject();
-		JSONObject jsSalesInProg= new JSONObject();
-		JSONObject jsUnSettleBill= new JSONObject();
+		Map mapDayEnd= new HashMap();
+		Map mapSettlement= new HashMap();
+		Map mapSalesInProg= new HashMap();
+		Map mapUnSettleBill= new HashMap();
 		
 		DayEndProcessData=funLoadDayEndData();
-		jsDayEnd=(JSONObject) DayEndProcessData.get("DayEnd");
-		jsSettlement=(JSONObject) DayEndProcessData.get("Settlement");
-		jsSalesInProg=(JSONObject) DayEndProcessData.get("SalesInProg");
-		jsUnSettleBill=(JSONObject) DayEndProcessData.get("UnSettleBill");
+		mapDayEnd=(Map) DayEndProcessData.get("DayEnd");
+		mapSettlement=(Map) DayEndProcessData.get("Settlement");
+		mapSalesInProg=(Map) DayEndProcessData.get("SalesInProg");
+		mapUnSettleBill=(Map) DayEndProcessData.get("UnSettleBill");
 		
 		ArrayList al=new ArrayList<ArrayList<String>>();
-		jArrDayEnd=(JSONArray) jsDayEnd.get("DayEndArr");
-		objDayEndProcessBean.setjArrDayEnd(jArrDayEnd);
-		objDayEndProcessBean.setTotalpax(jsDayEnd.get("totalPax").toString());
-		objDayEndProcessBean.setjArrDayEndTotal((JSONArray) jsDayEnd.get("DayEndJArrTot"));
+		listDayEnd=(List) mapDayEnd.get("DayEndArr");
+		objDayEndProcessBean.setListDayEnd(listDayEnd);
+		objDayEndProcessBean.setTotalpax(mapDayEnd.get("totalPax").toString());
+		objDayEndProcessBean.setListDayEndTotal((List) mapDayEnd.get("DayEndJArrTot"));
 		
-		objDayEndProcessBean.setjArrSettlement((JSONArray) jsSettlement.get("jArrSettlement"));
-		objDayEndProcessBean.setjArrSettlementTotal((JSONArray) jsSettlement.get("jArrsettlementTot"));
-		
-		objDayEndProcessBean.setjArrSalesInProg((JSONArray) jsSalesInProg.get("SalesInProgress"));
-		
-		objDayEndProcessBean.setjArrUnSettlebill((JSONArray) jsUnSettleBill.get("UnSettleBill"));
-	
-		objDayEndProcessBean.setTotal(jsUnSettleBill.get("total").toString());
+		objDayEndProcessBean.setListSettlement((List) mapSettlement.get("jArrSettlement"));
+		objDayEndProcessBean.setListSettlementTotal((List) mapSettlement.get("jArrsettlementTot"));
+		objDayEndProcessBean.setListSalesInProg((List) mapSalesInProg.get("SalesInProgress"));
+		objDayEndProcessBean.setListUnSettlebill((List) mapUnSettleBill.get("UnSettleBill"));
+		objDayEndProcessBean.setTotal(mapUnSettleBill.get("total").toString());
 			
-		
-	 	if("2".equalsIgnoreCase(urlHits)){
+		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSShiftEndProcessConsolidate_1","command", objDayEndProcessBean);
 		}else if("1".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSShiftEndProcessConsolidate","command", objDayEndProcessBean);
 		}else {
 			return null;
 		}
-		
-	
 	}
 	
-	public JSONObject funLoadDayEndData()
+	public Map funLoadDayEndData()
 	{
-		JSONObject DayEndDataProcess= new JSONObject();
-		JSONObject DayEndData= new JSONObject();
-		JSONObject jsSettlement= new JSONObject();
-		JSONObject jsSalesInProg= new JSONObject();
-		JSONObject jsUnSettleBill= new JSONObject();
-		JSONArray lastJson= new JSONArray();
-		JSONArray jArr=new JSONArray();
-		JSONArray jArrtmp=new JSONArray();
+		Map DayEndDataProcess= new HashMap();
+		Map DayEndData= new HashMap();
+		Map mapSettlement= new HashMap();
+		Map mapSalesInProg= new HashMap();
+		Map mapUnSettleBill= new HashMap();
+		List listLastJson= new ArrayList();
+		List jArr=new ArrayList();
+		List jArrtmp=new ArrayList();
 			
 		try{
-			JSONObject DayEndDataWS= funFillCurrencyGrid();
-			JSONObject SettlementWS= funFillSettlementWiseSalesGrid();
-			JSONObject SalesInProgWS= funFillTableSaleInProgress();
-			JSONObject UnSettleBillws= funFillTableUnsettleBills();
+			Map DayEndDataWS= funFillCurrencyGrid();
+			Map SettlementWS= funFillSettlementWiseSalesGrid();
+			Map SalesInProgWS= funFillTableSaleInProgress();
+			Map UnSettleBillws= funFillTableUnsettleBills();
 			 
 			 dblApproxSaleAmount=0;
 				
-				DayEndData.put("DayEndArr",funGetJsonArrRowDayEnd((JSONArray)DayEndDataWS.get("tblDayEnd")));// lastJson);
+				DayEndData.put("DayEndArr",funGetJsonArrRowDayEnd((List)DayEndDataWS.get("tblDayEnd")));// listLastJson);
 				DayEndData.put("totalPax", DayEndDataWS.get("totalPax").toString());
-				DayEndData.put("DayEndJArrTot", funGetJsonArrRowDayEnd((JSONArray)DayEndDataWS.get("TotalDayEnd")));
+				DayEndData.put("DayEndJArrTot", funGetJsonArrRowDayEnd((List)DayEndDataWS.get("TotalDayEnd")));
 				
-				jsSettlement.put("jArrSettlement", funGetJsonArrRowSettlement((JSONArray)SettlementWS.get("settlement")));
-				jsSettlement.put("jArrsettlementTot", funGetJsonArrRowSettlement((JSONArray)SettlementWS.get("settlementTot")));
+				mapSettlement.put("jArrSettlement", funGetJsonArrRowSettlement((List)SettlementWS.get("settlement")));
+				mapSettlement.put("jArrsettlementTot", funGetJsonArrRowSettlement((List)SettlementWS.get("settlementTot")));
 			
-				jsSalesInProg.put("SalesInProgress",funGetJsonArrRowSalesOfProg((JSONArray)SalesInProgWS.get("salesInProg")));
+				mapSalesInProg.put("SalesInProgress",funGetJsonArrRowSalesOfProg((List)SalesInProgWS.get("salesInProg")));
 			
-				jsUnSettleBill.put("UnSettleBill",funGetJsonArrRowSettlement((JSONArray)UnSettleBillws.get("jArrUnSettle")));
-				jsUnSettleBill.put("total", UnSettleBillws.get("ApproxSaleAmount").toString());
+				mapUnSettleBill.put("UnSettleBill",funGetJsonArrRowSettlement((List)UnSettleBillws.get("jArrUnSettle")));
+				mapUnSettleBill.put("total", UnSettleBillws.get("ApproxSaleAmount").toString());
 				DayEndDataProcess.put("DayEnd", DayEndData);
-				DayEndDataProcess.put("Settlement", jsSettlement);
-				DayEndDataProcess.put("SalesInProg", jsSalesInProg);
-				DayEndDataProcess.put("UnSettleBill", jsUnSettleBill);
+				DayEndDataProcess.put("Settlement", mapSettlement);
+				DayEndDataProcess.put("SalesInProg", mapSalesInProg);
+				DayEndDataProcess.put("UnSettleBill", mapUnSettleBill);
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -176,13 +171,13 @@ public class clsPOSDayEndProcessConsolidate {
 		return DayEndDataProcess;
 	}
 
-	public JSONObject funFillCurrencyGrid()throws Exception
+	public Map funFillCurrencyGrid()throws Exception
 	{
 		totalSales=0;
-		JSONArray jArrDayEnd=new JSONArray();
-		 JSONArray jArrDayEndTot=new JSONArray();
-		JSONObject jsonDayEnd =new JSONObject();
-		JSONObject jsonDayEndTot =new JSONObject();
+		List listDayEnd=new ArrayList();
+		List listDayEndTot=new ArrayList();
+		Map mapDayEnd =new HashMap();
+		Map mapDayEndTot =new HashMap();
 		//List listDayEnd=new ArrayList<>();
 		sql.setLength(0);
         sql.append("select strSettelmentDesc from tblsettelmenthd where strSettelmentType='Cash'");
@@ -191,7 +186,7 @@ public class clsPOSDayEndProcessConsolidate {
 		{
 			for (int i = 0; i < listSql.size(); i++) 
 			{
-				JSONObject jsonOb =new JSONObject();
+				Map jsonOb =new HashMap();
 				List dataList=new ArrayList();
 				String str= (String) listSql.get(i);
 			
@@ -207,12 +202,12 @@ public class clsPOSDayEndProcessConsolidate {
 				jsonOb.put("9","0.00");
 				jsonOb.put("10","0");
 		
-				jArrDayEnd.add(jsonOb);
+				listDayEnd.add(jsonOb);
 				
 				
 				}
 			
-			jsonDayEnd.put("tblDayEnd", jArrDayEnd);
+			mapDayEnd.put("tblDayEnd", listDayEnd);
 		}
 		sql.setLength(0);
 		 sql.append("SELECT c.strSettelmentDesc,sum(b.dblSettlementAmt),sum(a.dblDiscountAmt),c.strSettelmentType "
@@ -236,9 +231,9 @@ public class clsPOSDayEndProcessConsolidate {
 		
 			            totalSales = totalSales + (Double.parseDouble(obj[1].toString().toString()));
 		
-			            for (int cntDayEndTable = 0; cntDayEndTable < jArrDayEnd.size(); cntDayEndTable++)
+			            for (int cntDayEndTable = 0; cntDayEndTable < listDayEnd.size(); cntDayEndTable++)
 			            {
-			            	JSONObject jr=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+			            	Map jr=(Map) listDayEnd.get(cntDayEndTable);
 			            	
 			            	if(jr.get("0").toString().equals(obj[0].toString()))
 			            	{
@@ -276,15 +271,15 @@ public class clsPOSDayEndProcessConsolidate {
 		    		totalBillNo = Integer.parseInt(listTotBill.get(0).toString());
 				}
 		    	
-		        // jsonDayEndTot
+		        // mapDayEndTot
 		        
-		         JSONObject jsonOb =new JSONObject();
+		         Map jsonOb =new HashMap();
 		         jsonOb.put("0", "Total Sales");
 		         jsonOb.put("1", totalSales);
 		         jsonOb.put("8", totalBillNo);
 		     //    jsonOb.put("1", discountRecords);
 		         
-		         //jArrDayEndTot.put(jsonOb);
+		         //listDayEndTot.put(jsonOb);
 		         sql.setLength(0);
 		         sql.append("select count(dblAdvDeposite) from tbladvancereceipthd "
 		                 + "where dtReceiptDate='" + strPOSDate + "' and intShiftCode=" + shiftNo);
@@ -313,7 +308,7 @@ public class clsPOSDayEndProcessConsolidate {
 				            	 Object[] obj = (Object[]) listSql.get(0);
 				            	 advCash = Double.parseDouble(obj[0].toString());
 								}
-				             JSONObject jr=(JSONObject) jArrDayEnd.get(0);
+				             Map jr=(Map) listDayEnd.get(0);
 				             jr.put("4",advCash );
 				           }
 					}
@@ -331,11 +326,11 @@ public class clsPOSDayEndProcessConsolidate {
 			    		{
 			    			 Object[] obj = (Object[]) listTransaction.get(i);
 					        
-			    			 for (int cntDayEndTable = 0; cntDayEndTable < jArrDayEnd.size(); cntDayEndTable++)
+			    			 for (int cntDayEndTable = 0; cntDayEndTable < listDayEnd.size(); cntDayEndTable++)
 				             {
 				                 if (obj[0].toString().equals("Float"))
 				                 {
-				                	  JSONObject job=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+				                	  Map job=(Map) listDayEnd.get(cntDayEndTable);
 				                         if (job.get("0").toString().equals(obj[2].toString()))
 					                     {
 					                    	 totalFloat += Double.parseDouble(obj[1].toString());
@@ -345,7 +340,7 @@ public class clsPOSDayEndProcessConsolidate {
 				                 }
 				                 else if (obj[0].toString().equals("Transfer In"))
 				                 {
-				                	 JSONObject job=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+				                	 Map job=(Map) listDayEnd.get(cntDayEndTable);
 			                         if (job.get("0").toString().equals(obj[2].toString()))
 				                     {
 				                         totalTransIn +=Double.parseDouble(obj[1].toString());
@@ -355,7 +350,7 @@ public class clsPOSDayEndProcessConsolidate {
 				                 }
 				                 else if (obj[0].toString().equals("Payments"))
 				                 {
-				                	 JSONObject job=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+				                	 Map job=(Map) listDayEnd.get(cntDayEndTable);
 			                         if (job.get("0").toString().equals(obj[2].toString()))
 				                     {
 				                         totalPayments += Double.parseDouble(obj[1].toString());
@@ -365,7 +360,7 @@ public class clsPOSDayEndProcessConsolidate {
 				                 }
 				                 else if (obj[0].toString().equals("Transfer Out"))
 				                 {
-				                	 JSONObject job=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+				                	 Map job=(Map) listDayEnd.get(cntDayEndTable);
 			                         if (job.get("0").toString().equals(obj[2].toString()))
 				                     {
 				                         totalTransOuts += Double.parseDouble(obj[1].toString());
@@ -375,7 +370,7 @@ public class clsPOSDayEndProcessConsolidate {
 				                 }
 				                 else if (obj[0].toString().equals("Withdrawl"))
 				                 {
-				                	 JSONObject job=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+				                	 Map job=(Map) listDayEnd.get(cntDayEndTable);
 			                         if (job.get("0").toString().equals(obj[2].toString()))
 				                     {
 				                         totalWithdrawl += Double.parseDouble(obj[1].toString());
@@ -401,7 +396,7 @@ public class clsPOSDayEndProcessConsolidate {
 				          
 							}
 				      }
-				    	jsonDayEnd.put("totalPax", totalPax);
+				    	mapDayEnd.put("totalPax", totalPax);
 				    		
 				    	 cashIn = cashIn + advCash + sales;
 	
@@ -415,16 +410,16 @@ public class clsPOSDayEndProcessConsolidate {
 				         jsonOb.put("9", cashOut);
 				         jsonOb.put("10","");
 				         
-				         jArrDayEndTot.add(jsonOb);
+				         listDayEndTot.add(jsonOb);
 				         
 				         double inHandCash = (cashIn) - cashOut;
 				         
-				         jsonDayEnd.put("TotalDayEnd", jArrDayEndTot);
+				         mapDayEnd.put("TotalDayEnd", listDayEndTot);
 				    	
 				         double totalReceipts = 0.00, totalPayments = 0.00, balance = 0.00;
-				         for (int cntDayEndTable = 0; cntDayEndTable < jArrDayEnd.size(); cntDayEndTable++)
+				         for (int cntDayEndTable = 0; cntDayEndTable < listDayEnd.size(); cntDayEndTable++)
 				         {
-				        	 JSONObject job=(JSONObject) jArrDayEnd.get(cntDayEndTable);
+				        	 Map job=(Map) listDayEnd.get(cntDayEndTable);
 	                         totalReceipts = Double.parseDouble(job.get("1").toString())
 				                     + Double.parseDouble(job.get("2").toString())
 				                     + Double.parseDouble(job.get("3").toString())
@@ -437,16 +432,16 @@ public class clsPOSDayEndProcessConsolidate {
 				             job.put("10", balance);
 				            
 				         }
-	return jsonDayEnd;
+	return mapDayEnd;
 	}
 	
-	public JSONObject funFillSettlementWiseSalesGrid() throws Exception
+	public Map funFillSettlementWiseSalesGrid() throws Exception
     {
 		
-		JSONObject jsonSettlement =new JSONObject();
-		JSONObject jsonSettlementTot =new JSONObject();
-		JSONArray jArrSettt=new JSONArray();
-		JSONArray jArrSetttTot=new JSONArray();
+		Map mapSettlement =new HashMap();
+		Map mapSettlementTot =new HashMap();
+		List listSettt=new ArrayList();
+		List listSetttTot=new ArrayList();
 		 totalDiscount = 0;
 	     totalSales = 0;
 	       sql.setLength(0);sql.append("SELECT c.strSettelmentDesc,sum(b.dblSettlementAmt),sum(a.dblDiscountAmt) "
@@ -462,13 +457,13 @@ public class clsPOSDayEndProcessConsolidate {
 			    		for(int i=0;i<listSettlementSale.size();i++)
 			    		{
 			    			 Object[] obj = (Object[]) listSettlementSale.get(i);
-			    			 JSONObject js=new JSONObject();
+			    			 Map js=new HashMap();
 			    			 js.put("0",obj[0].toString());
 			    			 js.put("1",obj[1].toString());
 				        
 				            totalDiscount = totalDiscount + (Double.parseDouble(obj[2].toString()));
 				            totalSales = totalSales + (Double.parseDouble(obj[1].toString()));
-				            jArrSettt.add(js);
+				            listSettt.add(js);
 			    		}
 				}
 		    	
@@ -497,44 +492,44 @@ public class clsPOSDayEndProcessConsolidate {
 				    			totalBillNo = Integer.parseInt(String.valueOf(listTotalBills.get(0)));
 			            }
 			    	
-				    	JSONObject job=new JSONObject();
+				    	Map job=new HashMap();
 				    	job.put("0","Total Sales");
 				    	job.put("1",totalSales);
 				    	job.put("2",totalBillNo);
-				    	jArrSetttTot.add(job);
+				    	listSetttTot.add(job);
 				    	
-				    	job=new JSONObject();
+				    	job=new HashMap();
 				    	job.put("0","Total Discount");
 				    	job.put("1",totalDiscount);
 				    	job.put("2",noOfDiscountedBills);
-				    	jArrSetttTot.add(job);
+				    	listSetttTot.add(job);
 			         
 			    	
 			         //tblSettlementWiseSalesTotal
-			    	if (jArrSettt.size() > 0)
+			    	if (listSettt.size() > 0)
 			        {
-			    		JSONObject jo=(JSONObject) jArrSettt.get(0);
+			    		Map jo=(Map) listSettt.get(0);
 			    		jo.put("2", totalBillNo);
 			            
 			        }
 			        dblApproxSaleAmount += totalSales;
 			        
-			        jsonSettlement.put("settlement", jArrSettt);
-			        jsonSettlement.put("settlementTot", jArrSetttTot);
-		return jsonSettlement;
+			        mapSettlement.put("settlement", listSettt);
+			        mapSettlement.put("settlementTot", listSetttTot);
+		return mapSettlement;
     }
 	      
-	public JSONObject funFillTableSaleInProgress() throws Exception
+	public Map funFillTableSaleInProgress() throws Exception
 	{
-		JSONObject jsonSaleInProgress =new JSONObject();
-		JSONArray jArrSalesInProgress=new JSONArray();
+		Map mapSaleInProgress =new HashMap();
+		List listSalesInProgress=new ArrayList();
 		 double dblSaleInProgressAmount = 0.00;
 		 
         StringBuilder sql_FillTable =new StringBuilder("select b.strTableName,sum(a.dblAmount) "
                 + " from tblitemrtemp a,tbltablemaster b "
                 + " where a.strTableNo=b.strTableNo and a.strNCKotYN='N' "
                 + " group by a.strTableNo");
-        JSONObject jsonOb=new JSONObject();
+        Map jsonOb=new HashMap();
         List listSaleprog =  objBaseService.funGetList(sql_FillTable, "sql");
 	    	if (listSaleprog.size() > 0) 
 			{
@@ -542,30 +537,30 @@ public class clsPOSDayEndProcessConsolidate {
 		    		{
 		    			 Object[] obj = (Object[]) listSaleprog.get(i);
 		    			 dblSaleInProgressAmount += Double.parseDouble(obj[1].toString());
-		    			 JSONObject jOb=new JSONObject();
+		    			 Map jOb=new HashMap();
 		    			 jOb.put("0", obj[0].toString());
 		    			 jOb.put("1", obj[1].toString());
 		    			
-		    			 jArrSalesInProgress.add(jOb);
+		    			 listSalesInProgress.add(jOb);
 		    			
 				       }
 			}
 	    	jsonOb.put("0","");
 	    	jsonOb.put("1","");
-	    	jArrSalesInProgress.add(jsonOb);
+	    	listSalesInProgress.add(jsonOb);
 	    	jsonOb=new JSONObject();
 	    	jsonOb.put("0","Total");
 	    	jsonOb.put("1",dblSaleInProgressAmount);
-	    	jArrSalesInProgress.add(jsonOb);
+	    	listSalesInProgress.add(jsonOb);
 	    	dblApproxSaleAmount += dblSaleInProgressAmount;
-	    	jsonSaleInProgress.put("salesInProg", jArrSalesInProgress);
-		return jsonSaleInProgress;
+	    	mapSaleInProgress.put("salesInProg", listSalesInProgress);
+		return mapSaleInProgress;
 	}
 		
-	public JSONObject funFillTableUnsettleBills() throws Exception
+	public Map funFillTableUnsettleBills() throws Exception
 	{
-		JSONObject jsonUnSettleBill =new JSONObject();
-		JSONArray jArrUnSettleBill=new JSONArray();
+		Map mapUnSettleBill =new HashMap();
+		List listUnSettleBill=new ArrayList();
 		 double unSetteledBillAmount = 0.00;
 		 
 		 sql.setLength(0);
@@ -581,12 +576,12 @@ public class clsPOSDayEndProcessConsolidate {
 		    		{
 		    			 Object[] obj = (Object[]) listUnsettledBills.get(i);
 		                 unSetteledBillAmount += Double.parseDouble(obj[2].toString());
-			             JSONObject jb=new JSONObject();
+			             Map jb=new HashMap();
 			             jb.put("0",obj[0].toString());
 			             jb.put("1",obj[1].toString());
 			             jb.put("2",obj[2].toString());
 		               
-			             jArrUnSettleBill.add(jb);
+			             listUnSettleBill.add(jb);
 			        }
 			}
 	       
@@ -603,42 +598,42 @@ public class clsPOSDayEndProcessConsolidate {
 			    		{
 			    			 Object[] obj = (Object[]) listUnBillsDirectBiller.get(i);
 			    			 unSetteledBillAmount +=  Double.parseDouble(obj[1].toString());
-			    			    JSONObject jb=new JSONObject();
+			    			    Map jb=new HashMap();
 					             jb.put("0",obj[0].toString());
 					             jb.put("1","Direct Biller");
 					             jb.put("2",obj[1].toString());
 				               
-					             jArrUnSettleBill.add(jb);
+					             listUnSettleBill.add(jb);
 			    			
 					     }
 				}
 		    	
-		     JSONObject jsonOb=new JSONObject();
+		     Map jsonOb=new HashMap();
 		    	jsonOb.put("0","");
 		    	jsonOb.put("1","");
 		    	jsonOb.put("2","");
-		    	jArrUnSettleBill.add(jsonOb);
-		    	jsonOb=new JSONObject();
+		    	listUnSettleBill.add(jsonOb);
+		    	jsonOb=new HashMap();
 		    	jsonOb.put("0","Total");
 		    	jsonOb.put("1","");
 		    	jsonOb.put("2",unSetteledBillAmount);
-		    	jArrUnSettleBill.add(jsonOb);
+		    	listUnSettleBill.add(jsonOb);
 		    	
-		    	jsonUnSettleBill.put("jArrUnSettle", jArrUnSettleBill);
+		    	mapUnSettleBill.put("jArrUnSettle", listUnSettleBill);
 		    	
 		    	 dblApproxSaleAmount += unSetteledBillAmount;
-		    	 jsonUnSettleBill.put("ApproxSaleAmount", dblApproxSaleAmount);
+		    	 mapUnSettleBill.put("ApproxSaleAmount", dblApproxSaleAmount);
 		    	 
-		return jsonUnSettleBill;
+		return mapUnSettleBill;
 	}
 	
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/consolidateStartDayProcess",  method = RequestMethod.GET)
-	public @ResponseBody JSONObject funConsolidateStartDayProcess(HttpServletRequest req)
+	public @ResponseBody Map funConsolidateStartDayProcess(HttpServletRequest req)
 	{
-		JSONObject jsonDayStart=new JSONObject();
-		 jsonDayStart.put("DayStart", "Day Not Start");
+		Map mapDayStart=new HashMap();
+		 mapDayStart.put("DayStart", "Day Not Start");
 		//String strDayStart="N";
 		try{
 			//funShiftStartProcess();
@@ -649,7 +644,7 @@ public class clsPOSDayEndProcessConsolidate {
 			req.getSession().setAttribute("gShiftEnd","N");
 		    req.getSession().setAttribute("gDayEnd","N");
 		    req.getSession().setAttribute("gShiftNo",shiftNo);	
-			  jsonDayStart.put("DayStart", "Day Started Successfully");
+			  mapDayStart.put("DayStart", "Day Started Successfully");
 			  //strDayStart="Y";
 		}
 		catch(Exception e)
@@ -657,12 +652,12 @@ public class clsPOSDayEndProcessConsolidate {
 			e.printStackTrace();
 		}
 		
-		return jsonDayStart;//new ModelAndView("frmPOSShiftEndProcessConsolidate");//return jsonDayStart; //new clsDayEndProcessBean();
+		return mapDayStart;//new ModelAndView("frmPOSShiftEndProcessConsolidate");//return mapDayStart; //new clsDayEndProcessBean();
 	}
 	
-	public JSONObject funShiftStartProcess(String shift) 
+	public Map funShiftStartProcess(String shift) 
     {
-		JSONObject jObj=new JSONObject();
+		Map jObj=new HashMap();
 		try{
 				
 				
@@ -714,12 +709,11 @@ public class clsPOSDayEndProcessConsolidate {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/ConsolidateEndDayProcess",  method = RequestMethod.GET)
-	public @ResponseBody JSONObject funConsolidateEndDayProcess(@RequestParam("emailReport") String EmailReport, HttpServletRequest req)
+	public @ResponseBody Map funConsolidateEndDayProcess(@RequestParam("emailReport") String EmailReport, HttpServletRequest req)
 	{
-		
-		 userCode=req.getSession().getAttribute("gUserCode").toString();
-		 strClientCode=req.getSession().getAttribute("gClientCode").toString();
-		 strPOSDate=req.getSession().getAttribute("gPOSDate").toString();
+		userCode=req.getSession().getAttribute("gUserCode").toString();
+		strClientCode=req.getSession().getAttribute("gClientCode").toString();
+		strPOSDate=req.getSession().getAttribute("gPOSDate").toString();
 		String ShiftNo="1";
 		
 		String shiftEnd="", DayEnd="", strShiftNo="";
@@ -727,12 +721,12 @@ public class clsPOSDayEndProcessConsolidate {
 		funConsolidateDayEndProcess( strPOSCode, ShiftNo, userCode, strPOSDate, strClientCode, EmailReport,req);
 		 
 		req.getSession().setAttribute("gDayEnd","Y");
-		jsonConsolidateDayEndReturn.put("msg", "Succesfully Day End");
+		mapConsolidateDayEndReturn.put("msg", "Succesfully Day End");
 		//shiftEnd=jObj.get("shiftEnd").toString();
 		//DayEnd=jObj.get("DayEnd").toString();
 		///ShiftNo=jObj.get("shiftNo").toString();
      
-		return jsonConsolidateDayEndReturn;//new ModelAndView("frmPOSShiftEndProcessConsolidate");
+		return mapConsolidateDayEndReturn;//new ModelAndView("frmPOSShiftEndProcessConsolidate");
 	}
 	
 	//btnShiftEndMouseClicked()..jpos
@@ -771,7 +765,7 @@ public class clsPOSDayEndProcessConsolidate {
 			{
 				e.printStackTrace();
 			}
-			//return jsonConsolidateDayEndReturn;
+			//return mapConsolidateDayEndReturn;
 		}
 		
 		private void funShiftEndButtonClicked(HttpServletRequest req)
@@ -894,7 +888,7 @@ public class clsPOSDayEndProcessConsolidate {
 		                objBaseService.funExecuteUpdate(sql.toString(),"sql");
 		                //clsGlobalVarClass.gDayEndReportForm = "DayEndReport";
 		                clsPOSDayEndProcess.gDayEndReportForm = "DayEndReport";
-		                jsonConsolidateDayEndReturn.put("gDayEndReportForm","DayEndReport");
+		                mapConsolidateDayEndReturn.put("gDayEndReportForm","DayEndReport");
 		                
 		               sql.setLength(0);
 		               sql.append("select date(max(dtePOSDate)),intShiftCode"
@@ -932,7 +926,7 @@ public class clsPOSDayEndProcessConsolidate {
 
 		                //clsGlobalVarClass.gDayEndReportForm = "DayEndReport";
 		                clsPOSDayEndProcess.gDayEndReportForm = "DayEndReport";
-		                jsonConsolidateDayEndReturn.put("gDayEndReportForm","DayEndReport");
+		                mapConsolidateDayEndReturn.put("gDayEndReportForm","DayEndReport");
 
 		                sql.setLength(0); 
 		                sql.append("select date(max(dtePOSDate)),intShiftCode"
@@ -973,9 +967,9 @@ public class clsPOSDayEndProcessConsolidate {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/ConsolidateCheckBillSettleBusyTable",  method = RequestMethod.GET)
-	public @ResponseBody JSONObject funCheckBillSettleBusyTable(HttpServletRequest req)
+	public @ResponseBody Map funCheckBillSettleBusyTable(HttpServletRequest req)
 	{
-		JSONObject jsonObj=new JSONObject();
+		Map jsonObj=new HashMap();
 		try{
 				
 //			strPOSCode=req.getSession().getAttribute("loginPOS").toString();
@@ -1010,58 +1004,58 @@ public class clsPOSDayEndProcessConsolidate {
 		return jsonObj; 
 	}
 	
-	public JSONArray funGetJsonArrRowDayEnd(JSONArray jArr)
+	public List funGetJsonArrRowDayEnd(List jArr)
 	{
-		JSONArray lastJson= new JSONArray();
+		List listLastJson= new ArrayList();
 		for(int i=0;i<jArr.size();i++)
 		{
 			
-			 JSONObject JsOb=(JSONObject) jArr.get(i);
+			 Map jsOb=(Map) jArr.get(i);
 			String str="";
 			//JSONArray jArrtmp=new JSONArray();
 			ArrayList al=new ArrayList<>();
 			for(int j=0;j<11;j++){
 				str=String.valueOf(j);
-				al.add(JsOb.get(str).toString());
+				al.add(jsOb.get(str).toString());
 			}
-			lastJson.add(al);
+			listLastJson.add(al);
 		}
-		return lastJson;
+		return listLastJson;
 	}
-	public JSONArray funGetJsonArrRowSettlement(JSONArray jArr)
+	public List funGetJsonArrRowSettlement(List jArr)
 	{
-		JSONArray lastJson= new JSONArray();
+		List listLastJson= new ArrayList();
 		for(int i=0;i<jArr.size();i++)
 		{
 			
-			 JSONObject JsOb=(JSONObject) jArr.get(i);
+			 Map jsOb=(Map) jArr.get(i);
 			String str="";
-			JSONArray jArrtmp=new JSONArray();
+			List jArrtmp=new ArrayList();
 			for(int j=0;j<3;j++){
 				str=String.valueOf(j);
-				jArrtmp.add(JsOb.get(str));
+				jArrtmp.add(jsOb.get(str));
 			}
-			lastJson.add(jArrtmp);
+			listLastJson.add(jArrtmp);
 		}
-		return lastJson;
+		return listLastJson;
 	}
 	
-	public JSONArray funGetJsonArrRowSalesOfProg(JSONArray jArr)
+	public List funGetJsonArrRowSalesOfProg(List jArr)
 	{
-		JSONArray lastJson= new JSONArray();
+		List listLastJson= new ArrayList();
 		for(int i=0;i<jArr.size();i++)
 		{
 			
-			 JSONObject JsOb=(JSONObject) jArr.get(i);
+			 Map jsOb=(Map) jArr.get(i);
 			String str="";
-			JSONArray jArrtmp=new JSONArray();
+			List jArrtmp=new ArrayList();
 			for(int j=0;j<2;j++){
 				str=String.valueOf(j);
-				jArrtmp.add(JsOb.get(str));
+				jArrtmp.add(jsOb.get(str));
 			}
-			lastJson.add(jArrtmp);
+			listLastJson.add(jArrtmp);
 		}
-		return lastJson;
+		return listLastJson;
 	}
 	
 }

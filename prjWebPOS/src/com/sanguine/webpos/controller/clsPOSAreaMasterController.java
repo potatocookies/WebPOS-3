@@ -102,6 +102,9 @@ public class clsPOSAreaMasterController {
 			objMasterService.funSaveUpdateAreaMaster(objModel);
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+areaCode);
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Area' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmPOSAreaMaster.html");
 		}

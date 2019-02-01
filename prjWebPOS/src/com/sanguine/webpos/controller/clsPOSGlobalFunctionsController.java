@@ -54,6 +54,9 @@ public class clsPOSGlobalFunctionsController
 	
 	public static String wsServerPortNo;
 	
+	public static String urlSqlDump;
+	
+	
 	@Value("${wsServerIp}")
 	public void setWsServerIp(String wsServerIp) {
 		clsPOSGlobalFunctionsController.wsServerIp = wsServerIp;
@@ -64,6 +67,11 @@ public class clsPOSGlobalFunctionsController
 	public void setWsServerPortNo(String wsServerPortNo) {
 		clsPOSGlobalFunctionsController.wsServerPortNo = wsServerPortNo;
 		setPOSWSURL("http://"+wsServerIp+":"+wsServerPortNo+"/prjSanguineWebService");
+	}
+	
+	@Value("${urlSqlDump}")
+	public void seturlSqlDump(String urlSqlDump) {
+		clsPOSGlobalFunctionsController.urlSqlDump = urlSqlDump;
 	}
 	
 	public void setPOSWSURL(String pOSWSURL) {

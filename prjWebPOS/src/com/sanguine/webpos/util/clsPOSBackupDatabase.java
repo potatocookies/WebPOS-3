@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +26,8 @@ import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 
 import com.sanguine.controller.clsGlobalFunctions;
@@ -87,22 +90,21 @@ public class clsPOSBackupDatabase
         objWriter.newLine();
         
         
-       // objWriter.write(objUtilityController.funGetDBBackUpPath(clientCode)+" -u root -proot jpos>"+"\""+filePath+"/%DATE_DAY%_%DATE_TIME%_JPOS.sql\" ");
-        JSONObject jsonConfig=new JSONObject(); 
-        JSONObject jObjPOSMaster=new JSONObject();
-	    jObjPOSMaster.put("strClientCode", clientCode);
-	    
-	    String posUrl = clsPOSGlobalFunctionsController.POSWSURL+"/WebPOSTools/funLoadConfigSetting";
-//	    JSONObject jsonData=objGlobal.funPOSTMethodUrlJosnObjectData(posUrl,jObjPOSMaster);
-//		
-//         JSONArray jArr=(JSONArray)jsonData.get("configSetting");
-//         jsonConfig=(JSONObject)jArr.get(0);
-//         
-//        objWriter.write(objUtilityController.funGetDBBackUpPath(clientCode) + " -u "+jsonConfig.get("strUserID").toString()+" -p"+jsonConfig.get("strPassword").toString()+" -h "+jsonConfig.get("strIPAddress").toString()+" "+jsonConfig.get("strDBName").toString()+">" + "\"" + filePath + "/" + fileName + ".sql\" ");
-//
-//        System.out.println(objUtilityController.funGetDBBackUpPath(clientCode) + " -u "+jsonConfig.get("strUserID").toString()+" -p"+jsonConfig.get("strPassword").toString()+" -h "+jsonConfig.get("strIPAddress").toString()+" "+jsonConfig.get("strDBName").toString()+">" + "\"" + filePath + "/" + fileName + ".sql\" ");
-//        System.out.println(fileName);
-
+        String fileFullNamemms = filePath + "\\" + fileName + ".sql";
+        String dumpPath=clsPOSGlobalFunctionsController.urlSqlDump;
+        
+        Properties prop = new Properties();
+		Resource resource = new ClassPathResource("resources/database.properties");
+		InputStream input = resource.getInputStream();
+		// load a properties file
+		prop.load(input);
+		// get the property value and print it out
+		
+		//changed for WebPOS connection
+		String dbName = prop.getProperty("database.urlWebPOS");
+        String[] arrDbName =dbName.split("/");
+        objWriter.write(dumpPath + " --hex-blob " + " -u " + clsGlobalFunctions.urluser + " -p" + clsGlobalFunctions.urlPassword + " -h " + "localhost" + " --default-character-set=utf8 --max_allowed_packet=64M --add-drop-table --skip-add-locks --skip-comments --add-drop-database --databases " + arrDbName[3].toString()+" >" + "\"" + fileFullNamemms + "\" ");
+        
         objWriter.flush();
         objWriter.close();
 
@@ -319,7 +321,7 @@ public class clsPOSBackupDatabase
         catch (Exception e)
         {
             //new clsUtility().funWriteErrorLog(e);
-        		clsPOSDayEndProcess.jsonDayEndReturn.put("DBBackupInvaliedPath","Invalid MySQL File Path!!!\nPlease Check DBConfig File.");
+        		clsPOSDayEndProcess.mapDayEndReturn.put("DBBackupInvaliedPath","Invalid MySQL File Path!!!\nPlease Check DBConfig File.");
         	
         		System.out.println("Invalied MySql File Path" );
                 //e.printStackTrace();

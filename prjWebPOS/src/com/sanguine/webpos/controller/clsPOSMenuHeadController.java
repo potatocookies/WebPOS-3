@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSMenuHeadBean;
@@ -51,6 +52,9 @@ public class clsPOSMenuHeadController {
 	
 	@Autowired
 	private intfBaseService objSer;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	
 	@RequestMapping(value = "/frmPOSMenuHead", method = RequestMethod.GET)
@@ -101,84 +105,85 @@ public class clsPOSMenuHeadController {
 		}
 		
 		if(objBean.getStrSubMenuHeadName()!="")
-		{	try
-		{
-			
-			String clientCode=req.getSession().getAttribute("gClientCode").toString();
-			String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
-			String subMenuCode = objBean.getStrSubMenuHeadCode();
-			
-			if (subMenuCode.trim().isEmpty())
+		{	
+			try
 			{
+				String clientCode=req.getSession().getAttribute("gClientCode").toString();
+				String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
+				String subMenuCode = objBean.getStrSubMenuHeadCode();
 				
-				List list=objUtilityController.funGetDocumentCode("POSSubMenuHead");
-				if (!list.get(0).toString().equals("0"))
+				if (subMenuCode.trim().isEmpty())
 				{
-					String strCode = "0";
-					String code = list.get(0).toString();
-					StringBuilder sb = new StringBuilder(code);
-					String ss = sb.delete(0, 2).toString();
-					for (int i = 0; i < ss.length(); i++)
+					
+					List list=objUtilityController.funGetDocumentCode("POSSubMenuHead");
+					if (!list.get(0).toString().equals("0"))
 					{
-						if (ss.charAt(i) != '0')
+						String strCode = "0";
+						String code = list.get(0).toString();
+						StringBuilder sb = new StringBuilder(code);
+						String ss = sb.delete(0, 2).toString();
+						for (int i = 0; i < ss.length(); i++)
 						{
-							strCode = ss.substring(i, ss.length());
-							break;
+							if (ss.charAt(i) != '0')
+							{
+								strCode = ss.substring(i, ss.length());
+								break;
+							}
+						}
+	
+						int intCode = Integer.parseInt(strCode);
+						intCode++;
+						if (intCode < 10)
+						{
+							subMenuCode = "SM00000" + intCode;
+						}
+						else if (intCode < 100)
+						{
+							subMenuCode = "SM0000" + intCode;
+						}
+						else if (intCode < 1000)
+						{
+							subMenuCode = "SM000" + intCode;
+						}
+						else if (intCode < 10000)
+						{
+							subMenuCode = "SM00" + intCode;
+						}
+						else if (intCode < 100000)
+						{
+							subMenuCode = "SM0" + intCode;
+						}
+						else if (intCode < 1000000)
+						{
+							subMenuCode = "SM" + intCode;
 						}
 					}
-
-					int intCode = Integer.parseInt(strCode);
-					intCode++;
-					if (intCode < 10)
+					else
 					{
-						subMenuCode = "SM00000" + intCode;
-					}
-					else if (intCode < 100)
-					{
-						subMenuCode = "SM0000" + intCode;
-					}
-					else if (intCode < 1000)
-					{
-						subMenuCode = "SM000" + intCode;
-					}
-					else if (intCode < 10000)
-					{
-						subMenuCode = "SM00" + intCode;
-					}
-					else if (intCode < 100000)
-					{
-						subMenuCode = "SM0" + intCode;
-					}
-					else if (intCode < 1000000)
-					{
-						subMenuCode = "SM" + intCode;
+						subMenuCode = "SM000001";
 					}
 				}
-				else
-				{
-					subMenuCode = "SM000001";
-				}
+				clsSubMenuHeadMasterModel objModel = new clsSubMenuHeadMasterModel(new clsSubMenuHeadMasterModel_ID(subMenuCode, clientCode));
+				objModel.setStrSubMenuHeadCode(subMenuCode);
+				objModel.setStrSubMenuHeadName(objBean.getStrSubMenuHeadName());
+				objModel.setStrSubMenuHeadShortName(objBean.getStrSubMenuHeadShortName());
+				objModel.setStrMenuCode(objBean.getStrMenuHeadCode());
+				objModel.setStrSubMenuOperational(objBean.getStrSubMenuOperational());
+				objModel.setStrUserCreated(webStockUserCode);
+				objModel.setStrUserEdited(webStockUserCode);
+				objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+				objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+	
+				objMasterService.funSaveUpdateSubMenuHeadMasterData(objModel);//funSaveSubMenuMaster(objModel);
+	
+				req.getSession().setAttribute("success", true);
+				req.getSession().setAttribute("successMessage"," "+subMenuCode);
+				
+				String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='SubMenuHead' ";
+				objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+										
+				return new ModelAndView("redirect:/frmPOSMenuHead.html");
 			}
-			clsSubMenuHeadMasterModel objModel = new clsSubMenuHeadMasterModel(new clsSubMenuHeadMasterModel_ID(subMenuCode, clientCode));
-			objModel.setStrSubMenuHeadCode(subMenuCode);
-			objModel.setStrSubMenuHeadName(objBean.getStrSubMenuHeadName());
-			objModel.setStrSubMenuHeadShortName(objBean.getStrSubMenuHeadShortName());
-			objModel.setStrMenuCode(objBean.getStrMenuHeadCode());
-			objModel.setStrSubMenuOperational(objBean.getStrSubMenuOperational());
-			objModel.setStrUserCreated(webStockUserCode);
-			objModel.setStrUserEdited(webStockUserCode);
-			objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-			objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-
-			objMasterService.funSaveUpdateSubMenuHeadMasterData(objModel);//funSaveSubMenuMaster(objModel);
-
-			
-						
-			req.getSession().setAttribute("success", true);
-			req.getSession().setAttribute("successMessage"," "+subMenuCode);
-									
-			return new ModelAndView("redirect:/frmPOSMenuHead.html");
-		}
 		catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -258,6 +263,9 @@ public class clsPOSMenuHeadController {
 		
 				req.getSession().setAttribute("success", true);
 				req.getSession().setAttribute("successMessage"," "+menuCode);
+				
+				String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Menu' ";
+				objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 										
 				return new ModelAndView("redirect:/frmPOSMenuHead.html");
 		  }

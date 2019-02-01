@@ -92,7 +92,7 @@
 		
 		
 
-
+	//Execute Button
 		$("#execute").click(function(event){
 			
 
@@ -241,19 +241,19 @@ function funFillCustomerWiseTables(selectedTab,reportType,fromDate,toDate)
  			    		document.all[ 'divItemWise' ].style.display = 'block';
  			    		funRemoveTableRows("tblItemWise");
  			    		funRemoveTableRows("tblTotalItem");
-		        	$.each(response.CustomerWiseTblData, function(i, item) 
-		        	{
-		        		
-		        			
-		        			funFillCustomerWiseItemTable(item.billNo,item.billDate,item.customerCode,item.customerName,item.itemName,item.dblQuantity,
-			        				item.dblAmount);
-		        	});
-		        	$.each(response.TotalTblData, function(i, item) 
-				        	{
-				        		
-				        			
-				        			funFillTotalItemTable(item.Total,item.totAmt);
-				        	});
+	 			    	$.each(response.ListOfHeader, function(i, item) 
+	 					{
+	 						funFillHeaderItemTable(item.BillNo,item.BillDate,item.ItemName,item.Quantity,item.Amount);
+	 					});
+			        	$.each(response.CustomerWiseTblData, function(i, item) 
+			        	{
+			        		funFillCustomerWiseItemTable(item.strBillNo,item.dteBillDate,item.strItemName,item.dblQuantity,item.dblAmount);
+			        	});
+			        	$.each(response.TotalTblData, function(i, item) 
+					    {
+					        funFillTotalItemTable(item.Total,item.totAmt);
+					    });
+		        	
 		        	}
 		        	else
 		        	{
@@ -261,15 +261,23 @@ function funFillCustomerWiseTables(selectedTab,reportType,fromDate,toDate)
  			    		document.all[ 'divItemWise' ].style.display = 'none';
  			    		funRemoveTableRows("tblBillWise");
  			    		funRemoveTableRows("tblTotalBillWise");
-		        		$.each(response.CustomerWiseTblData, function(i, item) 
+ 			    		$.each(response.ListOfHeader, function(i, item) 
+ 						{
+ 				        	funFillHeaderBillTable(item.BillNo,item.BillDate,item.BillTime,item.POSName,item.PayMode,
+	 				        		item.SubTotal,item.DiscPer,item.DiscAmt,item.TaxAmt,item.SalesAmt
+	 				        		,item.Remark,item.Tip,item.DiscRemarks,item.Reason);  			
+ 						});
+ 			    		$.each(response.CustomerWiseTblData, function(i, item) 
 		    		    {
-		        			funFillCustomerWiseTable(item[0],item[1],item[2],item[3],item[4],item[5]);
+		        			funFillCustomerWiseTable(item.billNo,item.dteBillDate,item.dteDateCreated,item.posName,item.settelmentDesc,
+					        		item.subTotal,item.discountPercentage,item.discountAmount,item.taxAmount,item.settlementAmt
+					        		,item.remark,item.tipAmount,item.discountRemark,item.reason);
 		        			
 		    		    });
 		        		$.each(response.TotalTblData, function(i, item) 
 				    	{
 				        			
-		        			funFillTotalBillWiseTable(item.Total,item.TotalGrandTotal);
+		        			funFillTotalBillWiseTable(item.Total,item.totalSubTotal);
 				    	});
 		        	}
 		        	}
@@ -291,9 +299,7 @@ function funFillCustomerWiseTables(selectedTab,reportType,fromDate,toDate)
 		    		    });
 		        		$.each(response.TotalTblData, function(i, item) 
 					    {
-					        		
-		        			funFillTotalTopSpendersTable(item.Total,item.totalSettleAmt);  			
-					        			
+					        funFillTotalTopSpendersTable(item.Total,item.totalSettleAmt);			
 					    });
 		        	}
 		            	        	
@@ -327,7 +333,8 @@ function funRemoveTableRows(tableId)
 		rowCount--;
 	}
 }
-function funFillCustomerWiseTable(billNo,billDate,dblDateCreated,posName,settelmentDesc,dblSubTotal)
+function funFillCustomerWiseTable(billNo,billDate,dblDateCreated,posName,settelmentDesc,dblSubTotal,dblDiscountPer,dblDiscountAmt,dblTaxAmt,dblSettlementAmt,
+								strRemark,dblTipAmount,strDiscountRemark,strReasonName)
 {
 	var table = document.getElementById("tblBillWise");
 	var rowCount = table.rows.length;
@@ -339,18 +346,28 @@ function funFillCustomerWiseTable(billNo,billDate,dblDateCreated,posName,settelm
 	row.insertCell(3).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].posName\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+posName+"' >";
 	row.insertCell(4).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].settelmentDesc\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+settelmentDesc+"' >";
 	row.insertCell(5).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblSubTotal\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblSubTotal+"' >";
+	row.insertCell(6).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblDiscountPer\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblDiscountPer+"' >";
+	row.insertCell(7).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblDiscountAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblDiscountAmt+"' >";
+	row.insertCell(8).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblTaxAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblTaxAmt+"' >";
+	row.insertCell(9).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblSettlementAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblSettlementAmt+"' >";
+	row.insertCell(10).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].strRemark\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+strRemark+"' >";
+	row.insertCell(11).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblTipAmount\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+dblTipAmount+"' >";
+	row.insertCell(12).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].strDiscountRemark\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+strDiscountRemark+"' >";
+	row.insertCell(13).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].strReasonName\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+strReasonName+"' >";
+		
 }
-function funFillCustomerWiseItemTable(billNo,billDate,customerCode,customerName,itemName,dblQuantity,dblAmount)
+function funFillCustomerWiseItemTable(billNo,billDate,itemName,dblQuantity,dblAmount)
 {
 	var table = document.getElementById("tblItemWise");
 	var rowCount = table.rows.length;
 	var row = table.insertRow(rowCount);
-
-	row.insertCell(0).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billNo\" readonly=\"readonly\" style=\"text-align: center\"class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+billNo+"'  >";
-	row.insertCell(1).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billDate\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtTime."+(rowCount)+"\" value='"+billDate+"' >";
-	row.insertCell(2).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].itemName\" readonly=\"readonly\" class=\"Box \" size=\"40%\" id=\"txtitemName."+(rowCount)+"\" value='"+itemName+"' >";
-	row.insertCell(3).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblQuantity\" readonly=\"readonly\" class=\"Box \" size=\"7%\" id=\"txtdblQuantity."+(rowCount)+"\" value='"+dblQuantity+"' >";
-	row.insertCell(4).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblAmount\" readonly=\"readonly\" class=\"Box \" size=\"20%\" id=\"txtdblAmount."+(rowCount)+"\" value='"+dblAmount+"' >";
+	
+	row.insertCell(0).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billNo\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+billNo+"'  >";
+	row.insertCell(1).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].billDate\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtTime."+(rowCount)+"\" value='"+billDate+"' >";
+	row.insertCell(2).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].itemName\" readonly=\"readonly\" class=\"Box \" size=\"40%\" id=\"txtTime."+(rowCount)+"\" value='"+itemName+"' >";
+	row.insertCell(3).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblQuantity\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtitemName."+(rowCount)+"\" value='"+dblQuantity+"' >";
+	row.insertCell(4).innerHTML= "<input name=\"CustomerWiseTblData["+(rowCount)+"].dblAmount\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtdblQuantity."+(rowCount)+"\" value='"+dblAmount+"' >";
+	
 }
 function funFillNonSpendersTable(longMobileNo,strCustomerName,dteBillDate)
 {
@@ -361,7 +378,8 @@ function funFillNonSpendersTable(longMobileNo,strCustomerName,dteBillDate)
 	row.insertCell(0).innerHTML= "<input name=\"NonSpendersTblData["+(rowCount)+"].longMobileNo\" readonly=\"readonly\" style=\"text-align: center\" class=\"Box \" size=\"30%\" id=\"txtlongMobileNo."+(rowCount)+"\" value='"+longMobileNo+"'  >";
 	row.insertCell(1).innerHTML= "<input name=\"NonSpendersTblData["+(rowCount)+"].strCustomerName\" readonly=\"readonly\" class=\"Box \" size=\"40%\" id=\"txtstrCustomerName."+(rowCount)+"\" value='"+strCustomerName+"' >";
 	row.insertCell(2).innerHTML= "<input name=\"NonSpendersTblData["+(rowCount)+"].dteBillDate\" style=\"text-align: center;\" readonly=\"readonly\" class=\"Box \" size=\"30%\" id=\"txtdteBillDate."+(rowCount)+"\" value='"+dteBillDate+"' >";
-	}
+
+}
 
 function funFillTopSpendersTable(LongMobileNo,StrCustomerName,strBillNo,dblGrandTotal)
 {
@@ -375,17 +393,14 @@ function funFillTopSpendersTable(LongMobileNo,StrCustomerName,strBillNo,dblGrand
 	row.insertCell(3).innerHTML= "<input name=\"TopSpendersTblData["+(rowCount)+"].dblGrandTotal\" readonly=\"readonly\" style=\"text-align: right\" class=\"Box \" size=\"40%\" id=\"txtdblGrandTotal."+(rowCount)+"\" value='"+dblGrandTotal+"' >";	  
 }
 
-
-
-
 function funFillTotalItemTable(Total,totAmt)
 {
 	var table = document.getElementById("tblTotalItem");
 	var rowCount = table.rows.length;
 	var row = table.insertRow(rowCount);
 
-	row.insertCell(0).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].Total\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtTotal."+(rowCount)+"\" value='"+Total+"'  >";
-	row.insertCell(1).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totAmt\" readonly=\"readonly\" style=\"text-align: right\" class=\"Box \" size=\"12%\" id=\"txttotAmt."+(rowCount)+"\" value='"+totAmt+"' >";
+	row.insertCell(0).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].Total\" readonly=\"readonly\" class=\"Box \" size=\"98%\" id=\"txtTotal."+(rowCount)+"\" value='"+Total+"'  >";
+	row.insertCell(1).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].totAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"10px \" id=\"txttotAmt."+(rowCount)+"\" value='"+totAmt+"' >";
 	
 }
 
@@ -407,21 +422,62 @@ function funFillTotalBillWiseTable(Total,TotalGrandTotal)
 	var row = table.insertRow(rowCount);
 
 	row.insertCell(0).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].Total\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"Total."+(rowCount)+"\" value='"+Total+"'  >";
-	row.insertCell(1).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].TotalGrandTotal\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"TotalGrandTotal."+(rowCount)+"\" value='"+TotalGrandTotal+"' >";
+	row.insertCell(1).innerHTML= "<input name=\"TotalTblData["+(rowCount)+"].TotalGrandTotal\" readonly=\"readonly\" class=\"Box \" size=\"15%\" id=\"TotalGrandTotal."+(rowCount)+"\" value='"+TotalGrandTotal+"' >";
 } 
+
+function funFillHeaderItemTable(BillNo,BillDate,ItemName,Quantity,Amount)
+{
+	var table = document.getElementById("tblItemWise");
+	var rowCount = table.rows.length;
+	var row = table.insertRow(rowCount);
+	
+	row.insertCell(0).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].BillNo\" readonly=\"readonly\" style=\"text-align: center\"class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+BillNo+"'  >";
+	row.insertCell(1).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].BillDate\" readonly=\"readonly\" style=\"text-align: center\"class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+BillDate+"'  >";
+	row.insertCell(2).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].ItemName\" readonly=\"readonly\" class=\"Box \" size=\"40%\" id=\"txtTime."+(rowCount)+"\" value='"+ItemName+"' >";
+	row.insertCell(3).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].Quantity\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtitemName."+(rowCount)+"\" value='"+Quantity+"' >";
+	row.insertCell(4).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].Amount\" readonly=\"readonly\" class=\"Box \" size=\"12%\" id=\"txtdblQuantity."+(rowCount)+"\" value='"+Amount+"' >";
+		
+}
+
+function funFillHeaderBillTable(BillNo,BillDate,BillTime,POSName,PayMode,SubTotal,DiscPer,DiscAmt,TaxAmt,SalesAmt
+		,Remark,Tip,DiscRemarks,Reason)
+{
+	var table = document.getElementById("tblBillWise");
+	var rowCount = table.rows.length;
+	var row = table.insertRow(rowCount);
+	
+	row.insertCell(0).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].BillNo\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"12%\" id=\"txtKOTNo."+(rowCount)+"\" value='"+BillNo+"'  >";
+	row.insertCell(1).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].BillDate\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtTime."+(rowCount)+"\" value='"+BillDate+"' >";
+	row.insertCell(2).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].BillTime\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtWaiterName."+(rowCount)+"\" value='"+BillTime+"' >";
+	row.insertCell(3).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].POSName\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+POSName+"' >";
+	row.insertCell(4).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].PayMode\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+PayMode+"' >";
+	row.insertCell(5).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].SubTotal\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"28%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+SubTotal+"' >";
+	row.insertCell(6).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].DiscPer\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+DiscPer+"' >";
+	row.insertCell(7).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].DiscAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+DiscAmt+"' >";
+	row.insertCell(8).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].TaxAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+TaxAmt+"' >";
+	row.insertCell(9).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].SalesAmt\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"11%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+SalesAmt+"' >";
+	row.insertCell(10).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].Remark\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+Remark+"' >";
+	row.insertCell(11).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].Tip\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+Tip+"' >";
+	row.insertCell(12).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].DiscRemarks\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+DiscRemarks+"' >";
+	row.insertCell(13).innerHTML= "<input name=\"ListOfHeader["+(rowCount)+"].Reason\" readonly=\"readonly\" style=\"text-align: left\" class=\"Box \" size=\"15%\" id=\"txtdblSettlementAmt."+(rowCount)+"\" value='"+Reason+"' >";
+	 	
+}
 
 
 /**
 * Get and Set data from help file and load data Based on Selection Passing Value(Customer Code)
 **/
-function funSetData(code)
+function funSetData(code,cusCode,cusName)
 {
-	$("#txtCustCode").val(code);
-	var searchurl=getContextPath()+"/loadPOSCustomerMasterDtl.html?POSCustomerCode="+code;
+	$("#txtCustCode").val(cusCode);
+	var searchurl=getContextPath()+"/loadPOSCustomerMasterDtl.html";
 	 $.ajax({
-		        type: "GET",
+		        type: "POST",
 		        url: searchurl,
 		        dataType: "json",
+		        data : {
+		        	code:code,
+		        },
 		        success: function(response)
 		        {
 		        	if(response.strCustomerTypeMasterCode=='Invalid Code')
@@ -431,9 +487,12 @@ function funSetData(code)
 		        	}
 		        	else
 		        	{
-			        	$("#txtCustCode").val(response.strCustomerCode);
-			        	$("#txtCustName").val(response.strCustomerName);
-			        	$("#txtCustName").focus();
+		        		$.each(response.CustomerData, function(i, item) 
+				    	{		
+		        			$("#txtCustCode").val(item.customerCode);//strCustomerCode
+				        	$("#txtCustName").val(item.strCustomerName);//strCustomerName
+				        	$("#txtCustName").focus(); 
+				    	});
 			        	
 		        	}
 				},
@@ -580,20 +639,21 @@ function funResetFields()
 									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
-
-											<th style="width: 12%">Bill No</th>
+											
+											<!-- <th style="width: 10%">Bill No</th>
 											<th style="width: 11%">Bill Date</th>
 											<th style="width: 11%">Bill Time</th>
-											<th style="width: 18%">Bill Amount</th>
-											<th style="width: 15%">Contact </th>
-											<th style="width: 28%">Name</th>
+											<th style="width: 11%">Bill Amount</th>
+											<th style="width: 13%">Contact Number</th>
+											<th style="width: 22%">Name </th> -->
+											
 											<!-- 											<input type="checkbox" id="chkALL" onclick="funfillSettlementDetail()" /></th>	 -->
 										</tr>
 
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; overflow-x: hidden; overflow-y: scroll; width: 100%; height: 400px;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; overflow-x: scroll; overflow-y: scroll; width: 100%; height: 400px;">
 									<table id="tblBillWise" class="transTablex col5-center"
 										style="width: 100%;">
 										<tbody>
@@ -607,15 +667,15 @@ function funResetFields()
 										<!--  COl4  -->
 										<col style="width: 13%">
 										<!--  COl5   -->
-										<col style="width: 22%">
+										<col style="width: 15%">
 										<!--  COl6   -->
 										<col style="width: 14%">
 										<!--  COl7   -->
 										<col style="width: 13%">
 										<!--  COl8   -->
-										<col style="width: 21%">
+										<col style="width: 15%">
 										<!--  COl9   -->
-										<col style="width: 8%">
+										<col style="width: 15%">
 										<!--  COl10   -->
 										</tbody>
 									</table>
@@ -637,7 +697,7 @@ function funResetFields()
 										<tbody>
 											<col style="width: 12%;">
 											<!--  COl1   -->
-											<col style="width: 12%">
+											<col style="width: 15%">
 											<!--  COl2   -->
 										</tbody>
 									</table>
@@ -651,17 +711,13 @@ function funResetFields()
 									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
-											<th style="width: 10%">Bill No</th>
-											<th style="width: 10%">Bill Date</th>
-											<th style="width: 40%">Item Name</th>
-											<th style="width: 7%">Quantity</th>
-											<th style="width: 20%">Amount</th>
+											
 										</tr>
 
 									</thead>
 								</table>
 								<div
-									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 100%;">
+									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; height: 400px; margin: auto; overflow-x: scroll; overflow-y: scroll; width: 100%;">
 									<table id="tblItemWise" class="transTablex col5-center"
 										style="width: 100%;">
 										<tbody>
@@ -680,7 +736,7 @@ function funResetFields()
 
 
 								</div>
-								<table border="1" class="myTable"
+								<!-- <table border="1" class="myTable"
 									style="width: 100%; margin: auto;">
 									<thead>
 										<tr>
@@ -689,14 +745,14 @@ function funResetFields()
 										</tr>
 
 									</thead>
-								</table>
+								</table> -->
 								<div
 									style="background-color: #a4d7ff; border: 1px solid #ccc; display: block; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 100%; height: 50px;">
 									<table id="tblTotalItem" class="transTablex col5-center" style="width: 100%;">
 										<tbody>
-										<col style="width: 12%;">
+										<col style="width: 83%;">
 										<!--  COl1   -->
-										<col style="width: 12%">
+										<col style="width: 17%">
 										<!--  COl2   -->
 
 										</tbody>

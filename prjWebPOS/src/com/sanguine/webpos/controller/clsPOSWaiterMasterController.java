@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.service.clsGlobalFunctionsService;
 import com.sanguine.webpos.bean.clsPOSWaiterMasterBean;
@@ -29,8 +30,6 @@ import com.sanguine.webpos.util.clsPOSUtilityController;
 @Controller
 public class clsPOSWaiterMasterController 
 {
-
-	
 	@Autowired
 	private clsGlobalFunctions objGlobal;
 	
@@ -44,7 +43,9 @@ public class clsPOSWaiterMasterController
 	
 	@Autowired
 	clsPOSMasterService objMasterService;
-
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	@RequestMapping(value = "/frmPOSWaiterMaster", method = RequestMethod.GET)
 
@@ -155,10 +156,12 @@ public class clsPOSWaiterMasterController
 		    
 		    objMasterService.funSaveUpdateWaiterMaster(objModel);
 
-						
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+waiterNo);
-									
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Waiter' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+			
 			return new ModelAndView("redirect:/frmPOSWaiterMaster.html?saddr="+urlHits);
 		}
 		catch(Exception ex)

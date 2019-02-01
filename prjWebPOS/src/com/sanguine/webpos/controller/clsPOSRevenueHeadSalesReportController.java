@@ -239,15 +239,13 @@ public class clsPOSRevenueHeadSalesReportController {
 							resp.setContentType("application/xlsx");
 							exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 							exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
-							
 							if(null!=source && source.equals("DayEndMail"))
 								exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, new FileOutputStream(filePath));
-							
 							exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 							resp.setHeader("Content-Disposition", "inline;filename=RevenueHeadWiseSalesReport_"+strFromdate+"_To_"+strToDate+"_"+userCode+".xls");
 							exporter.exportReport();
-							servletOutputStream.flush();
-							servletOutputStream.close();
+							/*servletOutputStream.flush();
+							servletOutputStream.close();*/
 						}
 					}
 					else

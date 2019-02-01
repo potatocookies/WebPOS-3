@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSDiscountDtlsOnBill;
 import com.sanguine.webpos.bean.clsPosDiscountMasterBean;
@@ -41,6 +42,9 @@ public class clsPOSDiscountMasterController {
 	
 	@Autowired
 	clsPOSMasterService objMasterService;
+	
+	@Autowired 
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	Map map=new HashMap();
 	@RequestMapping(value = "/frmDiscountMaster", method = RequestMethod.GET)
@@ -188,9 +192,11 @@ public class clsPOSDiscountMasterController {
 		    objModel.setListDiscountDtl(listDiscDtl);
 		    objMasterService.funSaveUpdateDiscountMaster(objModel);
 			
-			
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+discountCode);
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='DiscountMaster' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmDiscountMaster.html");
 		}

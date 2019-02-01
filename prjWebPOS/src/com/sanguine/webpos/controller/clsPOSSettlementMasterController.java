@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSSettlementDetailsBean;
 import com.sanguine.webpos.bean.clsPOSSettlementMasterBean;
@@ -31,15 +32,18 @@ public class clsPOSSettlementMasterController {
 
 	@Autowired
 	private clsGlobalFunctions objGlobal;
+	
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
 	
 	@Autowired
 	private clsPOSUtilityController obUtilityController;
 	
-	
 	@Autowired
 	private clsPOSMasterService obMasterService;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	
 	@RequestMapping(value = "/frmPOSSettlement", method = RequestMethod.GET)
@@ -102,7 +106,7 @@ public class clsPOSSettlementMasterController {
 			objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setStrAccountCode(objBean.getStrAccountCode());
 			objModel.setStrAdvanceReceipt(objGlobal.funIfNull(objBean.getStrAdvanceReceipt(),"N","Y"));
-			objModel.setStrApplicable(objBean.getStrApplicable());
+			objModel.setStrApplicable(objGlobal.funIfNull(objBean.getStrApplicable(),"N","Y"));
 			objModel.setStrBilling( objGlobal.funIfNull(objBean.getStrBilling(),"N","Y"));
 			objModel.setStrBillPrintOnSettlement(objGlobal.funIfNull(objBean.getStrBillPrintOnSettlement(),"N","Y"));
 			objModel.setStrClientCode(clientCode);
@@ -113,14 +117,17 @@ public class clsPOSSettlementMasterController {
 			objModel.setStrUserCreated(webStockUserCode);
 			objModel.setStrUserEdited(webStockUserCode);
 			objModel.setStrCreditReceiptYN(objGlobal.funIfNull(objBean.getStrCreditReceiptYN(),"N","Y"));
-			objModel.setStrComissionOn(objBean.getStrComissionOn());
-			objModel.setStrComissionType(objBean.getStrComissionType());
+			objModel.setStrComissionOn("Net Amount");
+			objModel.setStrComissionType("Per");
 			objModel.setDblThirdPartyComission(objBean.getDblThirdPartyComission());
 			
 			obMasterService.funSaveSettlementMaster(objModel);
 						
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+settlementCode);
+			
+			String sql = "update  set dteDatetblmasteroperationstatusEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Settlement' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmPOSSettlement.html");
 		}

@@ -28,8 +28,6 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -602,8 +600,8 @@ public class clsPOSItemWiseReportController
 					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 					resp.setHeader("Content-Disposition", "inline;filename=ItemWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 					exporter.exportReport();
-					servletOutputStream.flush();
-					servletOutputStream.close();
+//					servletOutputStream.flush();
+//					servletOutputStream.close();
 				}
 			}
 			else

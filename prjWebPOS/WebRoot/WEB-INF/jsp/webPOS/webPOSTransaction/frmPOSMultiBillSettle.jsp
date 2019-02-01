@@ -70,6 +70,8 @@ $(document).ready(function()
 		});
 
 	}
+		
+	
 
 	function btnSubmit_Onclick() {
 
@@ -140,7 +142,51 @@ $(document).ready(function()
 			}
 		});
 	}
+	
+	function funGetUnsettleTable(){
+		
+		$('#tblBillSettle tbody').empty();
+	
+				var table = document.getElementById("cmbTableName").value;
 
+		var searchurl=getContextPath()+"/getUnSettleledBillOnTable.html?tableNO="+table;
+		
+		$.ajax({
+			type : "GET",
+			url : searchurl,
+			success : function(response) {
+				$.each(response.UnsettleBillDtl, function(i, item) {
+					funfillSettleBillDtlData(item.strBillNo, item.strTableName,
+							item.strCustomerName, item.strBuildingName,
+							item.strDPName, item.dteBillDate,
+							item.dblGrandTotal);
+
+				});
+
+			},
+			
+			error : function(jqXHR, exception) {
+				if (jqXHR.status === 0) {
+					alert('Not connect.n Verify Network.');
+				} else if (jqXHR.status == 404) {
+					alert('Requested page not found. [404]');
+				} else if (jqXHR.status == 500) {
+					alert('Internal Server Error [500].');
+				} else if (exception === 'parsererror') {
+					alert('Requested JSON parse failed.');
+				} else if (exception === 'timeout') {
+					alert('Time out error.');
+				} else if (exception === 'abort') {
+					alert('Ajax request aborted.');
+				} else {
+					alert('Uncaught Error.n' + jqXHR.responseText);
+				}
+			}
+	
+	
+		});
+	
+	}
 	function funfillSettleBillDtlData(strBillNo, strTableName, strCustomerName,
 			strBuildingName, strDPName, dteBillDate, dblGrandTotal) {
 		var table = document.getElementById("tblBillSettle");
@@ -231,13 +277,17 @@ $(document).ready(function()
 	<div id="formHeading">
 		<label>Multiple Bill Settle In Cash</label>
 	</div>
-	
-	
-	
+
+
+
 	<s:form name="MultiBillSettle" method="POST"
-		action="settlePOSMultiBill.html?saddr=${urlHits}">
+		action="settlePOSMultiBill.html?saddr=${urlHits}" >
 
 
+<%-- 		<div><label>Table</label>&emsp;&ensp; <s:select --%>
+<%-- 						id="cmbTableName" name="cmbTableName" path="" cssClass="BoxW124px" onchange="funGetUnsettleTable();" --%>
+<%-- 						items="${Table}"> --%>
+<%-- 					</s:select> --%>
 
 
 		<table border="1" class="myTable" style="width: 80%; margin: auto;">
@@ -248,7 +298,7 @@ $(document).ready(function()
 			
 			
 			<td width="30%"><label>Table</label>&emsp;&ensp; <s:select
-									id="cmbPOSName" name="cmbPOSName" path=""
+									id="cmbTableName" name="cmbTableName" path=""
 									cssClass="BoxW124px" items="${Table}">
 								</s:select></td>
 								

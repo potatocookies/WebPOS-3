@@ -10,12 +10,12 @@ import org.json.simple.JSONArray;
 public class clsPOSDayEndProcessBean {
 
 	
-	private JSONArray jArrDayEnd=null;;
-	private JSONArray jArrDayEndTotal=null;;
-	private JSONArray jArrSettlement=null;;
-	private JSONArray jArrSettlementTotal=null;
-	private JSONArray jArrSalesInProg=null;
-	private JSONArray jArrUnSettlebill=null;
+	private List listDayEnd=null;;
+	private List listDayEndTotal=null;;
+	private List listSettlement=null;;
+	private List listSettlementTotal=null;
+	private List listSalesInProg=null;
+	private List listUnSettlebill=null;
 	
 	private List<clsPOSDayEndProcessBean> listMailReport ;
 	
@@ -61,42 +61,42 @@ public class clsPOSDayEndProcessBean {
 	}
 	
 	
-	public JSONArray getjArrDayEnd() {
-		return jArrDayEnd;
+	public List getListDayEnd() {
+		return listDayEnd;
 	}
-	public void setjArrDayEnd(JSONArray jArrDayEnd) {
-		this.jArrDayEnd = jArrDayEnd;
+	public void setListDayEnd(List listDayEnd) {
+		this.listDayEnd = listDayEnd;
 	}
-	public JSONArray getjArrDayEndTotal() {
-		return jArrDayEndTotal;
+	public List getListDayEndTotal() {
+		return listDayEndTotal;
 	}
-	public void setjArrDayEndTotal(JSONArray jArrDayEndTotal) {
-		this.jArrDayEndTotal = jArrDayEndTotal;
+	public void setListDayEndTotal(List listDayEndTotal) {
+		this.listDayEndTotal = listDayEndTotal;
 	}
-	public JSONArray getjArrSettlement() {
-		return jArrSettlement;
+	public List getListSettlement() {
+		return listSettlement;
 	}
-	public void setjArrSettlement(JSONArray jArrSettlement) {
-		this.jArrSettlement = jArrSettlement;
+	public void setListSettlement(List listSettlement) {
+		this.listSettlement = listSettlement;
 	}
-	public JSONArray getjArrSettlementTotal() {
-		return jArrSettlementTotal;
+	public List getListSettlementTotal() {
+		return listSettlementTotal;
 	}
-	public void setjArrSettlementTotal(JSONArray jArrSettlementTotal) {
-		this.jArrSettlementTotal = jArrSettlementTotal;
+	public void setListSettlementTotal(List listSettlementTotal) {
+		this.listSettlementTotal = listSettlementTotal;
 	}
 	
-	public JSONArray getjArrSalesInProg() {
-		return jArrSalesInProg;
+	public List getListSalesInProg() {
+		return listSalesInProg;
 	}
-	public void setjArrSalesInProg(JSONArray jArrSalesInProg) {
-		this.jArrSalesInProg = jArrSalesInProg;
+	public void setListSalesInProg(List listSalesInProg) {
+		this.listSalesInProg = listSalesInProg;
 	}
-	public JSONArray getjArrUnSettlebill() {
-		return jArrUnSettlebill;
+	public List getListUnSettlebill() {
+		return listUnSettlebill;
 	}
-	public void setjArrUnSettlebill(JSONArray jArrUnSettlebill) {
-		this.jArrUnSettlebill = jArrUnSettlebill;
+	public void setListUnSettlebill(List listUnSettlebill) {
+		this.listUnSettlebill = listUnSettlebill;
 	}
 	
 	public String getStrReportName() {

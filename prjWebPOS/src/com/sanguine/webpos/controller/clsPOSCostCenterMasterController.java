@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSCostCenterBean;
 import com.sanguine.webpos.model.clsCostCenterMasterModel;
@@ -41,6 +42,9 @@ public class clsPOSCostCenterMasterController {
 	
 	@Autowired
 	clsPOSMasterService objMasterService;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	// Open CostCenterMaster
 	@RequestMapping(value = "/frmPOSCostCenter", method = RequestMethod.GET)
@@ -139,10 +143,12 @@ public class clsPOSCostCenterMasterController {
 		    objModel.setStrDataPostFlag("N");
 		    objMasterService.funSaveUpdateCostCenterMaster(objModel);
 			
-						
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+costCenterCode);
-									
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='CostCenter' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+			
 			return new ModelAndView("redirect:/frmPOSCostCenter.html?saddr="+urlHits);
 		}
 		catch(Exception ex)

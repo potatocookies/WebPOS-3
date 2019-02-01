@@ -253,8 +253,8 @@ public class clsPOSGroupSubGroupWiseReportController {
 						exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 						resp.setHeader("Content-Disposition", "inline;filename=GroupSubGroupWiseSalesReport_"+strFromdate+"_To_"+strToDate+"_"+userCode+".xls");
 					    exporter.exportReport();
-						servletOutputStream.flush();
-						servletOutputStream.close();
+						/*servletOutputStream.flush();
+						servletOutputStream.close();*/
 			    	}
 			    }else
 			    {

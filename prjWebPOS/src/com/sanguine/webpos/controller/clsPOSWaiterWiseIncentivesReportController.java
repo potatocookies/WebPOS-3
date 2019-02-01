@@ -205,8 +205,8 @@ public class clsPOSWaiterWiseIncentivesReportController {
     					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
     					resp.setHeader("Content-Disposition", "inline;filename=WaiterWiseIncentiveSummaryReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
     					exporter.exportReport();
-    					servletOutputStream.flush();
-    					servletOutputStream.close();
+    					/*servletOutputStream.flush();
+    					servletOutputStream.close();*/
     				}
     			}
     			else
@@ -262,8 +262,8 @@ public class clsPOSWaiterWiseIncentivesReportController {
     					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
     					resp.setHeader("Content-Disposition", "inline;filename=WaiterWiseIncentiveDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
     					exporter.exportReport();
-    					servletOutputStream.flush();
-    					servletOutputStream.close();
+    					/*servletOutputStream.flush();
+    					servletOutputStream.close();*/
     				}
     			}
     			else

@@ -2435,11 +2435,13 @@ function funDiscOkClicked()
 			 		<table style="width:98%;height:98px;font-size:11px; font-weight: bold;">
 					 		<tr>
 					 			<td style="padding-bottom: 2px;"><label id="lblDisc" style=" display: inline-block;width: 100%;text-align: left;">Discount %</label></td>
-						 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountPer" value="0.00" path="dblDiscountPer"  cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  onfocus="this.value=''" onfocusout="funDiscPerFocusOut(this)"  /> </td>						 		
+						 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountPer" value="0.00" path="dblDiscountPer"  cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"  onfocus="this.value=''" onfocusout="funDiscPerFocusOut(this)"  /> </td>
+						 		<td></td>						 		
 					 		</tr>
 					 		<tr>
 					 			<td style="padding-bottom: 2px;" ><label id="lblDiscAmt" style=" display: inline-block;width: 100%;text-align: left;">Discount Amount</label></td>
-			        	 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountAmt" value="0.00" path="dblDiscountAmt" cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"   onfocus="this.value=''" onfocusout="funDiscAmtFocusOut(this)" /> </td>			        	 		
+			        	 		<td style="padding-bottom: 2px;"><s:input  type="text"  id="txtDiscountAmt" value="0.00" path="dblDiscountAmt" cssStyle="width:120px; text-align: right;" cssClass="longTextBox jQKeyboard form-control"   onfocus="this.value=''" onfocusout="funDiscAmtFocusOut(this)" /> </td>
+			        	 		<td></td>			        	 		
 				 			</tr>
 				 			<tr>
 					 			<td colspan="2" style="padding-bottom: 2px;">
@@ -2454,6 +2456,7 @@ function funDiscOkClicked()
 								<s:input type="radio"  path="strDisountOn"   value="Total" checked="checked"  name ="rdbDiscgroup"  onclick="funTotalDiscClicked()"/>Total
 								
 								</td>
+								<td></td>
 				 			</tr>
 				 			<tr>				 				
 					 			<td colspan="2" style="padding-bottom: 2px;">
@@ -2461,7 +2464,8 @@ function funDiscOkClicked()
 						 		</td>	
 						 		<td>				 			
 						 			<input type="button" id="btnDiscOk" value="OK" style="width: 45px; height:25px;"  onclick="funDiscOkClicked(this)" class="btn btn-primary btn-sm" ></input> 
-					 			</td>					 			
+					 			</td>	
+					 			<td></td>				 			
 				 			</tr>
 					</table>
 				</div>
@@ -2637,7 +2641,7 @@ function funDiscOkClicked()
 					 <table>
 						 <tr>
 						 	<td style="padding-right: 5px;" ><input type="button" id="btnBack" value="BACK" style="width: 60px; height:40px;"  onclick="funBackButtonClicked(this)" class="btn btn-outline-success" ></input></td>
-						 	<td style="padding-right: 5px;"><input type="submit" id="btnPrint"  value="SAVE" style="width: 60px; height:40px;" onclick="return funSaveBtnClicked()" class="btn btn-outline-success"></input></td>
+						 	<td style="padding-right: 5px;"><input type="submit" id="btnPrint"  value="SETTLE" style="width: 72px; height:40px;" onclick="return funSaveBtnClicked()" class="btn btn-outline-success"></input></td>
 						 	<td style="padding-right: 5px;"><input type="button" id="btnSettle" name = "settleBill" value="Need To Remove" style="width: 130px; height:40px; display:none" class="btn btn-outline-success"></input></td>
 						 	<td style="padding-right: 5px;"><input type="button" id="btnGetOffer" value="CHECK OFFER" style="width: 80px; height:40px;display:block"  onclick="funGetOfferButtonClicked(this)" class="btn btn-outline-success"></input></td>			 	
 						 </tr> 

@@ -22,7 +22,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
+import com.sanguine.webpos.bean.clsPOSBillItemDtl;
+import com.sanguine.webpos.bean.clsPOSBillItemDtlBean;
+import com.sanguine.webpos.bean.clsPOSCustomerDtlsOnBill;
 import com.sanguine.webpos.bean.clsPOSCustomerHistoryFlashBean;
+import com.sanguine.webpos.model.clsCustomerMasterModel;
 import com.sanguine.webpos.sevice.clsPOSMasterService;
 
 @Controller
@@ -78,6 +82,7 @@ public class clsPOSCustomerHistoryFlashController
 		model.put("mapAmount",mapAmount);
 		
 		Map mapReportType = new HashMap<>();
+		
 		mapReportType.put("Bill Wise", "Bill Wise");
 		mapReportType.put("Item Wise", "Item Wise");
 		
@@ -150,6 +155,8 @@ public class clsPOSCustomerHistoryFlashController
 		Map jObjAllTableData=new HashMap();
 		List  jArrForAllTbl=null;
 		List  jArrForAllTbl1=null;
+		List  jArrForAllTbl2=null;
+		List  jArrForAllTbl3=null;
 		jObj = funFillAllTables(jObjCustomerHistoryFlash);
 	
 		Map jObjTblDataDtl=new HashMap();
@@ -161,17 +168,21 @@ public class clsPOSCustomerHistoryFlashController
 	    	 {
 	    		 jArrForAllTbl=(List) jObj.get("CustomerWiseTblData");
 	    		 jArrForAllTbl1=(List) jObj.get("TotalTblData");
+	    		 jArrForAllTbl2=(List) jObj.get("listOfHeader");
 	    		 
 	    		 jObjTblDataDtl.put("CustomerWiseTblData",jArrForAllTbl);
 	    		 jObjTblDataDtl.put("TotalTblData",jArrForAllTbl1);
+	    		 jObjTblDataDtl.put("ListOfHeader",jArrForAllTbl2);
 	    	 }
 	    	 else 
 	    	 {
 	    		jArrForAllTbl=(List) jObj.get("CustomerWiseTblData");
 	    		jArrForAllTbl1=(List) jObj.get("TotalTblData");
-	    			
+	    		jArrForAllTbl3=(List) jObj.get("list");	
+	    		jArrForAllTbl2=(List) jObj.get("listOfHeader");
 	 	        jObjTblDataDtl.put("CustomerWiseTblData",jArrForAllTbl); 
 	 	        jObjTblDataDtl.put("TotalTblData",jArrForAllTbl1); 
+	 	        jObjTblDataDtl.put("ListOfHeader",jArrForAllTbl2); 
 	    	 }
 	    	 jObjTblDataDtl.put("strCmbName", strCmbName);
 	    		 
@@ -195,6 +206,31 @@ public class clsPOSCustomerHistoryFlashController
 		
 	}
 	
+	@RequestMapping(value = "/loadPOSCustomerMasterDtl", method = RequestMethod.POST)
+	public @ResponseBody Map loadPOSCustomerMasterDtl(HttpServletRequest req) throws Exception
+	{
+		String strClientCode=req.getSession().getAttribute("gClientCode").toString();
+		Map mapCustDtl=new HashMap();
+		List listCustDtl=new ArrayList();
+		List listCust=new ArrayList();
+		String strCustCode=req.getParameter("code");
+		StringBuilder sql=new StringBuilder();
+		sql.append("select strCustomerCode,strCustomerName from tblcustomermaster where strCustomerCode='" +strCustCode+ "' AND strClientCode='"+ strClientCode +"' ");
+		listCust=objBaseService.funGetList(sql, "sql");
+		if(listCust.size()>0)
+		{
+			for(int i=0;i<listCust.size();i++)
+			{
+				Object[] obj=(Object[])listCust.get(i);
+				clsPOSCustomerDtlsOnBill objBean=new clsPOSCustomerDtlsOnBill();
+				objBean.setCustomerCode(obj[0].toString());
+				objBean.setStrCustomerName(obj[1].toString());
+				listCustDtl.add(objBean);
+			}
+		}
+		mapCustDtl.put("CustomerData", listCustDtl);
+		return mapCustDtl;
+	}
 	
 	public Map funFillAllTables(Map jObjCustomerHistoryFlash)
 	{
@@ -245,6 +281,7 @@ public class clsPOSCustomerHistoryFlashController
          StringBuilder sbSqlFilters = new StringBuilder();
          List jList=new ArrayList();
          List list =null;
+         List listOfHeader = new ArrayList();
          Map jObjCustomerWiseTblData=new HashMap();
          try 
          {
@@ -290,14 +327,15 @@ public class clsPOSCustomerHistoryFlashController
             	for(int i=0; i<listsbSqlLiveBill.size(); i++)
 				{
 					Object[] obj = (Object[]) listsbSqlLiveBill.get(i);
-					jList.add(obj[0].toString());
-					jList.add(obj[1].toString());
-					jList.add(obj[2].toString());
-					jList.add(obj[3].toString());
-					jList.add(obj[4].toString());
-					jList.add(obj[5].toString());
-					jList.add(obj[6].toString());
-					jArrlistOfBillData.add(jList);
+					clsPOSBillItemDtlBean objBean=new clsPOSBillItemDtlBean();
+					objBean.setStrBillNo(obj[0].toString());
+					objBean.setDteBillDate(obj[1].toString());
+					objBean.setStrCustomerCode(obj[2].toString());
+					objBean.setStrCustomerName(obj[3].toString());
+					objBean.setStrItemName(obj[4].toString());
+					objBean.setDblQuantity(Double.parseDouble(obj[5].toString()));
+					objBean.setDblAmount(Double.parseDouble(obj[6].toString()));
+					jArrlistOfBillData.add(objBean);
 					double grandTotal=Double.parseDouble(obj[6].toString());
 					totalAmt +=grandTotal ; // Grand Total
 				}
@@ -309,14 +347,15 @@ public class clsPOSCustomerHistoryFlashController
 				for(int i=0; i<listsbSqlQFileBill.size(); i++)
 				{
 					Object[] obj = (Object[]) listsbSqlQFileBill.get(i);
-					jList.add(obj[0].toString()); //Bill No
-					jList.add(obj[1].toString()); //Bill Date
-					jList.add(obj[2].toString()); //Cust Code
-					jList.add(obj[3].toString()); //Cust Name
-					jList.add(obj[4].toString()); //Item Name
-					jList.add(obj[5].toString()); //DblQuantity
-					jList.add(obj[6].toString()); //DblAmount
-					jArrlistOfBillData.add(jList);
+					clsPOSBillItemDtlBean objBean=new clsPOSBillItemDtlBean();
+					objBean.setStrBillNo(obj[0].toString());
+					objBean.setDteBillDate(obj[1].toString());
+					objBean.setStrCustomerCode(obj[2].toString());
+					objBean.setStrCustomerName(obj[3].toString());
+					objBean.setStrItemName(obj[4].toString());
+					objBean.setDblQuantity(Double.parseDouble(obj[5].toString()));
+					objBean.setDblAmount(Double.parseDouble(obj[6].toString()));
+					jArrlistOfBillData.add(objBean);
 					double grandTotal=Double.parseDouble(obj[6].toString());
 					totalAmt +=grandTotal ; // Grand Total   
 	            }
@@ -325,10 +364,19 @@ public class clsPOSCustomerHistoryFlashController
 			jobjTotal.put("Total", "Total");
             jArrlistOfTotalData.add(jobjTotal);
             
-			jObjCustomerWiseTblData.put("CustomerWiseTblData", jArrlistOfBillData);  
+            Map mapOfHeader=new HashMap();
+            mapOfHeader.put("BillNo", "Bill No");
+            mapOfHeader.put("BillDate", "Bill Date");
+            mapOfHeader.put("ItemName","Item Name");
+            mapOfHeader.put("Quantity","Quantity");
+            mapOfHeader.put("Amount","Amount");
+            listOfHeader.add(mapOfHeader);
+            
+            jObjCustomerWiseTblData.put("CustomerWiseTblData", jArrlistOfBillData);  
 			jObjCustomerWiseTblData.put("TotalTblData", jArrlistOfTotalData);  
 			jObjCustomerWiseTblData.put("cmbName", "Item Wise"); 
 			jObjCustomerWiseTblData.put("tabName", "Customer Wise"); 
+			jObjCustomerWiseTblData.put("listOfHeader", listOfHeader);
          } 
          catch (Exception e) {
             e.printStackTrace();
@@ -348,6 +396,7 @@ public class clsPOSCustomerHistoryFlashController
 		StringBuilder sbSqlQFileBill = new StringBuilder();
 		StringBuilder sbSqlFilters = new StringBuilder();
 		List jList=new ArrayList();
+		List listOfHeader=new ArrayList();
 		Map jObjCustomerWiseTblData=new HashMap();
        
 		try 
@@ -410,21 +459,22 @@ public class clsPOSCustomerHistoryFlashController
         	   for(int i=0; i<listsbSqlLiveBill.size(); i++)
         	   {
 					Object[] obj = (Object[]) listsbSqlLiveBill.get(i);
-					jList.add(obj[0].toString()); //Bill No
-					jList.add(obj[1].toString()); //Bill Date
-					jList.add(obj[2].toString()); //dblDateCreated
-					jList.add(obj[3].toString()); //POS Name
-					jList.add(obj[4].toString()); //settelmentDesc 
-					jList.add(obj[5].toString()); //dblSubTotal
-					jList.add(Double.parseDouble(obj[6].toString())); //dblDiscountPer
-					jList.add(obj[7].toString()); //dblDiscountAmt
-					jList.add(obj[8].toString()); //dblTaxAmt
-					jList.add(obj[9].toString()); //dblSettlementAmt
-					jList.add(obj[10].toString()); //strRemark
-					jList.add(obj[11].toString()); //dblTipAmount
-					jList.add(obj[12].toString()); //strDiscountRemark
-					jList.add(obj[13].toString()); //strReasonName
-					jArrlistOfBillData.add(jList);
+					clsPOSBillItemDtl objBean=new clsPOSBillItemDtl();
+					objBean.setBillNo(obj[0].toString());//Bill No
+					objBean.setDteBillDate(obj[1].toString());//Bill Date
+					objBean.setDteDateCreated(obj[2].toString());//dblDateCreated
+					objBean.setPosName(obj[3].toString());//POS Name
+					objBean.setSettelmentDesc(obj[4].toString());//settelmentDesc 
+					objBean.setSubTotal(Double.parseDouble(obj[5].toString()));//dblSubTotal
+					objBean.setDiscountPercentage(Double.parseDouble(obj[6].toString()));//dblDiscountPer
+					objBean.setDiscountAmount(Double.parseDouble(obj[7].toString()));//dblDiscountAmt
+					objBean.setTaxAmount(Double.parseDouble(obj[8].toString()));//dblTaxAmt
+					objBean.setSettlementAmt(Double.parseDouble(obj[9].toString()));//dblSettlementAmt
+					objBean.setRemark(obj[10].toString()); //strRemark
+					objBean.setTipAmount(Double.parseDouble(obj[11].toString()));//dblTipAmount
+					objBean.setDiscountRemark(obj[12].toString());//strDiscountRemark
+					objBean.setReason(obj[13].toString());//strReasonName
+					jArrlistOfBillData.add(objBean);
 					double grandTot=Double.parseDouble(obj[7].toString());
 					totalDiscAmt +=grandTot ; // Grand Total     
 					totalSubTotal += Double.parseDouble(obj[5].toString());
@@ -441,21 +491,22 @@ public class clsPOSCustomerHistoryFlashController
 				for(int i=0; i<listsbSqlQFileBill.size(); i++)
 				{
 					Object[] obj = (Object[]) listsbSqlQFileBill.get(i);
-					jList.add(obj[0].toString()); //billNo
-					jList.add(obj[1].toString()); //billDate
-					jList.add(obj[2].toString()); //dblDateCreated
-					jList.add(obj[3].toString()); //posName
-					jList.add(obj[4].toString()); //settelmentDesc
-					jList.add(obj[5].toString()); //dblSubTotal
-					jList.add(Double.parseDouble(obj[6].toString())); //dblDiscountPer
-					jList.add(obj[7].toString()); //dblDiscountAmt
-					jList.add(obj[8].toString()); //dblTaxAmt
-					jList.add(obj[9].toString()); //dblSettlementAmt
-					jList.add(obj[10].toString()); //strRemark
-					jList.add(obj[11].toString()); //dblTipAmount
-					jList.add(obj[12].toString()); //strDiscountRemark
-					jList.add(obj[13].toString()); //strReasonName
-					jArrlistOfBillData.add(jList);
+					clsPOSBillItemDtl objBean=new clsPOSBillItemDtl();
+					objBean.setBillNo(obj[0].toString());//Bill No
+					objBean.setDteBillDate(obj[1].toString());//Bill Date
+					objBean.setDteDateCreated(obj[2].toString());//dblDateCreated
+					objBean.setPosName(obj[3].toString());//POS Name
+					objBean.setSettelmentDesc(obj[4].toString());//settelmentDesc 
+					objBean.setSubTotal(Double.parseDouble(obj[5].toString()));//dblSubTotal
+					objBean.setDiscountPercentage(Double.parseDouble(obj[6].toString()));//dblDiscountPer
+					objBean.setDiscountAmount(Double.parseDouble(obj[7].toString()));//dblDiscountAmt
+					objBean.setTaxAmount(Double.parseDouble(obj[8].toString()));//dblTaxAmt
+					objBean.setSettlementAmt(Double.parseDouble(obj[9].toString()));//dblSettlementAmt
+					objBean.setRemark(obj[10].toString()); //strRemark
+					objBean.setTipAmount(Double.parseDouble(obj[11].toString()));//dblTipAmount
+					objBean.setDiscountRemark(obj[12].toString());//strDiscountRemark
+					objBean.setReason(obj[13].toString());//strReasonName
+					jArrlistOfBillData.add(objBean);
 					double grandTot=Double.parseDouble(obj[7].toString());
 					totalDiscAmt +=grandTot ; // Grand Total     
 					totalSubTotal += Double.parseDouble(obj[5].toString());
@@ -473,10 +524,28 @@ public class clsPOSCustomerHistoryFlashController
             jobjTot.put("totalTipAmt", totalTipAmt);
             jArrlistOfTotalData.add(jobjTot);
             
+            Map mapOfHeader=new HashMap();
+            mapOfHeader.put("BillNo", "Bill No");
+            mapOfHeader.put("BillDate", "Bill Date");
+            mapOfHeader.put("BillTime","Bill Time");
+            mapOfHeader.put("POSName","POS Name");
+            mapOfHeader.put("PayMode","Pay Mode");
+            mapOfHeader.put("SubTotal","Sub Total");
+            mapOfHeader.put("DiscPer","Disc Per");
+            mapOfHeader.put("DiscAmt","Disc Amount");
+            mapOfHeader.put("TaxAmt","Tax Amount");
+            mapOfHeader.put("SalesAmt","Sales Amount");
+            mapOfHeader.put("Remark","Remark");
+            mapOfHeader.put("Tip","Tip");
+            mapOfHeader.put("DiscRemarks","Discount Remarks");
+            mapOfHeader.put("Reason","Reason");
+            listOfHeader.add(mapOfHeader);
+            
 	        jObjCustomerWiseTblData.put("CustomerWiseTblData", jArrlistOfBillData); 
 	        jObjCustomerWiseTblData.put("TotalTblData", jArrlistOfTotalData); 
 	        jObjCustomerWiseTblData.put("cmbName", "Bill Wise"); 
 	        jObjCustomerWiseTblData.put("tabName", "Customer Wise"); 
+	        jObjCustomerWiseTblData.put("listOfHeader", listOfHeader);
 			}
 			else
 			{
@@ -527,13 +596,14 @@ public class clsPOSCustomerHistoryFlashController
 						for(int i=0; i<listsbSqlLiveBill.size(); i++)
 						{
 							Object[] obj = (Object[]) listsbSqlLiveBill.get(i);
-							jList.add(obj[0].toString()); //billNo
-							jList.add(obj[1].toString()); //billDate
-							jList.add(obj[2].toString()); //dblDateCreated
-							jList.add(obj[3].toString()); //dblGrandTotal
-							jList.add(obj[4].toString()); //LongMobileNo
-							jList.add(obj[5].toString()); //strCustomerName
-							listOfBillData.add(obj);
+							clsPOSBillItemDtlBean objBean=new clsPOSBillItemDtlBean();
+							objBean.setStrBillNo(obj[0].toString());
+							objBean.setDteBillDate(obj[1].toString());
+							objBean.setDteDateCreated(obj[2].toString());
+							objBean.setDblGrandTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setLongMobileNo(obj[4].toString());
+							objBean.setStrCustomerName(obj[5].toString());
+							listOfBillData.add(objBean);
 							totGrandTotal+=Double.parseDouble(obj[3].toString());
 						}
 					}
@@ -544,13 +614,14 @@ public class clsPOSCustomerHistoryFlashController
 						for(int i=0; i<listsbSqlQFileBill.size(); i++)
 						{
 							Object[] obj = (Object[]) listsbSqlQFileBill.get(i);
-							jList.add(obj[0].toString()); //billNo
-							jList.add(obj[1].toString()); //billDate
-							jList.add(obj[2].toString()); //dblDateCreated
-							jList.add(obj[3].toString()); //dblGrandTotal
-							jList.add(obj[4].toString()); //LongMobileNo
-							jList.add(obj[5].toString()); //strCustomerName
-							listOfBillData.add(obj);
+							clsPOSBillItemDtlBean objBean=new clsPOSBillItemDtlBean();
+							objBean.setStrBillNo(obj[0].toString());
+							objBean.setDteBillDate(obj[1].toString());
+							objBean.setDteDateCreated(obj[2].toString());
+							objBean.setDblGrandTotal(Double.parseDouble(obj[3].toString()));
+							objBean.setLongMobileNo(obj[4].toString());
+							objBean.setStrCustomerName(obj[5].toString());
+							listOfBillData.add(objBean);
 							totGrandTotal+=Double.parseDouble(obj[3].toString());
 						}
 					}

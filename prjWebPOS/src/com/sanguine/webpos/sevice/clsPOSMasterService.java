@@ -871,5 +871,22 @@ public class clsPOSMasterService {
 			list=obBaseService.funGetList(sqlBuilder, "sql");
 			return list;
 		}
+	 
+	 public List funGetBilledTableName(String strPosCode,String strClientCode) throws Exception 
+	 {
+		 List list = null;
+		 
+		 StringBuilder sb = new StringBuilder();
+		 sb.append("select a.strTableNo ,b.strTableName "
+		    + "from tblbillhd a,tbltablemaster b "
+		    + "where a.strTableNo=b.strTableNo "
+		    + "and a.strPOSCode='" + strPosCode + "' and a.strClientCode='" +strClientCode+"' "
+		    + "and a.strBillNo NOT IN (SELECT strBillNo FROM tblbillsettlementdtl) "
+		    + "group by b.strTableNo "
+		    + "order by b.strTableNo ");
+		 list=obBaseService.funGetList(sb, "sql");
+		return list;
+		 
+	 }
 }
 

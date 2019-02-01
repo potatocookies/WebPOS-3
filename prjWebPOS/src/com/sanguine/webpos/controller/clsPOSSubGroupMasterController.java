@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.clsBaseServiceImpl;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSSubGroupMasterBean;
 import com.sanguine.webpos.model.clsGroupMasterModel;
@@ -31,12 +32,15 @@ public class clsPOSSubGroupMasterController
 
 	@Autowired
 	private clsGlobalFunctions objGlobal;
+	
 	@Autowired
 	private clsPOSMasterService objMasterService; 
 	
-
 	@Autowired
 	private clsPOSUtilityController obUtilityController;
+	
+	@Autowired
+	private clsBaseServiceImpl objBaseServiceImpl;
 	
 	Map<String,String> mapGroup=new HashMap<String,String>();
 	
@@ -72,9 +76,6 @@ public class clsPOSSubGroupMasterController
 		}
 		 
 	}
-	
-	
-	
 
 	@RequestMapping(value = "/savePOSSubGroup", method = RequestMethod.POST)
 	public ModelAndView funAddUpdate(@ModelAttribute("command") @Valid clsPOSSubGroupMasterBean objBean,BindingResult result,HttpServletRequest req)
@@ -154,7 +155,10 @@ public class clsPOSSubGroupMasterController
 						
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+subGroupCode);
-									
+			
+			String sql = "update tblmasteroperationstatus set dteDateEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='SubGroup' ";
+			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
+			
 			return new ModelAndView("redirect:/frmPOSSubGroup.html?saddr="+urlHits);
 		}
 		catch(Exception ex)

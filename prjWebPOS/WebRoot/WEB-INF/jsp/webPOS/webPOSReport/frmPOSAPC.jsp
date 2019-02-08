@@ -29,20 +29,20 @@
 <script type="text/javascript">
 
 
- $(function() 
-{		
+$(function() 
+{	
+	var POSDate="${gPOSDate}"
+   var startDate="${gPOSDate}";
+  	var Date = startDate.split(" ");
+	var arr = Date[0].split("-");
+	Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
 	$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-	$("#txtFromDate" ).datepicker('setDate', 'today');
+	$("#txtFromDate" ).datepicker('setDate', Dat);
 	$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-	$("#txtToDate" ).datepicker('setDate', 'today');
-	
+	$("#txtToDate" ).datepicker('setDate', Dat);
+				
 }); 
 
-
-	
-	
-	
-	
 </script>
 
 

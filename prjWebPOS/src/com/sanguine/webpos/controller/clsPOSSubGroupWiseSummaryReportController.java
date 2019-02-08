@@ -48,6 +48,9 @@ public class clsPOSSubGroupWiseSummaryReportController {
 	@Autowired
 	private clsGlobalFunctions objGlobalFunctions;
 	
+	@Autowired 
+	clsGlobalFunctions objGlobalFun;
+	
 	@Autowired
 	private ServletContext servletContext;
 	

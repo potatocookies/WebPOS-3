@@ -95,7 +95,7 @@ public class clsPOSAverageItemsPerBillReportController
 		model.put("urlHits", urlHits);
 		List poslist = new ArrayList();
 		poslist.add("ALL");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -142,7 +142,15 @@ public class clsPOSAverageItemsPerBillReportController
 			String posCode = "ALL";
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
-				posCode = hmPOSData.get(strPOSName).toString();
+				if(source.equalsIgnoreCase("DayEndMail"))
+				{
+					posCode=objBean.getStrPOSCode();
+				}
+				else
+				{
+					posCode = hmPOSData.get(strPOSName).toString();
+				}
+				
 			}
 			hm.put("posCode", posCode);
 			String fromDate = hm.get("fromDate").toString();

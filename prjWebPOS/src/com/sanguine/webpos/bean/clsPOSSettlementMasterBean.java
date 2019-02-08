@@ -28,6 +28,18 @@ public class clsPOSSettlementMasterBean {
 	
 	private double dblThirdPartyComission;
 	
+	private String strCustomerSelectionOnBillSettlement;
+	
+    public String getStrCustomerSelectionOnBillSettlement()
+	{
+		return strCustomerSelectionOnBillSettlement;
+	}
+
+	public void setStrCustomerSelectionOnBillSettlement(String strCustomerSelectionOnBillSettlement)
+	{
+		this.strCustomerSelectionOnBillSettlement = strCustomerSelectionOnBillSettlement;
+	}
+	
 	public String getStrComissionOn() {
 		return strComissionOn;
 	}

@@ -105,9 +105,10 @@ public class clsPOSSettlementMasterController {
 			objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setStrAccountCode(objBean.getStrAccountCode());
-			objModel.setStrAdvanceReceipt(objGlobal.funIfNull(objBean.getStrAdvanceReceipt(),"N","Y"));
-			objModel.setStrApplicable(objGlobal.funIfNull(objBean.getStrApplicable(),"N","Y"));
-			objModel.setStrBilling( objGlobal.funIfNull(objBean.getStrBilling(),"N","Y"));
+			objModel.setStrAdvanceReceipt(objGlobal.funIfNull(objBean.getStrAdvanceReceipt(),"No","Yes"));
+			objModel.setStrApplicable(objGlobal.funIfNull(objBean.getStrApplicable(),"No","Yes"));
+			objModel.setStrBilling( objGlobal.funIfNull(objBean.getStrBilling(),"No","Yes"));
+			objModel.setStrCustomerSelectionOnBillSettlement( objGlobal.funIfNull(objBean.getStrCustomerSelectionOnBillSettlement(),"N","Y"));
 			objModel.setStrBillPrintOnSettlement(objGlobal.funIfNull(objBean.getStrBillPrintOnSettlement(),"N","Y"));
 			objModel.setStrClientCode(clientCode);
 			objModel.setStrDataPostFlag("N");
@@ -117,8 +118,8 @@ public class clsPOSSettlementMasterController {
 			objModel.setStrUserCreated(webStockUserCode);
 			objModel.setStrUserEdited(webStockUserCode);
 			objModel.setStrCreditReceiptYN(objGlobal.funIfNull(objBean.getStrCreditReceiptYN(),"N","Y"));
-			objModel.setStrComissionOn("Net Amount");
-			objModel.setStrComissionType("Per");
+			objModel.setStrComissionOn(objBean.getStrComissionOn());
+			objModel.setStrComissionType(objBean.getStrComissionType());		
 			objModel.setDblThirdPartyComission(objBean.getDblThirdPartyComission());
 			
 			obMasterService.funSaveSettlementMaster(objModel);

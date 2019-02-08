@@ -626,6 +626,15 @@ public class clsPOSCustomerHistoryFlashController
 						}
 					}
 					
+					Map mapOfHeader=new HashMap();
+		            mapOfHeader.put("BillNumber", "Bill Number");
+		            mapOfHeader.put("BillDate", "Date");
+		            mapOfHeader.put("BillTime","Time");
+		            mapOfHeader.put("BillAmount","Bill Amount");
+		            mapOfHeader.put("ContactNo","Contact No");
+		            mapOfHeader.put("Name","Name");
+		            listOfHeader.add(mapOfHeader);
+					
 					mapObjTotal.put("TotalGrandTotal", totGrandTotal);
 					String total="Total";
 					mapObjTotal.put("Total",total);
@@ -634,7 +643,8 @@ public class clsPOSCustomerHistoryFlashController
 			        jObjCustomerWiseTblData.put("CustomerWiseTblData", listOfBillData); 
 			        jObjCustomerWiseTblData.put("TotalTblData", jArrlistOfTotalData); 
 			        jObjCustomerWiseTblData.put("cmbName", "Bill Wise"); 
-			        jObjCustomerWiseTblData.put("tabName", "Customer Wise"); 
+			        jObjCustomerWiseTblData.put("tabName", "Customer Wise");
+			        jObjCustomerWiseTblData.put("listOfHeader", listOfHeader);
 			}
        } 
        catch (Exception e) {

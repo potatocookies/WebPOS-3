@@ -645,6 +645,8 @@ public class clsGlobalFunctions
     			   		+ " and MID(a.strGRNCode,6,1) = '"+transMonth+"' "
     			   		+ " and MID(a.strGRNCode,1,2) = '"+propCode+"' and strClientCode='"+clientCode+"' ";
     			   
+    			   
+    			   
     		   
     		   
     		   

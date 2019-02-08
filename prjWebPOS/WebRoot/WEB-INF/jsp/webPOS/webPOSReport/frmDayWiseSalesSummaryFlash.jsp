@@ -289,7 +289,7 @@
 		<label>POS Day Wise Sales Summary Flash</label>
 	</div>
 
-	<s:form name="POSDayWiseSalesSummeryFlash" method="POST" action="processDayWiseSalesSummeryFlash.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
+	<s:form name="POSDayWiseSalesSummeryFlash" method="POST" action="processDayWiseSalesSummeryFlash1.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;margin-top:2%;">
 
 		<br />
 		

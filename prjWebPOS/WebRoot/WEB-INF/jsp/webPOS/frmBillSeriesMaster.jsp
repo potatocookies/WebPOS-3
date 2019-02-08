@@ -283,15 +283,13 @@ var k=1;
 		function funfillBillSeriesTypeDtlGrid(code,strGroupName,strGroupCode)
 		{
 			var flag=false;
-
-		
 			var table = document.getElementById("tblBillSeriesTypeDtl");
 			var rowCount = table.rows.length;
 			var row = table.insertRow(rowCount);
 
-			row.insertCell(0).innerHTML= "<input name=\"listDtl["+(rowCount)+"].strShortName\" readonly=\"readonly\" class=\"Box \" size=\"22%\" id=\"txtType."+(rowCount)+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this)\">";  
-		    row.insertCell(1).innerHTML= "<input name=\"listDtl["+(rowCount)+"].strGroupName\" readonly=\"readonly\" class=\"Box \" size=\"27%\" id=\"txtGroupName."+(rowCount)+"\" value='"+strGroupName+"' onclick=\"funGetSelectedRowIndex(this)\">";
-		    row.insertCell(2).innerHTML= "<input name=\"listDtl["+(rowCount)+"].strGroupCode\" readonly=\"readonly\" class=\"Box \" size=\"28%\" id=\"txtGroupCode."+(rowCount)+"\" value='"+strGroupCode+"' onclick=\"funGetSelectedRowIndex(this)\">";
+			row.insertCell(0).innerHTML= "<input name=\"listDtl["+(rowCount)+"].strShortName\"  class=\"Box \" size=\"22%\" id=\"txtType."+(rowCount)+"\" value='"+code+"' onclick=\"funGetSelectedRowIndex(this)\">";  
+		    row.insertCell(1).innerHTML= "<input name=\"listDtl["+(rowCount)+"].strGroupName\"  class=\"Box \" size=\"27%\" id=\"txtGroupName."+(rowCount)+"\" value='"+strGroupName+"' onclick=\"funGetSelectedRowIndex(this)\">";
+		    row.insertCell(2).innerHTML= "<input name=\"listDtl["+(rowCount)+"].strGroupCode\"  class=\"Box \" size=\"28%\" id=\"txtGroupCode."+(rowCount)+"\" value='"+strGroupCode+"' onclick=\"funGetSelectedRowIndex(this)\">";
 		    row.insertCell(3).innerHTML= "<input type=\"checkbox\" name=\"listDtl["+(rowCount)+"].strSelect\" size=\"12%\" id=\"chkOperational."+(rowCount)+"\" value=''"+false+"' onclick=\"funGetSelectedRowIndex(this)\">";
 	      	
 		}
@@ -381,29 +379,30 @@ var k=1;
 					 });
 				}
 			 
-			 function funFillBillSeriesDtlData(serialNo,billSeries,itemName,printGST,printTax)
+			function funFillBillSeriesDtlData(serialNo,billSeries,itemName,printGST,printTax)
+			{
+				var table = document.getElementById("tblBillSeriesDtl");
+				var rowCount = table.rows.length;
+				var row = table.insertRow(rowCount);
+				row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"2%\" id=\""+serialNo+"\" value='"+serialNo+"'/>";
+				if(billSeries!="")
 				{
-					var table = document.getElementById("tblBillSeriesDtl");
-					var rowCount = table.rows.length;
-					var row = table.insertRow(rowCount);
-					row.insertCell(0).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" size=\"2%\" id=\""+serialNo+"\" value='"+serialNo+"'/>";
-					if(billSeries!="")
-					{
-						row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\" name=\"listBillSeriesDtl["+(rowCount)+"].strBillSeries\" class=\"Box \" size=\"10%\" id=\""+"bllSeries"+"\" value='"+billSeries+"' />";
-						row.insertCell(2).innerHTML= "<input readonly=\"readonly\" name=\"listBillSeriesDtl["+(rowCount)+"].strNames\" class=\"Box \" size=\"18%\" id=\""+itemName+"\" value='"+itemName+"'/>";
-					}
-					else
-					{	
-					row.insertCell(1).innerHTML= "<input type=\"text\" name=\"listBillSeriesDtl["+(rowCount)+"].strBillSeries\" class=\"Box \" size=\"10%\" id=\""+"bllSeries"+"\" value='"+billSeries+"' />";
-					row.insertCell(2).innerHTML= "<input name=\"listBillSeriesDtl["+(rowCount)+"].strNames\" class=\"Box \" size=\"18%\" id=\""+itemName+"\" value='"+itemName+"'/>";
-					}
-					
-					row.insertCell(3).innerHTML= "<input id=\""+""+"\" type=\"checkbox\" name=\"BillGroupthemes\" value='"+false+"' class=\"Box\" />";	   
-					
-					row.insertCell(4).innerHTML= "<input id=\"chkStrPrintGst\" type=\"checkbox\" name=\"listBillSeriesDtl["+(rowCount)+"].strPrintGTOfOtherBills\"  class=\"Box\" onclick=\"return funGetSelectedCheckBo(this)\"/>";
-					row.insertCell(5).innerHTML= "<input id=\"chkStrPrintTax\" type=\"checkbox\" name=\"listBillSeriesDtl["+(rowCount)+"].strPrintInclusiveOfTaxOnBill\" value='"+printTax+"' class=\"Box\" />";
-					row.insertCell(6).innerHTML= "<input type=\"hidden\" name=\"listBillSeriesDtl["+(rowCount)+"].serialNo\" class=\"Box \" size=\"15%\" id=\""+serialNo+"\" value='"+serialNo+"' />";
+					row.insertCell(1).innerHTML= "<input type=\"text\"  name=\"listBillSeriesDtl["+(rowCount)+"].strBillSeries\" class=\"Box \" size=\"10%\" id=\""+"bllSeries"+"\" value='"+billSeries+"' />";
+					row.insertCell(2).innerHTML= "<input readonly=\"readonly\" name=\"listBillSeriesDtl["+(rowCount)+"].strNames\" class=\"Box \" size=\"18%\" id=\""+itemName+"\" value='"+itemName+"'/>";
 				}
+				else
+				{	
+				row.insertCell(1).innerHTML= "<input type=\"text\" name=\"listBillSeriesDtl["+(rowCount)+"].strBillSeries\" class=\"Box \" size=\"10%\" id=\""+"bllSeries"+"\" value='"+billSeries+"' />";
+				row.insertCell(2).innerHTML= "<input name=\"listBillSeriesDtl["+(rowCount)+"].strNames\" class=\"Box \" size=\"18%\" id=\""+itemName+"\" value='"+itemName+"'/>";
+				}
+				
+				row.insertCell(3).innerHTML= "<input id=\""+""+"\" type=\"checkbox\" name=\"BillGroupthemes\" value='"+false+"' class=\"Box\" />";	   
+				
+				row.insertCell(4).innerHTML= "<input id=\"chkStrPrintGst\" type=\"checkbox\" name=\"listBillSeriesDtl["+(rowCount)+"].strPrintGTOfOtherBills\"  class=\"Box\" onclick=\"return funGetSelectedCheckBo(this)\"/>";
+				row.insertCell(5).innerHTML= "<input id=\"chkStrPrintTax\" type=\"checkbox\" name=\"listBillSeriesDtl["+(rowCount)+"].strPrintInclusiveOfTaxOnBill\" value='"+printTax+"' class=\"Box\" />";
+				row.insertCell(6).innerHTML= "<input type=\"hidden\" name=\"listBillSeriesDtl["+(rowCount)+"].serialNo\" class=\"Box \" size=\"15%\" id=\""+serialNo+"\" value='"+serialNo+"' />";
+			}
+			 
 			 function funGetSelectedCheckBo(obj)
 			 {
 				 var v1 = $('#chkStrPrintGst').val($(this).is(':checked'));

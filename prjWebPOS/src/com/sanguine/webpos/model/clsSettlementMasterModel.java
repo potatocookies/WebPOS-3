@@ -96,6 +96,19 @@ public class clsSettlementMasterModel extends clsBaseModel implements Serializab
     @Column(name="dblThirdPartyComission")
     private double dblThirdPartyComission;
     
+    @Column(name="strCustomerSelectionOnBillSettlement")
+	private String strCustomerSelectionOnBillSettlement;
+	
+    public String getStrCustomerSelectionOnBillSettlement()
+	{
+		return strCustomerSelectionOnBillSettlement;
+	}
+
+	public void setStrCustomerSelectionOnBillSettlement(String strCustomerSelectionOnBillSettlement)
+	{
+		this.strCustomerSelectionOnBillSettlement = strCustomerSelectionOnBillSettlement;
+	}
+    
     public double getDblThirdPartyComission() {
 		return dblThirdPartyComission;
 	}

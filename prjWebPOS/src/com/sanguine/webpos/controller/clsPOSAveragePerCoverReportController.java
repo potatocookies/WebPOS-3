@@ -86,6 +86,9 @@ public class clsPOSAveragePerCoverReportController
 
 	HashMap hmPOSData = new HashMap<String, String>();
 	HashMap hmWaiterData = new HashMap<String, String>();
+	List<clsPOSAPCReport> listOfDtl = new LinkedList<clsPOSAPCReport>();
+	double dinningAmt=0.0;
+	
 	@RequestMapping(value = "/frmPOSAPC", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest request)throws Exception
 	{
@@ -103,7 +106,7 @@ public class clsPOSAveragePerCoverReportController
 		model.put("urlHits", urlHits);
 		List poslist = new ArrayList();
 		poslist.add("ALL");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -150,7 +153,7 @@ public class clsPOSAveragePerCoverReportController
 
 	}
 
-	List<clsPOSAPCReport> listOfDtl = new LinkedList<clsPOSAPCReport>(); 
+
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/rptPOSAvgPerCover", method = RequestMethod.POST)
@@ -160,13 +163,21 @@ public class clsPOSAveragePerCoverReportController
 		{
 			String reportName = "";
 			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
-			String strClientCode=req.getSession().getAttribute("gClientCode").toString();	
+			String strClientCode=req.getSession().getAttribute("gClientCode").toString();
+			String userCode=req.getSession().getAttribute("gUserCode").toString();
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String posCode = "ALL";
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
-				posCode = hmPOSData.get(strPOSName).toString();
+				if(source.equalsIgnoreCase("DayEndMail"))
+				{
+					posCode=objBean.getStrPOSCode();
+				}
+				else
+				{
+					posCode = hmPOSData.get(strPOSName).toString();
+				}
 			}
 			hm.put("posCode", posCode);
 			String fromDate = hm.get("fromDate").toString();
@@ -181,13 +192,65 @@ public class clsPOSAveragePerCoverReportController
 			
 			if(strReportMode.equalsIgnoreCase("Summary"))
 			{
-				if (objBean.getStrDocType().equals("PDF"))
-				{
+				
+					listOfDtl.clear();
+					StringBuilder sql=new StringBuilder();
+					sql.append("SELECT ifnull(tblatvreport.strPosCode,'') ,"
+							  +" tblatvreport.dteDate ,"
+							  +" ifnull(tblatvreport.dblDiningAmt,0),"
+							  +" ifnull(tblatvreport.dblDiningNoBill,0) ,"
+							  +" ifnull(tblatvreport.dblDiningAvg,0), "
+							  +" ifnull(tblatvreport.dblHDAmt,0) ,"
+							  +" ifnull(tblatvreport.dblHDNoBill,0) ,"
+							  +" ifnull(tblatvreport.dblHdAvg,0) , "
+							  +" ifnull(tblatvreport.dblTAAmt,0) , "
+							  +" ifnull(tblatvreport.dblTANoBill,0) ,"
+							  +" ifnull(tblatvreport.dblTAAvg,0) , "   
+							  +" ifnull(tblatvreport.strPosName,'') "
+                              +" FROM tblatvreport tblatvreport "
+                              +" order by strPosCode,dteDate") ;
+					
+					List listReport = objBaseService.funGetList(sql,"sql");
+					
+					
+					if (listReport.size()>0)
+					{
+						clsPOSAPCReport objAPCReport=null;
+						for(int i=0;i<listReport.size();i++)
+						{
+							Object[] obj= (Object[]) listReport.get(i);
+							objAPCReport = new clsPOSAPCReport();
+							
+							objAPCReport.setStrPOSCode(obj[0].toString());
+							objAPCReport.setDteBillDate(obj[1].toString());
+							objAPCReport.setDblDiningAmt(Double.parseDouble(obj[2].toString()));
+							objAPCReport.setDblDiningNoBill(Double.parseDouble(obj[3].toString()));
+							objAPCReport.setDblDiningAvg(Double.parseDouble(obj[4].toString()));
+							objAPCReport.setDblHDAmt(Double.parseDouble(obj[5].toString()));
+							objAPCReport.setDblHDNoBill(Double.parseDouble(obj[6].toString()));
+							objAPCReport.setDblHdAvg(Double.parseDouble(obj[7].toString()));
+							objAPCReport.setDblTAAmt(Double.parseDouble(obj[8].toString()));
+							objAPCReport.setDblTANoBill(Double.parseDouble(obj[9].toString()));
+							objAPCReport.setDblTAAvg(Double.parseDouble(obj[10].toString()));
+							objAPCReport.setStrPOSName(obj[11].toString());
+							dinningAmt=dinningAmt+ objAPCReport.getDblDiningAmt();
+							
+							listOfDtl.add(objAPCReport);
+						
+						}
+					}
+				
+ 					
+					
+					String companyName=req.getSession().getAttribute("gCompanyName").toString();
 					String shiftNo = "All", shiftCode = "All";
 
 					hm.put("shiftNo", shiftNo);
 					hm.put("shiftCode", shiftCode);
 					hm.put("dateWise", "No");
+					hm.put("strClientName",companyName);
+					//hm.put("strAddressLine1",addressLine1);
+					//hm.put("strAddressLine3", addressLine1);
 					if (strDateWise.equalsIgnoreCase("Yes"))
 					{
 					    hm.put("dateWise", "Yes");
@@ -198,14 +261,16 @@ public class clsPOSAveragePerCoverReportController
 					
 					hm.put("decimalFormaterForDoubleValue", gDecimalFormatString.toString());
 					hm.put("decimalFormaterForIntegerValue", "0");
-
+                    hm.put("listOfData", listOfDtl);
 					reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptAPCSummary.jrxml");
 					funInsertDataForSummary(fromDate,toDate,strPOSCode,strPOSWise,strDateWise,strWShortName,strAPCOn,strPOSName);
 				   
 					JasperDesign jd = JRXmlLoader.load(reportName);
 		    		JasperReport jr = JasperCompileManager.compileReport(jd);
 		            List<JasperPrint> jprintlist = new ArrayList<JasperPrint>();
-		            JasperPrint print = JasperFillManager.fillReport(jr, hm, new JREmptyDataSource());
+		            JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listOfDtl);
+					
+		            JasperPrint print = JasperFillManager.fillReport(jr, hm,beanCollectionDataSource);
 		            jprintlist.add(print);
 		            String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
 					String extension=".pdf";
@@ -252,7 +317,8 @@ public class clsPOSAveragePerCoverReportController
 						resp.getWriter().append("No Record Found");
 
 					}
-				}
+				
+				
 			}
 			else //for detail
 			{
@@ -261,6 +327,9 @@ public class clsPOSAveragePerCoverReportController
 					hm.put("strDateWise",strDateWise );
 					hm.put("shiftNo", shiftNo);
 					hm.put("shiftCode", shiftCode);
+					hm.put("strUserName",userCode);
+					
+				
 					if (strWShortName.equalsIgnoreCase("Yes"))
 					{
 					    hm.put("waiter", "Waiter Name");
@@ -303,8 +372,8 @@ public class clsPOSAveragePerCoverReportController
 							exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
 							resp.setHeader("Content-Disposition", "inline;filename=AvgPerCoverDetailReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
 							exporter.exportReport();
-							servletOutputStream.flush();
-							servletOutputStream.close();
+							/*servletOutputStream.flush();
+							servletOutputStream.close();*/
 						}
 						else
 						{
@@ -365,7 +434,7 @@ public class clsPOSAveragePerCoverReportController
 		}
 
 		//for not multi settle 
-		sqlNonComplimentaryBuilder.append("select " + posCode + " ," + posName + ",date(a.dteBillDate) as Date," + apcOnField + " as DiningAmt,sum(intBillSeriesPaxNo),'0' "
+		sqlNonComplimentaryBuilder.append("select " + posCode + " ," + posName + ",date(a.dteBillDate) as Date," + apcOnField + " as DiningAmt,ifnull(sum(intBillSeriesPaxNo),0),'0' "
 			+ "from vqbillhd a,vqbillsettlementdtl b,tblsettelmenthd c,tblposmaster d "
 			+ "where Date(a.dteBillDate) between '" + fromDate + "' and '" + toDate + "' "
 			+ "and a.strPOSCode=d.strPosCode "
@@ -461,7 +530,10 @@ public class clsPOSAveragePerCoverReportController
 	
 				objAPCReport.setStrPOSCode(obj[0].toString());//posCode
 				objAPCReport.setStrPOSName(obj[1].toString());//posName
-				objAPCReport.setDteBillDate(obj[2].toString());//date
+				if(null !=obj[2]){
+					objAPCReport.setDteBillDate(obj[2].toString());//date
+				}
+				
 				objAPCReport.setDblDiningAmt(Double.parseDouble(obj[3].toString()));//dining amt
 				objAPCReport.setDblPAXNo(Double.parseDouble(obj[4].toString()));//PAX
 	
@@ -599,7 +671,7 @@ public class clsPOSAveragePerCoverReportController
 
 		sqlLiveNonComplimentaryBuilder.append("SELECT a.strPOSCode,d.strPosName, DATE(a.dteBillDate) AS DATE,a.strBillNo,a.dblDiscountAmt AS Discount,a.dblSubTotal AS subTotal\n"
 			+ ", SUM(intBillSeriesPaxNo), sum(a.dblSubTotal-a.dblDiscountAmt) AS netTotal, a.dblSubTotal-a.dblDiscountAmt AS grandTotal,'0'\n"
-			+ ",e.strWShortName\n"
+			+ ",ifnull (e.strWShortName,'')\n"
 			+ "FROM tblbillhd a\n"
 			+ "join tblbillsettlementdtl b on a.strBillNo=b.strBillNo \n"
 			+ "join tblsettelmenthd c on b.strSettlementCode=c.strSettelmentCode AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"
@@ -617,7 +689,7 @@ public class clsPOSAveragePerCoverReportController
 
 		sqlQNonComplimentaryBuilder.append("SELECT a.strPOSCode,d.strPosName, DATE(a.dteBillDate) AS DATE,a.strBillNo,a.dblDiscountAmt AS Discount,a.dblSubTotal AS subTotal\n"
 			+ ", SUM(intBillSeriesPaxNo), sum(a.dblSubTotal-a.dblDiscountAmt) AS netTotal, a.dblSubTotal-a.dblDiscountAmt AS grandTotal,'0'\n"
-			+ ",e.strWShortName\n"
+			+ ",ifnull (e.strWShortName,'')\n"
 			+ "FROM tblqbillhd a\n"
 			+ "join tblqbillsettlementdtl b on a.strBillNo=b.strBillNo \n"
 			+ "join tblsettelmenthd c on b.strSettlementCode=c.strSettelmentCode AND DATE(a.dteBillDate)= DATE(b.dteBillDate) \n"

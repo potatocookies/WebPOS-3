@@ -209,12 +209,13 @@ public class clsPOSRevenueHeadSalesReportController {
 					JasperPrint print = JasperFillManager.fillReport(jr, hm, beanCollectionDataSource);
 					jprintlist.add(print);
 					
-					objBean.setStrDocType("EXCEL");
 					String filePath = System.getProperty("user.dir")+ "/DayEndMailReports/";
 					String extension=".pdf";
 					if (!objBean.getStrDocType().equals("PDF"))
+					{
+						objBean.setStrDocType("EXCEL");
 						extension=".xls";
-						
+					}	
 					String fileName = "RevenueHeadWiseSalesReport_"+ strFromdate + "_To_" + strToDate + "_" + userCode + extension;
 					filePath=filePath+"/"+fileName;
 					

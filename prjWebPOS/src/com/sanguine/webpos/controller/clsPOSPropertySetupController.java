@@ -94,7 +94,7 @@ public class clsPOSPropertySetupController {
 		String clientCode=request.getSession().getAttribute("gClientCode").toString();
 		String posCode=request.getSession().getAttribute("loginPOS").toString();
 	
-		List list=objMasterService.funFillPOSCombo(clientCode);
+		List list=objMasterService.funFullPOSCombo(clientCode);
 		mapPOS.put("All","All");
 		for(int cnt=0;cnt<list.size();cnt++)
 		 {
@@ -102,7 +102,8 @@ public class clsPOSPropertySetupController {
 			mapPOSForDayEnd.put(Array.get(obj, 0).toString(), Array.get(obj, 1).toString());
 			mapPOS.put(Array.get(obj, 0).toString(), Array.get(obj, 1).toString());
 		 }
-		model.put("posList",mapPOS);
+		Map<String, String> mapPosData = new TreeMap<String, String>(mapPOS);
+		model.put("posList",mapPosData);
 	    model.put("posListForDayEnd",mapPOSForDayEnd);
 		 
 		mapArea=funLoadAreaList(posCode);

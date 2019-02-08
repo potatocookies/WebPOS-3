@@ -31,7 +31,7 @@
 {	
 	 	var gEnableShiftYN="${gEnableShiftYN}";
 		var POSDate="${POSDate}"
-   		 var startDate="${POSDate}";
+   		var startDate="${POSDate}";
 	  	var Date = startDate.split(" ");
 		var arr = Date[0].split("-");
 		Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	

@@ -370,7 +370,7 @@ public class clsPOSMailDayEndReportsController {
 			}
 				funGenerateReport(alReportName.get(r).toString(),resp,req,fromDate,toDate);
 			}
-			File[] files = new File("C:/eclipse/DayEndMailReports").listFiles();
+			File[] files = new File("D:/setup/eclipse/DayEndMailReports").listFiles();
 			String gReceiverEmailIds = objPOSSetupUtility.funGetParameterValuePOSWise(clientCode,posCode, "gReceiverEmailIds");
 			int check=objPOSSendMail.funSendMail(gReceiverEmailIds, files,clientCode,posCode,posName,posDate);
 			
@@ -451,7 +451,7 @@ public class clsPOSMailDayEndReportsController {
 			obj.setUserName("All");
 			objPOSCashManagementFlashController.funReport(obj,resp,req,"DayEndMail");
 		}
-		else if (reportName.equalsIgnoreCase("Audit Flash".toUpperCase()))
+		/*else if (reportName.equalsIgnoreCase("Audit Flash".toUpperCase()))
 		{
 			objBean.setStrReasonMaster("ALL");
 			objBean.setStrPSPCode("Modified Bill");
@@ -463,7 +463,7 @@ public class clsPOSMailDayEndReportsController {
 		else if (reportName.equalsIgnoreCase("Day End Flash".toUpperCase()))
 		{
 			objPOSDayEndFlashReportController.funExportReportForDayEndMail(objBean, resp, req);
-		}
+		}*/
 		else if (reportName.equalsIgnoreCase("AvgItemPerBill".toUpperCase()))
 		{
 			objPOSAverageItemsPerBillReportController.funReport(objBean,resp,req,"DayEndMail");
@@ -538,12 +538,12 @@ public class clsPOSMailDayEndReportsController {
 		/*else if (reportName.equalsIgnoreCase("DeliveryboyIncentive".toUpperCase()))
 		{
 			funGenerateDeliveryBoyIncentivesExcelReport(posCode, posName, fromDate, toDate);
-		}*/
+		}
 		else if (reportName.equalsIgnoreCase("Sales Summary Flash".toUpperCase()))
 		{
 			objBean.setStrPayMode("ALL");
 			objPOSSalesSummaryFlashController.funReport(objBean, resp, req);
-		}
+		}*/
 		else if (reportName.equalsIgnoreCase("POS Wise Sales".toUpperCase()))
 		{
 			objBean.setStrViewType("Item Wise");
@@ -570,7 +570,7 @@ public class clsPOSMailDayEndReportsController {
 		{
 			objPOSSubGroupWiseSummaryReportController.funReport(objBean, resp, req,"DayEndMail");
 		}
-		else if (reportName.equalsIgnoreCase("DayWiseSalesSummaryFlash".toUpperCase()))
+		/*else if (reportName.equalsIgnoreCase("DayWiseSalesSummaryFlash".toUpperCase()))
 		{
 			objBean.setStrOperationType("ALL");
 			objBean.setStrSettlementName("ALL");
@@ -585,7 +585,7 @@ public class clsPOSMailDayEndReportsController {
 			objBean.setStrViewBy("Item's Group Wise");
 			objBean.setStrGroupName("ALL");
 			objPOSBillWiseSettlementSalesSummaryFlashController.funExportReportForDayEndMail(objBean, resp, req);
-		}
+		}*/
 		else if (reportName.equalsIgnoreCase("Revenue Head Wise Item Sales".toUpperCase()))
 		{
 			objBean.setStrRevenueHead("ALL");

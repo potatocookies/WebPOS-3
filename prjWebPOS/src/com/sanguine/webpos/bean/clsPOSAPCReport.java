@@ -26,6 +26,11 @@ public class clsPOSAPCReport
     private double dblHDNoBill;
     private double dblDiningAvg;
     private double dblAPCPer;
+    private double dblHDAmt;
+    private double dblHdAvg;
+    private double dblTAAmt;
+    private double dblTANoBill;
+    private double dblTAAvg;
     
     public String getStrPOSCode()
     {
@@ -179,7 +184,57 @@ public class clsPOSAPCReport
     {
         this.dblAPCPer = dblAPCPer;
     }
+    
+  //new changes 2/2/2019 mahesh
+    public double getDblHDAmt()
+   	{
+   		return dblHDAmt;
+   	}
 
+   	public void setDblHDAmt(double dblHDAmt)
+   	{
+   		this.dblHDAmt = dblHDAmt;
+   	}
+
+   	public double getDblHdAvg()
+   	{
+   		return dblHdAvg;
+   	}
+
+   	public void setDblHdAvg(double dblHdAvg)
+   	{
+   		this.dblHdAvg = dblHdAvg;
+   	}
+
+   	public double getDblTAAmt()
+   	{
+   		return dblTAAmt;
+   	}
+
+   	public void setDblTAAmt(double dblTAAmt)
+   	{
+   		this.dblTAAmt = dblTAAmt;
+   	}
+
+   	public double getDblTANoBill()
+   	{
+   		return dblTANoBill;
+   	}
+
+   	public void setDblTANoBill(double dblTANoBill)
+   	{
+   		this.dblTANoBill = dblTANoBill;
+   	}
+
+   	public double getDblTAAvg()
+   	{
+   		return dblTAAvg;
+   	}
+
+   	public void setDblTAAvg(double dblTAAvg)
+   	{
+   		this.dblTAAvg = dblTAAvg;
+   	}
     
 
 }

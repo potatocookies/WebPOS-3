@@ -63,13 +63,18 @@
 var reOrderStockList=0;
 var jsonObj = [];
 $(function() 
-		{		
-			$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
-			$("#txtFromDate" ).datepicker('setDate', 'today');
-			$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
-			$("#txtToDate" ).datepicker('setDate', 'today');
-			
-		}); 
+{	
+	var POSDate="${gPOSDate}";
+    var startDate="${gPOSDate}";
+   	var Date = startDate.split(" ");
+ 	var arr = Date[0].split("-");
+ 	Dat=arr[2]+"-"+arr[1]+"-"+arr[0];
+	$("#txtFromDate").datepicker({ dateFormat: 'dd-mm-yy' });
+	$("#txtFromDate" ).datepicker('setDate', Dat);
+	$("#txtToDate").datepicker({ dateFormat: 'dd-mm-yy' });
+	$("#txtToDate" ).datepicker('setDate', Dat);
+	
+}); 
 /**
 * Success Message After Saving Record
 **/
@@ -99,15 +104,15 @@ $(document).ready(function()
 		$("#wait").css("display", "none");
 	});
 
-	$("#txtFromDate").datepicker({
+	/* $("#txtFromDate").datepicker({
 		dateFormat : 'dd-mm-yy'
 	});
-	$("#txtFromDate").datepicker('setDate', 'today');
+	$("#txtFromDate").datepicker('setDate', Dat);
 
 	$("#txtToDate").datepicker({
 		dateFormat : 'dd-mm-yy'
 	});
-	$("#txtToDate").datepicker('setDate', 'today');
+	$("#txtToDate").datepicker('setDate', Dat); */
 	
 	$("[type='reset']").click(function(){
 		location.reload(true);
@@ -178,7 +183,7 @@ $(document).ready(function()
 function funLoadTableData()
 {
 	var callingTime="first";
-	var posdate="${gPOSDate}"
+	var posdate="${gPOSDate}";
 	$("#txtFromDate").val(posdate);
  	$("#txtToDate").val(posdate);
  	
@@ -620,7 +625,6 @@ function funFetchColNames(callingTime) {
 			  		  		</div>
 			  		  </div>
 				
-			  		  
 			  		  <div class="row" style="background-color: #fff; display:block; margin-bottom: 10px;">
 							<div class="element-input col-lg-6" style="width: 15%;"> 
 			  		  			<s:input type="hidden" id="txtAuditType" name="txtAuditType" path="strPSPCode" />

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.5.0.final using JasperReports Library version 6.5.0  -->
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AVT1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="22790e02-561a-4ab9-8b06-84ffe9afa648">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
@@ -11,64 +11,49 @@
 		</parameter>
 		<parameter name="decimalFormaterForIntegerValue" class="java.lang.String"/>
 		<queryString>
-			<![CDATA[SELECT
-     tblatvreport.`strPosCode` AS tblatvreport_strPosCode,
-     tblatvreport.`dteDate` AS tblatvreport_dteDate,
-     tblatvreport.`dblDiningAmt` AS tblatvreport_dblDiningAmt,
-     tblatvreport.`dblDiningNoBill` AS tblatvreport_dblDiningNoBill,
-     tblatvreport.`dblDiningAvg` AS tblatvreport_dblDiningAvg,
-     tblatvreport.`dblHDAmt` AS tblatvreport_dblHDAmt,
-     tblatvreport.`dblHDNoBill` AS tblatvreport_dblHDNoBill,
-     tblatvreport.`dblHdAvg` AS tblatvreport_dblHdAvg,
-     tblatvreport.`dblTAAmt` AS tblatvreport_dblTAAmt,
-     tblatvreport.`dblTANoBill` AS tblatvreport_dblTANoBill,
-     tblatvreport.`dblTAAvg` AS tblatvreport_dblTAAvg,    
-     tblatvreport.`strPosName` AS tblatvreport_strPosName
-FROM
-     `tblatvreport` tblatvreport
-order by strPosCode,dteDate]]>
+			<![CDATA[SELECT 1 FROM DUAL]]>
 		</queryString>
-		<field name="tblatvreport_strPosCode" class="java.lang.String"/>
-		<field name="tblatvreport_dteDate" class="java.sql.Date"/>
-		<field name="tblatvreport_dblDiningAmt" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblDiningNoBill" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblDiningAvg" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblHDAmt" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblHDNoBill" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblHdAvg" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblTAAmt" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblTANoBill" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_dblTAAvg" class="java.math.BigDecimal"/>
-		<field name="tblatvreport_strPosName" class="java.lang.String"/>
+		<field name="strPOSCode" class="java.lang.String"/>
+		<field name="dteBillDate" class="java.lang.String"/>
+		<field name="dblDiningAmt" class="java.lang.Double"/>
+		<field name="dblDiningNoBill" class="java.lang.Double"/>
+		<field name="dblDiningAvg" class="java.lang.Double"/>
+		<field name="dblHDAmt" class="java.lang.Double"/>
+		<field name="dblHDNoBill" class="java.lang.Double"/>
+		<field name="dblHdAvg" class="java.lang.Double"/>
+		<field name="dblTAAmt" class="java.lang.Double"/>
+		<field name="dblTANoBill" class="java.lang.Double"/>
+		<field name="dblTAAvg" class="java.lang.Double"/>
+		<field name="strPOSName" class="java.lang.String"/>
 		<variable name="SumDiningAmt" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblDiningAmt}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblDiningAmt}]]></variableExpression>
 		</variable>
 		<variable name="sumNoBillDining" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblDiningNoBill}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblDiningNoBill}]]></variableExpression>
 		</variable>
 		<variable name="SumDeliveryAmt" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblHDAmt}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblHDAmt}]]></variableExpression>
 		</variable>
 		<variable name="SumNoDeliveryBill" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblHDNoBill}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblHDNoBill}]]></variableExpression>
 		</variable>
 		<variable name="SumTakeAwayAmt" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblTAAmt}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblTAAmt}]]></variableExpression>
 		</variable>
 		<variable name="SumNoTakeAwayBill" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblTANoBill}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblTANoBill}]]></variableExpression>
 		</variable>
 		<variable name="SumDiningAvg" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblDiningAvg}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblDiningAvg}]]></variableExpression>
 		</variable>
 		<variable name="SumDeliveryAvg" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblHdAvg}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblHdAvg}]]></variableExpression>
 		</variable>
 		<variable name="SumTakeAwayAvg" class="java.math.BigDecimal" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblTAAvg}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblTAAvg}]]></variableExpression>
 		</variable>
 		<variable name="sumOfComplPAX" class="java.lang.Double" calculation="Sum">
-			<variableExpression><![CDATA[$F{tblatvreport_dblHDNoBill}]]></variableExpression>
+			<variableExpression><![CDATA[$F{dblHDNoBill}]]></variableExpression>
 		</variable>
 	</subDataset>
 	<parameter name="FromDate" class="java.lang.String"/>
@@ -84,56 +69,22 @@ order by strPosCode,dteDate]]>
 		<parameterDescription><![CDATA[]]></parameterDescription>
 	</parameter>
 	<parameter name="decimalFormaterForIntegerValue" class="java.lang.String"/>
+	<parameter name="listOfData" class="java.util.List"/>
+	<parameter name="strClientName" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT
-     tblsetup.`strClientCode` AS tblsetup_strClientCode,
-     tblsetup.`strClientName` AS tblsetup_strClientName,
-     tblsetup.`strAddressLine1` AS tblsetup_strAddressLine1,
-     tblsetup.`strAddressLine2` AS tblsetup_strAddressLine2,
-     tblsetup.`strAddressLine3` AS tblsetup_strAddressLine3,
-     tblsetup.`strEmail` AS tblsetup_strEmail,
-     tblsetup.`strState` AS tblsetup_strState,
-     tblsetup.`strCountry` AS tblsetup_strCountry,
-     tblsetup.`intTelephoneNo` AS tblsetup_intTelephoneNo,
-     tblsetup.`strCityName` AS tblsetup_strCityName
-FROM
-     `tblsetup` tblsetup]]>
+		<![CDATA[SELECT 1 FROM DUAL]]>
 	</queryString>
-	<field name="tblsetup_strClientCode" class="java.lang.String"/>
-	<field name="tblsetup_strClientName" class="java.lang.String"/>
-	<field name="tblsetup_strAddressLine1" class="java.lang.String"/>
-	<field name="tblsetup_strAddressLine2" class="java.lang.String"/>
-	<field name="tblsetup_strAddressLine3" class="java.lang.String"/>
-	<field name="tblsetup_strEmail" class="java.lang.String"/>
-	<field name="tblsetup_strState" class="java.lang.String"/>
-	<field name="tblsetup_strCountry" class="java.lang.String"/>
-	<field name="tblsetup_intTelephoneNo" class="java.lang.String"/>
-	<field name="tblsetup_strCityName" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
 		<band height="134" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="167" y="21" width="205" height="20" isRemoveLineWhenBlank="true" uuid="e3d906a8-ebfc-4ec2-b319-9caec6810265"/>
-				<textElement textAlignment="Center">
-					<font fontName="Trebuchet MS"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{tblsetup_strAddressLine1}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="167" y="42" width="205" height="20" isRemoveLineWhenBlank="true" uuid="75bafc7f-881c-4984-ac9e-f38df76516d2"/>
-				<textElement textAlignment="Center">
-					<font fontName="Trebuchet MS"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{tblsetup_strAddressLine3}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
 				<reportElement x="167" y="1" width="205" height="20" isRemoveLineWhenBlank="true" uuid="8a798358-a63f-4399-907a-d4a37f358c6e"/>
 				<textElement textAlignment="Center">
 					<font fontName="Trebuchet MS"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{tblsetup_strClientName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{strClientName}]]></textFieldExpression>
 			</textField>
 			<image onErrorType="Blank">
 				<reportElement x="3" y="2" width="150" height="79" uuid="5ea12fd6-6cbd-47f0-87cd-263c311d7cfd"/>
@@ -213,14 +164,14 @@ FROM
 			<componentElement>
 				<reportElement key="table 2" isPrintRepeatedValues="false" mode="Opaque" x="5" y="0" width="550" height="80" uuid="084a8444-1070-47d3-93c7-6714161bc6a9"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="AVT!" uuid="d88d590b-3838-4c13-b2a0-23bc11449886">
+					<datasetRun subDataset="AVT!" uuid="487f8e12-45b2-4b5e-b1cd-97251b1ca4bb">
 						<datasetParameter name="dateWise">
 							<datasetParameterExpression><![CDATA[$P{dateWise}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="decimalFormaterForDoubleValue">
 							<datasetParameterExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></datasetParameterExpression>
 						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{listOfData})]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="186" uuid="38da51ad-3423-4f4b-b60f-8b17b15fd654">
 						<jr:columnHeader height="30" rowSpan="1">
@@ -236,7 +187,7 @@ FROM
 						<jr:detailCell height="20" rowSpan="1">
 							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="186" height="20" uuid="8846baa7-d07b-41fa-b0b1-b8af95322707"/>
-								<textFieldExpression><![CDATA[$F{tblatvreport_strPosName}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{strPOSName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -262,10 +213,8 @@ FROM
 						</jr:columnFooter>
 						<jr:detailCell height="20" rowSpan="1">
 							<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="90" height="20" uuid="e92c1910-075c-4d85-9cb9-c329aaccd940">
-									<printWhenExpression><![CDATA[$P{dateWise}.equals("Yes")]]></printWhenExpression>
-								</reportElement>
-								<textFieldExpression><![CDATA[$F{tblatvreport_dteDate}]]></textFieldExpression>
+								<reportElement x="0" y="0" width="90" height="20" uuid="e92c1910-075c-4d85-9cb9-c329aaccd940"/>
+								<textFieldExpression><![CDATA[$F{dteBillDate}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -293,7 +242,7 @@ FROM
 							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="53" height="20" uuid="1955c8d2-b1e5-4c73-ba71-836ee200a6d0"/>
 								<textElement textAlignment="Right"/>
-								<textFieldExpression><![CDATA[$F{tblatvreport_dblDiningAmt}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{dblDiningAmt}]]></textFieldExpression>
 								<patternExpression><![CDATA[$P{decimalFormaterForDoubleValue}]]></patternExpression>
 							</textField>
 						</jr:detailCell>
@@ -321,7 +270,7 @@ FROM
 							<textField pattern="###0" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="50" height="20" uuid="001f0f2c-c9fb-4ee4-9537-10c609222985"/>
 								<textElement textAlignment="Right"/>
-								<textFieldExpression><![CDATA[$F{tblatvreport_dblDiningNoBill}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{dblDiningNoBill}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -348,7 +297,7 @@ FROM
 							<textField pattern="###0" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="58" height="20" uuid="001f0f2c-c9fb-4ee4-9537-10c609222985"/>
 								<textElement textAlignment="Right"/>
-								<textFieldExpression><![CDATA[$F{tblatvreport_dblHDNoBill}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{dblHDNoBill}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -365,9 +314,9 @@ FROM
 						<jr:columnFooter height="30" rowSpan="1"/>
 						<jr:detailCell height="20" rowSpan="1">
 							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="55" height="20" uuid="0dc4f60f-e9c3-4f47-9a6d-9f2658203c4c"/>
+								<reportElement x="0" y="0" width="56" height="20" uuid="0dc4f60f-e9c3-4f47-9a6d-9f2658203c4c"/>
 								<textElement textAlignment="Right"/>
-								<textFieldExpression><![CDATA[$F{tblatvreport_dblDiningAvg}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{dblDiningAvg}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

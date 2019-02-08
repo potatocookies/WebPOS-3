@@ -88,7 +88,7 @@ public class clsPOSCreditBillOutstandingReportController
 		model.put("urlHits", urlHits);
 		List poslist = new ArrayList();
 		poslist.add("ALL");
-		List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+		List listOfPos = objMasterService.funFullPOSCombo(strClientCode);
 		if(listOfPos!=null)
 		{
 			for(int i =0 ;i<listOfPos.size();i++)
@@ -136,13 +136,21 @@ public class clsPOSCreditBillOutstandingReportController
 			List listModLive = null;
 			List listModQFile = null;
 			List<clsPOSGroupWaiseSalesBean> list = new ArrayList<>();
-			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillOutstandingSummaryReport.jrxml");
 			String strClientCode = req.getSession().getAttribute("gClientCode").toString();
 			String POSCode=req.getSession().getAttribute("loginPOS").toString();	
 			Map hm = objGlobalFunctions.funGetCommonHashMapForJasperReport(objBean, req, resp);
 			String strPOSName = objBean.getStrPOSName();
 			String reportType=objBean.getStrReportType();
 			String strReportType=objBean.getStrDocType();
+			String reportName="";
+			if(reportType.equalsIgnoreCase("Summary"))
+			{
+				reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillOutstandingSummaryReport.jrxml");
+			}
+			else
+			{
+				reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillReport.jrxml");
+			}
 			String posCode = "ALL";
 			if (!strPOSName.equalsIgnoreCase("ALL"))
 			{
@@ -188,7 +196,7 @@ public class clsPOSCreditBillOutstandingReportController
 					exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, jprintlist);
 					exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, servletOutputStream);
 					exporter.setParameter(JRPdfExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-					resp.setHeader("Content-Disposition", "inline;filename=GroupWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
+					resp.setHeader("Content-Disposition", "inline;filename=CreditBillOutStandingReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".pdf");
 					exporter.exportReport();
 					servletOutputStream.flush();
 					servletOutputStream.close();
@@ -200,7 +208,7 @@ public class clsPOSCreditBillOutstandingReportController
 					exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT_LIST, jprintlist);
 					exporter.setParameter(JRXlsExporterParameter.OUTPUT_STREAM, servletOutputStream);
 					exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
-					resp.setHeader("Content-Disposition", "inline;filename=GroupWiseSalesReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
+					resp.setHeader("Content-Disposition", "inline;filename=CreditBillOutStandingReport_" + fromDate + "_To_" + toDate + "_" + strUserCode + ".xls");
 					exporter.exportReport();
 					servletOutputStream.flush();
 					servletOutputStream.close();
@@ -228,7 +236,7 @@ public class clsPOSCreditBillOutstandingReportController
 		 List<clsPOSBillDtl> listOfCreditBillReport = new ArrayList<clsPOSBillDtl>();
 		try
 		{	
-			String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillOutstandingSummaryReport.jrxml");
+			//String reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillReport.jrxml");
 			StringBuilder sbSqlLive = new StringBuilder();
 			StringBuilder sbSqlQFile = new StringBuilder();
 			StringBuilder sqlModLive = new StringBuilder();
@@ -269,7 +277,7 @@ public class clsPOSCreditBillOutstandingReportController
 					+ " and a.strCustomerCode=d.strCustomerCode"
 					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 
-				if (!posCode.equals("All"))
+				if (!posCode.equalsIgnoreCase("All"))
 				{
 				    sbSqlFilters1.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}
@@ -300,7 +308,7 @@ public class clsPOSCreditBillOutstandingReportController
 					+ " AND a.strCustomerCode=c.strCustomerCode "
 					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'");
 	
-				if (!posCode.equals("All"))
+				if (!posCode.equalsIgnoreCase("All"))
 				{
 				    sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}
@@ -472,7 +480,7 @@ public class clsPOSCreditBillOutstandingReportController
 		    }
 			    else//summary
 			    {
-			    	reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillOutstandingSummaryReport.jrxml");
+			    	//reportName = servletContext.getRealPath("/WEB-INF/reports/webpos/rptCreditBillOutstandingSummaryReport.jrxml");
 	
 					fromDate = hm.get("fromDate").toString();
 					toDate = hm.get("toDate").toString();
@@ -511,7 +519,7 @@ public class clsPOSCreditBillOutstandingReportController
 					+ " and a.strCustomerCode=d.strCustomerCode"
 					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
 
-				if (!posCode.equals("All"))
+				if (!posCode.equalsIgnoreCase("All"))
 				{
 				    sbSqlFilters1.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}
@@ -544,7 +552,7 @@ public class clsPOSCreditBillOutstandingReportController
 					+ " AND a.strCustomerCode=c.strCustomerCode "
 					+ " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "'");
 
-				if (!posCode.equals("All"))
+				if (!posCode.equalsIgnoreCase("All"))
 				{
 				    sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
 				}

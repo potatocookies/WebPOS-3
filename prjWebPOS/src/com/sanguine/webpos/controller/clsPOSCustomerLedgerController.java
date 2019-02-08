@@ -149,7 +149,7 @@ public class clsPOSCustomerLedgerController
 			{
 				posCode = (String)hmPOSData.get(strPOSName);
 			}
-			hm.put("posCode", posCode);
+			hm.put("posCode", strPOSName);
 			String fromDate = hm.get("fromDate").toString();
 			String toDate = hm.get("toDate").toString();
 			String strUserCode = hm.get("userName").toString();
@@ -234,7 +234,7 @@ public class clsPOSCustomerLedgerController
 
         	String fromDate = hm.get("fromDate").toString();
     	    String toDate = hm.get("toDate").toString();
-    	    String posCode = hm.get("posCode").toString();
+    	    String strPOSName = hm.get("posCode").toString();
     	    String shiftNo = hm.get("shiftNo").toString();
     	    String posName = hm.get("posName").toString();
 
@@ -272,9 +272,9 @@ public class clsPOSCustomerLedgerController
     		    + " and date( a.dteBillDate ) BETWEEN '" + fromDate + "' AND '" + toDate + "' ");
             
 
-            if (!posCode.equalsIgnoreCase("All"))
+            if (!strPOSName.equalsIgnoreCase("All"))
             {
-            	sbSqlFilters1.append(" AND a.strPOSCode = '" + posCode + "' ");
+            	sbSqlFilters1.append(" AND a.strPOSCode = '" + strPOSName + "' ");
             }
 
             if (shiftEnableYN.equalsIgnoreCase("Y"))
@@ -306,9 +306,9 @@ public class clsPOSCustomerLedgerController
     		    + " and a.strCustomerCode='" + strCustomerCode  + "' "
     		    + " and DATE(b.dteReceiptDate) BETWEEN '" + fromDate + "' AND '" + toDate + "'");
     	    
-    	    if (!posCode.equals("All"))
+    	    if (!strPOSName.equals("All"))
     	    {
-    	    	sbSqlFilters.append(" AND a.strPOSCode = '" + posCode + "' ");
+    	    	sbSqlFilters.append(" AND a.strPOSCode = '" + strPOSName + "' ");
     	    }
     	    if (shiftEnableYN.equalsIgnoreCase("Y"))
 	    	    {
@@ -342,9 +342,9 @@ public class clsPOSCustomerLedgerController
     		    + "and a.strCustomerCode='" + strCustomerCode  + "'   "
     		    + "and date( a.dteBillDate ) < '" + fromDate + "'    ");
     	    
-    	    if (!posCode.equals("All"))
+    	    if (!strPOSName.equals("All"))
     	    {
-    	    	sqlOpeningBalBuilder.append(" AND a.strPOSCode = '" + posCode + "' ");
+    	    	sqlOpeningBalBuilder.append(" AND a.strPOSCode = '" + strPOSName + "' ");
     	    }
     	    if (shiftEnableYN.equalsIgnoreCase("Y"))
     	    {
@@ -379,9 +379,9 @@ public class clsPOSCustomerLedgerController
     		    + "AND a.strCustomerCode='" + strCustomerCode  + "'   "
     		    + "AND DATE(b.dteReceiptDate) < '" + fromDate + "'   ");
     	    
-    	    if (!posCode.equals("All"))
+    	    if (!strPOSName.equals("All"))
     	    {
-    	    	sqlOpeningBalBuilder.append(" AND a.strPOSCode = '" + posCode + "' ");
+    	    	sqlOpeningBalBuilder.append(" AND a.strPOSCode = '" + strPOSName + "' ");
     	    }
     	    if (shiftEnableYN.equalsIgnoreCase("Y"))
 	    	    {

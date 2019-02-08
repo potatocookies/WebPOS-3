@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSAreaMasterBean;
 import com.sanguine.webpos.bean.clsPOSCustomerTypeMasterBean;
@@ -34,16 +35,23 @@ import com.sanguine.webpos.bean.clsPOSMasterBean;
 import com.sanguine.webpos.bean.clsPOSTaxMasterBean;
 import com.sanguine.webpos.bean.clsPOSUserAccessBean;
 import com.sanguine.webpos.bean.clsPOSUserRegistrationBean;
+import com.sanguine.webpos.model.clsUserDetailHdModel;
 
 
 @Controller
 public class clsPOSUserRegistrationController {
 	@Autowired
 	private clsGlobalFunctions objGlobal;
+	
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
+	
+	@Autowired
+	intfBaseService objBaseService;
+	
 	private String userType="";
 	Map map=new HashMap();
+	
 	@RequestMapping(value = "/frmPOSUserRegistration", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSUserRegistrationBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request){
 		String urlHits="1";
@@ -294,6 +302,52 @@ public class clsPOSUserRegistrationController {
 	}
 	
 	
+	@RequestMapping(value = "/loadUsersModuleData", method = RequestMethod.GET)
+	public @ResponseBody clsPOSUserRegistrationBean funLoadUsersModule(@RequestParam("userCode") String userCode, HttpServletRequest req)
+	{
+		String clientCode = req.getSession().getAttribute("gClientCode").toString();
+		clsPOSUserRegistrationBean objUserRegistration = null;
+		List<clsPOSUserAccessBean> listAllSelectedModules = new ArrayList<clsPOSUserAccessBean>();
+        StringBuilder sqlUserData = new StringBuilder();
+        sqlUserData.append("SELECT a.strUserCode,a.strFormName,a.strGrant,a.strTLA,a.strAuditing" + " FROM tbluserdtl a,tbluserhd b WHERE a.strUserCode=b.strUserCode AND b.strClientCode='" + clientCode + "' " + " GROUP BY a.strUserCode; ");
+        List list=null;
+		try
+		{
+			list = objBaseService.funGetList(sqlUserData, "sql");
+			clsUserDetailHdModel objUserModel = new clsUserDetailHdModel();
+			if (list.size() > 0)
+			{
+				clsPOSUserAccessBean objUser =null;
+				List list1 = new ArrayList();
+				for (int cnt = 0; cnt < list.size(); cnt++)
+				{
+					Object[] obj = (Object[]) list.get(cnt);
+
+					objUser = new clsPOSUserAccessBean();
+					objUser.setStrUserCode(userCode);
+					objUser.setStrFormName(obj[1].toString()); // formName
+					objUser.setStrGrant(obj[2].toString()); // grant
+					objUser.setStrAuditing(obj[4].toString()); // tla
+					objUser.setStrTLA(obj[3].toString()); // audit
+					listAllSelectedModules.add(objUser);
+				}
+				objUserRegistration.setListUsersSelectedForms(listAllSelectedModules);
+			}
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (null == objUserRegistration)
+		{
+			objUserRegistration = new clsPOSUserRegistrationBean();
+			objUserRegistration.setStrUserCode("Invalid Code");
+		}
+
+		return objUserRegistration;
+	}
 	
 	
 //	@RequestMapping(value = "/loadUsersModuleData", method = RequestMethod.GET)

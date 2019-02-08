@@ -44,29 +44,14 @@ var toTableName;
 var kotWiseItmeList=[];
 
 
-
-
-
-
 $(document).ready(function() 
 {
-
-
-	
-	
 	$("#cmbTable").change(function() 
 	{
     	funFetchBusyTableData();
         	
-	});
-   
-    
-   
-	  
+	});  
 });
-
-
-
 
 
 //Footer btn click
@@ -494,7 +479,45 @@ $(document).ready(function()
 		<br />
 		<br />
 		
+		<!-- Pratiksha -->
 		<div class="title">
+			<div style=" width: 98%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: auto;padding-left: 50px;padding-right: 50px;">
+				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 15px;">
+					<div class="element-input col-lg-6" style="width: 30%;margin-left: 34px; size='10'; margin-left: auto;"> 
+	    				<s:select id="cmbTable" path="strTableName" items="${bussyTableList}" />
+	    			</div>
+	    			<div class="element-input col-lg-6" style="width: 25%; margin-left: -300px" >
+	    				<label class="title" >BUSY TABLES</label>
+	    			</div>
+	    		
+				</div>
+				
+				<table border="2" style="width:100%;margin: auto;"  >
+							<thead>
+									<tr>
+										<td style="width:40%; background: #78BEF9;">Description</td>
+										<td style="width:10%; background: #78BEF9;">Rate</td>
+										<td style="width:10%; background: #78BEF9;">Quantity</td>
+										<td style="width:10%; background: #78BEF9;">Move Quantity</td>
+										<td style="width:20%; background: #78BEF9;">Amount</td>
+										<td style="width:10% border: #c0c0c0 1px solid; background: #78BEF9;">Select</td>
+<!-- 										<td style="width:0%; background: #78BEF9;">Item Code</td> -->
+<!-- 										<td style="width:0%; background: #78BEF9;">Waiter</td> -->
+<!-- 										<td style="width:0%; background: #78BEF9;">Fired Qty</td> -->
+									</tr>
+							</thead>
+					</table>
+					
+					<table border="2" id="tblBussyTableItems" style="width: 100%;">
+							<tbody>    
+
+							 </tbody>							
+					 </table>
+			</div>
+		</div>
+		
+		
+		<%-- <div class="title">
 			<div style=" width: 98%; height: 450px;float:left;  overflow-x: hidden; border-collapse: separate; overflow-y: auto;padding-left: 50px;padding-right: 50px;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 15px;">
 					<div class="element-input col-lg-6" style="width: 30%;margin-left: 34px;"> 
@@ -530,19 +553,27 @@ $(document).ready(function()
 							 </tbody>							
 					 </table>
 			</div>
-		</div>
+		</div> --%>
 		
 		
 		
 		<br/><br/>
 		
-		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
+		<!-- Pratiksha -->
+		<div class="submit col-lg-4 col-sm-4 col-xs-4">
+  				<input type="submit" value="View KOT" style="margin-left: -210px";onclick="funFooterButtonClicked(this)" class="btn btn-spos-outline-success"/></div>
+              		<div class="submit col-lg-4 col-sm-4 col-xs-4">
+              		<input type="submit" value="Make Bill" style="margin-left: 200px";onclick="funFooterButtonClicked(this)" class="btn btn-spos-outline-success"/></div>
+     		        <div class="submit col-lg-4 col-sm-4 col-xs-4">
+     		        </div><input type="button" value="Close" style="margin-left: 200px" onclick="funFooterButtonClicked(this)" class="btn btn-spos-outline-success"></div>
+		
+		<!-- <div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
      		<p align="center">
      		  
      			<input type="button"  id="Home" 	    value="BACK"    		style="width: 100px;height: 50px; white-space: normal;"   				onclick="funFooterButtonClicked(this)" class="btn btn-spos-outline-success"/>
             	<input type="button"  id="Make Bill"    value="Make Bill"    	style="width: 100px;height: 50px; white-space: normal; "   onclick="funFooterButtonClicked(this)" class="btn btn-spos-outline-success"/>
      		  
-   		</div>
+   		</div> -->
 		
 		
 	

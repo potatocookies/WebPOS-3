@@ -130,7 +130,7 @@ $(document).ready(function() {
  		 funFillTableRow(fromDate,toDate,payMode,posName,reportType);
 	 }
 	
-	 function funfillColumnData(colData,reportType)
+	 /* function funfillColumnData(colData,reportType)
 	 {
 			var table = document.getElementById("tblsalesSumFlash");
 		    var rowCount = table.rows.length;
@@ -149,10 +149,67 @@ $(document).ready(function() {
 		    for(var i=0;i<colData.length;i++){
 			row.insertCell(i+3).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value='"+colData[i]+"' >";		
 		}
+	 } */
+	 
+	 function funfillColumnData(colData,reportType)
+	 {
+			var table = document.getElementById("tblsalesSumFlash");
+		    var rowCount = table.rows.length;
+		    var row = table.insertRow(rowCount);
+		    var paymod=$('#cmbPaymentMode').val();
+			if(reportType=='Daily')  
+			{
+				if(paymod=="ALL")
+				{
+					 row.insertCell(0).innerHTML= "<input type=\"text\" readonly=\"readonly\" class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosCode >";
+			         row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosName >";
+			         row.insertCell(2).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosDate >";
+					
+	            }
+				else
+				{
+					 row.insertCell(0).innerHTML= "<input type=\"text\" readonly=\"readonly\" class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value=PosCode >";
+					 row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value=PosName >";
+					 row.insertCell(2).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value=PosDate >";  
+				}
+					
+			
+			}
+			else
+			{
+				if(paymod=="ALL")
+				{
+					 row.insertCell(0).innerHTML= "<input type=\"text\" readonly=\"readonly\" class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosCode >";
+			         row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosName >";
+			         row.insertCell(2).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value=PosDate >";
+					
+	            }
+				else
+				{
+					 row.insertCell(0).innerHTML= "<input type=\"text\" readonly=\"readonly\" class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value=PosCode >";
+					 row.insertCell(1).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value=PosName >";
+					 row.insertCell(2).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value=PosDate >";  
+				}
+				
+			}
+		    
+		    for(var i=0;i<colData.length;i++){
+		    	if(paymod=="ALL")
+		    	{
+		    		row.insertCell(i+3).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"15%\" id=\""+(rowCount)+"\" value='"+colData[i]+"' >";	
+		    	
+		    	}
+		    	else
+		    	{
+		    		row.insertCell(i+3).innerHTML= "<input type=\"text\" readonly=\"readonly\"  class=\"header \" size=\"26%\" id=\""+(rowCount)+"\" value='"+colData[i]+"' >";			
+		    	}
+			
+		}
 	 }
+	 
 
 	 
-	 function funFillTableRow(fromDate,toDate,payMode,posName,reportType){
+	 /* function funFillTableRow(fromDate,toDate,payMode,posName,reportType){
 		 
 		 var searchurl=getContextPath()+"/loadPaymentData.html?fromDate=" + fromDate+"&toDate="+toDate+"&payMode="+payMode+"&posName="+posName+"&reportType="+reportType;
 		 $.ajax({
@@ -209,7 +266,101 @@ $(document).ready(function() {
 		            }		            
 		        }
 	 });
+	 } */
+	 
+function funFillTableRow(fromDate,toDate,payMode,posName,reportType){
+		 
+		 var searchurl=getContextPath()+"/loadPaymentData.html?fromDate=" + fromDate+"&toDate="+toDate+"&payMode="+payMode+"&posName="+posName+"&reportType="+reportType;
+		 $.ajax({
+		        type: "GET",
+		        url: searchurl,
+		        dataType: "json",
+		        
+		        success: function (response) {
+		        
+		        	var tableHeaderData = document.getElementById("tblsalesSumFlash");
+		    		var colCount=tableHeaderData.rows[0].cells.length;
+		    		var table = document.getElementById("tblsalesSumFlash");
+		    	 	var rowCount = table.rows.length;
+		    	 	var paymod1=$('#cmbPaymentMode').val();
+		        	
+		        	$.each(response.List,function(i,item)
+		        	{
+		              row = table.insertRow(rowCount);
+		  		 	  for(var i=0;i<colCount;i++)
+		  		 	  {
+		  		 		if(paymod1=="ALL")
+		  		 		{
+
+		  		 			if(i==2)
+		  		 			{
+		  		 				   var arr1 = item[i].split("-");
+		  		 				   var date1=arr1[2]+"-"+arr1[1]+"-"+arr1[0];
+				  			       row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"text-align:center;\" id=\""+(i)+"\" value='"+date1+"'>";
+				  			}
+		  		 			else
+		  		 			{
+		  		 				
+				  			       row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"text-align:right;\" size=\"15%\" id=\""+(i)+"\" value='"+item[i]+"'>";
+
+		  		 			}
+
+		  		 		}
+		  		 		else
+		  		 		{ 
+		  		 			if(i==2)
+		  		 			{
+		  		 				   var arr2 = item[i].split("-");
+		  		 				   var date2=arr2[2]+"-"+arr2[1]+"-"+arr2[0];
+				  			       row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"text-align:center;\" id=\""+(i)+"\" value='"+date2+"'>";
+
+		  		 			}
+		  		 			else
+		  		 			{
+
+			  		 			if(i==3)
+			  		 				{
+			  		 			         row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"text-align:right;\" size=\"32%\" id=\""+(i)+"\" value='"+item[i]+"'>";
+					  			    }
+			  		 			else
+			  		 				{
+			  		                     row.insertCell(i).innerHTML= "<input name=\readonly=\"readonly\" class=\"Box \" style=\"text-align:left;\" size=\"38%\" id=\""+(i)+"\" value='"+item[i]+"'>";
+                                    }
+			  		 				
+			  		 	    }
+                       }
+		  		 			
+		            }
+			  		 	 rowCount++;
+			  		 	 i--;
+ 		            });
+		        	
+		        	
+		        	funFillTotalCol(response.totalList); 
+		        
+		    
+		        },
+		        error: function(jqXHR, exception)
+		        {
+		            if (jqXHR.status === 0) {
+		                alert('Not connect.n Verify Network.');
+		            } else if (jqXHR.status == 404) {
+		                alert('Requested page not found. [404]');
+		            } else if (jqXHR.status == 500) {
+		                alert('Internal Server Error [500].');
+		            } else if (exception === 'parsererror') {
+		                alert('Requested JSON parse failed.');
+		            } else if (exception === 'timeout') {
+		                alert('Time out error.');
+		            } else if (exception === 'abort') {
+		                alert('Ajax request aborted.');
+		            } else {
+		                alert('Uncaught Error.n' + jqXHR.responseText);
+		            }		            
+		        }
+	 });
 	 }
+	 
 	 
 	 function funFillTotalCol(rowData) 
 		{
@@ -300,6 +451,14 @@ $(document).ready(function() {
 		}
 	}	 	 	 
 
+ function DeleteRows() {
+     var rowCount = tblsalesSumFlash.rows.length;
+     for (var i = rowCount - 1; i > 0; i--) {
+    	 tblsalesSumFlash.deleteRow(i);
+     }
+     $('#tblTotal tbody').empty();
+ }
+ 
 	 
 	</script>
 
@@ -316,7 +475,7 @@ $(document).ready(function() {
 	</div>
 	
 	<s:form name="SalesSummaryFlash" method="POST"
-		action="processSalesSummeryFlash.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+		action="processSalesSummeryFlash1.html?saddr=${urlHits}" target="_blank" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 
 
 	<div class="title" >

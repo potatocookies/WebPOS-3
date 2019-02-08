@@ -149,6 +149,11 @@ public class clsPOSVoidKOTReportController {
 		String posCode = "ALL";
 		if (!strPOSName.equalsIgnoreCase("ALL"))
 		{
+			if(source.equalsIgnoreCase("DayEndMail"))
+			{
+				posCode=objBean.getStrPOSCode();
+			}
+			else
 			posCode = (String) map.get(strPOSName);
 		}
 		hm.put("posCode", posCode);

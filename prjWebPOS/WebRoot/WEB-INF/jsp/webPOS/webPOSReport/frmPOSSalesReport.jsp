@@ -2938,7 +2938,7 @@
 			</tr> -->
 					</table>
 				</div>
-				<div style="width: 57%; overflow-y: scroll; overflow-x: hidden; margin-left: 10%;">
+				<div style="width: 56%; overflow-y: scroll; overflow-x: hidden; margin-left: 10%;">
 					<table class="transTablex">
 
 						<tr>
@@ -2982,7 +2982,7 @@
 										<div
 											style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 100px; margin: auto; overflow-x: scroll; overflow-y: scroll; width: 99.80%;">
 											<table id="tblSettlementWiseTotal"
-												style="width: 100%; height: 50%; border: #0F0; table-layout: fixed; overflow: scroll"
+												style="width: 100%; height: 50%; border: #0F0; table-layout: fixed; "
 												class="transTablex col11-center">
 												<tbody>
 												<col style="width: 20%">
@@ -2991,8 +2991,8 @@
 										</div>
 									</div>
 								</div> <!-- Bill wise table -->
-								<div id="divBillWise" class=""
-									style="width: 57%; height: 400px; overflow-y: scroll; overflow-x: scroll;">
+							<div id="divBillWise" class=""
+									style="width: 56%; height: 400px; overflow-y: scroll;overflow-x: hidden; border: 1px solid black;  ">
 									<table
 										style="height: 20px; border: #0F0; width: 100%; font-size: 11px; font-weight: bold;">
 										<tr bgcolor="#72BEFC">
@@ -3015,10 +3015,10 @@
 											<td width="5%">Reason</td>
 										</tr>
 									</table>
-									<div
-										style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 80%; margin: auto; overflow-y: scroll; overflow-x: scroll; width: 100%;">
+								<div
+										style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 90%; margin: auto; overflow-x: scroll;overflow-y: hidden; width: 100%;">
 										<table id="tblBillWise"
-											style="width: 100%; border: #0F0; table-layout: fixed; overflow: scroll"
+											style="width: 100%; border: #0F0; "
 											class="transTablex col11-center">
 											<tbody>
 											<col style="width: 7%">
@@ -3042,7 +3042,7 @@
 										</table>
 									</div>
 									<div class=""
-										style="width: 100%; height: 200px; display: block;">
+										style="width: 100%; height: 60px; display: block; ">
 										<table
 											style="height: 20px; border: #0F0; width: 99%; font-size: 11px; font-weight: bold;">
 											<tr bgcolor="#72BEFC">
@@ -3056,9 +3056,9 @@
 											</tr>
 										</table>
 										<div
-											style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 100px; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 99.80%;">
+											style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 20px; margin: auto; width: 99.80%;">
 											<table id="tblBillWiseTotal"
-												style="width: 100%; height: 50%; border: #0F0; table-layout: fixed; overflow: scroll"
+												style="width: 100%; height: 50%; border: #0F0; table-layout: fixed;"
 												class="transTablex col11-center">
 												<tbody>
 												<col style="width: 20%">
@@ -4127,18 +4127,18 @@
 								</div> <!-- All Tables End Here -->
 							</td>
 						</tr>
-						<tr>
+						<!-- <tr>
 							<td colspan="4"></td>
 						</tr>
 						<tr>
 							<td colspan="4">
 								
-						<tr></tr>
+						<tr> --></tr>
 						<tr>
 							
 							<td colspan="4">
 								<div id="tableImg"
-									style="width: 57%; height: 120px; overflow-x: scroll; overflow-y: hidden;">
+									style="width: 57%; height: 120px; overflow-x: scroll; overflow-y: hidden; border:1px solid black;">
 									<table class="transTablex">
 										<!-- style="height:120px; border: #0F0;width: 100%;font-size:11px;overflow-x: scroll; font-weight: bold;"> -->
 										<tr bgcolor="#72BEFC">

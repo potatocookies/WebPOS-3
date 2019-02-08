@@ -35,8 +35,8 @@
 	
 	$(document).ready(function() {
 		
-	    var POSDate="${POSDate}"
-	    var startDate="${POSDate}";
+	    var POSDate="${gPOSDate}";
+	    var startDate="${gPOSDate}";
 	  	var Date = startDate.split(" ");
 		var arr = Date[0].split("-");
 		Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
@@ -303,7 +303,7 @@
 	<div id="formHeading">
 		<label>Cash Management Flash</label>
 	</div>
-	<s:form name="POSCashManagementFlash" method="POST" action="exportCashManagement.html?saddr=${urlHits}"
+	<s:form name="POSCashManagementFlash" method="POST" action="exportCashManagement1.html?saddr=${urlHits}"
 		target="_blank" >
 	
 	<br />					

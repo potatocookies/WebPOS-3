@@ -28,8 +28,8 @@
 				window.opener.funSetData();
 				window.close();
 			}
-				var POSDate="${POSDate}"
-			    var startDate="${POSDate}";
+				var POSDate="${gPOSDate}";
+			    var startDate="${gPOSDate}";
 	 		  	var Date = startDate.split(" ");
 				var arr = Date[0].split("-");
 				Dat=arr[2]+"-"+arr[1]+"-"+arr[0];	
@@ -62,7 +62,7 @@
 		           	
 		           	});
 		           	
-		           	funNeedMailreport();
+		           	//funNeedMailreport();
 		        },	 
 	           error : function(jqXHR, exception)
 	       		 {
@@ -181,7 +181,7 @@
 						<td align="center" width="10%">SEND EMAIL</td>					
 					</tr>
 				</table>
-				<div style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 80%; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 99.80%;">
+				<div style="background-color: #C0E2FE; border: 1px solid #ccc; display: block; height: 90%; margin: auto; overflow-x: hidden; overflow-y: scroll; width: 99.80%;">
 					<table id="tblDayEndEmailRpt"
 						style="width: 100%; height:90%; border: #0F0; table-layout: fixed; overflow: scroll"
 						class="transTablex col11-center">

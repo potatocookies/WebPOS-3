@@ -9,11 +9,11 @@
 
 <script type="text/javascript">
 	$(document).ready(function() 
-		{
-		 $('input#txtSettelmentCode').mlKeyboard({layout: 'en_US'});
-		  $('input#txtSettelmentDesc').mlKeyboard({layout: 'en_US'});
-		  $('input#txtConversionRatio').mlKeyboard({layout: 'en_US'});
-		  $('input#txtAccountCode').mlKeyboard({layout: 'en_US'});
+	{
+	  /* $('input#txtSettelmentCode').mlKeyboard({layout: 'en_US'});
+	  $('input#txtSettelmentDesc').mlKeyboard({layout: 'en_US'});
+	  $('input#txtConversionRatio').mlKeyboard({layout: 'en_US'});
+	  $('input#txtAccountCode').mlKeyboard({layout: 'en_US'}); */
 		$(".tab_content").hide();
 		$(".tab_content:first").show();
 
@@ -112,12 +112,25 @@ $(document).ready(function()
 				        		$("#chkAdvanceReceipt").prop('checked',true);
 			        		}
 				        	
-				        	if(response.strBillPrintOnSettlement=='Y')
+				        	if(response.strBillPrintOnSettlement=='Yes')
+			        		{
+				        		$("#chkBillPrintOnSettlement").prop('checked',true);
+			        		}
+				        	if(response.strCustomerSelectionOnBillSettlement=='Yes')
+				        	{
+				        		$('#chkSelectCustOnBillSettlement').prop('checked',true)
+				        	}
+				        	if(response.strCreditReceiptYN=='Y')
+				        	{
+				        		$('#chkCreditReceipt').prop('checked',true)
+				        	}
+				        	$("#txtAccountCode").val(response.strAccountCode);
+				        	/* if(response.strBillPrintOnSettlement=='Y')
 			        		{
 				        		$("#chkBillPrintOnSettlement").prop('checked',true);
 			        		}
 				        	
-				        	$("#txtAccountCode").val(response.strAccountCode);
+				        	$("#txtAccountCode").val(response.strAccountCode); */
 			        	}
 					},
 					error: function(jqXHR, exception) {
@@ -209,7 +222,7 @@ $(document).ready(function()
 
 <br/>
 <br/>
-
+	<!--  Mahesh -->
 	<s:form name="POSSettlementMaster" method="POST" action="savePOSSettlementMaster.html" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 	
 	<div class="title" style="margin-left: 25%;">
@@ -267,33 +280,81 @@ $(document).ready(function()
 						<div class="element-input col-lg-6" style="width: 20%; margin-left: 12px;">
 							<label class="title" style="width: 100%">Applicable For</label>
 						</div>
-		    			<div class="element-input col-lg-6" style="width: 60%; margin-left: 6%;">
+		    			<div class="element-input col-lg-6" style="width: 60%; margin-left: 7%;">
 		    				<s:input type="checkbox"  id="chkBilling" path="strBilling"></s:input>Billing &nbsp;
 		    				<s:input type="checkbox"  id="chkAdvanceReceipt" path="strAdvanceReceipt"></s:input>Advance Receipt &nbsp;
 		    				<s:input type="checkbox"  id="chkBillPrintOnSettlement" path="strBillPrintOnSettlement"></s:input>Bill Print On Settlement
 						</div> 
 				</div>
 				
+			 	<div class="row" style="background-color: #fff; display: inline-flex; margin-bottom: 10px;">
+						<div class="element-input col-lg-6" style="width: 20%; margin-left: 12px;">
+						
+						</div>
+		    			<div class="element-input col-lg-6" style="width: 60%; margin-left: 7%;">
+		    			       <s:input type="checkbox"  id="chkCreditReceipt" path="strCreditReceiptYN"></s:input>Credit Receit
+						</div> 
+				</div>
+				
+			 	<div class="row" style="background-color: #fff; display: inline-flex; margin-bottom: 10px;">
+						<div class="element-input col-lg-6" style="width: 20%; margin-left: 12px;">
+						
+						</div>
+		    			<div class="element-input col-lg-6" style="width: 60%; margin-left: 7%;">
+		    			       <s:input type="checkbox"  id="chkSelectCustOnBillSettlement" path="strCustomerSelectionOnBillSettlement"></s:input>Select Customer On Bill Settlement
+						</div> 
+				</div>
+				
 			 	<div class="row" style="background-color: #fff;">
-					<div class="element-input col-lg-6" > 
+					<div class="element-input col-lg-6" style="width: 29%;  margin-bottom: 30px;"> 
 	    				<label class="title">Applicable</label>
 	   				</div>
-	   				<div class="element-input col-lg-6" style="margin-bottom: 10px;"> 
+	   				
+	   				<div class="element-input col-lg-6"  style="width: 25%;"> 
 						<s:select id="cmbApplicable" path="strApplicable" >
 							<option value="Y">Yes</option>
 				 			<option value="N">No</option>
 					    </s:select>
+					
 					</div>
+					
+					
 		 		</div>
 		 		
 		 		<div class="row" style="background-color: #fff;">
-						<div class="element-input col-lg-6" > 
+						<div class="element-input col-lg-6" style="width: 29%;  margin-bottom: 30px;" > 
 	    					<label class="title">Conversion Rate</label>
 	    				</div>
-	    				<div class="element-input col-lg-6" style="margin-bottom: 10px;"> 
+	    				<div class="element-input col-lg-6" style="width: 25%;"> 
 							<s:input class="large" colspan="3" type="text" id="txtConversionRatio" value="1" path="dblConversionRatio" />
 						</div>
 			 	</div>
+			 	
+			 	<div class="row" style="background-color: #fff;">
+					<div class="element-input col-lg-6" style="width: 29%;  margin-bottom: 30px;"> 
+	    				<label class="title">Third Party Commision</label>
+	   				</div>
+	   				
+	   				<div class="element-input col-lg-6"  style="width: 20%;"> 
+	   				<s:input class="large" colspan="3"  type="text" id="txtThirdPartyComission" path="dblThirdPartyComission" />
+					</div>
+	   				
+	   				<div class="element-input col-lg-6"  style="width: 25%;"> 
+						<s:select id="cmbComissionType" path="strComissionType" >
+							<option value="Per">Per</option>
+				 			<option value="Amt">Amt</option>
+					    </s:select>
+					 </div>  
+					 <div class="element-input col-lg-6"  style="width: 25%;">
+					    <s:select id="cmbComissionOn" path="strComissionOn" >
+					    	<option value="Net Amount">Net Amount</option>
+				 			<option value=" Gross Amount">Gross Amount</option>
+				 			<option value="No. of Pax">No. of Paxt</option>
+				 		</s:select>
+				 	
+				 	</div>
+		 		</div>
+			 	
 				
 			</div>
 			

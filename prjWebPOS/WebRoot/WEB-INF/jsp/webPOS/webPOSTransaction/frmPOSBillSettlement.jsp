@@ -2012,7 +2012,7 @@ function funDiscOkClicked()
 		  
 		  if(amtDisc>0)
 		  {
-			  perDisc=(amtDisc/dblDiscountOnAmt)*100;
+			  //perDisc=(amtDisc/dblDiscountOnAmt)*100;
 			  
 			  $('#txtDiscountPer').val(perDisc);
 		  }

@@ -59,6 +59,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.POSLicence.controller.clsClientDetails;
 import com.POSLicence.controller.clsEncryptDecryptClientCode;
@@ -8226,4 +8230,34 @@ public class clsPOSUtilityController
             e.printStackTrace();
         }
     }
+    
+    @RequestMapping(value = "/funGetAreaCodeFromTable", method = RequestMethod.GET)
+	public @ResponseBody Map funGetAreaCodeFromTable(@RequestParam("strTableNo") String strTableNo, HttpServletRequest request)
+	{
+		List list = null;
+		Map jObjTableData = new HashMap();
+		try
+		{
+			String clientCode = request.getSession().getAttribute("gClientCode").toString();
+
+			String sql = "select a.strAreaCode " + "from tbltablemaster a " + "where a.strTableNo='" + strTableNo + "' " + "and a.strClientCode='"+clientCode+"' ";
+
+			list = objBaseService.funGetList(new StringBuilder(sql), "sql");
+			if (list.size() > 0)
+			{
+					jObjTableData.put("strAreaCode",list.get(0));
+				
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+
+		}
+		finally
+		{
+			return jObjTableData;
+		}
+
+	}
 }

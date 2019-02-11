@@ -982,7 +982,7 @@ public class clsPOSBillingAPIController
 
 					if (!iCode.contains("M"))
 					{
-						if (null != hmPromoItem)
+						if (null!= hmPromoItem && hmPromoItem.size()>0)
 						{
 							clsBillPromotionDtlModel objPromortion = new clsBillPromotionDtlModel();
 							if (null != hmPromoItem.get(iCode))
@@ -1264,7 +1264,7 @@ public class clsPOSBillingAPIController
 			}
 
 			netTotal = subTotalForTax - discAmt;
-			discPer = (discAmt / netTotal) * 100;
+			discPer = (discAmt / subTotalForTax) * 100;
 
 			grandTotal = subTotalForTax - discAmt + totalTaxAmt;
 

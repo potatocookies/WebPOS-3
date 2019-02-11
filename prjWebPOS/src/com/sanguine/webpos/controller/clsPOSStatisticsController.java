@@ -47,16 +47,23 @@ public class clsPOSStatisticsController
 		
 		List poslist = new ArrayList();
 		poslist.add("All");		
-		List list=objMasterService.funFillPOSCombo(strClientCode);
+		List list=objMasterService.funFullPOSCombo(strClientCode);
 		mapPOS.put("All", "All");
-		for(int cnt=0;cnt<list.size();cnt++)
+		for(int i=0;i<list.size();i++)
+		{
+			Object[] obj=(Object[]) list.get(i);
+			poslist.add( obj[1].toString());
+			mapPOS.put( obj[0].toString(), obj[1].toString());
+		}
+		model.put("posList",mapPOS);
+		
+		/*for(int cnt=0;cnt<list.size();cnt++)
 		{
 			Object obj=list.get(cnt);
 			poslist.add(Array.get(obj, 1).toString());
 			mapPOS.put(Array.get(obj, 1).toString(),Array.get(obj, 0).toString());
 		}
-		model.put("posList",poslist);
-		
+		model.put("posList",poslist);*/
 		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSStatistics_1","command", new clsPOSStatisticsBean());

@@ -132,9 +132,63 @@ function funRemoveTableRows(tblId)
 		rowCount--;
 	}
 }
-
-
+//Pratiksha
 function funFillTableGrid(list)
+{
+	 var tblTableDtl=document.getElementById('tblTableStatus');
+	 var insertCol=0;
+	 var insertTR=tblTableDtl.insertRow();
+	 $.each(list, function(i, obj) 
+		{				
+		 totalPax=totalPax+obj.intPaxCapacity;
+			if(insertCol<tblMenuItemDtl_MAX_COL_SIZE)
+			{
+				var col=insertTR.insertCell(insertCol);
+				if(obj.strStatus=="Occupied")
+				{
+					col.innerHTML = "<td><button type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+" "+obj.intPaxCapacity+"'  style=\"width: 85px;height: 85px; background: #ff0d0d; text-align: center;white-space:pre-wrap; word-wrap:break-word; margin-top: 5px;\"  onclick=\"funGetSelectedRowIndex(this,"+"tblTableStatus"+")\"/>"+obj.strTableName+"<br>"+obj.intPaxCapacity+"</button></td>";
+
+				}
+				else if(obj.strStatus=="Billed")
+				{
+					col.innerHTML = "<td><button type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"  "+obj.intPaxCapacity+"'   style=\"width: 85px;height: 85px; background: #0000CD; white-space:pre-wrap; word-wrap:break-word; margin-top: 5px;\"  onclick=\"funGetSelectedRowIndex(this,'tblTableStatus')\"/>"+obj.strTableName+"<br>"+obj.intPaxCapacity+"</button></td>";
+				}
+				else
+				{
+					col.innerHTML = "<td><button type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"  "+obj.intPaxCapacity+"'   style=\"width: 85px;height: 85px; text-align: center;white-space:pre-wrap; background: #B0C4DE;word-wrap:break-word; margin-top: 5px;\"  onclick=\"funGetSelectedRowIndex(this,'tblTableStatus')\"/>"+obj.strTableName+"<br>"+obj.intPaxCapacity+"</button></td>";
+				}	
+				
+				
+				insertCol++;
+			}
+			else
+			{					
+				insertTR=tblTableDtl.insertRow();									
+				insertCol=0;
+				var col=insertTR.insertCell(insertCol);  
+				if(obj.strStatus=="Occupied")
+				{
+					col.innerHTML = "<td><button type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"  "+obj.intPaxCapacity+"'  style=\"width: 85px;height: 85px; background-color: #ff0d0d; white-space:pre-wrap; word-wrap:break-word; margin-top: 5px;\" onclick=\"funGetSelectedRowIndex(this,'tblTableStatus')\"/>"+obj.strTableName+"<br>"+obj.intPaxCapacity+"</button></td>";
+
+				}
+				else if(obj.strStatus=="Billed")
+				{
+					col.innerHTML = "<td><button type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"  "+obj.intPaxCapacity+"'  style=\"width: 85px;height: 85px; background-color: #0000CD; white-space:pre-wrap; word-wrap:break-word; margin-top: 5px;\" onclick=\"funGetSelectedRowIndex(this,'tblTableStatus')\"/>"+obj.strTableName+"<br>"+obj.intPaxCapacity+"</button></td>";
+				}
+				else
+				{
+					col.innerHTML = "<td><button type=\"button\" id="+obj.strTableNo+" value='"+obj.strTableName+"  "+obj.intPaxCapacity+"'  style=\"width: 85px;height: 85px; white-space:pre-wrap; word-wrap:break-word;background: #B0C4DE; margin-top: 5px;\" onclick=\"funGetSelectedRowIndex(this,'tblTableStatus')\"/>"+obj.strTableName+"<br>"+obj.intPaxCapacity+"</button></td>";
+				}
+					
+				insertCol++;
+			}							
+		});
+	 
+	 $("#lblTotalPax").text("Total Pax: "+totalPax);
+}
+
+
+/* function funFillTableGrid(list)
 {
 	 var tblTableDtl=document.getElementById('tblTableStatus');
 	 var insertCol=0;
@@ -185,7 +239,7 @@ function funFillTableGrid(list)
 		});
 	 
 	 $("#lblTotalPax").text("Total Pax: "+totalPax);
-}
+} */
 
 function funGetSelectedRowIndex(obj,tableId)
 {

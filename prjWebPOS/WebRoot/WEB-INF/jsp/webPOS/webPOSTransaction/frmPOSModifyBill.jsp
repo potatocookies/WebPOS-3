@@ -11,6 +11,8 @@
 <script type="text/javascript">
 
 var selectedRowIndex="";
+var strTableNo="";
+var arrTableNo= new Array(100);
 
 	$(function() 
 	{
@@ -114,6 +116,9 @@ var selectedRowIndex="";
 		    {
 		    	row = table.insertRow(rowCount);
 		    	var rowData=data[i];
+		    	//last element of rowdata is tableNo
+		    	arrTableNo[i] = rowData[rowData.length-1];
+
 		    	
 		    	for(var j=0;j<rowData.length;j++)
 		    	{
@@ -135,6 +140,8 @@ var selectedRowIndex="";
 	{
 		 var index = obj.parentNode.parentNode.rowIndex;
 		 var table = document.getElementById("tblData");
+		 $("#hidTableNo").val(arrTableNo[index-1]);
+		 gTableNo=arrTableNo[index-1];
 		 if((selectedRowIndex>0) && (index!=selectedRowIndex))
 		 {
 			 if(selectedRowIndex%2==0)
@@ -165,9 +172,44 @@ var selectedRowIndex="";
 			 row.hilite = true;
 		 }
 		 
-		 funOpenBillSettlement()
-		
+		 funGetAreaCodeFromTable( gTableNo);
+		 funOpenBillSettlement();
 	}
+	
+	function  funGetAreaCodeFromTable(tableNo)
+	{
+		var searchUrl=getContextPath()+"/funGetAreaCodeFromTable.html?strTableNo="+tableNo;
+	    $.ajax({
+	        type: "GET",
+	        url: searchUrl,
+	        async:false,
+	        dataType: "json",
+		    success: function(response)
+		    {
+		    	gAreaCode=response.strAreaCode;
+		    	$("#hidAreaCode").val(gAreaCode);
+		    	
+		    },
+		    error: function(jqXHR, exception) {
+	            if (jqXHR.status === 0) {
+	                alert('Not connect.n Verify Network.');
+	            } else if (jqXHR.status == 404) {
+	                alert('Requested page not found. [404]');
+	            } else if (jqXHR.status == 500) {
+	                alert('Internal Server Error [500].');
+	            } else if (exception === 'parsererror') {
+	                alert('Requested JSON parse failed.');
+	            } else if (exception === 'timeout') {
+	                alert('Time out error.');
+	            } else if (exception === 'abort') {
+	                alert('Ajax request aborted.');
+	            } else {
+	                alert('Uncaught Error.n' + jqXHR.responseText);
+	            }
+	        }
+	      });
+	}
+	
 	 function funOpenBillSettlement()
 	 {
 		 
@@ -362,8 +404,8 @@ var selectedRowIndex="";
 	
 </div>
 	<s:input type="hidden" path="strBillNo" id="hiddBillNo" />
-<s:input type="hidden" path="strTableNo" id="hiddTableNO" />
-<s:input type="hidden" path="selectedRow" id="hiddSelectedRow" />
+	<%-- <s:input type="hidden" path="strTableNo" id="hiddTableNO" /> --%>
+	<s:input type="hidden" path="selectedRow" id="hiddSelectedRow" />
 	</s:form>
 
 

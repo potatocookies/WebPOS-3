@@ -11,7 +11,7 @@
  
  	var fieldName="";
  	 $(document).ready(function () {
-		  $('input#txtCustomerCode').mlKeyboard({layout: 'en_US'});
+		 /*  $('input#txtCustomerCode').mlKeyboard({layout: 'en_US'});
 		  $('input#txtAddress').mlKeyboard({layout: 'en_US'});
 		  $('input#txtMobileNo').mlKeyboard({layout: 'en_US'});
 		  $('input#txtExternalCode').mlKeyboard({layout: 'en_US'});
@@ -34,7 +34,7 @@
 		  $('input#txtOfficeStreetName').mlKeyboard({layout: 'en_US'});
 		  $('input#txtOfficeArea').mlKeyboard({layout: 'en_US'});
 		  $('input#txtOfficePinCode').mlKeyboard({layout: 'en_US'});
-		  $('input#strOfficeState').mlKeyboard({layout: 'en_US'});
+		  $('input#strOfficeState').mlKeyboard({layout: 'en_US'}); */
 		
 		  
 		});  
@@ -409,7 +409,7 @@
 	
 	<s:form name="POSCustomerMaster" method="POST" action="savePOSCustomerMaster.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
 	
-		<div id="tab_container" style="height: 100%;">
+		<div id="tab_container" style="height: 500px;">
 				<ul class="tabs">
 						<li class="active" data-state="tab1" style="width: 15%; padding-left: 4%; height: 25px; border-radius: 4px;">Customer</li>
 						<li data-state="tab2" style="width: 15%; padding-left: 5%; height: 25px; border-radius: 4px;">Office</li>
@@ -425,14 +425,14 @@
 				<div class="title">
 			
 					<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="element-input col-lg-6" style="width: 18%; margin-left:10px;margin-top:5px"> 
 	    					<label class="title">Customer Code</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:input class="large" colspan="3" type="text" id="txtCustomerCode" path="strCustomerCode"  ondblclick="funHelp('POSCustomerMaster')"/>
 						</div>
-						<div class="element-input col-lg-6" style="width: 15%;"> 
-	    					<label class="title">ExternalCode</label>
+						<div class="element-input col-lg-6" style="width: 15%; margin-left:80px;margin-top:5px"> 
+	    					<label class="title">External Code</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:input class="large" colspan="3" type="text" id="txtExternalCode" path="strExternalCode"  />
@@ -440,13 +440,13 @@
 				 	</div>
 				 	
 				 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;" > 
+						<div class="element-input col-lg-6" style="width: 18%;margin-left:10px;margin-top:5px" > 
 	    					<label class="title">Customer Name</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:input class="large" colspan="3" type="text" id="txtCustomerName" path="strCustomerName" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 15%;" > 
+						<div class="element-input col-lg-6" style="width: 15%; margin-left:80px;margin-top:5px" > 
 	    					<label class="title">Gender</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -458,13 +458,13 @@
 				 	</div>
 				 	
 				 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="element-input col-lg-6" style="width: 18%; margin-left:10px;margin-top:5px"> 
 	    					<label class="title">Contact No</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:input class="large" colspan="3" type="text" id="txtMobileNo" path="intlongMobileNo" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="element-input col-lg-6" style="width: 15%; margin-left:80px;margin-top:5px"> 
 	    					<label class="title">DOB</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -473,13 +473,13 @@
 				 	</div>
 				 	
 				 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="element-input col-lg-6" style="width: 18%; margin-left:10px;margin-top:5px"> 
 	    					<label class="title">Customer Type</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:select id="txtCustomerType" path="strCustomerType" items="${customerType}" />
 						</div>
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="element-input col-lg-6" style="width: 15%; margin-left:80px;margin-top:5px"> 
 	    					<label class="title">Email Id</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -488,76 +488,98 @@
 				 	</div>
 				 	
 				 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="element-input col-lg-6" style="width: 18%; margin-left:10px;margin-top:5px"> 
 	    					<label class="title">Area</label>
 	    				</div>
-	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
-							<s:input type="text" id="txtBuldingCode" path="strBuldingCode" ondblclick="funHelp('POSCustomerAreaMaster');"  />
+	    				<div class="element-input col-sm-3" style="margin-bottom: 5px;width: 28%; "> 
+							<s:input type="text" id="txtBuldingCode" style="width:50px;" path="strBuldingCode" ondblclick="funHelp('POSCustomerAreaMaster');"  />
+							<s:input type="text" id="txtArea" style="width:130px; margin-left:5px;" path="strBuildingName" />
 						</div>
-						<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;">
-							<s:input type="text" id="txtArea" path="strBuildingName" />
-						</div>
-						<div class="element-input col-lg-6" style="width: 15%;">
+						<%-- <div class="element-input col-lg-6" style="margin-left:2px; margin-bottom: 5px;width: 10%;">
+							<s:input type="text" id="txtArea" style="width:80px;" path="strBuildingName" />
+						</div> --%>
+						<div class="element-input col-lg-6" style="width: 15%; margin-left:12px; margin-top:5px ">
 	    					<label class="title">Anniversary</label>
 	    				</div>
-	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
+	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%; "> 
 							<s:input  type="text" id="txtAnniversary" path="dteAnniversary" />
 						</div>
 				 	</div>
 				 	
-				 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+				 	<div class="row" style="background-color: #fff; display: block; ">
+						<div class="element-input col-lg-6" style="width: 18%; margin-left:10px;margin-top:5px; "> 
 	    					<label class="title">Address/Flat No.</label>
 	    				</div>
-	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
-							<s:input  type="text" id="txtAddress" path="strArea" />
+	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 25%;"> 
+							<s:textarea type="text" id="txtAddress" path="strArea" />
+						</div>
+						
+						<div class="element-input col-lg-6" style="width: 15%;margin-left:35px;margin-top:5px;"> 
+	    					<label class="title">Street Name</label>
+	    				</div>
+	    				<div class="element-input col-lg-6" style="margin-bottom: 5px; margin-left:5px; width: 20%; "> 
+							<s:input  type="text" id="txtStreetName" path="strStreetName" />
 						</div>
 					</div>
 					
-					<div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+					<%-- <div class="row" style="background-color: #fff; display: -webkit-box;">
+						<div class="element-input col-lg-6" style="width: 18%;margin-left:10px;margin-top:5px"> 
 	    					<label class="title">Street Name</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:input  type="text" id="txtStreetName" path="strStreetName" />
 						</div>
-				   </div>
+				   </div> --%>
 				   
-				   <div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+				   <div class="row" style="background-color: #fff; display: block; ">
+						<div class="element-input col-lg-6" style="width: 18%;margin-left:10px;margin-top:5px"> 
 	    					<label class="title">Landmark</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 							<s:input  type="text" id="txtLandmark" path="strLandmark" />
 						</div>
+						
+						<div class="element-input col-lg-6" style="width:15%; margin-left:80px;margin-top:5px; "> 
+	    					<label class="title">PinCode</label>
+	    				</div>
+	    				<div class="element-input col-lg-6" style="margin-bottom: 5px; width:20%"; > 
+							<s:input  type="text" class="numeric" id="txtPinCode" path="intPinCode" />
+						</div>
 				   </div>
 				   
-				   <div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width:15%"> 
+				   <%-- <div class="row" style="background-color: #fff; display: block; ">
+						<div class="element-input col-lg-6" style="width:15% margin-left:10px;margin-top:5px"> 
 	    					<label class="title">PinCode</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width:20%"> 
 							<s:input  type="text" class="numeric" id="txtPinCode" path="intPinCode" />
 						</div>
-				   </div>
+				   </div> --%>
 				   
-				   <div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6" style="width: 15%;"> 
+				   <div class="row" style="background-color: #fff; display: block; ">
+						<div class="element-input col-lg-6" style="width: 15%; margin-left:10px;margin-top:5px;"> 
 	    					<label class="title">City</label>
 	    				</div>
-	    				<div class="element-input col-lg-6" style="margin-bottom: 5px; width: 25%;"> 
+	    				<div class="element-input col-lg-6" style="margin-bottom: 5px; width: 25%; margin-left:20px; "> 
 							<s:select id="txtCity" path="strCity" items="${cityName}" />
+						</div>
+						
+						<div class="element-input col-lg-6"  style="width: 15%; margin-left:40px; margin-top:5px; "> 
+	    					<label class="title">State</label>
+	    				</div>
+	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 25%; margin-left:2px; "> 
+							<s:select id="txtState" path="strState" items="${stateName}" />
 						</div>
 				   </div>
 				   
-				    <div class="row" style="background-color: #fff; display: -webkit-box;">
-						<div class="element-input col-lg-6"  style="width: 15%;"> 
+				    <%-- <div class="row" style="background-color: #fff; display: -webkit-box;">
+						<div class="element-input col-lg-6"  style="width: 15%; margin-left:10px;margin-top:5px"> 
 	    					<label class="title">State</label>
 	    				</div>
 	    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 25%;"> 
 							<s:select id="txtState" path="strState" items="${stateName}" />
 						</div>
-				   </div>
+				   </div> --%>
 			 	
 			   </div>
 			   
@@ -571,15 +593,16 @@
 				
 					<div class="title">
 				
-						<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
-		    					<label class="title">Building Name/Flat No.</label>
+						<div class="row" style="background-color: #fff; display: block; ">
+							<div class="element-input col-lg-6" style="width: 15%; margin-left:40px; margin-top:5px;"> 
+		    					<label class="title">Building Code</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px; width: 20%;"> 
 								<s:input type="text" id="txtOfficeBuildingCode" path="strOfficeBuildingCode" ondblclick="funHelp('POSCustomerAreaMaster');"/>
 								<s:input type="text" id="txtOfficeBuildingName" path="strOfficeBuildingName" />
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							
+							<div class="element-input col-lg-6" style="width: 15%; margin-left:60px; margin-top:5px;"> 
 		    					<label class="title">Office No</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -588,13 +611,13 @@
 					 	</div>
 					 	
 					 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 15%;  margin-left:40px; margin-top:5px;"> 
 		    					<label class="title">Street Name</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 								<s:input type="text" id="txtOfficeNo" path="strOfficeNo" />
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 15%; margin-left:60px;"> 
 		    					<label class="title">City</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -603,13 +626,13 @@
 					 	</div>
 					 	
 					 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 15%;  margin-left:40px; margin-top:5px;"> 
 		    					<label class="title">Area</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px; width: 20%;"> 
 								<s:input type="text" id="txtOfficeArea" path="strOfficeArea" />
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 15%; margin-left:60px; margin-top:5px;"> 
 		    					<label class="title">State</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -618,13 +641,13 @@
 					 	</div>
 					 	
 					 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 15%;  margin-left:40px; margin-top:5px;"> 
 		    					<label class="title">GST No.</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
 								<s:input  type="text" id="txtGSTNo" path="strGSTNo" />
 							</div>
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+							<div class="element-input col-lg-6" style="width: 15%; margin-left:60px; margin-top:5px;"> 
 		    					<label class="title">Pin Code</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;width: 20%;"> 
@@ -642,10 +665,10 @@
 
 			<div id="tab3" class="tab_content">
 				
-					<div class="title">
+					<div class="title"> 
 				
-						<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+						<div class="row" style="background-color: #fff; display: block; ">
+							<div class="element-input col-lg-6" style="width: 20%; margin-left:10px;margin-top:5px;"> 
 		    					<label class="title">Temporary Address</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;"> 
@@ -653,8 +676,8 @@
 							</div>
 					 	</div>
 					 	
-					 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+					 	<div class="row" style="background-color: #fff; display: block;">
+							<div class="element-input col-lg-6" style="width: 20%; margin-left:10px;margin-top:5px;"> 
 		    					<label class="title">Street Name</label>
 		    				</div>
 		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;"> 
@@ -662,20 +685,20 @@
 							</div>
 					 	</div>
 					 	
-					 	<div class="row" style="background-color: #fff; display: -webkit-box;">
-							<div class="element-input col-lg-6" style="width: 15%;"> 
+					 	<div class="row" style="background-color: #fff; display: block; ">
+							<div class="element-input col-lg-6" style="width: 15%; margin-left:10px;margin-top:5px;"> 
 		    					<label class="title">Landmark</label>
 		    				</div>
-		    				<div class="element-input col-lg-6" style="margin-bottom: 5px;"> 
+		    				<div class="element-input col-lg-6" style="margin-bottom: 5px; margin-left:42px;"> 
 								<s:input type="text" id="txtTempLandmark" path="strTempLandmark" />
 							</div>
 					 	</div>
 					 	
-					</div>
+				</div>
 				
 			  </div>
 			  
-			  <div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;">
+			  <div class="col-lg-10 col-sm-10 col-xs-10" style="width: 50%; margin-top:30px; margin-left:250px;">
 			  		<p align="center">
 						<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="SUBMIT" /></div>
 						<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="reset" value="RESET" onclick="funResetFields()"/></div>

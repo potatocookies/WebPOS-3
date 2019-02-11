@@ -169,6 +169,7 @@ public class clsPOSBillSettlementController
 					setFillGrid.add(hmtemp.get("strCustomerName").toString());
 					setFillGrid.add(hmtemp.get("dteBillDate").toString());
 					setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
+					setFillGrid.add(hmtemp.get("strTableNo").toString());
 
 					listUnsettlebill.add(setFillGrid);
 				}
@@ -181,12 +182,14 @@ public class clsPOSBillSettlementController
 					setFillGrid.add(hmtemp.get("strDPName").toString());
 					setFillGrid.add(hmtemp.get("dteBillDate").toString());
 					setFillGrid.add(Double.parseDouble(hmtemp.get("dblGrandTotal").toString()));
+					setFillGrid.add(hmtemp.get("strTableNo").toString());
 
 					listUnsettlebill.add(setFillGrid);
 
 				}
 
 				hmUnsettleBill.put("listUnsettlebill", listUnsettlebill);
+				System.out.println(listUnsettlebill);
 				hmUnsettleBill.put("gShowBillsType", gShowBillsType);
 				hmUnsettleBill.put("gCMSIntegrationYN", gCMSIntegrationYN);
 
@@ -308,6 +311,7 @@ public class clsPOSBillSettlementController
 						hmData.put("strCustomerName", obj[6].toString());
 						hmData.put("dteBillDate", obj[8].toString());
 						hmData.put("dblGrandTotal", obj[7].toString());
+						hmData.put("strTableNo", obj[1].toString());
 					}
 					else// Delivery Detail Wise
 					{
@@ -318,6 +322,7 @@ public class clsPOSBillSettlementController
 						hmData.put("strDPName", obj[3].toString());
 						hmData.put("dteBillDate", obj[7].toString());
 						hmData.put("dblGrandTotal", obj[4].toString());
+						hmData.put("strTableNo", obj[5].toString());
 					}
 					listData.add(hmData);
 				}

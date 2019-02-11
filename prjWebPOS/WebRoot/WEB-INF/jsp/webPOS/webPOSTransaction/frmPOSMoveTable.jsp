@@ -53,8 +53,69 @@ var prevRow,prevCell,nxtRow,nxtCell,prevRow1,prevCell1,nxtRow1,nxtCell1,cellStat
 					%>alert("Table Moved... \n\n"+message);<%
 				}
 			}%>
-		});
+		
+		//Pratiksha Search in ALL Table
+		
+		// Get the input field
+		var input = document.getElementById("txtSearchTable");
+		var input1 = document.getElementById("txtSearchOpenTable");
 
+
+		// Execute a function when the user releases a key on the keyboard
+		input.addEventListener("keyup", function(event)
+		{
+		  // Cancel the default action, if needed
+		  	event.preventDefault();
+		}); 
+		
+		input1.addEventListener("keyup", function(event)
+		{
+		  	event.preventDefault(); 
+		}); 
+		
+		$("#txtSearchTable").keyup(function()
+		{
+			searchTable($(this).val(),$('#tblAllTable'));
+		});
+		
+		$("#txtSearchOpenTable").keyup(function()
+		{
+			searchTable($(this).val(),$('#tblOccupiedTable'));
+		});
+		
+		
+		                                                                                                                                                            
+		function searchTable(inputVal,table)
+		{
+			//var table = $('#tblAllTable');
+				
+			table.find('tr').each(function(index, row)
+					{
+				       //find the row data 
+						var allCells = $(row).find('td');
+						if(allCells.length > 0)
+						{
+							var found = false;
+							allCells.each(function(index, td)
+							{
+								var regExp = new RegExp(inputVal, 'i');
+								if(regExp.test($(td).find('input').val()))
+								{
+									found = true;
+									return false;
+								}
+								
+							}
+							);
+							if(found == true)$(row).show();else $(row).hide();
+						}
+					});
+		}
+	
+	});
+	
+	
+	
 function funLoadData()
 {
 	  funLoadTable("tblOccupiedTable","Occupied");
@@ -508,9 +569,16 @@ function funLoadData()
 	     <div class="title">
 			<div style=" width: 50%; height: 600px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 30px;">
-					<div class="element-input col-lg-6" style="width: 30%;"> 
-	    				<label class="title" >OPEN Tables</label>
+					<div class="element-input col-lg-6" style="width: 20%;"> 
+	    				<label class="title" >Open Tables</label>
 	    			</div>
+	    			<div class="element-input col-lg-6" style="width: 30%;"> 
+	    				<input type="text" name="txtSearchOpenTable" id="txtSearchOpenTable" onkeypress="funGetSelectedRowIndex(this,tblOccupiedTable)" placeholder="Search...."/>
+	    			</div>
+					
+					<!-- <div class="element-input col-lg-6" style="width: 30%;"> 
+	    				<label class="title" >OPEN Tables</label>
+	    			</div> -->
 				</div>
 				
 				<table id="tblOccupiedTable" class="transFormTable">
@@ -522,9 +590,15 @@ function funLoadData()
 		<div class="title">
 			<div style=" width: 50%; height: 600px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
 				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;margin-left: 30px;">
-					<div class="element-input col-lg-6" style="width: 30%;"> 
+					<div class="element-input col-lg-6" style="width: 20%;"> 
 	    				<label class="title" >All Tables</label>
 	    			</div>
+	    			<div class="element-input col-lg-6" style="width: 30%;"> 
+	    				<input type="text" name="txtSearchTable" id="txtSearchTable" onkeypress="funGetSelectedRowIndex(this,tblAllTable)" placeholder="Search...."/>
+	    			</div>
+					<!-- <div class="element-input col-lg-6" style="width: 30%;"> 
+	    				<label class="title" >All Tables</label>
+	    			</div> -->
 				</div>
 				
 				<table id="tblAllTable" class="transFormTable">
@@ -536,10 +610,18 @@ function funLoadData()
 		
 		<div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
      		  <p align="center">
+            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Save" style="margin-left: 600px" onclick="return funValidateData();"/></div>
+            		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="Close" style="margin-left: 500px" onclick="funPOSHome()"></div>
+     		  </p>
+   		 </div>
+		
+		
+		<!-- <div class="col-lg-10 col-sm-10 col-xs-10" style="width: 70%;margin-left: 240px;">
+     		  <p align="center">
             		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="submit" value="Save" onclick="return funValidateData();"/></div>
             		<div class="submit col-lg-4 col-sm-4 col-xs-4"><input type="button" value="Close" onclick="funPOSHome()"></div>
      		  </p>
-   		 </div>
+   		 </div> -->
 
 </s:form>
 </body>

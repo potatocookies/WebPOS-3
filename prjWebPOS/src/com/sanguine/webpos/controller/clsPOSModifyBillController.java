@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.sanguine.base.service.clsSetupService;
 import com.sanguine.base.service.intfBaseService;
 import com.sanguine.controller.clsGlobalFunctions;
@@ -31,6 +34,7 @@ import com.sanguine.webpos.bean.clsPOSPromotionItems;
 import com.sanguine.webpos.model.clsBillDtlModel;
 import com.sanguine.webpos.model.clsBillHdModel;
 import com.sanguine.webpos.model.clsBillHdModel_ID;
+import com.sanguine.webpos.model.clsBillModifierDtlModel;
 
 @Controller
 public class clsPOSModifyBillController
@@ -117,11 +121,8 @@ public class clsPOSModifyBillController
 
 		try
 		{
-			String clientCode = request.getSession().getAttribute("gClientCode").toString();
-			String posClientCode = request.getSession().getAttribute("gPOSCode").toString();
 			String posCode = request.getSession().getAttribute("gPOSCode").toString();
 			String posDate = request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
-			String userCode = request.getSession().getAttribute("gUserCode").toString();
 
 			sql.setLength(0);
 			sql.append("select c.strItemCode,c.strItemName,c.dblRate,c.dblQuantity,c.dblAmount,c.dblTaxAmount,c.dblDiscAmt,c.isModifier,c.strSequenceNo " + ",d.strSubGroupCode,e.strSubGroupName,e.strGroupCode,f.strGroupName " + "from " + "(select a.strItemCode,a.strItemName,a.dblRate,sum(a.dblQuantity)dblQuantity,sum(a.dblAmount)dblAmount,sum(a.dblTaxAmount)dblTaxAmount,sum(a.dblDiscountAmt)dblDiscAmt,'false' isModifier,a.strSequenceNo strSequenceNo " + "from tblbilldtl a " + "where a.strBillNo='" + billNo + "' " + "group by a.strItemCode " + " " + "union all " + " " + "select b.strItemCode,b.strModifierName,b.dblRate,sum(b.dblQuantity)dblQuantity,sum(b.dblAmount)dblAmount,0.00 dblTaxAmount,sum(b.dblDiscAmt)dblDiscAmt,'true' isModifier,b.strSequenceNo strSequenceNo " + "from tblbillmodifierdtl b " + "where b.strBillNo='" + billNo + "' " + "group by b.strItemCode) c " + ",tblitemmaster d,tblsubgrouphd e,tblgrouphd f " + "where left(c.strItemCode,7)=d.strItemCode " + "and d.strSubGroupCode=e.strSubGroupCode " + "and e.strGroupCode=f.strGroupCode " + "order by c.strItemCode,c.strItemName ");
@@ -176,30 +177,19 @@ public class clsPOSModifyBillController
 	{
 		try
 		{
-			String clientCode = "", POSCode = "", posDate = "", userCode = "", posClientCode = "";
-
-			clientCode = request.getSession().getAttribute("gClientCode").toString();
-			POSCode = request.getSession().getAttribute("gPOSCode").toString();
-			posDate = request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
-			userCode = request.getSession().getAttribute("gUserCode").toString();
-
-			String split = posDate;
-			String billDateTime = split;
+			String posDate = request.getSession().getAttribute("gPOSDate").toString().split(" ")[0];
+			String billDateTime = posDate;
 
 			Date dt = new Date();
 			String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dt);
-			String dateTime = posDate + " " + currentDateTime.split(" ")[1];
 
 			StringBuilder sbSql = new StringBuilder();
 			sbSql.setLength(0);
 
 			String billNo = objBean.getStrBillNo();
 
-			int totalPAXNo = 0;
-			String tableNo = "";
-
 			boolean isBillSeries = false;
-			if (clsPOSGlobalFunctionsController.hmPOSSetupValues.get("strEnableBillSeries").toString().equalsIgnoreCase("Y"))
+			if (clsPOSGlobalFunctionsController.hmPOSSetupValues.containsKey("strEnableBillSeries") && clsPOSGlobalFunctionsController.hmPOSSetupValues.get("strEnableBillSeries").toString().equalsIgnoreCase("Y"))
 			{
 				isBillSeries = true;
 			}
@@ -212,135 +202,60 @@ public class clsPOSModifyBillController
 			List<clsPOSKOTItemDtl> listOfWholeKOTItemDtl = new ArrayList<clsPOSKOTItemDtl>();
 
 			/* Setting billdtl data */
+			
 			sbSql.setLength(0);
-			sbSql.append("select * " + "from tblbilldtl a " + "where a.strBillNo='" + billNo + "' ");
-			List listItemKOTDtl = objBaseService.funGetList(sbSql, "sql");
-			if (listItemKOTDtl.size() > 0)
+			sbSql.append("from clsBillHdModel a where a.strBillNo='" + billNo + "' ");
+			List<clsBillHdModel> listBillHd = objBaseService.funGetList(sbSql, "hql");
+			if(listBillHd.size()>0)
 			{
-				for (int i = 0; i < listItemKOTDtl.size(); i++)
+				clsBillHdModel objBillHdModel = listBillHd.get(0);
+				List<clsBillDtlModel> listBillDtlModel = objBillHdModel.getListBillDtlModel();
+				for(clsBillDtlModel objBillDtlModel:listBillDtlModel)
 				{
-					Object[] arrKOTItem = (Object[]) listItemKOTDtl.get(i);
-
-					String iCode = arrKOTItem[0].toString();
-					String iName = arrKOTItem[1].toString();
-					String iBillNo = arrKOTItem[2].toString();
-					String iAdvBookingNo = arrKOTItem[3].toString();
-					double iRate = new Double(arrKOTItem[4].toString());
-					double iQty = new Double(arrKOTItem[5].toString());
-					double iAmt = new Double(arrKOTItem[6].toString());
-					double iTaxAmt = new Double(arrKOTItem[7].toString());
-					String iBillDateTime = arrKOTItem[8].toString();
-					String kotNo = arrKOTItem[9].toString();
-					arrKOTItem[10].toString();// clientCode
-					String iCustCode = "";
-					if (arrKOTItem[11] != null)// customerCode
-					{
-						iCustCode = arrKOTItem[11].toString();
-					}
-					String orderProcessTime = "00:00:00";
-					if (arrKOTItem[12] != null)//
-					{
-						orderProcessTime = arrKOTItem[12].toString();
-					}
-					arrKOTItem[13].toString();// dataPostFlag
-					arrKOTItem[14].toString();// MMS dataPostFlag
-					String manualKOTNo = arrKOTItem[15].toString();
-					String iTDHYN = arrKOTItem[16].toString();
-					String iPromoCode = arrKOTItem[17].toString();
-					String iCounterCode = arrKOTItem[18].toString();
-					String iWaiterNo = arrKOTItem[19].toString();
-					double iDiscAmt = new Double(arrKOTItem[20].toString());
-					double iDiscPer = new Double(arrKOTItem[21].toString());
-					String iSeqNo = arrKOTItem[22].toString();
-					String iBillDate = arrKOTItem[23].toString();
-					String orderPickupTime = "00:00:00";
-					if (arrKOTItem[24] != null)//
-					{
-						orderPickupTime = arrKOTItem[24].toString();
-					}
-
 					clsPOSKOTItemDtl objKOTItem = new clsPOSKOTItemDtl();
-
-					objKOTItem.setStrItemCode(iCode);
-					objKOTItem.setStrItemName(iName);
-					objKOTItem.setDblItemQuantity(iQty);
-					objKOTItem.setDblAmount(iAmt);
-					objKOTItem.setDblRate(iRate);
-					objKOTItem.setStrKOTNo(kotNo);
-					objKOTItem.setStrManualKOTNo(manualKOTNo);
+					objKOTItem.setStrItemCode(objBillDtlModel.getStrItemCode());
+					objKOTItem.setStrItemName(objBillDtlModel.getStrItemName());
+					objKOTItem.setDblItemQuantity(objBillDtlModel.getDblQuantity());
+					objKOTItem.setDblAmount(objBillDtlModel.getDblAmount());
+					objKOTItem.setDblRate(objBillDtlModel.getDblRate());
+					objKOTItem.setStrKOTNo(objBillDtlModel.getStrKOTNo());
+					objKOTItem.setStrManualKOTNo(objBillDtlModel.getStrManualKOTNo());
 					objKOTItem.setStrKOTDateTime(billDateTime);
-					objKOTItem.setStrCustomerCode(iCustCode);
+					objKOTItem.setStrCustomerCode(objGlobalFunctions.funIfNull(objBillDtlModel.getStrCustomerCode(), "", objBillDtlModel.getStrCustomerCode()));
 					objKOTItem.setStrCustomerName("");
-					objKOTItem.setStrPromoCode(iPromoCode);
+					objKOTItem.setStrPromoCode(objBillDtlModel.getStrPromoCode());
 					objKOTItem.setStrCardNo("");
-					objKOTItem.setStrOrderProcessTime(orderProcessTime);
-					objKOTItem.setStrOrderPickupTime(orderPickupTime);
-					objKOTItem.setStrWaiterNo(iWaiterNo);
+					objKOTItem.setStrOrderProcessTime(objGlobalFunctions.funIfNull(objBillDtlModel.getTmeOrderProcessing(), "00:00:00", objBillDtlModel.getTmeOrderProcessing()));
+					objKOTItem.setStrOrderPickupTime(objGlobalFunctions.funIfNull(objBillDtlModel.getTmeOrderPickup(), "00:00:00", objBillDtlModel.getTmeOrderPickup()));
+					objKOTItem.setStrWaiterNo(objBillDtlModel.getStrWaiterNo());
+					listOfWholeKOTItemDtl.add(objKOTItem);
+				}
+				
+				List<clsBillModifierDtlModel> listBillModifierDtlModel = objBillHdModel.getListBillModifierDtlModel();
+				for(clsBillModifierDtlModel objBillModifierDtlModel:listBillModifierDtlModel)
+				{
+					clsPOSKOTItemDtl objKOTItem = new clsPOSKOTItemDtl();
+					
+					objKOTItem.setStrItemCode(objBillModifierDtlModel.getStrItemCode());
+					objKOTItem.setStrItemName(objBillModifierDtlModel.getStrModifierName());
+					objKOTItem.setDblItemQuantity(objBillModifierDtlModel.getDblQuantity());
+					objKOTItem.setDblAmount(objBillModifierDtlModel.getDblAmount());
+					objKOTItem.setDblRate(objBillModifierDtlModel.getDblRate());
+					objKOTItem.setStrKOTNo("");
+					objKOTItem.setStrManualKOTNo("");
+					objKOTItem.setStrKOTDateTime(billDateTime);
+					objKOTItem.setStrCustomerCode(objBillModifierDtlModel.getStrCustomerCode());
+					objKOTItem.setStrCustomerName("");
+					objKOTItem.setStrPromoCode("");
+					objKOTItem.setStrCardNo("");
+					objKOTItem.setStrOrderProcessTime("");
+					objKOTItem.setStrOrderPickupTime("");
+					objKOTItem.setStrWaiterNo("");
 
 					listOfWholeKOTItemDtl.add(objKOTItem);
 				}
 			}
-
-			/* Setting billmodifierdtl data */
-			sbSql.setLength(0);
-			sbSql.append("select * " + "from tblbillmodifierdtl a " + "where a.strBillNo='" + billNo + "' ");
-			listItemKOTDtl = objBaseService.funGetList(sbSql, "sql");
-			if (listItemKOTDtl.size() > 0)
-			{
-				for (int i = 0; i < listItemKOTDtl.size(); i++)
-				{
-					Object[] arrKOTItem = (Object[]) listItemKOTDtl.get(i);
-
-					String iBillNo = arrKOTItem[0].toString();
-					String iCode = arrKOTItem[1].toString();
-					String iModiCode = arrKOTItem[2].toString();
-					String iName = arrKOTItem[3].toString();
-					String iAdvBookingNo = "";
-					double iRate = new Double(arrKOTItem[4].toString());
-					double iQty = new Double(arrKOTItem[5].toString());
-					double iAmt = new Double(arrKOTItem[6].toString());
-					double iTaxAmt = 0.00;
-					arrKOTItem[7].toString();// clientCode
-					String iCustCode = arrKOTItem[8].toString();// customerCode
-					arrKOTItem[9].toString();// dataPostFlag
-					arrKOTItem[10].toString();// MMS dataPostFlag
-					String defaultModifierSelectedYN = arrKOTItem[11].toString();
-					String iSeqNo = arrKOTItem[12].toString();
-					double iDiscPer = new Double(arrKOTItem[13].toString());
-					double iDiscAmt = new Double(arrKOTItem[14].toString());
-					String iBillDate = arrKOTItem[15].toString();
-
-					String iBillDateTime = "";
-					String kotNo = "";
-					String orderProcessTime = "";
-					String manualKOTNo = "";
-					String iTDHYN = "";
-					String iPromoCode = "";
-					String iCounterCode = "";
-					String iWaiterNo = "";
-					String orderPickupTime = "";
-
-					clsPOSKOTItemDtl objKOTItem = new clsPOSKOTItemDtl();
-
-					objKOTItem.setStrItemCode(iCode);
-					objKOTItem.setStrItemName(iName);
-					objKOTItem.setDblItemQuantity(iQty);
-					objKOTItem.setDblAmount(iAmt);
-					objKOTItem.setDblRate(iRate);
-					objKOTItem.setStrKOTNo(kotNo);
-					objKOTItem.setStrManualKOTNo(manualKOTNo);
-					objKOTItem.setStrKOTDateTime(billDateTime);
-					objKOTItem.setStrCustomerCode(iCustCode);
-					objKOTItem.setStrCustomerName("");
-					objKOTItem.setStrPromoCode(iPromoCode);
-					objKOTItem.setStrCardNo("");
-					objKOTItem.setStrOrderProcessTime(orderProcessTime);
-					objKOTItem.setStrOrderPickupTime(orderPickupTime);
-					objKOTItem.setStrWaiterNo(iWaiterNo);
-
-					listOfWholeKOTItemDtl.add(objKOTItem);
-				}
-			}
+	
 
 			if (isBillSeries)
 			{

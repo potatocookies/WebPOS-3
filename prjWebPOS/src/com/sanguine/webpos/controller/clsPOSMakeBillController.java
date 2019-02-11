@@ -85,8 +85,10 @@ public class clsPOSMakeBillController {
 	@RequestMapping(value = "/funFillItemTableDtl", method = RequestMethod.GET)
 	public @ResponseBody JSONObject funFillItemTableDtl(@RequestParam("tableNo") String tableNo,HttpServletRequest request)
 	{
+	     String clientCode = request.getSession().getAttribute("gClientCode").toString();
+
 		String posCode = request.getSession().getAttribute("loginPOS").toString();
-		JSONObject jObj = funFillItemTableDtl( tableNo, posCode);
+		JSONObject jObj = funFillItemTableDtl( tableNo, posCode,clientCode);
 		
 		return jObj;
 	}
@@ -340,7 +342,7 @@ public class clsPOSMakeBillController {
 	}
 	
 	@SuppressWarnings("finally")
-	public JSONObject funFillItemTableDtl(String tableNo,String posCode)
+	public JSONObject funFillItemTableDtl(String tableNo,String posCode,String clientCode)
 	{
 		
 		List list =null;
@@ -391,7 +393,7 @@ public class clsPOSMakeBillController {
 					 else
 					 {
 						 sqlBuilder.setLength(0);
-							sqlBuilder.append("select strWShortName from tblwaitermaster where strWaiterNo='" + strWaiterNo + "'");
+						 sqlBuilder.append("select strWShortName from tblwaitermaster where strWaiterNo='" + strWaiterNo + "'");
 						 list =objBaseServiceImpl.funGetList(sqlBuilder, "sql");
 						 if (list.size()>0)
 						 {
@@ -401,9 +403,18 @@ public class clsPOSMakeBillController {
 					 jObjTableData.put("itemDtl",jArrData);
 					 jObjTableData.put("intPaxNo",intPaxNo);
 					 jObjTableData.put("total",total);
-						
+					
+
+					 sqlBuilder.setLength(0);
+					 sqlBuilder.append("select tm.strAreaCode from tbltablemaster tm where tm.strTableNo='"+tableNo+"' and tm.strClientCode='"+clientCode+"' ");
+					 list = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
+					 if (list.size()>0)
+					 {
+						 jObjTableData.put("strAreaCode",list.get(0).toString());
+					 }
+
 				 }		
-				
+					
 			
 			}catch(Exception ex)
 			{

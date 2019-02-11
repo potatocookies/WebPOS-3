@@ -247,7 +247,8 @@ var selctedTableNo="";
 				        success: function(response)
 				        {
 				        	$("#txtWaiterName").val(response.strWaiterName);	
-				        	
+				        	$("#hidAreaCode").val(response.strAreaCode);
+				            gAreaCode=$("#hidAreaCode").val();
 				        	
 				        	var totalAmt=0;
 				        	$.each(response.itemDtl, function(i, obj) 

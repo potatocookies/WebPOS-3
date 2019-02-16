@@ -273,11 +273,11 @@
 	<br />
 <%-- 	<s:form name="Add KOT To Bill" method="POST" action="saveAddKOTToBill.html?saddr=${urlHits}" > --%>
 
-	<s:form name="Add KOT To Bill" method="POST" action="saveAddKOTToBill.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:880px;min-width:150px;margin-top:2%;">
+	<s:form name="Add KOT To Bill" method="POST" action="saveAddKOTToBill.html?saddr=${urlHits}" class="formoid-default-skyblue" style="background-color:#FFFFFF;font-size:14px;font-family:'Open Sans','Helvetica Neue','Helvetica',Arial,Verdana,sans-serif;color:#666666;max-width:1200px;min-width:150px;margin-top:2%;">
 	
-		<div class="title">
-			<div style=" width: 50%; height: 450px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
-				<div class="row" style="background-color: #fff;margin-bottom: 10px;display: -webkit-box;">
+		<div class="title" >
+			<div style=" width: 550px; height: 450px;float:left; overflow-x: scroll; border-collapse: separate;overflow-y: scroll;">
+				<div class="row" style="background-color: #fff;margin-bottom: 10px;display:block;">
 					<div class="element-input col-lg-6" style="width: 30%;"> 
 	    				<label class="title" >OPEN KOT</label>
 	    			</div>
@@ -296,8 +296,8 @@
 		</div>
 		
 		<div class="title">
-			<div style=" width: 50%; height: 450px;float:left;  overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
-				<div class="row" style="background-color: #fff;margin-bottom: 20px;display: -webkit-box;">
+			<div style=" width: 600px; height: 450px;float:left; margin-left: 20px;overflow-x: scroll; border-collapse: separate; overflow-y: scroll;">
+				<div class="row" style="background-color: #fff;margin-bottom: 20px;display:block;">
 					<div class="element-input col-lg-6" style="width: 100%;margin-left: 15px;"> 
 	    				<label class="title" >Bill No</label>
 	    			</div>

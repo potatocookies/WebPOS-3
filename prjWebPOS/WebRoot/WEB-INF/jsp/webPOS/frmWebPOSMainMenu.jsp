@@ -150,7 +150,7 @@
 		    	
 		    	newcontent += "<a href="+requestMapping+" class=\"button  btnLightBlue hvr-shutter-in-vertical hvr-grow\" style=\"margin: 2%;    width: 11%;\"><img id=\"Desktop\" src="+srcImg+" title='"+formTitle+"' style=\"width: 60.5%; margin-top: 15%; margin-left: 25px;\" >";
 		    	newcontent += "<br><div style=\"width:80%; margin-left:5%; margin-right:10%; \"><font style=\"color: #000000b5; font-size: 14px;\" class=\"dont-break-out\">"+formTitle+"</font></div> </a>";
-		    }
+		    } 
 		    	
 		   } 
 		    newcontent += '</div>';

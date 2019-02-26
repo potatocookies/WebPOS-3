@@ -2182,10 +2182,4 @@ public class clsSearchFormController
 		return listSearchForm;
 	}
 	
-	
-	
-	
-	
-	
-	
 }

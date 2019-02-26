@@ -495,14 +495,14 @@ public class clsSearchFormController
 			}
 			
 
-			case "webstockusermaster":
+			/*case "webstockusermaster":
 			 {	
 				listColumnNames="User Code,User Name,Super User";
 				searchFormTitle="User Master";
 				JSONObject jObjSearchData = funGetWebstockUserSearchDetails(clientCode);
 				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
 				break;
-			 }
+			 }*/
 
 			case "POSCounterMaster":
 			{
@@ -2169,40 +2169,6 @@ public class clsSearchFormController
 		}
 		return listSearchForm;
 	}
-	
-	private JSONObject funGetWebstockUserSearchDetails(String clientCode)
-	{
-		JSONObject jObjSearchDetails=new JSONObject();
-		String posUrl = clsPOSGlobalFunctionsController.POSWSURL+"/MMSIntegration/funGetUserMaster"
-			+ "?gClientCode="+clientCode;
-		System.out.println("posUrl:"+posUrl);
-		
-		try {
-			URL url = new URL(posUrl);
-		
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			String output = "", op = "";
-			while ((output = br.readLine()) != null)
-			{
-			    op += output;
-			}
-			System.out.println("Obj="+op);
-			conn.disconnect();
-								
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(op);
-	        jObjSearchDetails = (JSONObject) obj;
-	        
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return jObjSearchDetails;
-	}
-	
 	
 	
 	

@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     
-    <title>Web Stocks</title>
+    <title>Web POS</title>
    <link rel="stylesheet" type="text/css" href="<spring:url value="/resources/newdesign/css/hover.css"/>"/>
     <script type="text/javascript" src="<spring:url value="/resources/js/pagination.js"/>"></script>
         <!-- Load data to paginate -->
@@ -112,12 +112,12 @@
 	   
 	}
 
-	var items_per_page = 18;
+	var items_per_page = 24;
 	function getOptionsFromForm()
 	{
 	    var opt = {callback: pageselectCallback};
 		opt['items_per_page'] = items_per_page;
-		opt['num_display_entries'] = 18;
+		opt['num_display_entries'] = 24;
 		opt['num_edge_entries'] = 3;
 		opt['prev_text'] = "Prev";
 		opt['next_text'] = "Next";

@@ -50,9 +50,9 @@ public class clsPOSPromationMasterBean {
 		this.strAreaCode = strAreaCode;
 	}
 
-	private List<clsPOSPromotionDtlBean> listBuyPromotionDtl;
+	private List<clsPromotionDtlBean> listBuyPromotionDtl;
 	
-	private List<clsPOSPromotionDtlBean> listGetPromotionDtl;
+	private List<clsPromotionDtlBean> listGetPromotionDtl;
 	
 	private List<clsPOSPromotionDayTimeDtlBean> listPromotionDayTimeDtl;
 
@@ -168,19 +168,19 @@ public class clsPOSPromationMasterBean {
 		this.strGetPromoOn = strGetPromoOn;
 	}
 
-	public List<clsPOSPromotionDtlBean> getListBuyPromotionDtl() {
+	public List<clsPromotionDtlBean> getListBuyPromotionDtl() {
 		return listBuyPromotionDtl;
 	}
 
-	public void setListBuyPromotionDtl(List<clsPOSPromotionDtlBean> listBuyPromotionDtl) {
+	public void setListBuyPromotionDtl(List<clsPromotionDtlBean> listBuyPromotionDtl) {
 		this.listBuyPromotionDtl = listBuyPromotionDtl;
 	}
 
-	public List<clsPOSPromotionDtlBean> getListGetPromotionDtl() {
+	public List<clsPromotionDtlBean> getListGetPromotionDtl() {
 		return listGetPromotionDtl;
 	}
 
-	public void setListGetPromotionDtl(List<clsPOSPromotionDtlBean> listGetPromotionDtl) {
+	public void setListGetPromotionDtl(List<clsPromotionDtlBean> listGetPromotionDtl) {
 		this.listGetPromotionDtl = listGetPromotionDtl;
 	}
 

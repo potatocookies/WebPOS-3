@@ -291,155 +291,7 @@ public class clsUserController
 		}
 	}
 
-	
-/*
-	@SuppressWarnings("deprecation")
-	@RequestMapping(value = "/validateUser", method = RequestMethod.POST)
-	public  ModelAndView funValidateUser(@ModelAttribute("command") @Valid clsUserHdBean userBean,BindingResult result,HttpServletRequest req,ModelMap map)
-	{		
-		if(logger.isDebugEnabled())
-		{  
-			   logger.debug("Start debug");  
-		}
-		ModelAndView objMV=null;
-		String clientCode=req.getSession().getAttribute("gClientCode").toString();
-		String companyName=req.getSession().getAttribute("gCompanyName").toString();
-		
-		if(result.hasErrors())
-		{
-			map.put("invalid", "1");
-			return new ModelAndView("frmLogin","command", new clsUserHdBean());
-		}
-		else
-		{
-			clsPOSClientDetails.funAddClientCodeAndName();
-			if(clsPOSClientDetails.hmClientDtl.get(clientCode)!=null && clsPOSClientDetails.hmClientDtl.get(clientCode).Client_Name.equalsIgnoreCase(companyName))
-			{
-				 SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
-                 try
-                 {
-                	 Date systemDate = dFormat.parse(dFormat.format(new Date()));
-                	 Date WebStockExpiryDate = dFormat.parse(dFormat.format(clsPOSClientDetails.hmClientDtl.get(clientCode).expiryDate));
-					 if (systemDate.compareTo(WebStockExpiryDate)<=0) 
-					 {
-						 if(userBean.getStrUserCode().equalsIgnoreCase("SANGUINE"))
-						 {
-							 Date dt = new Date();
-						     int day = dt.getDate();
-						     int month = dt.getMonth() + 1;
-						     int year = dt.getYear() + 1900;
-						     int password = year + month + day + day;
-							
-						     String strpass=Integer.toString(password);
-						     char num1 =strpass.charAt(0);
-						     char num2 =strpass.charAt(1);
-						     char num3 =strpass.charAt(2);
-						     char num4 =strpass.charAt(3);
-						     String alph1=objGlobalFun.funGetAlphabet(Character.getNumericValue(num1));
-						     String alph2=objGlobalFun.funGetAlphabet(Character.getNumericValue(num2));
-						     String alph3=objGlobalFun.funGetAlphabet(Character.getNumericValue(num3));
-						     String alph4=objGlobalFun.funGetAlphabet(Character.getNumericValue(num4));
-						     String finalPassword=String.valueOf(password)+alph1+alph2+alph3+alph4;
-						     System.out.println("Hibernate: "+finalPassword+"CACA");
-						     String userPassword = userBean.getStrPassword();
-						     if (finalPassword.equalsIgnoreCase(userPassword)) 
-						     {
-						    	 clsUserHdModel user=new clsUserHdModel();
-						    	 user.setStrSuperType("YES");
-						    	 user.setStrUserName("SANGUINE");
-						    	 user.setStrUserCode("SANGUINE");
-						    	 objMV = funSessionValue(user, req);
-						    	 
-						     }
-						     else
-						     {
-						    	 clsUserHdModel user=null;
-						    	 try
-						    	 {
-						    		 user=objUserMasterService.funGetUser(userBean.getStrUserCode(),clientCode,"getUserMaster");
-						    	 }catch(Exception ex){
-						    		 objMV= new ModelAndView("frmStructureUpdate_2");
-						    	 }
-							        
-						    	 if(user!=null)
-						    	 {
-						    		 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-						    		 if(passwordEncoder.matches(userBean.getStrPassword(), user.getStrPassword()))
-						    		 {
-						    			 return funSessionValue(user, req);
-						    		 }
-						    		 else
-									{
-										map.put("invalid", "1");
-										objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-									}
-								}
-							    else
-								{
-									map.put("invalid", "1");
-									objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-								}
-						    }
-						}
-						else
-						{
-							clsUserHdModel user=objUserMasterService.funGetUser(userBean.getStrUserCode(),clientCode,"getUserMaster");
-							if(user!=null)
-							{
-								try
-									{
-									String encKey = "04081977";
-						            String password = clsGlobalSingleObject.getObjPasswordEncryptDecreat().encrypt(encKey, userBean.getStrPassword().trim().toUpperCase());
-									BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-									if(password.equals(user.getStrPassword()))
-									{
-										 return funSessionValue(user, req);
-									}
-									else
-									{
-										map.put("invalid", "1");
-										objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-									}
-								}
-								catch(Exception e)
-								{
-									map.put("invalid", "1");
-									objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-									logger.error(e);
-									e.printStackTrace();
-								}
-							}
-							else
-							{
-								map.put("invalid", "1");
-								objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-							}
-						}
-					}
-					else
-					{
-						map.put("LicenceExpired", "1");
-						objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-					}
-				}
-                catch (ParseException e) {
-                	e.printStackTrace();
-				}
-			}
-			else
-			{
-				map.put("LicenceExpired", "1");
-				objMV=new ModelAndView("frmLogin","command", new clsUserHdBean());
-			}
-			
-			return objMV;
-		}
-	}
-	*/
-	
-	
-	
-	
+
 	
 	@SuppressWarnings("rawtypes")
 	private ModelAndView funSessionValue(clsUserHdModel user,HttpServletRequest req)
@@ -516,109 +368,12 @@ public class clsUserController
 		{
 			user=objUserMasterService.funGetUser(userCode,clientCode,"getUserMaster");
 		}
-		funSetModuleForChangeModule(req);
+		//funSetModuleForChangeModule(req);
 		
 		return funSessionValue(user, req);
 	}
 
-	
-	private void funSetModuleForChangeModule(HttpServletRequest req)
-	{
-		String clientCode=req.getSession().getAttribute("gClientCode").toString();
-	//	List<clsCompanyMasterModel> listClsCompanyMasterModel=objSetupMasterService.funGetListCompanyMasterModel();
-		List<clsCompanyMasterModel> listClsCompanyMasterModel=objSetupMasterService.funGetListCompanyMasterModel(clientCode);
-		if(listClsCompanyMasterModel.size()>0){
-			clsCompanyMasterModel objCompanyMasterModel=listClsCompanyMasterModel.get(0);
-			String startDate=objCompanyMasterModel.getDtStart();
-			String[] spDate=startDate.split("-");
-			String year=spDate[0];
-			String month=spDate[1];
-			String[] spDate1 =spDate[2].split(" ");
-			String date=spDate1[0];
-			startDate=date+"/"+month+"/"+year;
-			req.getSession().setAttribute("gClientCode",objCompanyMasterModel.getStrClientCode());
-			req.getSession().setAttribute("companyCode",objCompanyMasterModel.getStrCompanyCode());
-			req.getSession().setAttribute("companyName",objCompanyMasterModel.getStrCompanyName());		
-			req.getSession().setAttribute("startDate",startDate);
-			String strCRMModule=objCompanyMasterModel.getStrCRMModule();
-			String strWebBookModule=objCompanyMasterModel.getStrWebBookModule();
-			String strWebClubModule=objCompanyMasterModel.getStrWebClubModule();
-			String strWebExciseModule=objCompanyMasterModel.getStrWebExciseModule();
-			String strWebPMSModule=objCompanyMasterModel.getStrWebPMSModule();
-			String strWebPOSModule=objCompanyMasterModel.getStrWebPOSModule();
-			String strWebStockModule=objCompanyMasterModel.getStrWebStockModule();
-			Map <String,String> moduleMap=new TreeMap<String, String>();
-			if ("Yes".equalsIgnoreCase(strWebStockModule)) {
-				moduleMap.put("1-WebStocks", "webstocks_module_icon.png");
-				strModule = "1";
-			}
 
-			if ("Yes".equalsIgnoreCase(strWebExciseModule)) {
-				moduleMap.put("2-WebExcise", "webexcise_module_icon.png");
-				strModule = "2";
-			}
-
-			if ("Yes".equalsIgnoreCase(strWebPMSModule)) {
-				moduleMap.put("3-WebPMS", "webpms_module_icon.png");
-				strModule = "3";
-			}
-
-			if ("Yes".equalsIgnoreCase(strWebClubModule)) {
-				moduleMap.put("4-WebClub", "webclub_module_icon.png");
-				strModule = "4";
-			}
-
-			if ("Yes".equalsIgnoreCase(strWebBookModule)) {
-				moduleMap.put("5-WebBook", "webbooks_icon.png");
-				strModule = "5";
-			}
-
-			if ("Yes".equalsIgnoreCase(strCRMModule)) {
-				moduleMap.put("6-WebCRM", "webcrm_module_icon.png");
-				strModule = "6";
-			}
-
-			if ("Yes".equalsIgnoreCase(strWebPOSModule)) {
-				moduleMap.put("7-WebPOS", "webpos_module_icon.png");
-				strModule = "7";
-			}
-			
-           req.getSession().setAttribute("moduleNo",strModule);
-           req.getSession().setAttribute("moduleMap",moduleMap);
-		  
-		   
-		}
-	}
-	
-
-	
-	
-/*	private String funWarFileDate()
-	{
-		String warDate="";
-		try {
-			
-		String filepath =System.getProperty("user.dir") +"\\webapps\\prjWebPOS.war";
-		System.out.println( filepath+"\\prjWebPOS.war");
-		Path path = Paths.get(filepath);
-		BasicFileAttributes attr;
-		
-			attr = Files.readAttributes(path, BasicFileAttributes.class);
-			System.out.println("creationTime: " + attr.creationTime());
-			warDate = attr.creationTime().toString();
-			if(!(warDate.length()==0))
-			{
-			warDate=warDate.substring(0, 10);
-			}
-		}catch(Exception e) 
-		{
-			
-			e.printStackTrace();
-		}
-		return warDate;
-		
-	}*/
-	
 	
 	@RequestMapping(value = "/frmWebPOSModuleSelection", method = RequestMethod.GET)
 	public ModelAndView funWebPOSModuleSelectionOpenForm(HttpServletRequest req,Map<String,Object> model)
@@ -680,17 +435,23 @@ public class clsUserController
 	public ModelAndView funWebPOSModuleMasterSelection(HttpServletRequest req,Map<String,Object> model)
 	{
 		List<clsUserDesktopUtil> webPOSDesktop=null;
+		ModelAndView mv=new ModelAndView("frmPOSSelection");
 		try {
-			
-			ArrayList<clsPOSSelectionBean> posList = funWebPOSPOSSelection(req);
-			req.getSession().setAttribute("posList",posList);
 			req.getSession().setAttribute("webPOSModuleSelect","M");
+			if(null!=req.getSession().getAttribute("loginPOS")){
+				//mv=new ModelAndView("frmWebPOSMainMenu");
+				mv=funWebPOSPOSSelection(req.getSession().getAttribute("loginPOS").toString(), req, model);
+			}else{
+				ArrayList<clsPOSSelectionBean> posList = funWebPOSPOSSelection(req);
+				req.getSession().setAttribute("posList",posList);
+			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//req.getSession().setAttribute("desktop",webPOSDesktop);
-		return new ModelAndView("frmPOSSelection");
+		return mv;
 		
 	}
 	
@@ -792,7 +553,7 @@ public class clsUserController
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-//			e.printStackTrace();
+			e.printStackTrace();
 			
 		//	objPOSTools.funPOSUpdateStructure(req);
 			
@@ -811,11 +572,21 @@ public class clsUserController
 	public ModelAndView funWebPOSPOSSelectionReport(HttpServletRequest req,Map<String,Object> model)
 	{
 		List<clsUserDesktopUtil> webPOSDesktop=null;
+		ModelAndView mv=new ModelAndView("frmPOSSelection");
 		try {
 			
-			ArrayList<clsPOSSelectionBean> posList = funWebPOSPOSSelection(req);
-			req.getSession().setAttribute("posList",posList);
 			req.getSession().setAttribute("webPOSModuleSelect","R");
+			if(null!=req.getSession().getAttribute("loginPOS")){
+				mv=funWebPOSPOSSelection(req.getSession().getAttribute("loginPOS").toString(), req, model);
+						//new ModelAndView("frmGetPOSSelection");
+				//mv=new ModelAndView("frmGetPOSSelection?strPosCode="+req.getSession().getAttribute("loginPOS"));
+			}else{
+				
+				ArrayList<clsPOSSelectionBean> posList = funWebPOSPOSSelection(req);
+				req.getSession().setAttribute("posList",posList);
+				
+			}
+			
 			
 			//webPOSDesktop = funGetPOSMenuMap("super", "117.001", "M", "Super", "P01");
 		} catch (Exception e) {
@@ -823,7 +594,7 @@ public class clsUserController
 			e.printStackTrace();
 		}
 		//req.getSession().setAttribute("desktop",webPOSDesktop);
-		return new ModelAndView("frmPOSSelection");
+		return mv;
 		
 	}
 	
@@ -833,11 +604,16 @@ public class clsUserController
 	public ModelAndView funWebPOSPOSSelectionTransection(HttpServletRequest req,Map<String,Object> model)
 	{
 		List<clsUserDesktopUtil> webPOSDesktop=null;
+		ModelAndView mv=new ModelAndView("frmPOSSelection");
 		try {
-			
-			ArrayList<clsPOSSelectionBean> posList = funWebPOSPOSSelection(req);
-			req.getSession().setAttribute("posList",posList);
 			req.getSession().setAttribute("webPOSModuleSelect","T");
+			if(null!=req.getSession().getAttribute("loginPOS")){
+				//mv=new ModelAndView("frmWebPOSMainMenu");
+				mv=funWebPOSPOSSelection(req.getSession().getAttribute("loginPOS").toString(), req, model);
+			}else{
+				ArrayList<clsPOSSelectionBean> posList = funWebPOSPOSSelection(req);
+				req.getSession().setAttribute("posList",posList);
+			}
 			
 			//webPOSDesktop = funGetPOSMenuMap("super", "117.001", "M", "Super", "P01");
 		} catch (Exception e) {
@@ -845,7 +621,7 @@ public class clsUserController
 			e.printStackTrace();
 		}
 		//req.getSession().setAttribute("desktop",webPOSDesktop);
-		return new ModelAndView("frmPOSSelection");
+		return mv;
 		
 	}
 	

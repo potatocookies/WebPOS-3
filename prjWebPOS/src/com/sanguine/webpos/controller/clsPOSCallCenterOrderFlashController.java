@@ -30,6 +30,7 @@ import com.sanguine.webpos.bean.clsPOSOrderDtlBean;
 import com.sanguine.webpos.bean.clsPOSOrderHDBean;
 import com.sanguine.webpos.bean.clsPOSReportBean;
 import com.sanguine.webpos.model.clsOrderHdModel;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
 
 @Controller
 public class clsPOSCallCenterOrderFlashController
@@ -46,6 +47,10 @@ public class clsPOSCallCenterOrderFlashController
 
 	@Autowired
 	private intfBaseService objBaseService;
+	
+
+	@Autowired 
+	clsPOSMasterService objMasterService;
 
 	Map map = new HashMap();
 	private HashMap<Object, Object> mapPOSName;
@@ -58,24 +63,30 @@ public class clsPOSCallCenterOrderFlashController
 		try
 		{
 			urlHits = request.getParameter("saddr").toString();
+
+			model.put("urlHits", urlHits);
+
+			// function to get all POS list
+			mapPOSName = new HashMap<>();
+			mapPOSName.put("All", "All");
+			// function to get all POS list
+			List listOfPos = objMasterService.funFillPOSCombo(strClientCode);
+			if (listOfPos != null)
+			{
+				for (int i = 0; i < listOfPos.size(); i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					mapPOSName.put(obj[0].toString(), obj[1].toString());
+				}
+			}
+
+			model.put("mapPOSName", mapPOSName);
+
 		}
-		catch (NullPointerException e)
+		catch (Exception e)
 		{
 			urlHits = "1";
 		}
-		model.put("urlHits", urlHits);
-
-		// function to get all POS list
-		JSONArray jPOSArr = objPOSGlobalFunctionsController.funGetAllPOSForMaster(strClientCode);
-		mapPOSName = new HashMap<>();
-		mapPOSName.put("All", "All");
-		for (int cnt = 0; cnt < jPOSArr.size(); cnt++)
-		{
-			JSONObject jObjPOS = (JSONObject) jPOSArr.get(cnt);
-			mapPOSName.put(jObjPOS.get("strPosCode").toString(), jObjPOS.get("strPosName").toString());
-		}
-		model.put("mapPOSName", mapPOSName);
-
 		if ("2".equalsIgnoreCase(urlHits))
 		{
 

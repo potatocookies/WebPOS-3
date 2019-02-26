@@ -306,7 +306,7 @@ public class clsSearchFormController
 				JSONObject jObjSearchData = funGetPOSSearchDetails(formName,clientCode);
 				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
 				break;
-			}
+			} 
 			case "POSTableMaster":
 			{
 				listColumnNames="Table No,Table Name,Area Name,Waiter Name,POS Name,Status";

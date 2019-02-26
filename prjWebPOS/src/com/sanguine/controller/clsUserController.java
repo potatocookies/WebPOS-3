@@ -74,7 +74,7 @@ public class clsUserController
 	@Autowired
 	clsPOSMasterService objMasterService;
 	
-	@Autowired
+	@Autowired 
 	clsPOSToolsController objPOSTools;
 	
 	private static int intcheckSturctureUpdate=0;

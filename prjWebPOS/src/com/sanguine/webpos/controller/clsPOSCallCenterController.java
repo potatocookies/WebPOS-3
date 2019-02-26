@@ -34,6 +34,7 @@ import com.sanguine.webpos.model.clsHomeDeliveryHdModel;
 import com.sanguine.webpos.model.clsOrderDtlModel;
 import com.sanguine.webpos.model.clsOrderHdModel;
 import com.sanguine.webpos.model.clsOrderHdModel_ID;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
 import com.sanguine.webpos.util.clsPOSUtilityController;
 
 @Controller
@@ -53,6 +54,9 @@ public class clsPOSCallCenterController
 	clsBaseServiceImpl objBaseServiceImpl;
 	@Autowired
 	clsPOSUtilityController objUtility;
+	
+	@Autowired 
+	clsPOSMasterService objMasterService;
 
 	public clsPOSBillDetails obBillItem;
 	private HashMap<Object, Object> mapPOSName;
@@ -67,16 +71,13 @@ public class clsPOSCallCenterController
 	public ModelAndView funOpenForm(Map<String, Object> model, HttpServletRequest request)
 	{
 		String urlHits = "1";
+		clsPOSDirectBillerBean objDirectBillerBean = new clsPOSDirectBillerBean();
 		try
 		{
 			urlHits = request.getParameter("saddr").toString();
 			request.getSession().setAttribute("customerMobile", ""); // mobile
 																		// no
-		}
-		catch (NullPointerException e)
-		{
-			urlHits = "1";
-		}
+		
 		obBillItem = new clsPOSBillDetails();
 		String clientCode = request.getSession().getAttribute("gClientCode").toString();
 		String posClientCode = request.getSession().getAttribute("gClientCode").toString();
@@ -85,7 +86,7 @@ public class clsPOSCallCenterController
 		String userCode = request.getSession().getAttribute("gUserCode").toString();
 
 		// direct biller model attribute
-		clsPOSDirectBillerBean objDirectBillerBean = new clsPOSDirectBillerBean();
+		
 
 		// JSONObject jObj =
 		// objGlobalFunctions.funGETMethodUrlJosnObjectData(clsPOSGlobalFunctionsController.POSWSURL
@@ -109,7 +110,7 @@ public class clsPOSCallCenterController
 
 		String posURL = clsPOSGlobalFunctionsController.POSWSURL + "/clsMakeKOTController/funGetButttonList"
 
-				+ "?transName=DirectBiller&posCode=" + posCode + "&posClientCode=" + clientCode;
+		+ "?transName=DirectBiller&posCode=" + posCode + "&posClientCode=" + clientCode;
 
 		// + "?transName=DirectBiller&posCode="+ posCode+"&posClientCode="+
 		// posClientCode;
@@ -137,16 +138,24 @@ public class clsPOSCallCenterController
 		model.put("gCRMInterface", clsPOSGlobalFunctionsController.hmPOSSetupValues.get("CRMInterface"));
 
 		// function to get all POS list
-		JSONArray jPOSArr = objPOSGlobalFunctionsController.funGetAllPOSForMaster(clientCode);
-		mapPOSName = new HashMap<>();
-		mapPOSName.put("", "");
-		for (int cnt = 0; cnt < jPOSArr.size(); cnt++)
+		List listOfPos = objMasterService.funFillPOSCombo(clientCode);
+		if(listOfPos!=null)
 		{
-			JSONObject jObjPOS = (JSONObject) jPOSArr.get(cnt);
-			mapPOSName.put(jObjPOS.get("strPosCode").toString(), jObjPOS.get("strPosName").toString());
+			for(int i =0 ;i<listOfPos.size();i++)
+			{
+				Object[] obj = (Object[]) listOfPos.get(i);
+				mapPOSName.put(obj[1].toString(), obj[0].toString());
+			}
 		}
+		
 		model.put("mapPOSName", mapPOSName);
-
+		
+		}
+		catch (Exception e)
+		{
+			urlHits = "1";
+			e.printStackTrace();
+		}
 		return new ModelAndView("frmCallCenter", "command", objDirectBillerBean);
 
 	}
@@ -201,8 +210,7 @@ public class clsPOSCallCenterController
 			JSONArray jsonArrForDirectBillerMenuItemPricing = (JSONArray) jObj.get("MenuItemPricingDtl");
 			objDirectBillerBean.setJsonArrForDirectBillerMenuItemPricing(jsonArrForDirectBillerMenuItemPricing);
 
-			String posURL = clsPOSGlobalFunctionsController.POSWSURL + "/clsMakeKOTController/funGetMenuHeads"
-					+ "?posCode=" + selectedPOSCode + "&userCode=" + userCode;
+			String posURL = clsPOSGlobalFunctionsController.POSWSURL + "/clsMakeKOTController/funGetMenuHeads" + "?posCode=" + selectedPOSCode + "&userCode=" + userCode;
 			jObj = objGlobalFunctions.funGETMethodUrlJosnObjectData(posURL);
 			JSONArray jsonArrForDirectBillerMenuHeads = (JSONArray) jObj.get("MenuHeads");
 
@@ -210,7 +218,7 @@ public class clsPOSCallCenterController
 
 			posURL = clsPOSGlobalFunctionsController.POSWSURL + "/clsMakeKOTController/funGetButttonList"
 
-					+ "?transName=DirectBiller&posCode=" + selectedPOSCode + "&posClientCode=" + clientCode;
+			+ "?transName=DirectBiller&posCode=" + selectedPOSCode + "&posClientCode=" + clientCode;
 
 			// + "?transName=DirectBiller&posCode="+ posCode+"&posClientCode="+
 			// posClientCode;
@@ -276,8 +284,7 @@ public class clsPOSCallCenterController
 			homeDeliveryAddress = "Home";
 		}
 
-		String posURL = clsPOSGlobalFunctionsController.POSWSURL + "/clsMakeKOTController/funGetCustomerAddress"
-				+ "?strMobNo=" + mobileNo;
+		String posURL = clsPOSGlobalFunctionsController.POSWSURL + "/clsMakeKOTController/funGetCustomerAddress" + "?strMobNo=" + mobileNo;
 
 		JSONObject jObj = objGlobal.funGETMethodUrlJosnObjectData(posURL);
 
@@ -308,8 +315,10 @@ public class clsPOSCallCenterController
 			addressCity = "";
 		}
 
-		clsPOSDirectBillerBean objDirectBillerBean = objBean; // use this bean in
-															// settlement form
+		clsPOSDirectBillerBean objDirectBillerBean = objBean; // use this bean
+																// in
+																// settlement
+																// form
 		req.getSession().setAttribute("customerMobile", mobileNo);
 
 		listItemsDtlInBill = new ArrayList<clsPOSItemsDtlsInBill>();
@@ -402,34 +411,32 @@ public class clsPOSCallCenterController
 					if (i > 0)
 					{
 						objItemsDtlsInBill = tmplistOfDirectBillerBillItemDtl.get(i);
-						
-						
 
-						List<clsPOSModifiersOnItem>listOfModifiers=objItemsDtlsInBill.getListModifierDtl();
+						List<clsPOSModifiersOnItem> listOfModifiers = objItemsDtlsInBill.getListModifierDtl();
 						// for modifier dtl
 						if (objItemsDtlsInBill.getItemCode() == null && listOfModifiers.size() > 0)
 						{
-																			
+
 							for (int j = i; j < listOfModifiers.size(); j++)
 							{
-								
-								clsPOSModifiersOnItem objModifiersOnItem=listOfModifiers.get(j);
-								
-								String itemModifierCode=objModifiersOnItem.getModifierCode();
-								if(itemModifierCode==null && !itemModifierCode.contains("M") && !itemModifierCode.contains("!"))
+
+								clsPOSModifiersOnItem objModifiersOnItem = listOfModifiers.get(j);
+
+								String itemModifierCode = objModifiersOnItem.getModifierCode();
+								if (itemModifierCode == null && !itemModifierCode.contains("M") && !itemModifierCode.contains("!"))
 								{
 									continue;
 								}
-								String arrItemModifierCode[]=itemModifierCode.split("!");
-								if(arrItemModifierCode.length<2)
+								String arrItemModifierCode[] = itemModifierCode.split("!");
+								if (arrItemModifierCode.length < 2)
 								{
 									continue;
 								}
-								
-								String itemCode=itemModifierCode.split("!")[0]+itemModifierCode.split("!")[1];
-								
+
+								String itemCode = itemModifierCode.split("!")[0] + itemModifierCode.split("!")[1];
+
 								double rate = objModifiersOnItem.getAmount() / objModifiersOnItem.getQuantity();
-								
+
 								clsOrderDtlModel objOrderDtl = new clsOrderDtlModel();
 								objOrderDtl.setStrItemCode(itemCode);
 								objOrderDtl.setStrItemName(objModifiersOnItem.getModifierDescription());
@@ -446,7 +453,7 @@ public class clsPOSCallCenterController
 								objOrderDtl.setStrDataPostFlag("N");
 								objOrderDtl.setStrMMSDataPostFlag("N");
 								objOrderDtl.setStrManualKOTNo("");
-								boolean tdYN =false;
+								boolean tdYN = false;
 								if (tdYN)
 								{
 									objOrderDtl.setTdhYN("Y");
@@ -546,7 +553,7 @@ public class clsPOSCallCenterController
 			long code = 0;
 			StringBuilder sqlBuilder = new StringBuilder();
 			sqlBuilder.setLength(0);
-			sqlBuilder.append("select longOrderNo from tblstorelastorderno where strPosCode='"+posCode+"' ");
+			sqlBuilder.append("select longOrderNo from tblstorelastorderno where strPosCode='" + posCode + "' ");
 			List listItemDtl = objBaseServiceImpl.funGetList(sqlBuilder, "sql");
 			if (listItemDtl != null && listItemDtl.size() > 0)
 			{
@@ -557,13 +564,13 @@ public class clsPOSCallCenterController
 				code = code + 1;
 
 				orderNo = "O" + posCode + String.format("%05d", code);
-				objBaseServiceImpl.funExecuteUpdate("update tblstorelastorderno set longOrderNo='" + code + "' where strPosCode='"+posCode+"' ", "sql");
+				objBaseServiceImpl.funExecuteUpdate("update tblstorelastorderno set longOrderNo='" + code + "' where strPosCode='" + posCode + "' ", "sql");
 			}
 			else
 			{
 				orderNo = "O" + posCode + "00001";
 				sqlBuilder.setLength(0);
-				objBaseServiceImpl.funExecuteUpdate("insert into tblstorelastorderno values('"+posCode+"','1')", "sql");
+				objBaseServiceImpl.funExecuteUpdate("insert into tblstorelastorderno values('" + posCode + "','1')", "sql");
 			}
 		}
 		catch (Exception e)

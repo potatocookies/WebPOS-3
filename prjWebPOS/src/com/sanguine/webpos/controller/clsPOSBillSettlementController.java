@@ -226,8 +226,8 @@ public class clsPOSBillSettlementController
 		JSONObject objRows = new JSONObject();
 		String clientCode = request.getSession().getAttribute("gClientCode").toString();
 		String strPosCode = request.getSession().getAttribute("loginPOS").toString();
-		JSONObject jobj = objPOSGlobalFunctionsController.funGetPOSDate(request);
-		String posDate = jobj.get("POSDate").toString();
+		
+		String posDate = request.getSession().getAttribute("gPOSDate").toString();
 		String isSuperUser = request.getSession().getAttribute("superuser").toString();
 		boolean superuser = true;
 		if ("YES".equalsIgnoreCase(isSuperUser))

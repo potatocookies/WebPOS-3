@@ -34,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sanguine.controller.clsGlobalFunctions;
 import com.sanguine.webpos.bean.clsPOSCocktailWorldInterfaceBean;
 import com.sanguine.webpos.bean.clsPOSAreaMasterBean;
+import com.sanguine.webpos.sevice.clsPOSMasterService;
 
 
 @Controller
@@ -45,6 +46,11 @@ public class clsPOSCocktailWorlInterfaceController
 	@Autowired
 	private clsPOSGlobalFunctionsController objPOSGlobal;
 	
+
+	@Autowired 
+	clsPOSMasterService objMasterService;
+
+	
 	Map map=new HashMap();
 	@RequestMapping(value = "/frmPOSCocktailWorldInterface", method = RequestMethod.GET)
 	public ModelAndView funOpenForm(@ModelAttribute("command") @Valid clsPOSCocktailWorldInterfaceBean objBean,BindingResult result,Map<String,Object> model, HttpServletRequest request)
@@ -53,29 +59,30 @@ public class clsPOSCocktailWorlInterfaceController
 		String posCode=request.getSession().getAttribute("loginPOS").toString();
 		try{
 			urlHits=request.getParameter("saddr").toString();
-		}catch(NullPointerException e){
+
+			model.put("urlHits", urlHits);
+
+			String clientCode = request.getSession().getAttribute("gClientCode").toString();
+			List<Object> posList = new ArrayList<Object>();
+			posList.add("ALL");
+
+			// function to get all POS list
+			List listOfPos = objMasterService.funFillPOSCombo(clientCode);
+			if (listOfPos != null)
+			{
+				for (int i = 0; i < listOfPos.size(); i++)
+				{
+					Object[] obj = (Object[]) listOfPos.get(i);
+					map.put(obj[1].toString(), obj[0].toString());
+				}
+			}
+
+			String POSDate = request.getSession().getAttribute("gPOSDate").toString();
+			model.put("posDate", POSDate);
+			model.put("posList",posList);
+		}catch(Exception e){
 			urlHits="1";
 		}
-		model.put("urlHits",urlHits);
-		
-		String clientCode=request.getSession().getAttribute("clientCode").toString();
-		List<Object> posList= new ArrayList<Object>();
-		posList.add("ALL");
-		
-		JSONArray jArrList=new JSONArray();
-			 jArrList =objPOSGlobal.funGetAllPOSForMaster(clientCode);
-			for(int i =0 ;i<jArrList.size();i++)
-			{
-				JSONObject josnObjRet = (JSONObject) jArrList.get(i);
-				posList.add(josnObjRet.get("strPosName"));
-				map.put(josnObjRet.get("strPosName"), josnObjRet.get("strPosCode"));
-			}
-		
-		
-       	 String POSDate = request.getSession().getAttribute("gPOSDate").toString();
-		 model.put("posDate", POSDate);  	
-		model.put("posList",posList);
-		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmPOSCocktailWorldInterface_1");
 		}else if("1".equalsIgnoreCase(urlHits)){

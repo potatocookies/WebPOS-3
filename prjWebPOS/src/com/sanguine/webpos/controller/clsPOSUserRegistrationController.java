@@ -229,7 +229,7 @@ public class clsPOSUserRegistrationController {
 		
 		List<clsPOSUserRegistrationBean> listMasterModuleData=new ArrayList<clsPOSUserRegistrationBean>();
 		
-		JSONArray jArryPosList =objPOSGlobal.funGetAllForm(clientCode);
+		JSONArray jArryPosList =new JSONArray();//objPOSGlobal.funGetAllForm(clientCode);
 		
 	        
 	        if(null!=jArryPosList)

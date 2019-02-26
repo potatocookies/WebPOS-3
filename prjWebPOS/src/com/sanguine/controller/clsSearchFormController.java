@@ -495,14 +495,14 @@ public class clsSearchFormController
 			}
 			
 
-			case "webstockusermaster":
+			/*case "webstockusermaster":
 			 {	
 				listColumnNames="User Code,User Name,Super User";
 				searchFormTitle="User Master";
 				JSONObject jObjSearchData = funGetWebstockUserSearchDetails(clientCode);
 				jArrSearchList=(JSONArray) jObjSearchData.get(formName);
 				break;
-			 }
+			 }*/
 
 			case "POSCounterMaster":
 			{
@@ -942,18 +942,25 @@ public class clsSearchFormController
 			 break;	
 			 
 			 case "POSReasonMaster":
-			 	
-			 	
-			 	list=objBaseService.funGetSerachList("getALLReason",clientCode);
-			 	for(int cnt=0;cnt<list.size();cnt++)
-				{
-			 		//clsReasonMasterModel objModelReason = (clsReasonMasterModel) list.get(cnt);
-			 		Object obj[]=(Object[]) list.get(cnt);
-				    JSONArray jArrDataRow = new JSONArray();
-				    jArrDataRow.add(obj[0].toString());
-				    jArrDataRow.add(obj[1].toString());
-				    jArrData.add(jArrDataRow);
-				}		 	
+				 	
+				 hqlQuery.setLength(0);
+				 hqlQuery.append(" select a.strReasonCode,a.strReasonName from tblreasonmaster a "
+				 		+ "where a.strClientCode='"+clientCode+"' order by a.strReasonCode; "); 
+				
+				list=objBaseService.funGetList(hqlQuery, "sql");
+				 
+			 	if(list.size()>0)
+			 	{
+			 		for(int cnt=0;cnt<list.size();cnt++)
+					{
+				 		//clsReasonMasterModel objModelReason = (clsReasonMasterModel) list.get(cnt);
+				 		Object obj[]=(Object[]) list.get(cnt);
+					    JSONArray jArrDataRow = new JSONArray();
+					    jArrDataRow.add(obj[0].toString());
+					    jArrDataRow.add(obj[1].toString());
+					    jArrData.add(jArrDataRow);
+					}
+			 	}	 	
 			 	jObjSearchData.put(masterName,jArrData);
 			 break;	
 			 
@@ -1425,10 +1432,14 @@ public class clsSearchFormController
 				    	break; 
 			    
 			    
-					  case "POSGroupMaster":
-						  	list=objBaseService.funGetSerachList(masterName,clientCode);
-							clsGroupMasterModel objModel = null;
-							for(int cnt=0;cnt<list.size();cnt++)
+					 case "POSGroupMaster":
+						 hqlQuery.setLength(0);
+		    			 hqlQuery.append(" select a.strGroupCode,a.strGroupName,a.strOperationalYN from tblgrouphd a "
+		    			 		+ "where a.strClientCode='"+clientCode+"' order by a.strGroupCode; ");
+		    			 list=objBaseService.funGetList(hqlQuery, "sql");
+		    			 if(list.size()>0)
+		    			 {
+		    				for(int cnt=0;cnt<list.size();cnt++)
 							{
 								Object ob[]=(Object[]) list.get(cnt);
 								JSONArray jArrDataRow = new JSONArray();
@@ -1436,9 +1447,10 @@ public class clsSearchFormController
 							    jArrDataRow.add(ob[1].toString());
 							    jArrDataRow.add(ob[2].toString());
 							    jArrData.add(jArrDataRow);
-							}
-							jObjSearchData.put(masterName, jArrData);
-							break;
+							} 
+		    			 }
+						jObjSearchData.put(masterName, jArrData);
+						break;
 							
     	case "MenuItemForPrice":
 					    	
@@ -2169,40 +2181,6 @@ public class clsSearchFormController
 		}
 		return listSearchForm;
 	}
-	
-	private JSONObject funGetWebstockUserSearchDetails(String clientCode)
-	{
-		JSONObject jObjSearchDetails=new JSONObject();
-		String posUrl = clsPOSGlobalFunctionsController.POSWSURL+"/MMSIntegration/funGetUserMaster"
-			+ "?gClientCode="+clientCode;
-		System.out.println("posUrl:"+posUrl);
-		
-		try {
-			URL url = new URL(posUrl);
-		
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			String output = "", op = "";
-			while ((output = br.readLine()) != null)
-			{
-			    op += output;
-			}
-			System.out.println("Obj="+op);
-			conn.disconnect();
-								
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(op);
-	        jObjSearchDetails = (JSONObject) obj;
-	        
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return jObjSearchDetails;
-	}
-	
 	
 	
 	

@@ -12,12 +12,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     
-    <title>Web Stocks</title>
+    <title>Web POS</title>
    <link rel="stylesheet" type="text/css" href="<spring:url value="/resources/newdesign/css/hover.css"/>"/>
     <script type="text/javascript" src="<spring:url value="/resources/js/pagination.js"/>"></script>
         <!-- Load data to paginate -->
 	<link rel="stylesheet" href="<spring:url value="/resources/css/pagination.css"/>" />
-    
+    <style>
+	    .dont-break-out {
+			overflow-wrap: break-word;
+		  	word-wrap: break-word;
+	  }
+    </style>
     <script src="<spring:url value="/resources/newdesign/js/jquery.sliphover.js"/>"/></script>
      <script type="text/javascript">
      
@@ -112,12 +117,12 @@
 	   
 	}
 
-	var items_per_page = 18;
+	var items_per_page = 24;
 	function getOptionsFromForm()
 	{
 	    var opt = {callback: pageselectCallback};
 		opt['items_per_page'] = items_per_page;
-		opt['num_display_entries'] = 18;
+		opt['num_display_entries'] = 24;
 		opt['num_edge_entries'] = 3;
 		opt['prev_text'] = "Prev";
 		opt['next_text'] = "Next";
@@ -144,7 +149,7 @@
 		    	var formTitle=formSerachlist[i].strShortName;
 		    	
 		    	newcontent += "<a href="+requestMapping+" class=\"button  btnLightBlue hvr-shutter-in-vertical hvr-grow\" style=\"margin: 2%;    width: 11%;\"><img id=\"Desktop\" src="+srcImg+" title='"+formTitle+"' style=\"width: 60.5%; margin-top: 15%; margin-left: 25px;\" >";
-		    	newcontent += "<font style=\"color: #000000b5; font-size: 14px\">"+formTitle+"</font> </a>";
+		    	newcontent += "<br><div style=\"width:80%; margin-left:5%; margin-right:10%; \"><font style=\"color: #000000b5; font-size: 14px;\" class=\"dont-break-out\">"+formTitle+"</font></div> </a>";
 		    }
 		    	
 		   } 

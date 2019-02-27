@@ -127,7 +127,7 @@ public class clsPOSSettlementMasterController {
 			req.getSession().setAttribute("success", true);
 			req.getSession().setAttribute("successMessage"," "+settlementCode);
 			
-			String sql = "update  set dteDatetblmasteroperationstatusEdited='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Settlement' ";
+			String sql = "update tblmasteroperationstatus set dteDateEdited ='"+objGlobal.funGetCurrentDateTime("yyyy-MM-dd")+"'  where strTableName='Settlement' ";
 			objBaseServiceImpl.funExecuteUpdate(sql,"sql");
 									
 			return new ModelAndView("redirect:/frmPOSSettlement.html");

@@ -102,12 +102,12 @@ $(document).ready(function()
 				        	$("#cmbApplicable").val(response.strApplicable);
 				        	$("#txtConversionRatio").val(response.dblConversionRatio);
 				        	$("#txtSettelmentDesc").focus();
-				        	if(response.strBilling=='Y')
+				        	if(response.strBilling=='Yes')
 			        		{
 				        		$("#chkBilling").prop('checked',true);
 			        		}
 				        	
-				        	if(response.strAdvanceReceipt=='Y')
+				        	if(response.strAdvanceReceipt=='Yes')
 			        		{
 				        		$("#chkAdvanceReceipt").prop('checked',true);
 			        		}
@@ -120,7 +120,7 @@ $(document).ready(function()
 				        	{
 				        		$('#chkSelectCustOnBillSettlement').prop('checked',true)
 				        	}
-				        	if(response.strCreditReceiptYN=='Y')
+				        	if(response.strCreditReceiptYN=='Yes')
 				        	{
 				        		$('#chkCreditReceipt').prop('checked',true)
 				        	}

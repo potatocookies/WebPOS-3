@@ -109,7 +109,7 @@ public class clsPOSMenuHeadController {
 			try
 			{
 				String clientCode=req.getSession().getAttribute("gClientCode").toString();
-				String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
+				String strUserCode=req.getSession().getAttribute("gUserCode").toString();
 				String subMenuCode = objBean.getStrSubMenuHeadCode();
 				
 				if (subMenuCode.trim().isEmpty())
@@ -169,8 +169,8 @@ public class clsPOSMenuHeadController {
 				objModel.setStrSubMenuHeadShortName(objBean.getStrSubMenuHeadShortName());
 				objModel.setStrMenuCode(objBean.getStrMenuHeadCode());
 				objModel.setStrSubMenuOperational(objBean.getStrSubMenuOperational());
-				objModel.setStrUserCreated(webStockUserCode);
-				objModel.setStrUserEdited(webStockUserCode);
+				objModel.setStrUserCreated(strUserCode);
+				objModel.setStrUserEdited(strUserCode);
 				objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 				objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 	
@@ -197,7 +197,7 @@ public class clsPOSMenuHeadController {
 			try
 			{
 				String clientCode=req.getSession().getAttribute("gClientCode").toString();
-				String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
+				String strUserCode=req.getSession().getAttribute("gUserCode").toString();
 				String menuCode = objBean.getStrMenuHeadCode();
 				if (menuCode.trim().isEmpty())
 				{
@@ -253,8 +253,8 @@ public class clsPOSMenuHeadController {
 				clsMenuHeadMasterModel objModel = new clsMenuHeadMasterModel(new clsMenuHeadMasterModel_ID(menuCode, clientCode));
 				objModel.setStrMenuName(objBean.getStrMenuHeadName());
 				objModel.setStrOperational(objBean.getStrOperational());
-				objModel.setStrUserCreated(webStockUserCode);
-				objModel.setStrUserEdited(webStockUserCode);
+				objModel.setStrUserCreated(strUserCode);
+				objModel.setStrUserEdited(strUserCode);
 				objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 				objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 				objModel.setStrDataPostFlag("N");

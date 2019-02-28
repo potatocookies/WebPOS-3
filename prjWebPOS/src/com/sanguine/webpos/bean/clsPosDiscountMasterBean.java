@@ -16,6 +16,9 @@ public class clsPosDiscountMasterBean
 	private String strDiscountType;
 	private double dblDiscountValue;
 	private String strDiscOnValue;
+	private String strDineIn;
+	private String strHomeDelivery;
+	private String strTakeAway;
 	
 	private List<clsPOSDiscountDtlsOnBill> listDiscountDtl=new ArrayList<clsPOSDiscountDtlsOnBill>();
 	
@@ -84,6 +87,30 @@ public class clsPosDiscountMasterBean
 	}
 	public void setListDiscountDtl(List<clsPOSDiscountDtlsOnBill> listDiscountDtl) {
 		this.listDiscountDtl = listDiscountDtl;
+	}
+	public String getStrDineIn()
+	{
+		return strDineIn;
+	}
+	public void setStrDineIn(String strDineIn)
+	{
+		this.strDineIn = strDineIn;
+	}
+	public String getStrHomeDelivery()
+	{
+		return strHomeDelivery;
+	}
+	public void setStrHomeDelivery(String strHomeDelivery)
+	{
+		this.strHomeDelivery = strHomeDelivery;
+	}
+	public String getStrTakeAway()
+	{
+		return strTakeAway;
+	}
+	public void setStrTakeAway(String strTakeAway)
+	{
+		this.strTakeAway = strTakeAway;
 	}
 	
 	

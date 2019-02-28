@@ -89,18 +89,18 @@
 	
 	$(function()
 	{
-		$("#txtPriceMonday").keydown(function (e)
+		$("#txtPriceSunday").keydown(function (e)
 		{
 			if (e.which == 9)
 			{
-				var priceMonday=$("#txtPriceMonday").val();
-				$("#txtPriceMonday").val(priceMonday);				
-				$("#txtPriceTuesday").val(priceMonday);
-				$("#txtPriceWednesday").val(priceMonday);
-				$("#txtPriceThursday").val(priceMonday);
-				$("#txtPriceFriday").val(priceMonday);
-				$("#txtPriceSaturday").val(priceMonday);
-				$("#txtPriceSunday").val(priceMonday);
+				var priceSunday=$("#txtPriceSunday").val();
+				$("#txtPriceMonday").val(priceSunday);				
+				$("#txtPriceTuesday").val(priceSunday);
+				$("#txtPriceWednesday").val(priceSunday);
+				$("#txtPriceThursday").val(priceSunday);
+				$("#txtPriceFriday").val(priceSunday);
+				$("#txtPriceSaturday").val(priceSunday);
+				$("#txtPriceSunday").val(priceSunday);
 			}
 		});
 	});

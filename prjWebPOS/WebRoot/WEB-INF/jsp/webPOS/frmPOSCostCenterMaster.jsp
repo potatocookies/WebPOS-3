@@ -311,7 +311,7 @@ var fieldName="";
     				<s:select id="cmbSecondaryPrinterPort" path="strSecondaryPrinterPort" items="${printerList}" style="height: 10%; width: 100%;"/>
     			</div>
     			<div class="element-input col-lg-6">
-    				<input id="secondaryPrinter" type="button" value="TEST" />
+    				<input id="secondaryPrinter" type="button" value="TEST" onclick="funTestPrint(this)" />
 			 	</div>
 			 </div>
 			 

@@ -71,8 +71,6 @@ public class clsPOSDiscountMasterController {
 		}
 		model.put("posList", map);
 		
-		
-		
 		if("2".equalsIgnoreCase(urlHits)){
 			return new ModelAndView("frmDiscountMaster_1");
 		}else if("1".equalsIgnoreCase(urlHits)){
@@ -89,7 +87,7 @@ public class clsPOSDiscountMasterController {
 		try
 		{
 			String clientCode=req.getSession().getAttribute("gClientCode").toString();
-			String webStockUserCode=req.getSession().getAttribute("gUserCode").toString();
+			String strUserCode=req.getSession().getAttribute("gUserCode").toString();
 			String[] dteFromDate = objBean.getDteFromDate().split(" ");
 			String[] arr = dteFromDate[0].split("-");
 			String fromDate=arr[2]+"-"+arr[1]+"-"+arr[0];
@@ -147,7 +145,7 @@ public class clsPOSDiscountMasterController {
 	            }
 	            else
 	            {
-	               discountCode = "D000001";
+	               discountCode = "D000001"; 
 	            }
 			}
 			clsDiscountMasterModel objModel = new clsDiscountMasterModel(new clsDiscountMasterModel_ID(discountCode, clientCode));
@@ -161,33 +159,36 @@ public class clsPOSDiscountMasterController {
 			objModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
 			objModel.setStrDataPostFlag("N");
-			objModel.setStrUserCreated(webStockUserCode);
-			objModel.setStrUserEdited(webStockUserCode);
+			objModel.setStrDineIn(objGlobal.funIfNull(objBean.getStrDineIn(),"N","Y"));
+			objModel.setStrHomeDelivery(objGlobal.funIfNull(objBean.getStrHomeDelivery(),"N","Y"));
+			objModel.setStrTakeAway(objGlobal.funIfNull(objBean.getStrTakeAway(),"N","Y"));
+			objModel.setStrUserCreated(strUserCode);
+			objModel.setStrUserEdited(strUserCode);
 
 			List<clsPOSDiscountDtlsOnBill> listDtl=objBean.getListDiscountDtl();
 			List<clsDiscountDetailsModel> listDiscDtl = new ArrayList<clsDiscountDetailsModel>();
 		    if(null!=listDtl)
 		    {
-		    for(int i=0; i<listDtl.size(); i++)
-		    {
-		    	clsDiscountDetailsModel objDtlModel = new clsDiscountDetailsModel();
-		    	clsPOSDiscountDtlsOnBill obj= new clsPOSDiscountDtlsOnBill();
-		    	obj=(clsPOSDiscountDtlsOnBill)listDtl.get(i);
-		    	
+			    for(int i=0; i<listDtl.size(); i++)
+			    {
+			    	clsDiscountDetailsModel objDtlModel = new clsDiscountDetailsModel();
+			    	clsPOSDiscountDtlsOnBill obj= new clsPOSDiscountDtlsOnBill();
+			    	obj=(clsPOSDiscountDtlsOnBill)listDtl.get(i);
+			    	
 		    		if(null!=obj.getDiscountReasonCode())
 		    		{
-		    		objDtlModel.setDblDiscountValue(obj.getDiscountOnValue());
-		    		objDtlModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-		    		objDtlModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
-		    		objDtlModel.setStrDataPostFlag("N");
-		    		objDtlModel.setStrDiscOnCode(obj.getDiscountReasonCode());
-		    		objDtlModel.setStrDiscOnName(obj.getStrDiscoutnName());
-		    		objDtlModel.setStrDiscountType(obj.getDiscountOnType());
-		    		objDtlModel.setStrUserCreated(webStockUserCode);
-		    		objDtlModel.setStrUserEdited(webStockUserCode);
-			    	listDiscDtl.add(objDtlModel);
+			    		objDtlModel.setDblDiscountValue(obj.getDiscountOnValue());
+			    		objDtlModel.setDteDateCreated(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+			    		objDtlModel.setDteDateEdited(objGlobal.funGetCurrentDateTime("yyyy-MM-dd"));
+			    		objDtlModel.setStrDataPostFlag("N");
+			    		objDtlModel.setStrDiscOnCode(obj.getDiscountReasonCode());
+			    		objDtlModel.setStrDiscOnName(obj.getStrDiscoutnName());
+			    		objDtlModel.setStrDiscountType(obj.getDiscountOnType());
+			    		objDtlModel.setStrUserCreated(strUserCode);
+			    		objDtlModel.setStrUserEdited(strUserCode);
+				    	listDiscDtl.add(objDtlModel);
 		    		}
-		    }
+			    }
 		    }
 		    objModel.setListDiscountDtl(listDiscDtl);
 		    objMasterService.funSaveUpdateDiscountMaster(objModel);
@@ -220,7 +221,9 @@ public class clsPOSDiscountMasterController {
 				objPOSDiscountMasterBean.setStrDiscountName(objModel.getStrDiscName());
 				objPOSDiscountMasterBean.setStrPosCode(objModel.getStrPOSCode());
 				objPOSDiscountMasterBean.setStrDiscountOn(objModel.getStrDiscOn());
-
+				objPOSDiscountMasterBean.setStrDineIn(objModel.getStrDineIn());
+				objPOSDiscountMasterBean.setStrHomeDelivery(objModel.getStrHomeDelivery());
+				objPOSDiscountMasterBean.setStrTakeAway(objModel.getStrTakeAway());
 				
 				List<clsDiscountDetailsModel> listDiscountDtl =objModel.getListDiscountDtl();
 				List<clsPOSDiscountDtlsOnBill> list=new ArrayList<clsPOSDiscountDtlsOnBill>();

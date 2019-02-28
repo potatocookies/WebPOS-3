@@ -95,6 +95,15 @@ public class clsDiscountMasterModel extends clsBaseModel implements Serializable
     @Column(name = "strDataPostFlag")
     private String strDataPostFlag;
     
+    
+    @Column(name = "strDineIn")
+    private String strDineIn;
+    
+    @Column(name = "strHomeDelivery")
+    private String strHomeDelivery;
+    
+    @Column(name = "strTakeAway")
+    private String strTakeAway;
    
     public String getStrDiscCode() {
 		return strDiscCode;
@@ -200,6 +209,36 @@ public class clsDiscountMasterModel extends clsBaseModel implements Serializable
 
 	public void setListDiscountDtl(List<clsDiscountDetailsModel> listDiscountDtl) {
 		this.listDiscountDtl = listDiscountDtl;
+	}
+
+	public String getStrDineIn()
+	{
+		return strDineIn;
+	}
+
+	public void setStrDineIn(String strDineIn)
+	{
+		this.strDineIn = strDineIn;
+	}
+
+	public String getStrHomeDelivery()
+	{
+		return strHomeDelivery;
+	}
+
+	public void setStrHomeDelivery(String strHomeDelivery)
+	{
+		this.strHomeDelivery = strHomeDelivery;
+	}
+
+	public String getStrTakeAway()
+	{
+		return strTakeAway;
+	}
+
+	public void setStrTakeAway(String strTakeAway)
+	{
+		this.strTakeAway = strTakeAway;
 	}
 
 

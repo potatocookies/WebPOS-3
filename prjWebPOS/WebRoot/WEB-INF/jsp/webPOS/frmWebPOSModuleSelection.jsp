@@ -12,12 +12,23 @@
 </head>
 <body style="margin-left: 18%;margin-top: 20%;">
 
-				<div >
+				<%-- <div >
 				 <a href="frmWebPOSSelectionMaster.html" ><img  src="../${pageContext.request.contextPath}/resources/images/imgMasters.png" title="Master" ></a> &nbsp;&nbsp;
 					&nbsp;&nbsp;
 					
 				<a href="frmWebPOSSelectionTransection.html" ><img  src="../${pageContext.request.contextPath}/resources/images/imgTransactions.png" title="Transactions" ></a> 
 					&nbsp;&nbsp;	
+					
+				<a href="frmWebPOSSelectionReport.html" ><img  src="../${pageContext.request.contextPath}/resources/images/imgReports.png" title="Report"  ></a>
+					
+				</div> --%>
+				
+				<div style="width:65%; height:100%;margin-left:auto;margin-right:auto;margin-top:22%">
+				 <a href="frmWebPOSSelectionMaster.html" ><img  src="../${pageContext.request.contextPath}/resources/images/imgMasters.png" title="Master" ></a> &nbsp;&nbsp;
+					&nbsp;&nbsp;
+					
+				<a href="frmWebPOSSelectionTransection.html" ><img  src="../${pageContext.request.contextPath}/resources/images/imgTransactions.png" title="Transactions" ></a> 
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	
 					
 				<a href="frmWebPOSSelectionReport.html" ><img  src="../${pageContext.request.contextPath}/resources/images/imgReports.png" title="Report"  ></a>
 					

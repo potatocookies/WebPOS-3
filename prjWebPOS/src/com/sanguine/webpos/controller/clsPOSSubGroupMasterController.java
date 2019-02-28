@@ -138,9 +138,14 @@ public class clsPOSSubGroupMasterController
 		        }
 		    }
 			
+			String strGroupCode = "";
 			clsSubGroupMasterHdModel objModel = new clsSubGroupMasterHdModel(new clsSubGroupMasterModel_ID(subGroupCode , clientCode));
 		    objModel.setStrSubGroupName(objBean.getStrSubGroupName());
-		    objModel.setStrGroupCode(objBean.getStrGroupCode());
+		    if(mapGroup.containsKey(objBean.getStrGroupCode()))
+		    {
+		    	strGroupCode = mapGroup.get(objBean.getStrGroupCode()).toString();
+		    }
+		    objModel.setStrGroupCode(strGroupCode);
 		   // objModel.setStrOperationalYN(operational);
 		    objModel.setStrUserCreated(webStockUserCode);
 		    objModel.setStrUserEdited(webStockUserCode);
